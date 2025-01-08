@@ -2,19 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\SoalKecermatan;
 use App\Models\HasilTes;
 use Illuminate\Http\Request;
+use App\Models\SoalKecermatan;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class SoalKecermatanController extends Controller
 {
     /**
      * Menampilkan halaman tes
      */
-    public function index()
+    public function index(Request $request)
     {
-        return view('kecermatan.soal');
+        $questions = $request->query('questions', []);
+        if (empty($questions) || count($questions) !== 10) {
+            return redirect()->route('kecermatan');
+        }
+
+        // Store questions in session for later use
+        session(['kecermatan_questions' => $questions]);
+
+        return view('kecermatan.soal', ['questions' => $questions]);
     }
 
     /**
@@ -22,42 +31,68 @@ class SoalKecermatanController extends Controller
      */
     public function getNextSoal(Request $request)
     {
-        $currentSet = $request->input('current_set', 0);
-        $nextSet = $currentSet + 1;
+        $validator = Validator::make($request->all(), [
+            'current_set' => 'required|integer'
+        ]);
 
-        if ($nextSet > 10) {
+        if ($validator->fails()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Tes telah selesai'
+                'message' => 'Invalid input',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $currentSet = $request->input('current_set');
+        $nextSet = $currentSet + 1;
+
+        // Get questions from session
+        $questions = session('kecermatan_questions', []);
+
+        if ($nextSet > 10 || empty($questions)) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'set_number' => $nextSet,
+                    'is_last' => true
+                ]
             ]);
         }
 
-        // Ambil 5 huruf acak untuk set soal ini
-        $huruf = $this->generateHurufSet();
+        // Convert the current question to the required format
+        $currentQuestion = $questions[$nextSet - 1];
+        $karakterSet = $this->formatQuestionToKarakterSet($currentQuestion);
 
         return response()->json([
             'success' => true,
             'data' => [
                 'set_number' => $nextSet,
-                'soal' => $huruf,
-                'is_last' => ($nextSet == 10)
+                'soal' => $karakterSet,
+                'is_last' => ($nextSet >= 10)
             ]
         ]);
     }
 
+
     /**
-     * Generate set huruf untuk satu soal
+     * Generate set karakter untuk satu soal berdasarkan jenis
      */
-    private function generateHurufSet()
+    private function formatQuestionToKarakterSet($question)
     {
-        $huruf = range('A', 'Z');
-        shuffle($huruf);
-        $selected = array_slice($huruf, 0, 5);
-        
+        $characters = str_split($question);
         $soal = [];
-        foreach ($selected as $index => $h) {
+
+        // Take only the first 5 characters if the question is longer
+        $characters = array_slice($characters, 0, 5);
+
+        // Pad with random characters if less than 5
+        while (count($characters) < 5) {
+            $characters[] = chr(rand(65, 90)); // Add random uppercase letters
+        }
+
+        foreach ($characters as $index => $char) {
             $soal[] = [
-                'huruf' => $h,
+                'huruf' => $char,
                 'opsi' => chr(65 + $index) // A, B, C, D, E
             ];
         }
@@ -95,7 +130,6 @@ class SoalKecermatanController extends Controller
                 'message' => 'Hasil tes berhasil disimpan',
                 'data' => $hasil
             ]);
-
         } catch (\Exception $e) {
             DB::rollback();
             return response()->json([

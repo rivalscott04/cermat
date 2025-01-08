@@ -43,9 +43,9 @@ class KecermatanController extends Controller
         $simbol = '!@#$%^&*()_+-=[]{}|;:",.<>?';
 
         // Menghasilkan 9 set karakter (untuk 9 kolom)
-        for ($i = 0; $i < 9; $i++) {
+        for ($i = 0; $i < 10; $i++) {
             $karakterSet = '';
-            
+
             switch ($jenis) {
                 case 'huruf':
                     $karakterSet = $this->generateRandomString($huruf);
@@ -60,7 +60,7 @@ class KecermatanController extends Controller
                     $karakterSet = $this->generateRandomString($huruf . $angka . $simbol);
                     break;
             }
-            
+
             $hasil[] = $karakterSet;
         }
 
@@ -77,11 +77,11 @@ class KecermatanController extends Controller
     {
         $result = '';
         $length = strlen($characters);
-        
+
         for ($i = 0; $i < 5; $i++) {
             $result .= $characters[rand(0, $length - 1)];
         }
-        
+
         return $result;
     }
 
@@ -122,7 +122,6 @@ class KecermatanController extends Controller
                 'message' => 'Hasil tes berhasil disimpan',
                 'data' => $hasilTes
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -138,8 +137,8 @@ class KecermatanController extends Controller
     public function hasilTes($userId)
     {
         $hasil = HasilTes::where('user_id', $userId)
-                        ->orderBy('tanggal_tes', 'desc')
-                        ->get();
+            ->orderBy('tanggal_tes', 'desc')
+            ->get();
 
         return view('kecermatan.hasil', compact('hasil'));
     }

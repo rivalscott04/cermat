@@ -33,7 +33,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
-            'is_active' => true
+            'is_active' => true,
+            'role' => 'user'
         ]);
 
         // Redirect ke halaman pembayaran
@@ -50,8 +51,12 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Cek status berlangganan
-            if (!Auth::user()->hasActiveSubscription()) {
+            if (Auth::user()->role == 'admin') {
+                return redirect()->route('admin.dashboard');
+            }
+
+            // Hanya untuk user biasa, cek status berlangganan
+            if (Auth::user()->role == 'user' && !Auth::user()->hasActiveSubscription()) {
                 return redirect()->route('subscription.expired');
             }
 

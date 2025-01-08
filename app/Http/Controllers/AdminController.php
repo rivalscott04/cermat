@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -22,20 +22,20 @@ class AdminController extends Controller
         // Mengambil statistik untuk dashboard
         $totalUsers = User::where('role', 'user')->count();
         $activeSubscriptions = Subscription::where('end_date', '>', now())
-                                         ->where('payment_status', 'paid')
-                                         ->count();
+            ->where('payment_status', 'paid')
+            ->count();
         $totalRevenue = Subscription::where('payment_status', 'paid')
-                                   ->sum('amount_paid');
-        
+            ->sum('amount_paid');
+
         return view('admin.dashboard', compact('totalUsers', 'activeSubscriptions', 'totalRevenue'));
     }
 
     public function userList()
     {
         $users = User::where('role', 'user')
-                    ->with('subscription')
-                    ->latest()
-                    ->paginate(10);
+            ->with('subscription')
+            ->latest()
+            ->paginate(10);
 
         return view('admin.users.index', compact('users'));
     }
@@ -43,8 +43,8 @@ class AdminController extends Controller
     public function subscriptionList()
     {
         $subscriptions = Subscription::with('user')
-                                   ->latest()
-                                   ->paginate(10);
+            ->latest()
+            ->paginate(10);
 
         return view('admin.subscriptions.index', compact('subscriptions'));
     }
@@ -70,13 +70,13 @@ class AdminController extends Controller
 
     public function userDetail($id)
     {
-        $user = User::with(['subscription' => function($query) {
+        $user = User::with(['subscription' => function ($query) {
             $query->latest();
         }])->findOrFail($id);
 
         $subscriptionHistory = Subscription::where('user_id', $id)
-                                         ->latest()
-                                         ->get();
+            ->latest()
+            ->get();
 
         return view('admin.users.detail', compact('user', 'subscriptionHistory'));
     }
