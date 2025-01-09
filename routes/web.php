@@ -13,12 +13,7 @@ Route::get('/', function () {
 
 // Routes for Tes Kecermatan
 
-Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
-Route::post('/kecermatan/generate', [KecermatanController::class, 'generateKarakter'])->name('kecermatan.generateKarakter');
-Route::get('/tes-kecermatan/soal', [SoalKecermatanController::class, 'index'])->name('kecermatan.soal');
-Route::post('/tes-kecermatan/next-soal', [SoalKecermatanController::class, 'getNextSoal'])->name('kecermatan.nextSoal');
-Route::post('/tes-kecermatan/simpan-hasil', [SoalKecermatanController::class, 'simpanHasil'])->name('kecermatan.simpanHasil');
-Route::get('/tes-kecermatan/hasil', [SoalKecermatanController::class, 'hasilTes'])->name('kecermatan.hasil');
+
 
 // Authentication Routes
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
@@ -32,6 +27,15 @@ Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout']
 Route::post('/subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
 Route::get('/subscription/expired', [SubscriptionController::class, 'expired'])->name('subscription.expired');
 Route::get('/subscription/check', [SubscriptionController::class, 'check'])->name('subscription.check');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
+    Route::post('/kecermatan/generate', [KecermatanController::class, 'generateKarakter'])->name('kecermatan.generateKarakter');
+    Route::get('/tes-kecermatan/soal', [SoalKecermatanController::class, 'index'])->name('kecermatan.soal');
+    Route::post('/tes-kecermatan/next-soal', [SoalKecermatanController::class, 'getNextSoal'])->name('kecermatan.nextSoal');
+    Route::post('/tes-kecermatan/simpan-hasil', [SoalKecermatanController::class, 'simpanHasil'])->name('kecermatan.simpanHasil');
+    Route::get('/tes-kecermatan/hasil', [SoalKecermatanController::class, 'hasilTes'])->name('kecermatan.hasil');
+});
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
