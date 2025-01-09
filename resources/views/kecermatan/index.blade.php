@@ -58,14 +58,17 @@
       font-weight: 500;
     }
 
+    .action-buttons {
+      margin-top: 30px;
+    }
+
     .btn-isi-otomatis {
       background-color: #0d6efd;
       color: white;
-      padding: 8px 16px;
+      padding: 8px 6px;
       border-radius: 8px;
       font-size: 15px;
       transition: all 0.2s ease;
-      border: none;
     }
 
     .btn-isi-otomatis:hover {
@@ -77,11 +80,10 @@
     .btn-mulai-tes {
       background-color: #28a745;
       color: white;
-      padding: 8px 16px;
+      padding: 8px 6px;
       border-radius: 8px;
       font-size: 15px;
       transition: all 0.2s ease;
-      border: none;
     }
 
     .btn-mulai-tes:hover {
@@ -111,21 +113,9 @@
       box-shadow: 0 0 0 0.2rem rgba(74, 77, 231, 0.25);
     }
 
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 30px;
-    }
-
     @media (max-width: 768px) {
       .soal-container {
         padding: 15px;
-      }
-
-      .header-controls {
-        flex-direction: column;
-        align-items: stretch;
       }
 
       .btn-karakter {
@@ -146,6 +136,7 @@
   </style>
 @endpush
 
+
 @section('content')
   <div class="container">
     <div class="wrapper wrapper-content animated-fadeInRight">
@@ -158,23 +149,23 @@
             <p class="instructions">Inputkan Huruf, Angka, atau Simbol dengan maksimal 5 karakter (karakter dapat digabung)
             </p>
 
-            <div class="header-controls">
-              <select class="form-select" name="jenis" style="max-width: 200px;">
+            <div class="form-group">
+              <select class="custom-select" name="jenis" style="max-width: 200px;">
                 <option value="huruf">Huruf</option>
                 <option value="angka">Angka</option>
                 <option value="simbol">Simbol</option>
                 <option value="acak">Acak</option>
               </select>
 
-              <button type="button" class="btn btn-isi-otomatis">
+              <button type="button" class="btn btn-isi-otomatis mx-2">
                 <i class="bi bi-hand-index"></i> Isi Soal Otomatis
               </button>
-
               <button type="submit" class="btn btn-mulai-tes">
                 Mulai Tes
               </button>
             </div>
 
+            <!-- Layout soal sama seperti sebelumnya -->
             <div class="row">
               <!-- Kolom 1-3 -->
               <div class="col-md-4">
@@ -182,7 +173,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 1</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="0"
-                      placeholder="ABCDE" maxlength="5">
+                      placeholder=").%<-" maxlength="5">
                   </div>
                   <button type="button" class="btn btn-karakter karakter-btn" data-index="0">Huruf</button>
                 </div>
@@ -191,7 +182,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 4</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="3"
-                      placeholder="FGHIJ" maxlength="5">
+                      placeholder="{@|>*" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="3">Huruf</button>
                 </div>
@@ -200,7 +191,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 7</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="6"
-                      placeholder="KLMNO" maxlength="5">
+                      placeholder="(.@|-" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="6">Huruf</button>
                 </div>
@@ -212,7 +203,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 2</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="1"
-                      placeholder="PQRST" maxlength="5">
+                      placeholder="&'!_" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="1">Huruf</button>
                 </div>
@@ -221,7 +212,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 5</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="4"
-                      placeholder="UVWXY" maxlength="5">
+                      placeholder="/^<{}" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="4">Huruf</button>
                 </div>
@@ -230,7 +221,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 8</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="7"
-                      placeholder="ZABCD" maxlength="5">
+                      placeholder="[)_+#" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="7">Huruf</button>
                 </div>
@@ -242,7 +233,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 3</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="2"
-                      placeholder="EFGHI" maxlength="5">
+                      placeholder="+>_)@" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="2">Huruf</button>
                 </div>
@@ -251,7 +242,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 6</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="5"
-                      placeholder="JKLMN" maxlength="5">
+                      placeholder=":^%|&" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="5">Huruf</button>
                 </div>
@@ -260,7 +251,7 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 9</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="8"
-                      placeholder="OPQRS" maxlength="5">
+                      placeholder="?^{*" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="8">Huruf</button>
                 </div>
@@ -274,11 +265,16 @@
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 10</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="9"
-                      placeholder="TUVWX" maxlength="5">
+                      placeholder="'*=?[" maxlength="5">
                   </div>
                   <button class="btn btn-karakter karakter-btn" data-index="9">Huruf</button>
                 </div>
               </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+
             </div>
           </form>
         </div>
@@ -288,12 +284,17 @@
 @endsection
 
 @push('scripts')
-  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script>
-    $(document).ready(function() {
-      // Placeholder examples untuk setiap tipe
+    document.addEventListener('DOMContentLoaded', function() {
+      // DOM Elements
+      const form = document.getElementById('kecermatanForm');
+      const karakterType = document.querySelector('.custom-select');
+      const karakterBtns = document.querySelectorAll('.karakter-btn');
+      const inputs = document.querySelectorAll('.karakter-input');
+      const isiOtomatisBtn = document.querySelector('.btn-isi-otomatis');
+
+      // Placeholder examples for each type
       const placeholderExamples = {
         huruf: ['ABCDE', 'FGHIJ', 'KLMNO', 'PQRST', 'UVWXY', 'ZABCD', 'EFGHI', 'JKLMN', 'OPQRS', 'TUVWX'],
         angka: ['12345', '67890', '13579', '24680', '11223', '44556', '77889', '90123', '45678', '98765'],
@@ -301,123 +302,196 @@
         acak: ['A1@B2', 'C3#D4', 'E5$F6', 'G7%H8', 'I9*J0', 'K!L@M', 'N#O$P', 'Q%R&S', 'T*U(V', 'W)X+Y']
       };
 
-      // Karakter set untuk setiap tipe
+      // Cache for storing generated character sets
+      const karakterCache = {
+        huruf: Array(10).fill(null),
+        angka: Array(10).fill(null),
+        simbol: Array(10).fill(null),
+        acak: Array(10).fill(null)
+      };
+
+      // Available character sets
       const karakterSet = {
         huruf: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
         angka: '0123456789',
         simbol: '!@#$%^&*()_+-=[]{}|;:",.<>?',
-        acak: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+-=[]{}|;:",.<>?'
+        get acak() {
+          return this.huruf + this.angka + this.simbol;
+        }
       };
 
-      // Generate random string dengan panjang tertentu
-      function generateRandomString(type, length = 5) {
-        const chars = karakterSet[type];
-        const result = [];
-        const charsArray = chars.split('');
-        
-        // Untuk tipe acak, kita bisa menggunakan karakter berulang
-        if (type === 'acak') {
-          for (let i = 0; i < length; i++) {
-            const randomIndex = Math.floor(Math.random() * charsArray.length);
-            result.push(charsArray[randomIndex]);
-          }
-        } else {
-          // Untuk tipe lain, pastikan tidak ada karakter berulang
-          const shuffled = charsArray.sort(() => 0.5 - Math.random());
-          return shuffled.slice(0, length).join('');
-        }
-        
-        return result.join('');
-      }
-
-      // Update placeholder berdasarkan tipe yang dipilih
+      // Update placeholders based on selected type
       function updatePlaceholders(type) {
-        $('.karakter-input').each(function(index) {
-          $(this).attr('placeholder', placeholderExamples[type][index]);
+        inputs.forEach((input, index) => {
+          input.placeholder = placeholderExamples[type][index];
         });
       }
 
-      // Event handler untuk perubahan dropdown
-      $('.form-select').on('change', function() {
-        const selectedType = $(this).val();
-        const buttonText = selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
-        
-        // Update text semua tombol
-        $('.karakter-btn').text(buttonText);
-        
-        // Update placeholders
-        updatePlaceholders(selectedType);
-      });
+      // Generate random string with specified type and length
+      function generateRandomString(type, length = 5) {
+        const chars = karakterSet[type] || karakterSet.huruf;
+        let result = '';
+        const charsLength = chars.length;
 
-      // Event handler untuk tombol "Isi Soal Otomatis"
-      $('.btn-isi-otomatis').on('click', function() {
-        const selectedType = $('.form-select').val();
-        $('.karakter-input').each(function() {
-          $(this).val(generateRandomString(selectedType));
+        // Ensure we don't have repeating characters
+        const usedIndexes = new Set();
+
+        while (result.length < length) {
+          const randomIndex = Math.floor(Math.random() * charsLength);
+          if (type === 'acak' || !usedIndexes.has(randomIndex)) {
+            result += chars.charAt(randomIndex);
+            usedIndexes.add(randomIndex);
+          }
+        }
+
+        return result;
+      }
+
+      // Pre-generate characters for all types
+      function preGenerateKarakter() {
+        ['huruf', 'angka', 'simbol', 'acak'].forEach(type => {
+          for (let i = 0; i < 10; i++) {
+            karakterCache[type][i] = generateRandomString(type);
+          }
         });
-      });
+      }
 
-      // Event handler untuk tombol karakter individual
-      $('.karakter-btn').on('click', function() {
-        const selectedType = $('.form-select').val();
-        const index = $(this).data('index');
-        const input = $(`.karakter-input[data-index="${index}"]`);
-        input.val(generateRandomString(selectedType));
-      });
-
-      // Event handler untuk validasi input
-      $('.karakter-input').on('input', function() {
-        const selectedType = $('.form-select').val();
-        let value = this.value;
-
-        // Konversi ke uppercase untuk tipe huruf
-        if (selectedType === 'huruf') {
-          value = value.toUpperCase();
+      // Get character from cache or generate new one
+      function getKarakter(type, index) {
+        if (!karakterCache[type][index]) {
+          karakterCache[type][index] = generateRandomString(type);
         }
+        return karakterCache[type][index];
+      }
 
-        // Filter karakter yang tidak valid
-        if (selectedType !== 'acak') {
-          const validChars = new RegExp(`[${karakterSet[selectedType]}]`, 'g');
-          value = (value.match(validChars) || []).join('');
+      // Refresh cache for specific type
+      function refreshCache(type) {
+        for (let i = 0; i < 10; i++) {
+          karakterCache[type][i] = generateRandomString(type);
         }
+      }
 
-        // Batasi panjang
-        if (value.length > 5) {
-          value = value.slice(0, 5);
-        }
-
-        this.value = value;
-      });
-
-      // Form submission handler
-      $('#kecermatanForm').on('submit', function(e) {
-        e.preventDefault();
-        
-        // Validasi form
-        const emptyInputs = $('.karakter-input').filter(function() {
-          return !this.value.trim();
+      // Update all input fields
+      function updateAllInputs(type) {
+        inputs.forEach((input, index) => {
+          input.value = getKarakter(type, index);
         });
+      }
 
+      // Validate form before submission
+      function validateForm() {
+        const emptyInputs = Array.from(inputs).filter(input => !input.value.trim());
         if (emptyInputs.length > 0) {
           alert('Harap isi semua kolom soal terlebih dahulu');
-          emptyInputs.first().focus();
+          emptyInputs[0].focus();
           return false;
         }
+        return true;
+      }
 
-        // Kumpulkan input dalam urutan yang benar
-        const questions = [];
-        $('.karakter-input').each(function() {
-          questions.push(encodeURIComponent(this.value));
-        });
+      // Form submission handler
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
 
-        // Buat query string
-        const selectedType = $('.form-select').val();
-        const queryString = `jenis=${selectedType}&${questions.map((q, i) => `questions[]=${q}`).join('&')}`;
+        if (!validateForm()) {
+          return;
+        }
 
-        // Redirect ke halaman tes
-        window.location.href = `${this.action}?${queryString}`;
+        // Create array to store inputs in correct order
+        const orderedInputs = [];
+
+        // Get all rows
+        const rows = form.querySelectorAll('.row');
+
+        // Process first three rows (containing 9 inputs in 3x3 grid)
+        const mainGrid = rows[0];
+        const columns = mainGrid.querySelectorAll('.col-md-4');
+
+        // Collect inputs horizontally (1,2,3 | 4,5,6 | 7,8,9)
+        for (let rowIndex = 0; rowIndex < 3; rowIndex++) {
+          for (let colIndex = 0; colIndex < 3; colIndex++) {
+            const input = columns[colIndex].querySelectorAll('.karakter-input')[rowIndex];
+            orderedInputs.push(input.value);
+          }
+        }
+
+        // Add the 10th input separately
+        const lastInput = rows[1].querySelector('.karakter-input');
+        if (lastInput) {
+          orderedInputs.push(lastInput.value);
+        }
+
+        // Create query string
+        const queryString = orderedInputs.map(value => `questions[]=${encodeURIComponent(value)}`).join('&');
+        const selectedType = karakterType.value;
+        const fullQueryString = `jenis=${selectedType}&${queryString}`;
+
+        // Redirect to the URL with query parameters
+        window.location.href = `${form.action}?${fullQueryString}`;
       });
 
-      // Set placeholder awal saat halaman dimuat
-      updatePlaceholders($('.form-select').val());
+      // Character type selection handler
+      karakterType.addEventListener('change', function() {
+        const selectedType = this.value;
+        const buttonText = selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
+
+        // Update button texts
+        karakterBtns.forEach(btn => {
+          btn.textContent = buttonText;
+        });
+
+        // Update placeholders
+        updatePlaceholders(selectedType);
+
+        // Generate new set for selected type
+        refreshCache(selectedType);
+      });
+
+      // Individual character buttons handler
+      karakterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const index = parseInt(this.dataset.index);
+          const selectedType = karakterType.value;
+          const karakter = getKarakter(selectedType, index);
+          const correspondingInput = inputs[index];
+          if (correspondingInput) {
+            correspondingInput.value = karakter;
+          }
+        });
+      });
+
+      // Auto-fill button handler
+      isiOtomatisBtn.addEventListener('click', function() {
+        const selectedType = karakterType.value;
+        refreshCache(selectedType);
+        updateAllInputs(selectedType);
+      });
+
+      // Input field validation handler
+      inputs.forEach(input => {
+        input.addEventListener('input', function() {
+          // Convert to uppercase for letter type
+          if (karakterType.value === 'huruf') {
+            this.value = this.value.toUpperCase();
+          }
+
+          // Remove invalid characters based on type
+          const selectedType = karakterType.value;
+          if (selectedType !== 'acak') {
+            const validChars = new RegExp(`[${karakterSet[selectedType]}]`, 'g');
+            this.value = (this.value.match(validChars) || []).join('');
+          }
+
+          // Enforce maximum length
+          if (this.value.length > 5) {
+            this.value = this.value.slice(0, 5);
+          }
+        });
+      });
+
+      // Initialize on page load
+      preGenerateKarakter();
+      updatePlaceholders('huruf'); // Set initial placeholders
     });
+  </script>
+@endpush
