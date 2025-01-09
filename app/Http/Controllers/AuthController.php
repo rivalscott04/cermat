@@ -57,7 +57,7 @@ class AuthController extends Controller
 
             // Hanya untuk user biasa, cek status berlangganan
             if (Auth::user()->role == 'user' && !Auth::user()->hasActiveSubscription()) {
-                return redirect()->route('subscription.expired');
+                return redirect()->route('kecermatan');
             }
 
             return redirect()->intended('dashboard');

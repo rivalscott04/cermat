@@ -73,7 +73,7 @@
     }
 
     .option-btn:hover {
-      background-color: #f8f9fa;
+      background-color: #18a689;
     }
 
     .title-row {
@@ -289,7 +289,7 @@
               icon: 'success',
               confirmButtonText: 'OK'
             }).then(() => {
-              window.location.href = '/kecermatan/hasil';
+              window.location.href = '/tes-kecermatan/hasil';
             });
           }
         })

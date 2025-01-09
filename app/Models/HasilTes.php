@@ -11,6 +11,7 @@ class HasilTes extends Model
     'skor_benar',
     'skor_salah',
     'waktu_total',
+    'average_time',
     'detail_jawaban',
     'tanggal_tes',
   ];

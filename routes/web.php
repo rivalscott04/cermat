@@ -18,6 +18,7 @@ Route::post('/kecermatan/generate', [KecermatanController::class, 'generateKarak
 Route::get('/tes-kecermatan/soal', [SoalKecermatanController::class, 'index'])->name('kecermatan.soal');
 Route::post('/tes-kecermatan/next-soal', [SoalKecermatanController::class, 'getNextSoal'])->name('kecermatan.nextSoal');
 Route::post('/tes-kecermatan/simpan-hasil', [SoalKecermatanController::class, 'simpanHasil'])->name('kecermatan.simpanHasil');
+Route::get('/tes-kecermatan/hasil', [SoalKecermatanController::class, 'hasilTes'])->name('kecermatan.hasil');
 
 // Authentication Routes
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');

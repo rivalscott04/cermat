@@ -474,6 +474,3 @@
     });
   </script>
 @endpush
-</body>
-
-</html>

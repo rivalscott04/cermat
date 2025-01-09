@@ -115,11 +115,17 @@ class SoalKecermatanController extends Controller
 
         DB::beginTransaction();
         try {
+            // Hitung rata-rata waktu
+            $totalQuestions = count($request->detail_jawaban);
+            $averageTime = $totalQuestions > 0 ? $request->waktu_total / $totalQuestions : 0;
+
+            // Simpan hasil tes ke database
             $hasil = HasilTes::create([
                 'user_id' => $request->user_id,
                 'skor_benar' => $request->skor_benar,
                 'skor_salah' => $request->skor_salah,
                 'waktu_total' => $request->waktu_total,
+                'average_time' => $averageTime, // Tambahkan data rata-rata waktu
                 'detail_jawaban' => json_encode($request->detail_jawaban),
                 'tanggal_tes' => now()
             ]);
@@ -138,5 +144,17 @@ class SoalKecermatanController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function hasilTes()
+    {
+        $user_id = auth()->id();
+        $hasilTes = HasilTes::where('user_id', $user_id)->latest()->first();
+
+        if (!$hasilTes) {
+            return redirect()->route('kecermatan')->with('error', 'Hasil tes tidak ditemukan.');
+        }
+
+        return view('kecermatan.hasil', ['hasilTes' => $hasilTes]);
     }
 }
