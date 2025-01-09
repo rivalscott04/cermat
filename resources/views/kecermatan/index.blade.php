@@ -158,7 +158,6 @@
             <p class="instructions">Inputkan Huruf, Angka, atau Simbol dengan maksimal 5 karakter (karakter dapat digabung)
             </p>
 
-            <!-- Header controls with dropdown and buttons -->
             <div class="header-controls">
               <select class="form-select" name="jenis" style="max-width: 200px;">
                 <option value="huruf">Huruf</option>
@@ -166,11 +165,11 @@
                 <option value="simbol">Simbol</option>
                 <option value="acak">Acak</option>
               </select>
-              
+
               <button type="button" class="btn btn-isi-otomatis">
                 <i class="bi bi-hand-index"></i> Isi Soal Otomatis
               </button>
-              
+
               <button type="submit" class="btn btn-mulai-tes">
                 Mulai Tes
               </button>
@@ -289,7 +288,16 @@
 @endsection
 
 @push('scripts')
+  <!-- jQuery first -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Then Bootstrap Bundle with Popper -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- MetisMenu -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/metisMenu/3.0.7/metisMenu.min.js"></script>
+  <!-- SlimScroll -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js"></script>
+  <!-- Inspinia -->
+  <script src="{{ asset('js/inspinia.js') }}"></script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // DOM Elements
@@ -321,85 +329,7 @@
       const placeholderExamples = {
         huruf: ['ABCDE', 'FGHIJ', 'KLMNO', 'PQRST', 'UVWXY', 'ZABCD', 'EFGHI', 'JKLMN', 'OPQRS', 'TUVWX'],
         angka: ['12345', '67890', '13579', '24680', '11223', '44556', '77889', '90123', '45678', '98765'],
-        simbol: ['!@#$%', '&*()_', '+=-[]', '{}|;:', '"<>?/', '.,$#@', '*&^%
-
-      // Generate random string with specified type and length
-      function generateRandomString(type, length = 5) {
-        const chars = karakterSet[type] || karakterSet.huruf;
-        let result = '';
-        const charsLength = chars.length;
-
-        // Ensure we don't have repeating characters
-        const usedIndexes = new Set();
-
-        while (result.length < length) {
-          const randomIndex = Math.floor(Math.random() * charsLength);
-          if (type === 'acak' || !usedIndexes.has(randomIndex)) {
-            result += chars.charAt(randomIndex);
-            usedIndexes.add(randomIndex);
-          }
-        }
-
-        return result;
-      }
-
-      // Pre-generate characters for all types
-      function preGenerateKarakter() {
-        ['huruf', 'angka', 'simbol', 'acak'].forEach(type => {
-          for (let i = 0; i < 10; i++) {
-            karakterCache[type][i] = generateRandomString(type);
-          }
-        });
-      }
-
-      // Get character from cache or generate new one
-      function getKarakter(type, index) {
-        if (!karakterCache[type][index]) {
-          karakterCache[type][index] = generateRandomString(type);
-        }
-        return karakterCache[type][index];
-      }
-
-      // Refresh cache for specific type
-      function refreshCache(type) {
-        for (let i = 0; i < 10; i++) {
-          karakterCache[type][i] = generateRandomString(type);
-        }
-      }
-
-      // Update all input fields
-      function updateAllInputs(type) {
-        inputs.forEach((input, index) => {
-          input.value = getKarakter(type, index);
-        });
-      }
-
-      // Validate form before submission
-      function validateForm() {
-        const emptyInputs = Array.from(inputs).filter(input => !input.value.trim());
-        if (emptyInputs.length > 0) {
-          alert('Harap isi semua kolom soal terlebih dahulu');
-          emptyInputs[0].focus();
-          return false;
-        }
-        return true;
-      }
-
-      // Form submission handler
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        if (!validateForm()) {
-          return;
-        }
-
-        // Create array to store inputs in correct order
-        const orderedInputs = [];
-
-        // Get all rows
-        const rows = form.querySelectorAll('.row');
-
-        // Process first three rows (containing 9 inputs in 3, '#@!&*', '()_+<', '>?,./'],
+        simbol: ['!@#$%', '&*()_', '+=-[]', '{}|;:', '"<>?/', '.,$#@', '*&^%$', '#@!&*', '()_+<', '>?,./'],
         acak: ['A1@B2', 'C3#D4', 'E5$F6', 'G7%H8', 'I9*J0', 'K!L@M', 'N#O$P', 'Q%R&S', 'T*U(V', 'W)X+Y']
       };
 
@@ -424,59 +354,4 @@
       }
 
       // Pre-generate characters for all types
-      function preGenerateKarakter() {
-        ['huruf', 'angka', 'simbol', 'acak'].forEach(type => {
-          for (let i = 0; i < 10; i++) {
-            karakterCache[type][i] = generateRandomString(type);
-          }
-        });
-      }
-
-      // Get character from cache or generate new one
-      function getKarakter(type, index) {
-        if (!karakterCache[type][index]) {
-          karakterCache[type][index] = generateRandomString(type);
-        }
-        return karakterCache[type][index];
-      }
-
-      // Refresh cache for specific type
-      function refreshCache(type) {
-        for (let i = 0; i < 10; i++) {
-          karakterCache[type][i] = generateRandomString(type);
-        }
-      }
-
-      // Update all input fields
-      function updateAllInputs(type) {
-        inputs.forEach((input, index) => {
-          input.value = getKarakter(type, index);
-        });
-      }
-
-      // Validate form before submission
-      function validateForm() {
-        const emptyInputs = Array.from(inputs).filter(input => !input.value.trim());
-        if (emptyInputs.length > 0) {
-          alert('Harap isi semua kolom soal terlebih dahulu');
-          emptyInputs[0].focus();
-          return false;
-        }
-        return true;
-      }
-
-      // Form submission handler
-      form.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        if (!validateForm()) {
-          return;
-        }
-
-        // Create array to store inputs in correct order
-        const orderedInputs = [];
-
-        // Get all rows
-        const rows = form.querySelectorAll('.row');
-
-        // Process first three rows (containing 9 inputs in 3
+      function preGenerateKarakter()
