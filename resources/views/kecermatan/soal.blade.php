@@ -266,20 +266,12 @@
     function selesaiTes() {
       clearInterval(timerInterval);
 
-      const appUrl = "{{ $appUrl }}";
-      if (!appUrl) {
-        console.error('APP URL not configured');
-        return;
-      }
-
-      // Use relative URL
-      fetch("{{ $appUrl }}/tes-kecermatan/simpan-hasil", {
+      // Send results to server
+      fetch("{{ route('kecermatan.simpanHasil') }}", {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-            // Tambahkan header Accept untuk memastikan response JSON
-            'Accept': 'application/json'
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
           },
           body: JSON.stringify({
             user_id: '{{ auth()->id() }}',
@@ -288,17 +280,7 @@
             waktu_total: (totalSets * 60) - waktuTersisa,
             detail_jawaban: detailJawaban
           })
-        })
-        .then(response => {
-          // Cek status response
-          if (!response.ok) {
-            // Jika status bukan 2xx, throw error
-            return response.text().then(text => {
-              throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-            });
-          }
-          return response.json();
-        })
+        }).then(response => response.json())
         .then(result => {
           if (result.success) {
             Swal.fire({
@@ -315,7 +297,7 @@
           console.error('Error saving results:', error);
           Swal.fire({
             title: 'Error!',
-            text: `Gagal menyimpan hasil tes: ${error.message}`,
+            text: 'Gagal menyimpan hasil tes',
             icon: 'error',
             confirmButtonText: 'OK'
           });
