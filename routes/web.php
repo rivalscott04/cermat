@@ -6,6 +6,7 @@ use App\Http\Controllers\KecermatanController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\PricingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,6 +15,7 @@ Route::get('/', function () {
 
 //Routes Harga Paket
 Route::get('/pricing', [PricingController::class, 'index'])->name('harga.index');
+
 
 // Routes for Tes Kecermatan
 
