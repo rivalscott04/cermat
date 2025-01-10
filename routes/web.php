@@ -11,6 +11,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+
+//Routes Harga Paket
+Route::get('/pricing', [App\Http\Controllers\PricingController::class, 'index'])->name('pricing.index');
 // Routes for Tes Kecermatan
 
 
