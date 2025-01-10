@@ -24,8 +24,7 @@ class SoalKecermatanController extends Controller
         session(['kecermatan_questions' => $questions]);
 
         return view('kecermatan.soal', [
-            'questions' => $questions,
-            rtrim(env('API_URL', ''), '/'),
+            'questions' => $questions
         ]);
     }
 
@@ -158,6 +157,6 @@ class SoalKecermatanController extends Controller
             return redirect()->route('kecermatan')->with('error', 'Hasil tes tidak ditemukan.');
         }
 
-        return view('kecermatan.hasil', [rtrim(env('API_URL', ''), '/'), 'hasilTes' => $hasilTes]);
+        return view('kecermatan.hasil', ['hasilTes' => $hasilTes]);
     }
 }
