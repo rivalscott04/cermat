@@ -266,8 +266,14 @@
     function selesaiTes() {
       clearInterval(timerInterval);
 
+      const apiUrl = "{{ $apiUrl }}";
+      if (!apiUrl) {
+        console.error('API URL not configured');
+        return;
+      }
+
       // Use relative URL
-      fetch("{{ route('kecermatan.simpanHasil') }}", {
+      fetch(`${apiUrl}/tes-kecermatan/simpan-hasil`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

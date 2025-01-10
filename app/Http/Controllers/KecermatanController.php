@@ -140,7 +140,7 @@ class KecermatanController extends Controller
             ->orderBy('tanggal_tes', 'desc')
             ->get();
 
-        return view('kecermatan.hasil', compact('hasil'));
+        return view('kecermatan.hasil', ['apiUrl' => env('API_URL')], compact('hasil'));
     }
 
     /**
