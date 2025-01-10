@@ -50,6 +50,6 @@ class PricingController extends Controller
             ]
         ];
 
-        return view('pricing.index', compact('packages'));
+        return view('harga.index', compact('packages'));
     }
 }
