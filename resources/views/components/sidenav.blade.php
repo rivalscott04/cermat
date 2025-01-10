@@ -39,6 +39,13 @@
       </li>
 
       <li>
+        <a href="{{ route('kecermatan.riwayat', ['userId' => Auth::user()->id]) }}">
+          <i class="fa fa-history"></i>
+          <span class="nav-label">Riwayat Tes</span>
+        </a>
+      </li>
+
+      <li>
         <a href="#"><i class="fa fa-table"></i> <span class="nav-label">Tables</span><span
             class="fa arrow"></span></a>
         <ul class="nav nav-second-level collapse">

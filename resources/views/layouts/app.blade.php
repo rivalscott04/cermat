@@ -26,9 +26,18 @@
   </div>
 
   <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script>
+    window.appRoutes = {
+      simpanHasil: "{{ route('kecermatan.simpanHasil') }}",
+    };
+  </script>
   <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
   <script src="{{ asset('js/popper.min.js') }}"></script>
   <script src="{{ asset('js/bootstrap.js') }}"></script>
+  <script src="{{ asset('js/generateSoal.js') }}"></script>
+  <script src="{{ asset('js/kecermatanSoal.js') }}"></script>
   <script src="{{ asset('js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
   <script src="{{ asset('js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
   <script src="{{ asset('js/inspinia.js') }}"></script>

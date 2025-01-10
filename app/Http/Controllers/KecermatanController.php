@@ -164,4 +164,19 @@ class KecermatanController extends Controller
             'data' => $statistik
         ]);
     }
+
+    public function riwayat($userId)
+    {
+        $hasil = HasilTes::where('user_id', $userId)
+            ->orderBy('tanggal_tes', 'asc')
+            ->get();
+
+        return view('kecermatan.riwayat', compact('hasil'));
+    }
+
+    public function detailTes($id)
+    {
+        $hasilTes = HasilTes::findOrFail($id);
+        return view('kecermatan.detail', compact('hasilTes'));
+    }
 }

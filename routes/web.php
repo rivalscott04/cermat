@@ -1,12 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SoalKecermatanController;
-use App\Http\Controllers\KecermatanController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PricingController;
+use App\Http\Controllers\KecermatanController;
+use App\Http\Controllers\SubscriptionController;
+use App\Http\Controllers\SoalKecermatanController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -14,9 +14,7 @@ Route::get('/', function () {
 
 
 //Routes Harga Paket
-Route::get('/pricing', [PricingController::class, 'index'])->name('harga.index');
-
-
+Route::get('/pricing', [PricingController::class, 'index'])->name('pricing.index');
 // Routes for Tes Kecermatan
 
 
@@ -34,13 +32,15 @@ Route::post('/subscription/process', [SubscriptionController::class, 'process'])
 Route::get('/subscription/expired', [SubscriptionController::class, 'expired'])->name('subscription.expired');
 Route::get('/subscription/check', [SubscriptionController::class, 'check'])->name('subscription.check');
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
     Route::post('/kecermatan/generate', [KecermatanController::class, 'generateKarakter'])->name('kecermatan.generateKarakter');
     Route::get('/tes-kecermatan/soal', [SoalKecermatanController::class, 'index'])->name('kecermatan.soal');
     Route::post('/tes-kecermatan/next-soal', [SoalKecermatanController::class, 'getNextSoal'])->name('kecermatan.nextSoal');
     Route::post('/tes-kecermatan/simpan-hasil', [SoalKecermatanController::class, 'simpanHasil'])->name('kecermatan.simpanHasil');
     Route::get('/tes-kecermatan/hasil', [SoalKecermatanController::class, 'hasilTes'])->name('kecermatan.hasil');
+    Route::get('/tes-kecermatan/riwayat/{userId}', [KecermatanController::class, 'riwayat'])->name('kecermatan.riwayat');
+    Route::get('/tes-kecermatan/detail/{id}', [KecermatanController::class, 'detailTes'])->name('kecermatan.detail');
 });
 
 // Admin Routes

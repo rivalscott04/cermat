@@ -1,53 +1,50 @@
-class KecermatanSoal {
-    constructor(config) {
-        this.currentSet = 0;
-        this.kolomMerah = [];
-        this.kolomBiru = [];
-        this.hurufHilang = null;
-        this.waktuTersisa = 60;
-        this.skorBenar = 0;
-        this.skorSalah = 0;
-        this.timerInterval = null;
-        this.detailJawaban = [];
-        this.totalSets = 10;
-        this.routes = config.routes;
-        this.userId = config.userId;
-        this.csrfToken = config.csrfToken;
+// Wait for DOM to be fully loaded
+document.addEventListener("DOMContentLoaded", function () {
+    let currentSet = 0;
+    let kolomMerah = [];
+    let kolomBiru = [];
+    let hurufHilang;
+    let waktuTersisa = 60;
+    let skorBenar = 0;
+    let skorSalah = 0;
+    let timerInterval;
+    let detailJawaban = [];
+    let totalSets = 10;
+    let allQuestions = [];
 
-        console.log("Game initialized with config:", config);
-        this.initializeEventListeners();
+    // Get questions from URL parameters
+    function getQuestionsFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const questions = urlParams.getAll("questions[]");
+        allQuestions = questions.map((chars, index) => {
+            return Array.from(chars).map((char, i) => ({
+                huruf: char,
+                opsi: String.fromCharCode(65 + i),
+            }));
+        });
     }
 
-    async getNextSoal() {
+    async function getNextSoal() {
         try {
-            console.log("Fetching next soal from:", this.routes.nextSoal);
-            const response = await fetch(this.routes.nextSoal, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": this.csrfToken,
-                },
-                body: JSON.stringify({
-                    current_set: this.currentSet,
-                }),
-            });
-            const data = await response.json();
-            console.log("Received data:", data);
-
-            if (data.success) {
-                this.kolomMerah = data.data.soal;
-                this.currentSet = data.data.set_number;
-                console.log("Updated kolomMerah:", this.kolomMerah);
-                return this.currentSet > this.totalSets;
+            currentSet++;
+            if (currentSet > totalSets) {
+                return true;
             }
-            return true;
+
+            kolomMerah = allQuestions[currentSet - 1] || [];
+            const currentSetElement = document.getElementById("current-set");
+            if (currentSetElement) {
+                currentSetElement.textContent = currentSet;
+            }
+
+            return false;
         } catch (error) {
-            console.error("Error fetching next soal:", error);
+            console.error("Error getting next question:", error);
             return true;
         }
     }
 
-    acakArray(array) {
+    function acakArray(array) {
         const arrayBaru = [...array];
         for (let i = arrayBaru.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -56,196 +53,198 @@ class KecermatanSoal {
         return arrayBaru;
     }
 
-    generateKolomBiru() {
-        const shuffled = this.acakArray(this.kolomMerah);
-        this.kolomBiru = shuffled.slice(0, 4);
-        this.hurufHilang = shuffled[4];
-        this.updateKolomBiru();
+    function generateKolomBiru() {
+        const shuffled = acakArray(kolomMerah);
+        kolomBiru = shuffled.slice(0, 4);
+        hurufHilang = shuffled[4];
+        updateKolomBiru();
     }
 
-    updateKolomMerah() {
-        console.log("Updating kolom merah with:", this.kolomMerah);
-        const kolomMerahContainer = document.getElementById("kolom-merah");
-        if (!kolomMerahContainer) {
-            console.error("kolom-merah container not found!");
-            return;
-        }
-        kolomMerahContainer.innerHTML = "";
-        this.kolomMerah.forEach((item) => {
-            console.log("Creating element for item:", item);
-            const kolom = document.createElement("div");
-            kolom.className = "kolom card";
-            kolom.innerHTML = `
-              <div class="card-body">
-                  <div class="huruf">${item.huruf}</div>
-                  <div class="opsi">${item.opsi}</div>
-              </div>
-          `;
-            kolomMerahContainer.appendChild(kolom);
+    function updateKolomMerah() {
+        const row = document.getElementById("kolom-merah");
+        if (!row) return;
+
+        row.innerHTML = "";
+        kolomMerah.forEach((item) => {
+            const td = document.createElement("td");
+            td.className = "karakter";
+            td.textContent = item.huruf;
+            row.appendChild(td);
         });
     }
 
-    updateKolomBiru() {
-        console.log("Updating kolom biru with:", this.kolomBiru);
-        const kolomBiruContainer = document.getElementById("kolom-biru");
-        if (!kolomBiruContainer) {
-            console.error("kolom-biru container not found!");
-            return;
-        }
-        kolomBiruContainer.innerHTML = "";
-        this.kolomBiru.forEach((item) => {
-            const kolom = document.createElement("div");
-            kolom.className = "kolom card";
-            kolom.innerHTML = `
-              <div class="card-body">
-                  <div class="huruf">${item.huruf}</div>
-              </div>
-          `;
-            kolomBiruContainer.appendChild(kolom);
+    function updateKolomBiru() {
+        const container = document.getElementById("kolom-biru");
+        if (!container) return;
+
+        container.innerHTML = "";
+        kolomBiru.forEach((item) => {
+            const div = document.createElement("div");
+            div.className = "answer-box";
+            div.textContent = item.huruf;
+            container.appendChild(div);
         });
     }
 
-    resetTimer() {
-        clearInterval(this.timerInterval);
-        this.waktuTersisa = 60;
-        document.getElementById("timer").textContent = this.waktuTersisa;
-    }
+    function mulaiTimer() {
+        clearInterval(timerInterval);
+        waktuTersisa = 60;
+        const timerElement = document.getElementById("timer");
+        if (timerElement) {
+            timerElement.textContent = waktuTersisa;
+        }
 
-    mulaiTimer() {
-        this.resetTimer();
-        this.timerInterval = setInterval(async () => {
-            if (this.waktuTersisa > 0) {
-                this.waktuTersisa--;
-                document.getElementById("timer").textContent =
-                    this.waktuTersisa;
+        timerInterval = setInterval(async () => {
+            if (waktuTersisa > 0) {
+                waktuTersisa--;
+                if (timerElement) {
+                    timerElement.textContent = waktuTersisa;
+                }
             } else {
-                clearInterval(this.timerInterval);
-                if (this.currentSet < this.totalSets) {
-                    const isLastSet = await this.transisiKeSetBerikutnya();
+                clearInterval(timerInterval);
+                if (currentSet < totalSets) {
+                    const isLastSet = await transisiKeSetBerikutnya();
                     if (isLastSet) {
-                        this.selesaiTes();
+                        selesaiTes();
                     }
                 } else {
-                    this.selesaiTes();
+                    selesaiTes();
                 }
             }
         }, 1000);
     }
 
-    async transisiKeSetBerikutnya() {
-        clearInterval(this.timerInterval);
+    async function transisiKeSetBerikutnya() {
+        clearInterval(timerInterval);
 
-        if (this.currentSet >= this.totalSets) {
+        if (currentSet >= totalSets) {
             return true;
         }
 
         return new Promise((resolve) => {
-            let timerInterval;
-            const popup = document.getElementById("popup");
-            popup.classList.remove("d-none");
-            popup.classList.add("d-block");
-
-            let countdown = 5;
-            const countdownElement = document.getElementById("countdown");
-
-            timerInterval = setInterval(async () => {
-                countdown--;
-                countdownElement.textContent = countdown;
-
-                if (countdown <= 0) {
-                    clearInterval(timerInterval);
-                    popup.classList.remove("d-block");
-                    popup.classList.add("d-none");
-
-                    const isLast = await this.getNextSoal();
-                    if (!isLast) {
-                        this.updateKolomMerah();
-                        this.generateKolomBiru();
-                        this.waktuTersisa = 60;
-                        document.getElementById("timer").textContent =
-                            this.waktuTersisa;
-                        this.mulaiTimer();
-                    }
-                    resolve(isLast);
+            let countdownInterval;
+            Swal.fire({
+                title: "Persiapan Soal Berikutnya",
+                html: "Soal berikutnya akan dimulai dalam <b></b> detik.",
+                timer: 5000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                didOpen: () => {
+                    const timer = Swal.getPopup().querySelector("b");
+                    countdownInterval = setInterval(() => {
+                        timer.textContent = Math.ceil(
+                            Swal.getTimerLeft() / 1000
+                        );
+                    }, 100);
+                },
+                willClose: () => {
+                    clearInterval(countdownInterval);
+                },
+            }).then(async () => {
+                const isLast = await getNextSoal();
+                if (!isLast) {
+                    updateKolomMerah();
+                    generateKolomBiru();
+                    mulaiTimer();
                 }
-            }, 1000);
+                resolve(isLast);
+            });
         });
     }
 
-    async selesaiTes() {
-        clearInterval(this.timerInterval);
+    function selesaiTes() {
+        clearInterval(timerInterval);
 
-        const hasilElement = document.getElementById("hasil");
-        hasilElement.innerHTML = `
-          <div class="alert alert-success" role="alert">
-              <h4 class="alert-heading">Tes Selesai!</h4>
-              <p>Skor Benar: ${this.skorBenar}</p>
-              <p>Skor Salah: ${this.skorSalah}</p>
-          </div>
-      `;
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector(
+            'meta[name="csrf-token"]'
+        )?.content;
 
-        try {
-            const response = await fetch(this.routes.simpanHasil, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": this.csrfToken,
-                },
-                body: JSON.stringify({
-                    user_id: this.userId,
-                    skor_benar: this.skorBenar,
-                    skor_salah: this.skorSalah,
-                    waktu_total: this.totalSets * 60 - this.waktuTersisa,
-                    detail_jawaban: this.detailJawaban,
-                }),
+        // Get the base URL dynamically
+        const baseUrl = window.location.origin;
+
+        fetch(saveResultsUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": document.querySelector(
+                    'meta[name="csrf-token"]'
+                ).content,
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                skor_benar: skorBenar,
+                skor_salah: skorSalah,
+                waktu_total: totalSets * 60 - waktuTersisa,
+                detail_jawaban: detailJawaban,
+            }),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Network response was not ok");
+                }
+                return response.json();
+            })
+            .then((result) => {
+                if (result.success) {
+                    Swal.fire({
+                        title: "Tes Selesai!",
+                        text: `Skor Benar: ${skorBenar}, Skor Salah: ${skorSalah}`,
+                        icon: "success",
+                        confirmButtonText: "OK",
+                    }).then(() => {
+                        window.location.href = `${baseUrl}/tes-kecermatan/hasil`;
+                    });
+                }
+            })
+            .catch((error) => {
+                console.error("Error saving results:", error);
+                Swal.fire({
+                    title: "Error!",
+                    text: "Gagal menyimpan hasil tes",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                });
             });
-
-            const result = await response.json();
-            if (result.success) {
-                setTimeout(() => {
-                    window.location.href = "/kecermatan/hasil";
-                }, 2000);
-            }
-        } catch (error) {
-            console.error("Error saving results:", error);
-            hasilElement.innerHTML += `
-              <div class="alert alert-danger" role="alert">
-                  Gagal menyimpan hasil tes
-              </div>
-          `;
-        }
     }
 
-    initializeEventListeners() {
+    // Initialize button event listeners
+    function initializeButtons() {
         ["A", "B", "C", "D", "E"].forEach((huruf) => {
-            document
-                .getElementById(`btn-${huruf}`)
-                .addEventListener("click", () => {
-                    const isBenar = this.hurufHilang.opsi === huruf;
+            const button = document.getElementById(`btn-${huruf}`);
+            if (button) {
+                button.addEventListener("click", () => {
+                    const isBenar = hurufHilang.opsi === huruf;
                     if (isBenar) {
-                        this.skorBenar++;
+                        skorBenar++;
                     } else {
-                        this.skorSalah++;
+                        skorSalah++;
                     }
 
-                    this.detailJawaban.push({
-                        set: this.currentSet,
+                    detailJawaban.push({
+                        set: currentSet,
                         jawaban: huruf,
                         benar: isBenar,
-                        waktu: 60 - this.waktuTersisa,
+                        waktu: 60 - waktuTersisa,
                     });
 
-                    this.generateKolomBiru();
+                    generateKolomBiru();
                 });
+            }
         });
     }
 
-    async init() {
-        console.log("Initializing game...");
-        await this.getNextSoal();
-        console.log("After getNextSoal, kolomMerah:", this.kolomMerah);
-        this.updateKolomMerah();
-        this.generateKolomBiru();
-        this.mulaiTimer();
+    // Initialize the game
+    function initialize() {
+        getQuestionsFromURL();
+        getNextSoal().then(() => {
+            updateKolomMerah();
+            generateKolomBiru();
+            mulaiTimer();
+        });
     }
-}
+
+    // Set up event listeners and initialize
+    initializeButtons();
+    initialize();
+});
