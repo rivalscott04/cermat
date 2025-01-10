@@ -266,7 +266,7 @@
     function selesaiTes() {
       clearInterval(timerInterval);
 
-      // Send results to server
+      // Use relative URL
       fetch("{{ route('kecermatan.simpanHasil') }}", {
           method: 'POST',
           headers: {
@@ -280,7 +280,8 @@
             waktu_total: (totalSets * 60) - waktuTersisa,
             detail_jawaban: detailJawaban
           })
-        }).then(response => response.json())
+        })
+        .then(response => response.json())
         .then(result => {
           if (result.success) {
             Swal.fire({
