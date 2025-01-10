@@ -13,7 +13,8 @@ Route::get('/', function () {
 
 
 //Routes Harga Paket
-Route::get('/pricing', [App\Http\Controllers\PricingController::class, 'index'])->name('harga.index');
+Route::get('/pricing', [PriceController::class, 'index'])->name('harga.index');
+
 // Routes for Tes Kecermatan
 
 
