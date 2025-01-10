@@ -277,7 +277,9 @@
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+            // Tambahkan header Accept untuk memastikan response JSON
+            'Accept': 'application/json'
           },
           body: JSON.stringify({
             user_id: '{{ auth()->id() }}',
@@ -287,7 +289,16 @@
             detail_jawaban: detailJawaban
           })
         })
-        .then(response => response.json())
+        .then(response => {
+          // Cek status response
+          if (!response.ok) {
+            // Jika status bukan 2xx, throw error
+            return response.text().then(text => {
+              throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+            });
+          }
+          return response.json();
+        })
         .then(result => {
           if (result.success) {
             Swal.fire({
@@ -304,7 +315,7 @@
           console.error('Error saving results:', error);
           Swal.fire({
             title: 'Error!',
-            text: 'Gagal menyimpan hasil tes',
+            text: `Gagal menyimpan hasil tes: ${error.message}`,
             icon: 'error',
             confirmButtonText: 'OK'
           });
