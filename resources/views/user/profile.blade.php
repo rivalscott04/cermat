@@ -11,160 +11,219 @@
 @endpush
 
 @section('content')
-  <div class="container">
-    <div class="wrapper wrapper-content animated fadeInRight">
-      <div class="card">
-        <div class="card-header">
-          <h5 class="mb-0">Data Profil</h5>
+  <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+      <!-- Profile Card -->
+      <div class="col-md-4">
+        <div class="card">
+          <div class="card-body text-center">
+            <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary mb-3 text-white"
+              style="width: 80px; height: 80px;">
+              <span class="h3">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
+            </div>
+            <h5 class="card-title">{{ $user->name }}</h5>
+            <p class="text-muted">{{ $user->email }}</p>
+
+            <!-- Free Programs -->
+            <div class="list-group mb-4 text-left">
+              <a href="#" class="list-group-item list-group-item-action">
+                (CPNS) GRATIS <i class="fa fa-chevron-right float-right"></i>
+              </a>
+              <a href="#" class="list-group-item list-group-item-action">
+                (BUMN) GRATIS <i class="fa fa-chevron-right float-right"></i>
+              </a>
+              <a href="#" class="list-group-item list-group-item-action">
+                (POLRI) GRATIS <i class="fa fa-chevron-right float-right"></i>
+              </a>
+            </div>
+
+            <!-- Navigation Menu -->
+            <div class="list-group text-left">
+              <a href="#" class="list-group-item list-group-item-action">
+                <i class="fa fa-user mr-2"></i> Pengaturan Akun
+              </a>
+              <a href="#" class="list-group-item list-group-item-action">
+                <i class="fa fa-exchange-alt mr-2"></i> Transaksi Saya
+              </a>
+              <a href="#" class="list-group-item list-group-item-action">
+                <i class="fa fa-ticket-alt mr-2"></i> Voucher Promo
+              </a>
+              <a href="#" class="list-group-item list-group-item-action">
+                <i class="fa fa-handshake mr-2"></i> Program Afiliasi
+              </a>
+            </div>
+          </div>
         </div>
-        <div class="card-body">
-          <div class="row">
-            <!-- Profile Card -->
-            <div class="col-md-4">
-              <div class="card mb-4">
-                <div class="card-body text-center">
-                  <div
-                    class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary mb-3 text-white"
-                    style="width: 80px; height: 80px;">
-                    <span class="h3">{{ strtoupper(substr($user->name, 0, 2)) }}</span>
-                  </div>
-                  <h5 class="card-title">{{ $user->name }}</h5>
-                  <p class="text-muted">{{ $user->email }}</p>
+      </div>
 
-                  <!-- Menu Items -->
-                  <div class="list-group text-left">
-                    <a href="#" class="list-group-item list-group-item-action">
-                      (CPNS) GRATIS <i class="fa fa-chevron-right float-right"></i>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                      (BUMN) GRATIS <i class="fa fa-chevron-right float-right"></i>
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                      (POLRI) GRATIS <i class="fa fa-chevron-right float-right"></i>
-                    </a>
-                  </div>
+      <!-- Main Profile Form -->
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">PROFIL</h5>
+            <button type="submit" form="profile-form" class="btn btn-primary">
+              <i class="fa fa-save"></i> Simpan Profil
+            </button>
+          </div>
+          <div class="card-body">
+            <form id="profile-form" action="{{ route('profile.update') }}" method="POST">
+              @csrf
+              @method('PUT')
 
-                  <!-- Navigation Menu -->
-                  <div class="list-group mt-4 text-left">
-                    <a href="#" class="list-group-item list-group-item-action">
-                      <i class="fa fa-user mr-2"></i> Pengaturan Akun
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                      <i class="fa fa-exchange-alt mr-2"></i> Transaksi Saya
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                      <i class="fa fa-ticket-alt mr-2"></i> Voucher Promo
-                    </a>
-                    <a href="#" class="list-group-item list-group-item-action">
-                      <i class="fa fa-handshake mr-2"></i> Program Afiliasi
-                    </a>
+              <div id="update-status" class="alert" style="display: none;"></div>
+
+              <!-- Personal Info -->
+              <div class="form-group">
+                <label>Nama</label>
+                <div class="input-group">
+                  <input type="text" class="form-control" name="name" value="{{ $user->name }}" required>
+                  <div class="input-group-append">
+                    <span class="input-group-text"><i class="fa fa-ellipsis-v"></i></span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Main Profile Form -->
-            <div class="col-md-8">
-              <div class="card">
-                <div class="card-body">
-                  <h4 class="card-title mb-4">PROFIL</h4>
+              <div class="form-group">
+                <label>Email</label>
+                <input type="email" class="form-control" name="email" value="{{ $user->email }}" required>
+              </div>
 
-                  <form>
-                    <!-- Personal Info -->
-                    <div class="form-group">
-                      <label>Nama</label>
-                      <div class="input-group">
-                        <input type="text" class="form-control" value="{{ $user->name }}">
-                        <div class="input-group-append">
-                          <span class="input-group-text"><i class="fa fa-ellipsis-v"></i></span>
-                        </div>
-                      </div>
-                    </div>
+              <div class="form-group">
+                <label>Nomor Telepon</label>
+                <input type="tel" class="form-control" name="phone_number" value="{{ $user->phone_number }}">
+              </div>
 
-                    <div class="form-group">
-                      <label>Email</label>
-                      <input type="email" class="form-control" value="{{ $user->email }}">
-                    </div>
-
-                    <div class="form-group">
-                      <label>Nomor Telepon</label>
-                      <input type="tel" class="form-control" value="{{ $user->phone_number ?? 'Belum diatur' }}">
-                    </div>
-
-                    <div class="form-group">
-                      <label>Tanggal Lahir</label>
-                      <div class="input-group">
-                        <input type="text" class="form-control" value="22/03/1995">
-                        <div class="input-group-append">
-                          <span class="input-group-text"><i class="fa fa-calendar"></i></span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Location -->
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>Provinsi</label>
-                          <select class="form-control">
-                            <option selected>Nusa Tenggara Barat (NTB)</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>Kota/Kabupaten</label>
-                          <select class="form-control">
-                            <option selected>Kota Mataram</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Personal Details -->
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>Jenis Kelamin</label>
-                          <select class="form-control">
-                            <option selected>Perempuan</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>Profesi</label>
-                          <input type="text" class="form-control" value="IT Support Jurnal Ilmiah Perguruan Tinggi">
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Learning Preferences -->
-                    <div class="row">
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>Cara Belajar</label>
-                          <select class="form-control">
-                            <option selected>Latihan soal</option>
-                          </select>
-                        </div>
-                      </div>
-                      <div class="col-md-6">
-                        <div class="form-group">
-                          <label>Preferensi Belajar</label>
-                          <select class="form-control">
-                            <option selected>Belajar mandiri</option>
-                          </select>
-                        </div>
-                      </div>
-                    </div>
-                  </form>
+              <!-- Location -->
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Provinsi</label>
+                    <select id="province" name="province" class="form-control">
+                      @if (!$user->province)
+                        <option selected disabled>Pilih Provinsi</option>
+                      @endif
+                      @foreach ($provinces as $province)
+                        <option value="{{ $province['id'] }}"
+                          {{ $user->province == $province['name'] ? 'selected' : '' }}>
+                          {{ $province['name'] }}
+                        </option>
+                      @endforeach
+                    </select>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label>Kota/Kabupaten</label>
+                    <select id="regency" name="regency" class="form-control" {{ !$user->province ? 'disabled' : '' }}>
+                      @if (!$user->regency)
+                        <option selected disabled>
+                          {{ !$user->province ? 'Pilih Kota/Kabupaten' : 'Pilih Kota/Kabupaten' }}</option>
+                      @endif
+                      @if ($regencies)
+                        @foreach ($regencies as $regency)
+                          <option value="{{ $regency['id'] }}"
+                            {{ $user->regency == $regency['name'] ? 'selected' : '' }}>
+                            {{ $regency['name'] }}
+                          </option>
+                        @endforeach
+                      @endif
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div>
+            </form>
           </div>
         </div>
       </div>
     </div>
   </div>
 @endsection
+
+@push('scripts')
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const provinceDropdown = document.getElementById('province');
+      const regencyDropdown = document.getElementById('regency');
+      const profileForm = document.getElementById('profile-form');
+      const updateStatus = document.getElementById('update-status');
+      const submitButton = document.querySelector('button[type="submit"][form="profile-form"]'); // Perbaikan disini
+
+      // Handle province selection change
+      provinceDropdown.addEventListener('change', async function() {
+        const provinceId = this.value;
+        regencyDropdown.innerHTML = '<option selected disabled>Memuat data...</option>';
+        regencyDropdown.disabled = true;
+
+        try {
+          const response = await fetch(`/api/regencies/${provinceId}`);
+          const regencies = await response.json();
+
+          regencyDropdown.innerHTML = '<option selected disabled>Pilih Kota/Kabupaten</option>';
+          regencies.forEach(regency => {
+            const option = document.createElement('option');
+            option.value = regency.id;
+            option.textContent = regency.name;
+            regencyDropdown.appendChild(option);
+          });
+          regencyDropdown.disabled = false;
+        } catch (error) {
+          console.error('Error fetching regencies:', error);
+          regencyDropdown.innerHTML = '<option selected disabled>Gagal memuat data</option>';
+        }
+      });
+
+      // Handle form submission
+      profileForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        formData.append('_method', 'PUT');
+
+        // Disable submit button if it exists
+        if (submitButton) {
+          submitButton.disabled = true;
+        }
+
+        try {
+          console.log('Submitting form...');
+
+          const response = await fetch(this.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'X-Requested-With': 'XMLHttpRequest',
+              'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
+            }
+          });
+
+          console.log('Response status:', response.status);
+
+          const result = await response.json();
+          console.log('Response data:', result);
+
+          if (!response.ok) {
+            throw new Error(result.message || `HTTP error! status: ${response.status}`);
+          }
+
+          updateStatus.className = 'alert alert-success';
+          updateStatus.textContent = result.message;
+          updateStatus.style.display = 'block';
+
+          setTimeout(() => {
+            updateStatus.style.display = 'none';
+          }, 3000);
+        } catch (error) {
+          console.error('Error detail:', error);
+          updateStatus.className = 'alert alert-danger';
+          updateStatus.textContent = 'Terjadi kesalahan: ' + error.message;
+          updateStatus.style.display = 'block';
+        } finally {
+          // Enable submit button if it exists
+          if (submitButton) {
+            submitButton.disabled = false;
+          }
+        }
+      });
+    });
+  </script>
+@endpush

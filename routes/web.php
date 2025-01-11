@@ -35,6 +35,12 @@ Route::get('/subscription/check', [SubscriptionController::class, 'check'])->nam
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');
+    Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
+
+    // API routes for location data
+    Route::get('/api/provinces', [UserController::class, 'getProvinces']);
+    Route::get('/api/regencies/{provinceId}', [UserController::class, 'getRegencies']);
+
 
     Route::middleware(['subscription'])->group(function () {
         Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
