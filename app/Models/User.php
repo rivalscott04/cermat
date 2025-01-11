@@ -10,6 +10,7 @@ class User extends Authenticatable
     use Notifiable;
 
     protected $fillable = [
+        'name',
         'email',
         'password',
         'phone_number',
@@ -28,8 +29,8 @@ class User extends Authenticatable
 
     public function hasActiveSubscription()
     {
-        return $this->subscription && 
-               $this->subscription->payment_status === 'paid' && 
-               $this->subscription->end_date > now();
+        return $this->subscription &&
+            $this->subscription->payment_status === 'paid' &&
+            $this->subscription->end_date > now();
     }
 }

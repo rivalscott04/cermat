@@ -20,6 +20,11 @@
     @include('components.sidenav')
     <div id="page-wrapper" class="gray-bg">
       @include('components.topnav')
+      @if (session('success'))
+        <div class="alert alert-success">
+          {{ session('success') }}
+        </div>
+      @endif
       @yield('content')
       @include('components.footer')
     </div>

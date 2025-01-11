@@ -60,6 +60,7 @@
             <p>Sed do eiusmod tempor incididunt ut labore et dolore..</p>
             <p>
               <a class="btn btn-lg btn-primary" href="{{ route('login') }}" role="button">Login</a>
+              <a class="btn btn-lg btn-primary" href="{{ route('register') }}" role="button">Register</a>
             </p>
           </div>
           <div class="carousel-image wow zoomIn">
@@ -76,6 +77,7 @@
             <h1>Lorem ipsum, adipisicing elit. <br /> dolor sit amet consectetur.</h1>
             <p> Deserunt, neque?</p>
             <p><a class="btn btn-lg btn-primary" href="{{ route('login') }}" role="button">Login</a></p>
+            <p><a class="btn btn-lg btn-primary" href="{{ route('register') }}" role="button">Register</a></p>
           </div>
         </div>
         <!-- Set background for slide in css -->

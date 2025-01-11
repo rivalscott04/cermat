@@ -15,9 +15,6 @@
       <div class="ibox">
         <div class="ibox-title">
           <h5>Detail Hasil Tes</h5>
-          <div class="float-right">
-            <a href="{{ url()->previous() }}" class="btn btn-sm btn-primary">Kembali</a>
-          </div>
         </div>
         <div class="ibox-content">
           <div class="row mb-3">

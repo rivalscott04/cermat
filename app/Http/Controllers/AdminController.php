@@ -80,4 +80,19 @@ class AdminController extends Controller
 
         return view('admin.users.detail', compact('user', 'subscriptionHistory'));
     }
+
+    public function update(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validatedData = $request->validate([
+            'is_active' => 'required|boolean', // Pastikan hanya menerima nilai boolean (1/0)
+        ]);
+
+        $user->update([
+            'is_active' => $validatedData['is_active'],
+        ]);
+
+        return redirect()->route('admin.users.index')->with('success', 'Status berhasil diperbarui.');
+    }
 }

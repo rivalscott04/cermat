@@ -33,7 +33,6 @@
                       <th>Email</th>
                       <th>Phone Number</th>
                       <th>Is Active</th>
-                      <th>Role</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -42,8 +41,16 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->phone_number ?? 'N/A' }}</td>
-                        <td class="center">{{ $user->is_active ? 'Active' : 'Inactive' }}</td>
-                        <td class="center">{{ ucfirst($user->role) }}</td>
+                        <td class="center">
+                          <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
+                            @csrf
+                            @method('PUT')
+                            <select name="is_active" onchange="this.form.submit()" class="form-control">
+                              <option value="1" {{ $user->is_active ? 'selected' : '' }}>Active</option>
+                              <option value="0" {{ !$user->is_active ? 'selected' : '' }}>Inactive</option>
+                            </select>
+                          </form>
+                        </td>
                       </tr>
                     @empty
                       <tr>
@@ -58,6 +65,5 @@
         </div>
       </div>
     </div>
-  </div>
   </div>
 @endsection

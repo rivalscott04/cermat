@@ -7,6 +7,7 @@ use App\Http\Controllers\PricingController;
 use App\Http\Controllers\KecermatanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SoalKecermatanController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -33,6 +34,8 @@ Route::get('/subscription/expired', [SubscriptionController::class, 'expired'])-
 Route::get('/subscription/check', [SubscriptionController::class, 'check'])->name('subscription.check');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');
+
     Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
     Route::post('/kecermatan/generate', [KecermatanController::class, 'generateKarakter'])->name('kecermatan.generateKarakter');
     Route::get('/tes-kecermatan/soal', [SoalKecermatanController::class, 'index'])->name('kecermatan.soal');
@@ -50,4 +53,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/users/{id}', [AdminController::class, 'userDetail'])->name('users.detail');
     Route::get('/subscriptions', [AdminController::class, 'subscriptionList'])->name('subscriptions.index');
     Route::get('/revenue', [AdminController::class, 'revenueReport'])->name('revenue.report');
+    Route::put('/users/{id}', [AdminController::class, 'update'])->name('users.update');
 });
