@@ -25,6 +25,20 @@
           {{ session('success') }}
         </div>
       @endif
+      @if (session('subscriptionError'))
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <script>
+          document.addEventListener('DOMContentLoaded', () => {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Akses Ditolak',
+              text: '{{ session('subscriptionError') }}',
+              confirmButtonText: 'Oke',
+              confirmButtonColor: '#3085d6'
+            });
+          });
+        </script>
+      @endif
       @yield('content')
       @include('components.footer')
     </div>
@@ -42,7 +56,7 @@
   <script src="{{ asset('js/popper.min.js') }}"></script>
   <script src="{{ asset('js/bootstrap.js') }}"></script>
   <script src="{{ asset('js/generateSoal.js') }}"></script>
-  <script src="{{ asset('js/kecermatanSoal.js') }}"></script>
+  {{-- <script src="{{ asset('js/kecermatanSoal.js') }}"></script> --}}
   <script src="{{ asset('js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
   <script src="{{ asset('js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
   <script src="{{ asset('js/inspinia.js') }}"></script>

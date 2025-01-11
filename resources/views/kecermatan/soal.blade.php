@@ -130,6 +130,7 @@
     const userId = "{{ auth()->id() }}";
   </script>
 
+  <script src="{{ asset('js/kecermatanSoal.js') }}"></script>
   <!-- Load file JS terpisah -->
   {{-- <script src="{{ asset('js/soal.js') }}" defer></script> --}}
 @endpush
