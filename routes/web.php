@@ -27,6 +27,10 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('post.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/trial', function () {
+    return view('kecermatan.trial');
+})->name('trial');
+
 // Subscription Routes
 Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
 Route::post('/subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');

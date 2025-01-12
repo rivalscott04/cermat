@@ -58,10 +58,11 @@
               dolor sit<br />
               consectetur adipiscing elit</h1>
             <p>Sed do eiusmod tempor incididunt ut labore et dolore..</p>
-            <p>
+            <>
               <a class="btn btn-lg btn-primary" href="{{ route('login') }}" role="button">Login</a>
               <a class="btn btn-lg btn-primary" href="{{ route('register') }}" role="button">Register</a>
-            </p>
+              <a class="btn btn-lg btn-primary" href="{{ route('trial') }}" role="button">Trial</a>
+              </p>
           </div>
           <div class="carousel-image wow zoomIn">
             <img src="img/landing/laptop.png" alt="laptop" />
@@ -78,20 +79,22 @@
             <p> Deserunt, neque?</p>
             <p><a class="btn btn-lg btn-primary" href="{{ route('login') }}" role="button">Login</a></p>
             <p><a class="btn btn-lg btn-primary" href="{{ route('register') }}" role="button">Register</a></p>
+            <p><a class="btn btn-lg btn-primary" href="{{ route('trial') }}" role="button">Trial</a></p>
           </div>
         </div>
-        <!-- Set background for slide in css -->
-        <div class="header-back two"></div>
       </div>
+      <!-- Set background for slide in css -->
+      <div class="header-back two"></div>
     </div>
-    <a class="carousel-control-prev" href="#inSlider" role="button" data-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#inSlider" role="button" data-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="sr-only">Next</span>
-    </a>
+  </div>
+  <a class="carousel-control-prev" href="#inSlider" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#inSlider" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
   </div>
 
 

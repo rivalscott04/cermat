@@ -124,13 +124,10 @@
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <!-- Tambahkan ini untuk mengakses route dari Laravel ke JavaScript -->
   <script>
     const saveResultsUrl = "{{ route('kecermatan.simpanHasil') }}";
     const userId = "{{ auth()->id() }}";
   </script>
 
   <script src="{{ asset('js/kecermatanSoal.js') }}"></script>
-  <!-- Load file JS terpisah -->
-  {{-- <script src="{{ asset('js/soal.js') }}" defer></script> --}}
 @endpush

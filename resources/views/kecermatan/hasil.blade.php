@@ -6,6 +6,22 @@
       border-radius: 0.375rem !important;
       height: 38px !important;
     }
+
+    .question-display {
+      letter-spacing: 0.5em;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+
+    .missing-letter {
+      color: #dc3545;
+      font-weight: bold;
+    }
+
+    .correct-answer {
+      color: #28a745;
+      font-weight: bold;
+    }
   </style>
 @endpush
 
@@ -19,6 +35,7 @@
         <div class="ibox-content">
           <div class="row mb-3">
             <div class="col-md-6">
+              <h4>Soal Terjawab: {{ $hasilTes->skor_benar + $hasilTes->skor_salah }}</h4>
               <h4>Skor Benar: {{ $hasilTes->skor_benar }}</h4>
               <h4>Skor Salah: {{ $hasilTes->skor_salah }}</h4>
               <h4>Waktu Total: {{ $hasilTes->waktu_total }} detik</h4>
@@ -37,11 +54,20 @@
           </div>
           <hr>
           <h4>Detail Jawaban</h4>
+          @php
+            $detailJawaban = json_decode($hasilTes->detail_jawaban, true);
+            $soalAsli = array_unique(array_column($detailJawaban, 'soal_asli'));
+          @endphp
+
+          <h3>Soal: {{ implode(', ', $soalAsli) }}</h3>
           <table class="table-bordered table-hover table">
             <thead>
               <tr>
                 <th>Nomor</th>
                 <th>Set</th>
+                <th>Soal Acak</th>
+                <th>Huruf Hilang</th>
+                <th>Posisi Benar</th>
                 <th>Jawaban</th>
                 <th>Hasil</th>
                 <th>Waktu (detik)</th>
@@ -52,6 +78,9 @@
                 <tr class="jawaban-row" data-set="{{ $jawaban->set }}">
                   <td>{{ $index + 1 }}</td>
                   <td>{{ $jawaban->set }}</td>
+                  <td class="question-display">{{ $jawaban->soal_acak }}</td>
+                  <td class="missing-letter">{{ $jawaban->huruf_hilang }}</td>
+                  <td class="correct-answer">{{ $jawaban->posisi_huruf_hilang }}</td>
                   <td>{{ $jawaban->jawaban }}</td>
                   <td class="{{ $jawaban->benar ? 'table-success' : 'table-danger' }}">
                     {{ $jawaban->benar ? 'Benar' : 'Salah' }}

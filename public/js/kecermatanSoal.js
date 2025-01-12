@@ -226,6 +226,14 @@ document.addEventListener("DOMContentLoaded", function () {
                         jawaban: huruf,
                         benar: isBenar,
                         waktu: 60 - waktuTersisa,
+                        soal_asli: kolomMerah
+                            .map((item) => item.huruf)
+                            .join(""),
+                        soal_acak:
+                            kolomBiru.map((item) => item.huruf).join("") +
+                            hurufHilang.huruf,
+                        huruf_hilang: hurufHilang.huruf,
+                        posisi_huruf_hilang: hurufHilang.opsi,
                     });
 
                     generateKolomBiru();

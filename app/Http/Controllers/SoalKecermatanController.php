@@ -105,6 +105,7 @@ class SoalKecermatanController extends Controller
     /**
      * Simpan hasil tes
      */
+
     public function simpanHasil(Request $request)
     {
         $request->validate([
@@ -127,8 +128,8 @@ class SoalKecermatanController extends Controller
                 'skor_benar' => $request->skor_benar,
                 'skor_salah' => $request->skor_salah,
                 'waktu_total' => $request->waktu_total,
-                'average_time' => $averageTime, // Tambahkan data rata-rata waktu
-                'detail_jawaban' => json_encode($request->detail_jawaban),
+                'average_time' => $averageTime,
+                'detail_jawaban' => json_encode($request->detail_jawaban), // Now includes detailed question data
                 'tanggal_tes' => now()
             ]);
 
