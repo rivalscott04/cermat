@@ -1,4 +1,3 @@
-<!-- resources/views/trial-kecermatan.blade.php -->
 <!DOCTYPE html>
 <html>
 
@@ -100,13 +99,14 @@
       text-align: center;
       margin-bottom: 1rem;
       font-size: 1.2rem;
+      display: none;
     }
   </style>
 </head>
 
 <body>
   <div class="container">
-    <div class="timer" id="timer">60</div>
+    <div class="timer" id="timer">20</div>
 
     <div class="question-container">
       <table class="soal-table">
@@ -138,10 +138,10 @@
       </div>
     </div>
 
-    {{-- <div class="score-display">
+    <div class="score-display">
       Benar: <span id="skor-benar">0</span> |
       Salah: <span id="skor-salah">0</span>
-    </div> --}}
+    </div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -152,11 +152,12 @@
       let kolomMerah = [];
       let kolomBiru = [];
       let hurufHilang;
-      let waktuTersisa = 60;
+      let waktuTersisa = 20;
       let skorBenar = 0;
       let skorSalah = 0;
       let timerInterval;
-      let totalSets = 3; // Changed to 3 for trial version
+      let totalSets = 3;
+      let buttonsEnabled = true;
 
       const karakterSet = {
         huruf: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
@@ -164,31 +165,27 @@
         simbol: '!@#$%^&*()_+-=[]{}|;:",.<>?'
       };
 
-      function generateRandomChars() {
+      function generateRandomChars(type) {
         const chars = [];
-        const usedChars = new Set(); // Keep track of used characters
+        const usedChars = new Set();
+        let sourceString;
 
-        // Keep generating until we have 5 unique characters
+        switch (type) {
+          case 'huruf':
+            sourceString = karakterSet.huruf;
+            break;
+          case 'angka':
+            sourceString = karakterSet.angka;
+            break;
+          case 'simbol':
+            sourceString = karakterSet.simbol;
+            break;
+        }
+
         while (chars.length < 5) {
-          const randomType = Math.floor(Math.random() * 3);
-          let sourceString;
-
-          switch (randomType) {
-            case 0:
-              sourceString = karakterSet.huruf;
-              break;
-            case 1:
-              sourceString = karakterSet.angka;
-              break;
-            case 2:
-              sourceString = karakterSet.simbol;
-              break;
-          }
-
           const randomIndex = Math.floor(Math.random() * sourceString.length);
           const newChar = sourceString[randomIndex];
 
-          // Only add if this character hasn't been used yet
           if (!usedChars.has(newChar)) {
             usedChars.add(newChar);
             chars.push({
@@ -206,7 +203,20 @@
           return true;
         }
 
-        kolomMerah = generateRandomChars();
+        let type;
+        switch (currentSet) {
+          case 1:
+            type = 'angka';
+            break;
+          case 2:
+            type = 'huruf';
+            break;
+          case 3:
+            type = 'simbol';
+            break;
+        }
+
+        kolomMerah = generateRandomChars(type);
         const currentSetElement = document.getElementById("current-set");
         if (currentSetElement) {
           currentSetElement.textContent = currentSet;
@@ -257,41 +267,15 @@
         });
       }
 
-      function updateScore() {
-        document.getElementById("skor-benar").textContent = skorBenar;
-        document.getElementById("skor-salah").textContent = skorSalah;
-      }
-
-      function mulaiTimer() {
-        clearInterval(timerInterval);
-        waktuTersisa = 60;
-        const timerElement = document.getElementById("timer");
-        if (timerElement) {
-          timerElement.textContent = waktuTersisa;
-        }
-
-        timerInterval = setInterval(async () => {
-          if (waktuTersisa > 0) {
-            waktuTersisa--;
-            if (timerElement) {
-              timerElement.textContent = waktuTersisa;
-            }
-          } else {
-            clearInterval(timerInterval);
-            if (currentSet < totalSets) {
-              const isLastSet = await transisiKeSetBerikutnya();
-              if (isLastSet) {
-                selesaiTes();
-              }
-            } else {
-              selesaiTes();
-            }
-          }
-        }, 1000);
+      function generateNewQuestion() {
+        kolomMerah = generateRandomChars(currentSet === 1 ? 'angka' : currentSet === 2 ? 'huruf' : 'simbol');
+        updateKolomMerah();
+        generateKolomBiru();
       }
 
       async function transisiKeSetBerikutnya() {
         clearInterval(timerInterval);
+        buttonsEnabled = true;
 
         if (currentSet >= totalSets) {
           return true;
@@ -328,15 +312,44 @@
         });
       }
 
+      function mulaiTimer() {
+        clearInterval(timerInterval);
+        waktuTersisa = 20;
+        const timerElement = document.getElementById("timer");
+        if (timerElement) {
+          timerElement.textContent = waktuTersisa;
+        }
+
+        timerInterval = setInterval(async () => {
+          if (waktuTersisa > 0) {
+            waktuTersisa--;
+            if (timerElement) {
+              timerElement.textContent = waktuTersisa;
+            }
+          } else {
+            clearInterval(timerInterval);
+            if (currentSet < totalSets) {
+              const isLastSet = await transisiKeSetBerikutnya();
+              if (isLastSet) {
+                selesaiTes();
+              }
+            } else {
+              selesaiTes();
+            }
+          }
+        }, 1000);
+      }
+
       function selesaiTes() {
         clearInterval(timerInterval);
+        buttonsEnabled = false;
         Swal.fire({
           title: "Tes Selesai!",
           html: `
-                        <p>Skor Benar: ${skorBenar}</p>
-                        <p>Skor Salah: ${skorSalah}</p>
-                        <p>Total Skor: ${skorBenar - skorSalah}</p>
-                    `,
+            <p>Skor Benar: ${skorBenar}</p>
+            <p>Skor Salah: ${skorSalah}</p>
+            <p>Total Skor: ${skorBenar - skorSalah}</p>
+          `,
           icon: "success",
           confirmButtonText: "OK",
         }).then(() => {
@@ -360,14 +373,17 @@
           const button = document.getElementById(`btn-${huruf}`);
           if (button) {
             button.addEventListener("click", () => {
+              if (!buttonsEnabled) return;
+
               const isBenar = hurufHilang.opsi === huruf;
+
               if (isBenar) {
                 skorBenar++;
               } else {
                 skorSalah++;
               }
 
-              updateScore();
+              // Hanya mengacak ulang kolom biru
               generateKolomBiru();
             });
           }
