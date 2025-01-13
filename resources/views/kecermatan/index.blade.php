@@ -52,6 +52,15 @@
       transform: translateY(1px);
     }
 
+    /* Style untuk input yang sudah diisi */
+    .form-control:not(:placeholder-shown) {
+      font-weight: 600;
+      color: #2c3e50;
+      background-color: #f8f9fa;
+      letter-spacing: 1px;
+      font-size: 1.1em;
+    }
+
     .soal-label {
       color: #666;
       margin-bottom: 10px;
@@ -166,8 +175,8 @@
             </div>
 
             <!-- Layout soal sama seperti sebelumnya -->
+            <!-- Baris 1 (Soal 1-3) -->
             <div class="row">
-              <!-- Kolom 1-3 -->
               <div class="col-md-4">
                 <div class="soal-group">
                   <div class="soal-input">
@@ -177,27 +186,7 @@
                   </div>
                   <button type="button" class="btn btn-karakter karakter-btn" data-index="0">Huruf</button>
                 </div>
-
-                <div class="soal-group">
-                  <div class="soal-input">
-                    <label class="soal-label">Kolom / Soal 4</label>
-                    <input type="text" name="questions[]" class="form-control karakter-input" data-index="3"
-                      placeholder="{@|>*" maxlength="5">
-                  </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="3">Huruf</button>
-                </div>
-
-                <div class="soal-group">
-                  <div class="soal-input">
-                    <label class="soal-label">Kolom / Soal 7</label>
-                    <input type="text" name="questions[]" class="form-control karakter-input" data-index="6"
-                      placeholder="(.@|-" maxlength="5">
-                  </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="6">Huruf</button>
-                </div>
               </div>
-
-              <!-- Kolom 4-6 -->
               <div class="col-md-4">
                 <div class="soal-group">
                   <div class="soal-input">
@@ -205,29 +194,9 @@
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="1"
                       placeholder="&'!_" maxlength="5">
                   </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="1">Huruf</button>
-                </div>
-
-                <div class="soal-group">
-                  <div class="soal-input">
-                    <label class="soal-label">Kolom / Soal 5</label>
-                    <input type="text" name="questions[]" class="form-control karakter-input" data-index="4"
-                      placeholder="/^<{}" maxlength="5">
-                  </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="4">Huruf</button>
-                </div>
-
-                <div class="soal-group">
-                  <div class="soal-input">
-                    <label class="soal-label">Kolom / Soal 8</label>
-                    <input type="text" name="questions[]" class="form-control karakter-input" data-index="7"
-                      placeholder="[)_+#" maxlength="5">
-                  </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="7">Huruf</button>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="1">Huruf</button>
                 </div>
               </div>
-
-              <!-- Kolom 7-9 -->
               <div class="col-md-4">
                 <div class="soal-group">
                   <div class="soal-input">
@@ -235,25 +204,75 @@
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="2"
                       placeholder="+>_)@" maxlength="5">
                   </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="2">Huruf</button>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="2">Huruf</button>
                 </div>
+              </div>
+            </div>
 
+            <!-- Baris 2 (Soal 4-6) -->
+            <div class="row">
+              <div class="col-md-4">
+                <div class="soal-group">
+                  <div class="soal-input">
+                    <label class="soal-label">Kolom / Soal 4</label>
+                    <input type="text" name="questions[]" class="form-control karakter-input" data-index="3"
+                      placeholder="{@|>*" maxlength="5">
+                  </div>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="3">Huruf</button>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="soal-group">
+                  <div class="soal-input">
+                    <label class="soal-label">Kolom / Soal 5</label>
+                    <input type="text" name="questions[]" class="form-control karakter-input" data-index="4"
+                      placeholder="/^<{}" maxlength="5">
+                  </div>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="4">Huruf</button>
+                </div>
+              </div>
+              <div class="col-md-4">
                 <div class="soal-group">
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 6</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="5"
                       placeholder=":^%|&" maxlength="5">
                   </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="5">Huruf</button>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="5">Huruf</button>
                 </div>
+              </div>
+            </div>
 
+            <!-- Baris 3 (Soal 7-9) -->
+            <div class="row">
+              <div class="col-md-4">
+                <div class="soal-group">
+                  <div class="soal-input">
+                    <label class="soal-label">Kolom / Soal 7</label>
+                    <input type="text" name="questions[]" class="form-control karakter-input" data-index="6"
+                      placeholder="(.@|-" maxlength="5">
+                  </div>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="6">Huruf</button>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="soal-group">
+                  <div class="soal-input">
+                    <label class="soal-label">Kolom / Soal 8</label>
+                    <input type="text" name="questions[]" class="form-control karakter-input" data-index="7"
+                      placeholder="[)_+#" maxlength="5">
+                  </div>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="7">Huruf</button>
+                </div>
+              </div>
+              <div class="col-md-4">
                 <div class="soal-group">
                   <div class="soal-input">
                     <label class="soal-label">Kolom / Soal 9</label>
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="8"
                       placeholder="?^{*" maxlength="5">
                   </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="8">Huruf</button>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="8">Huruf</button>
                 </div>
               </div>
             </div>
@@ -267,7 +286,7 @@
                     <input type="text" name="questions[]" class="form-control karakter-input" data-index="9"
                       placeholder="'*=?[" maxlength="5">
                   </div>
-                  <button class="btn btn-karakter karakter-btn" data-index="9">Huruf</button>
+                  <button type="button" class="btn btn-karakter karakter-btn" data-index="9">Huruf</button>
                 </div>
               </div>
             </div>
