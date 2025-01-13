@@ -28,7 +28,6 @@ class UserController extends Controller
             // Get regencies if province is selected
             $regencies = null;
             if ($user->province) {
-                // Cari ID provinsi berdasarkan nama
                 $provinceData = collect($provinces)->first(function ($province) use ($user) {
                     return $province['name'] === $user->province;
                 });
@@ -45,7 +44,13 @@ class UserController extends Controller
                 }
             }
 
-            return view('user.profile', compact('user', 'provinces', 'regencies'));
+            // Get subscription details
+            $subscription = $user->subscription()
+                ->select('end_date', 'payment_method', 'payment_details')
+                ->latest('end_date')
+                ->first();
+
+            return view('user.profile', compact('user', 'provinces', 'regencies', 'subscription'));
         } catch (\Exception $e) {
             Log::error('Error loading profile page', [
                 'error' => $e->getMessage(),
@@ -55,10 +60,12 @@ class UserController extends Controller
             return view('user.profile', [
                 'user' => $user,
                 'provinces' => [],
-                'regencies' => []
+                'regencies' => [],
+                'subscription' => null
             ])->with('error', 'Terjadi kesalahan saat memuat data wilayah');
         }
     }
+
 
     public function update(Request $request)
     {

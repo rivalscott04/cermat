@@ -36,28 +36,45 @@
                 (POLRI) GRATIS <i class="fa fa-chevron-right float-right"></i>
               </a>
             </div>
-
-            <!-- Navigation Menu -->
-            <div class="list-group text-left">
-              <a href="#" class="list-group-item list-group-item-action">
-                <i class="fa fa-user mr-2"></i> Pengaturan Akun
-              </a>
-              <a href="#" class="list-group-item list-group-item-action">
-                <i class="fa fa-exchange-alt mr-2"></i> Transaksi Saya
-              </a>
-              <a href="#" class="list-group-item list-group-item-action">
-                <i class="fa fa-ticket-alt mr-2"></i> Voucher Promo
-              </a>
-              <a href="#" class="list-group-item list-group-item-action">
-                <i class="fa fa-handshake mr-2"></i> Program Afiliasi
-              </a>
-            </div>
           </div>
         </div>
       </div>
 
-      <!-- Main Profile Form -->
+      <!-- Main Content Column -->
       <div class="col-md-8">
+        <!-- Status Information Card -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h5 class="mb-0">STATUS BERLANGGANAN</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-6">
+                <div class="mb-4">
+                  <p class="mb-1"><strong>Status:</strong></p>
+                  <p class="mb-0">{{ $user->is_active ? 'Aktif' : 'Tidak Aktif' }}</p>
+                </div>
+                <div class="mb-4">
+                  <p class="mb-1"><strong>Masa Aktif Langganan:</strong></p>
+                  <p class="mb-0">
+                    {{ $subscription ? date('l, d F Y', strtotime($subscription->end_date)) : 'Tidak Ada' }}</p>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="mb-4">
+                  <p class="mb-1"><strong>Tipe Pembayaran:</strong></p>
+                  <p class="mb-0">{{ $subscription ? $subscription->payment_method : 'Tidak Ada' }}</p>
+                </div>
+                <div>
+                  <p class="mb-1"><strong>Bank / Metode:</strong></p>
+                  <p class="mb-0">{{ $subscription ? $subscription->payment_details : 'Tidak Ada' }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile Form Card -->
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">PROFIL</h5>
