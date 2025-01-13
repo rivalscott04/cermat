@@ -166,10 +166,7 @@
                 <option value="acak">Acak</option>
               </select>
 
-              <button type="button" class="btn btn-isi-otomatis mx-2">
-                <i class="bi bi-hand-index"></i> Isi Soal Otomatis
-              </button>
-              <button type="submit" class="btn btn-mulai-tes">
+              <button type="submit" class="btn btn-mulai-tes ml-2">
                 Mulai Tes
               </button>
             </div>

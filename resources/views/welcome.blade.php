@@ -69,7 +69,7 @@
         <a href="{{ route('register') }}" class="btn btn-warning ml-3">Register</a>
       </div>
       <div class="col-lg-6 wow fadeInRight text-right">
-        <img src="{{ asset('img/elementor-placeholder-image.jpg') }}" alt="dashboard" class="img-fluid float-right">
+        <img src="{{ asset('img/Penerimaan-Polri_Utama.jpg') }}" alt="dashboard" class="img-fluid float-right">
       </div>
     </div>
   </section>

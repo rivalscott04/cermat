@@ -133,16 +133,24 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // Character type selection handler
+    // Character type selection handler
     karakterType.addEventListener("change", function () {
         const selectedType = this.value;
         const buttonText =
             selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
 
+        // Update button texts
         karakterBtns.forEach((btn) => {
             btn.textContent = buttonText;
         });
 
+        // Update placeholders
         updatePlaceholders(selectedType);
+
+        // Automatically fill all inputs when type changes
+        inputs.forEach((input) => {
+            input.value = generateRandomString(selectedType);
+        });
     });
 
     // Individual character buttons handler - FIXED
