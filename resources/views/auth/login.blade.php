@@ -21,7 +21,7 @@
   <div class="middle-box loginscreen animated fadeInDown text-center">
     <div>
       <div>
-        <h1 class="logo-name">IN+</h1>
+        <h1 class="logo-name">MC</h1>
       </div>
       <h3>Cermat</h3>
       <p>Login in. To see it in action.</p>
@@ -51,7 +51,7 @@
         <p class="text-muted text-center"><small>Do not have an account?</small></p>
         <a class="btn btn-sm btn-white btn-block" href="{{ url('register') }}">Create an account</a>
       </form>
-      <p class="m-t"> <small>Inspinia web app framework based on Bootstrap 3 &copy; 2014</small> </p>
+      <p class="m-t"> <small>Mahir Cermat &copy; 2025</small> </p>
     </div>
   </div>
 
