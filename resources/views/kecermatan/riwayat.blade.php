@@ -9,7 +9,7 @@
         </div>
         <div class="ibox-content">
           <div class="table-responsive">
-            <table class="table-bordered table-hover table text-center">
+            <table class="table-bordered table-hover dataTables-example table text-center">
               <thead>
                 <tr>
                   <th>No</th>
@@ -45,3 +45,23 @@
     </div>
   </div>
 @endsection
+
+@push('scripts')
+  <script>
+    // Upgrade button class name
+    $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn btn-white btn-sm';
+
+    $(document).ready(function() {
+      $('.dataTables-example').DataTable({
+        pageLength: 25,
+        responsive: true,
+        dom: 'tp<"bottom"l>', // This puts table first, then pagination, then length menu at bottom
+        searching: false, // Removes the search box
+        buttons: [], // Removes all buttons
+        language: {
+          lengthMenu: "Show _MENU_ entries"
+        }
+      });
+    });
+  </script>
+@endpush

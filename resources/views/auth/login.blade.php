@@ -21,10 +21,16 @@
   <div class="middle-box loginscreen animated fadeInDown text-center">
     <div>
       <div>
-        <h1 class="logo-name">MC</h1>
+        <img src="{{ asset('img/login-removebg-preview.png') }}" alt="dashboard" class="img-fluid float-right">
       </div>
       <h3>Cermat</h3>
       <p>Login in. To see it in action.</p>
+
+      @if (session('message'))
+        <div class="alert alert-info">
+          {{ session('message') }}
+        </div>
+      @endif
 
       @if ($errors->any())
         <div class="alert alert-danger">

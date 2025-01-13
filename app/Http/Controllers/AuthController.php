@@ -27,6 +27,8 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
             'phone_number' => 'required|digits_between:10,15',
+            'province' => 'required',
+            'regency' => 'required',
         ]);
 
         $user = User::create([
@@ -35,11 +37,18 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'phone_number' => $request->phone_number,
             'is_active' => false,
+            'province' => $request->province,
+            'regency' => $request->regency,
             'role' => 'user'
         ]);
 
-        // Redirect ke halaman pembayaran
-        return redirect()->route('subscription.checkout');
+        if (Auth::check()) {
+            return redirect()->route('user.profile', ['userId' => Auth::user()->id]);
+        } else {
+            return redirect()
+                ->route('login')
+                ->with('message', 'Silahkan login menggunakan email dan password yang telah dibuat');
+        }
     }
 
     public function login(Request $request)

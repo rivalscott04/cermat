@@ -75,7 +75,7 @@
         </div>
 
         <!-- Profile Form Card -->
-        <div class="card">
+        <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">PROFIL</h5>
             <button type="submit" form="profile-form" class="btn btn-primary">

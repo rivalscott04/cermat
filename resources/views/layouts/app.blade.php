@@ -12,6 +12,7 @@
   <link href="{{ asset('font-awesome/css/font-awesome.css') }}" rel="stylesheet">
   <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
   <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+  <link href="{{ asset('css/plugins/dataTables/datatables.min.css') }}" rel="stylesheet">
   @stack('styles')
 </head>
 
@@ -57,6 +58,7 @@
   <script src="{{ asset('js/bootstrap.js') }}"></script>
   <script src="{{ asset('js/generateSoal.js') }}"></script>
   {{-- <script src="{{ asset('js/kecermatanSoal.js') }}"></script> --}}
+  <script src="{{ asset('js/plugins/dataTables/datatables.min.js') }}"></script>
   <script src="{{ asset('js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
   <script src="{{ asset('js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
   <script src="{{ asset('js/inspinia.js') }}"></script>
