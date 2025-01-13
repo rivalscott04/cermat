@@ -357,12 +357,12 @@
             title: 'Trial Tes Selesai',
             html: 'Ingin melanjutkan tes? Silahkan daftarkan diri anda di <a href="{{ route('register') }}" style="color: blue; text-decoration: underline;">sini</a>',
             showCancelButton: true,
-            confirmButtonText: 'Daftar',
+            confirmButtonText: 'Beranda',
             cancelButtonText: 'Tutup',
             reverseButtons: true
           }).then((result) => {
             if (result.isConfirmed) {
-              window.location.href = '{{ route('register') }}';
+              window.location.href = '/';
             }
           });
         });
