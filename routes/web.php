@@ -32,7 +32,6 @@ Route::get('/trial', function () {
 })->name('trial');
 
 // Subscription Routes
-Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
 Route::post('/subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
 Route::get('/subscription/expired', [SubscriptionController::class, 'expired'])->name('subscription.expired');
 Route::get('/subscription/check', [SubscriptionController::class, 'check'])->name('subscription.check');
@@ -44,6 +43,8 @@ Route::middleware(['auth'])->group(function () {
     // API routes for location data
     Route::get('/api/provinces', [UserController::class, 'getProvinces']);
     Route::get('/api/regencies/{provinceId}', [UserController::class, 'getRegencies']);
+
+    Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
 
 
     Route::middleware(['subscription'])->group(function () {

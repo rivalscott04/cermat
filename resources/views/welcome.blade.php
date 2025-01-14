@@ -38,6 +38,27 @@
       padding: 10px 20px;
       font-weight: 600;
     }
+
+    /* Add these styles to your existing style block */
+    .landing-page .features.container {
+      min-height: calc(100vh - 60px);
+      /* Subtracting navbar height */
+      display: flex;
+      align-items: center;
+    }
+
+    .landing-page .features-block {
+      margin-top: 0;
+      /* Remove the original margin */
+      width: 100%;
+    }
+
+    /* Ensure the image doesn't overflow */
+    .landing-page .features-block img {
+      max-height: 70vh;
+      width: auto;
+      object-fit: contain;
+    }
   </style>
 </head>
 
@@ -60,7 +81,6 @@
     </nav>
   </div>
   <section class="features container">
-
     <div class="row features-block">
       <div class="col-lg-6 features-text wow fadeInLeft">
         <h1 class="font-weight-bold">Tes Cermat</h1>
@@ -69,8 +89,7 @@
         <a href="{{ route('register') }}" class="btn btn-warning ml-3">Register</a>
       </div>
       <div class="col-lg-6 wow fadeInRight text-right">
-        <img src="{{ asset('img/png-transparent-emojipedia-text-removebg-preview (1).png') }}" alt="dashboard"
-          class="img-fluid float-right">
+        <img src="{{ asset('img/polr.png') }}" alt="dashboard" class="img-fluid float-right">
       </div>
     </div>
   </section>

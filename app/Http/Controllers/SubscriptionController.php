@@ -16,9 +16,9 @@ class SubscriptionController extends Controller
     public function process(Request $request)
     {
         // Di sini paymaant gateway
-        
+
         $user = auth()->user();
-        
+
         $subscription = Subscription::create([
             'user_id' => $user->id,
             'start_date' => Carbon::now(),
