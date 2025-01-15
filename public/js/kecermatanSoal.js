@@ -126,7 +126,7 @@ document.addEventListener("DOMContentLoaded", function () {
             Swal.fire({
                 title: "Persiapan Soal Berikutnya",
                 html: "Soal berikutnya akan dimulai dalam <b></b> detik.",
-                timer: 5000,
+                timer: 3000,
                 timerProgressBar: true,
                 allowOutsideClick: false,
                 didOpen: () => {

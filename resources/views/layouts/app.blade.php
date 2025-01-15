@@ -34,8 +34,16 @@
               icon: 'warning',
               title: 'Akses Ditolak',
               text: '{{ session('subscriptionError') }}',
-              confirmButtonText: 'Oke',
+              showCloseButton: true,
+              showCancelButton: true,
+              cancelButtonText: 'Tutup',
+              confirmButtonText: 'Berlangganan sekarang',
               confirmButtonColor: '#3085d6'
+
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = "{{ route('subscription.checkout') }}";
+              }
             });
           });
         </script>
