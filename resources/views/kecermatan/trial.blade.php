@@ -162,7 +162,7 @@
       const karakterSet = {
         huruf: "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         angka: "0123456789",
-        simbol: '!@#$%^&*()_+-=[]{}|;:",.<>?'
+        simbol: 'αβγδεζηθικλμνξοπρςστυφχψωΓΔΘΛΣΦΨΩ'
       };
 
       function generateRandomChars(type) {

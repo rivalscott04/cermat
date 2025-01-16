@@ -188,9 +188,8 @@ document.addEventListener("DOMContentLoaded", function () {
             .then((result) => {
                 if (result.success) {
                     Swal.fire({
-                        title: "Tes Selesai!",
-                        text: `Skor Benar: ${skorBenar}, Skor Salah: ${skorSalah}`,
-                        icon: "success",
+                        title: "Waktu Habis!",
+                        icon: "error",
                         confirmButtonText: "OK",
                     }).then(() => {
                         window.location.href = `${baseUrl}/tes-kecermatan/hasil`;
