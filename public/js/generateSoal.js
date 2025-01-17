@@ -1,10 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
     // DOM Elements
     const form = document.getElementById("kecermatanForm");
-    const karakterType = document.querySelector(".custom-select");
+    const dropdownItems = document.querySelectorAll(".dropdown-item");
+    const dropdownButton = document.getElementById("dropdownMenuButton");
     const karakterBtns = document.querySelectorAll(".karakter-btn");
     const inputs = document.querySelectorAll(".karakter-input");
-    const isiOtomatisBtn = document.querySelector(".btn-isi-otomatis");
+    const isiOtomatisBtn = document.getElementById("isiOtomatisBtn");
 
     // Placeholder examples for each type remain the same
     const placeholderExamples = {
@@ -110,7 +111,86 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
     }
 
-    // Form submission handler
+    let currentHoverPlaceholders = [];
+
+    // Dropdown items click handler
+    // Dropdown items click handler
+    dropdownItems.forEach((item) => {
+        // Hover handlers
+        item.addEventListener("mouseenter", function () {
+            const selectedType = this.dataset.value;
+
+            // Store current state before changing
+            currentHoverPlaceholders = Array.from(inputs).map((input) => ({
+                value: input.value,
+                placeholder: input.placeholder,
+            }));
+
+            // Update button text temporarily
+            const buttonText =
+                selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
+            dropdownButton.dataset.originalText = dropdownButton.textContent;
+            dropdownButton.textContent = buttonText;
+
+            // Update karakter buttons text temporarily
+            karakterBtns.forEach((btn) => {
+                btn.dataset.originalText = btn.textContent;
+                btn.textContent = buttonText;
+            });
+
+            // Generate new values for preview
+            inputs.forEach((input) => {
+                input.dataset.originalValue = input.value;
+                input.value = generateRandomString(selectedType);
+            });
+        });
+
+        item.addEventListener("mouseleave", function () {
+            // Only restore if we haven't clicked (no current selection made)
+            if (dropdownButton.textContent === "Pilih Jenis") {
+                // Restore previous values and text
+                inputs.forEach((input) => {
+                    input.value = input.dataset.originalValue || "";
+                    delete input.dataset.originalValue;
+                });
+
+                // Restore button texts
+                dropdownButton.textContent =
+                    dropdownButton.dataset.originalText;
+                delete dropdownButton.dataset.originalText;
+
+                karakterBtns.forEach((btn) => {
+                    btn.textContent = btn.dataset.originalText;
+                    delete btn.dataset.originalText;
+                });
+            }
+        });
+
+        // Click handler - now keeps the hover-generated values
+        item.addEventListener("click", function (e) {
+            e.preventDefault();
+            const selectedType = this.dataset.value;
+            const buttonText =
+                selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
+
+            // Update text permanently
+            dropdownButton.textContent = buttonText;
+            karakterBtns.forEach((btn) => {
+                btn.textContent = buttonText;
+            });
+
+            // The current values from hover will remain
+            // Just clean up the temporary data attributes
+            inputs.forEach((input) => {
+                delete input.dataset.originalValue;
+            });
+            delete dropdownButton.dataset.originalText;
+            karakterBtns.forEach((btn) => {
+                delete btn.dataset.originalText;
+            });
+        });
+    });
+
     // Form submission handler
     form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -124,39 +204,18 @@ document.addEventListener("DOMContentLoaded", function () {
         const queryString = orderedInputs
             .map((value) => `questions[]=${encodeURIComponent(value)}`)
             .join("&");
-        const selectedType = karakterType.value;
+        const selectedType = dropdownButton.textContent.toLowerCase();
         const fullQueryString = `jenis=${selectedType}&${queryString}`;
 
         // Redirect to the URL with query parameters
         window.location.href = `${form.action}?${fullQueryString}`;
     });
 
-    // Character type selection handler
-    // Character type selection handler
-    karakterType.addEventListener("change", function () {
-        const selectedType = this.value;
-        const buttonText =
-            selectedType.charAt(0).toUpperCase() + selectedType.slice(1);
-
-        // Update button texts
-        karakterBtns.forEach((btn) => {
-            btn.textContent = buttonText;
-        });
-
-        // Update placeholders
-        updatePlaceholders(selectedType);
-
-        // Automatically fill all inputs when type changes
-        inputs.forEach((input) => {
-            input.value = generateRandomString(selectedType);
-        });
-    });
-
-    // Individual character buttons handler - FIXED
+    // Individual character buttons handler
     karakterBtns.forEach((btn) => {
         btn.addEventListener("click", function () {
             const index = parseInt(this.dataset.index);
-            const selectedType = karakterType.value;
+            const selectedType = dropdownButton.textContent.toLowerCase();
             const karakter = generateRandomString(selectedType);
             const correspondingInput = inputs[index];
 
@@ -168,7 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Auto-fill button handler
     isiOtomatisBtn.addEventListener("click", function () {
-        const selectedType = karakterType.value;
+        const selectedType = dropdownButton.textContent.toLowerCase();
         inputs.forEach((input) => {
             input.value = generateRandomString(selectedType);
         });
@@ -177,7 +236,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Input field validation handler
     inputs.forEach((input) => {
         input.addEventListener("input", function () {
-            const selectedType = karakterType.value;
+            const selectedType = dropdownButton.textContent.toLowerCase();
 
             // Convert to uppercase for letter type
             if (selectedType === "huruf") {

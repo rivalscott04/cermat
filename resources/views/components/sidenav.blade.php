@@ -67,15 +67,6 @@
           <span class="nav-label">Riwayat Tes</span>
         </a>
       </li>
-
-      <li>
-        <a href="#"><i class="fa fa-table"></i> <span class="nav-label">Tables</span><span
-            class="fa arrow"></span></a>
-        <ul class="nav nav-second-level collapse">
-          <li><a href="">Static Tables</a></li>
-          <li><a href="">Data Tables</a></li>
-        </ul>
-      </li>
     </ul>
   </div>
 </nav>

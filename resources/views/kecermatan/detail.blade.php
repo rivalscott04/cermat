@@ -206,15 +206,15 @@
           labels: labels,
           datasets: [{
               label: 'Total Terjawab',
-              backgroundColor: 'rgba(26,179,148,0.5)',
-              borderColor: 'rgba(26,179,148,0.7)',
+              backgroundColor: 'rgba(79, 70, 229, 0.6)',
+              borderColor: 'rgb(79, 70, 229)',
               borderWidth: 1,
               data: totalData
             },
             {
               label: 'Jawaban Benar',
-              backgroundColor: 'rgba(220,220,220,0.5)',
-              borderColor: 'rgba(220,220,220,0.7)',
+              backgroundColor: 'rgba(249, 115, 22, 0.6)',
+              borderColor: 'rgb(249, 115, 22)',
               borderWidth: 1,
               data: benarData
             }

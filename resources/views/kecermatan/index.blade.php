@@ -122,6 +122,18 @@
       box-shadow: 0 0 0 0.2rem rgba(74, 77, 231, 0.25);
     }
 
+    .btn-light {
+      padding: 8px 0px;
+      border-radius: 8px;
+      font-size: 15px;
+      width: 120px;
+    }
+
+    .dropdown-item {
+      padding-block: 10px;
+      font-size: 14px;
+    }
+
     @media (max-width: 768px) {
       .soal-container {
         padding: 15px;
@@ -158,19 +170,23 @@
             <p class="instructions">Inputkan Huruf, Angka, atau Simbol dengan maksimal 5 karakter (karakter dapat digabung)
             </p>
 
-            <div class="form-group">
-              <select class="custom-select" name="jenis" style="max-width: 200px;">
-                <option value="huruf">Huruf</option>
-                <option value="angka">Angka</option>
-                <option value="simbol">Simbol</option>
-                <option value="acak">Acak</option>
-              </select>
-
-              <button type="submit" class="btn btn-mulai-tes ml-2">
+            <div class="form-group d-flex align-items-center">
+              <div class="dropdown mr-2">
+                <button class="btn btn-light dropdown-toggle" type="button" id="dropdownMenuButton"
+                  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Pilih Jenis
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                  <a class="dropdown-item" href="#" data-value="huruf">Huruf</a>
+                  <a class="dropdown-item" href="#" data-value="angka">Angka</a>
+                  <a class="dropdown-item" href="#" data-value="simbol">Simbol</a>
+                  <a class="dropdown-item" href="#" data-value="acak">Acak</a>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-mulai-tes">
                 Mulai Tes
               </button>
             </div>
-
             <!-- Layout soal sama seperti sebelumnya -->
             <!-- Baris 1 (Soal 1-3) -->
             <div class="row">
@@ -299,7 +315,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
   <!-- Load class KecermatanSoal -->
-  <script src="{{ asset('js/kecermatanSoal.js') }}"></script>
+  {{-- <script src="{{ asset('js/kecermatanSoal.js') }}"></script> --}}
 
   <!-- Inisialisasi game -->
   <script>
