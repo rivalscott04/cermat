@@ -3,26 +3,15 @@
     <ul class="nav metismenu" id="side-menu">
       <li class="nav-header">
         <div class="dropdown profile-element">
-          <img alt="image" class="rounded-circle" src="{{ asset('img/profile_small.jpg') }}" />
+          <img alt="image" class="rounded-circle mb-1" src="{{ asset('img/profile_small.jpg') }}" />
           <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-            {{-- <span class="m-t-xs block font-bold">{{ Auth::user()->name }}</span> --}}
-            <span class="text-muted block text-xs">
+            <span class="font-weight-bold font-size-lg block">
+              {{-- {{ Auth::user()->name }} --}}
+            </span>
+            <span class="text-medium mt-3 block">
               {{ Auth::user()->role == 'admin' ? 'Admin' : 'User' }}
-              <b class="caret"></b>
             </span>
           </a>
-          <ul class="dropdown-menu animated fadeInRight m-t-xs">
-            <li><a class="dropdown-item" href="{{ route('user.profile', ['userId' => Auth::user()->id]) }}">Profile</a>
-            </li>
-            <li class="dropdown-divider"></li>
-            <li>
-              <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <a class="dropdown-item" href="{{ route('logout') }}"
-                  onclick="event.preventDefault(); this.closest('form').submit();">Logout</a>
-              </form>
-            </li>
-          </ul>
         </div>
         <div class="logo-element">
           IN+

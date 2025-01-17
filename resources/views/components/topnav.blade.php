@@ -11,9 +11,6 @@
     </div>
     <ul class="nav navbar-top-links navbar-right">
       <li>
-        <span class="m-r-sm text-muted welcome-message">Welcome to Dashboard</span>
-      </li>
-      <li>
         <form method="POST" action="{{ route('logout') }}">
           @csrf
           <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();">
