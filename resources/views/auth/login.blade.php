@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>INSPINIA | Login</title>
+  <title>Mahir Cermat | Login</title>
 
   <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('font-awesome/css/font-awesome.css') }}" rel="stylesheet">
@@ -23,8 +23,7 @@
       <div>
         <img src="{{ asset('img/login-removebg-preview.png') }}" alt="dashboard" class="img-fluid float-right">
       </div>
-      <h3>Cermat</h3>
-      <p>Login in. To see it in action.</p>
+      <h3>Mahir Cermat</h3>
 
       @if (session('message'))
         <div class="alert alert-info">
@@ -51,11 +50,11 @@
         <div class="form-group">
           <input type="password" name="password" class="form-control" placeholder="Password" required>
         </div>
-        <button type="submit" class="btn btn-primary full-width m-b block">Login</button>
+        <button type="submit" class="btn btn-primary full-width m-b block">Masuk</button>
 
-        <a href="#"><small>Forgot password?</small></a>
+        <a href="#"><small>Lupa Password?</small></a>
         <p class="text-muted text-center"><small>Do not have an account?</small></p>
-        <a class="btn btn-sm btn-white btn-block" href="{{ url('register') }}">Create an account</a>
+        <a class="btn btn-sm btn-white btn-block" href="{{ url('register') }}">Buat Akun</a>
       </form>
       <p class="m-t"> <small>Mahir Cermat &copy; 2025</small> </p>
     </div>
