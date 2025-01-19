@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Landing Page</title>
+  <title>Mahir Cermat</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
     .hero-section {
@@ -26,6 +26,7 @@
       color: white;
       font-size: 1.5rem;
       margin: 2rem 0;
+      font-weight: bold;
     }
 
     .laptop-container {
