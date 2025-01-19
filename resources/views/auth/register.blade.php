@@ -10,10 +10,26 @@
   <link href="{{ asset('css/plugins/iCheck/custom.css') }}" rel="stylesheet">
   <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
   <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+
+  <style>
+    .back-button-container {
+      position: relative;
+      width: 100%;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    @media (max-width: 768px) {
+      .back-button-container {
+        position: sticky;
+        top: 0;
+      }
+    }
+  </style>
 </head>
 
 <body class="gray-bg">
-  <div style="position: fixed; top: 20px; left: 20px;">
+  <div class="back-button-container">
     <a href="{{ url()->previous() }}" class="btn btn-default">
       <i class="fa fa-arrow-left"></i> Kembali
     </a>
@@ -63,13 +79,6 @@
       <div class="form-group">
         <input type="password" class="form-control" placeholder="Confirm Password" name="password_confirmation"
           required>
-      </div>
-      <div class="form-group">
-        <div class="checkbox i-checks">
-          <label>
-            <input type="checkbox" name="terms" required><i></i> Agree to the terms and policy
-          </label>
-        </div>
       </div>
       <button type="submit" class="btn btn-primary full-width m-b block">Register</button>
 
