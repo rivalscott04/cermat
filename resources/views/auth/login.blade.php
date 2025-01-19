@@ -53,7 +53,7 @@
         <button type="submit" class="btn btn-primary full-width m-b block">Masuk</button>
 
         <a href="#"><small>Lupa Password?</small></a>
-        <p class="text-muted text-center"><small>Do not have an account?</small></p>
+        <p class="text-muted text-center"><small>Belum memiliki akun?</small></p>
         <a class="btn btn-sm btn-white btn-block" href="{{ url('register') }}">Buat Akun</a>
       </form>
       <p class="m-t"> <small>Mahir Cermat &copy; 2025</small> </p>
