@@ -2,218 +2,160 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="">
-  <meta name="author" content="">
-
-  <title>INSPINIA - Landing Page</title>
-
-  <!-- Bootstrap core CSS -->
-  <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-
-  <!-- Animation CSS -->
-  <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
-  <link href="{{ asset('font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
-
-  <!-- Custom styles for this template -->
-  <link href="{{ asset('css/style.css') }}" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Landing Page</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    .landing-page .features-block {
-      margin-top: 150px
+    .hero-section {
+      background: linear-gradient(135deg, #a8e6cf 0%, #3eaf7c 100%);
+      min-height: 100vh;
+      padding: 4rem 0;
+      position: relative;
+      overflow: hidden;
     }
 
-    .landing-page .navbar-default .nav li a {
-      color: #999c9e
+    .hero-text {
+      color: white;
+      font-size: 4rem;
+      font-weight: bold;
+      line-height: 1.2;
     }
 
-    .landing-page h1 {
-      font-size: 45px;
+    .hero-subtext {
+      color: white;
+      font-size: 1.5rem;
+      margin: 2rem 0;
     }
 
-    .btn-warning {
-      font-size: 14px;
-      padding: 10px 20px;
-      font-weight: 600;
+    .laptop-container {
+      position: relative;
+      max-width: 600px;
+      /* Reduced from 800px */
+      margin: 2rem auto;
+      padding: 0;
+      overflow: hidden;
     }
 
-    /* Add these styles to your existing style block */
-    .landing-page .features.container {
-      min-height: calc(100vh - 60px);
-      /* Subtracting navbar height */
-      display: flex;
-      align-items: center;
-    }
-
-    .landing-page .features-block {
-      margin-top: 0;
-      /* Remove the original margin */
+    .laptop-frame {
+      position: relative;
       width: 100%;
+      margin: 0 auto;
+      display: block;
     }
 
-    /* Ensure the image doesn't overflow */
-    .landing-page .features-block img {
-      max-height: 70vh;
-      width: auto;
+    .laptop-base {
+      width: 100%;
+      height: auto;
+      display: block;
+      position: relative;
+      z-index: 1;
+    }
+
+    .screen-content {
+      position: absolute;
+      top: 6%;
+      left: 13.5%;
+      width: 73%;
+      height: 77%;
+      background: #fff;
+      overflow: hidden;
+      border-radius: 3px;
+      z-index: 0;
+    }
+
+    .screen-content img {
+      width: 100%;
+      height: 100%;
       object-fit: contain;
+      display: block;
+      background: white;
+    }
+
+    .get-started-btn {
+      background: white;
+      color: #333;
+      padding: 0.8rem 2rem;
+      border-radius: 4px;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .get-started-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar {
+      background: transparent !important;
+    }
+
+    .navbar-brand {
+      color: white !important;
+      font-weight: bold;
+    }
+
+    .nav-link {
+      color: white !important;
+    }
+
+    @media (max-width: 991px) {
+      .laptop-container {
+        max-width: 90%;
+        margin: 2rem auto;
+      }
+
+      .laptop-frame {
+        width: 100%;
+      }
     }
   </style>
 </head>
 
-<body id="page-top" class="landing-page no-skin-config">
-  <div class="navbar-wrapper">
-    <nav class="navbar navbar-default navbar-fixed-top navbar-expand-md" role="navigation">
-      <div class="container">
-        <a class="navbar-brand" href="index.html">CERMAT</a>
-        <div class="navbar-header page-scroll">
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar">
-            <i class="fa fa-bars"></i>
-          </button>
-        </div>
-        <div class="navbar-collapse justify-content-end collapse" id="navbar">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a class="nav-link page-scroll" href="{{ route('trial') }}">Trial</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </div>
-  <section class="features container">
-    <div class="row features-block">
-      <div class="col-lg-6 features-text wow fadeInLeft">
-        <h1 class="font-weight-bold">Tes Cermat</h1>
-        <br>
-        <a href="{{ route('login') }}" class="btn btn-primary">Login</a>
-        <a href="{{ route('register') }}" class="btn btn-warning ml-3">Register</a>
-      </div>
-      <div class="col-lg-6 wow fadeInRight text-right">
-        <img src="{{ asset('img/polr.png') }}" alt="dashboard" class="img-fluid float-right">
-      </div>
-    </div>
-  </section>
-  <section id="contact" class="gray-section contact">
+<body>
+  <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-      <div class="row m-b-lg">
-        <div class="col-lg-12 text-center">
-          <div class="navy-line"></div>
-          <h1>Contact Us</h1>
-          <p>Donec sed odio dui. Etiam porta sem malesuada magna mollis euismod.</p>
+      <a class="navbar-brand" href="#">LOGO</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="navbar-collapse collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto">
+
+        </ul>
+        <div class="d-flex">
+          <a href="{{ route('login') }}" class="btn btn-outline-light me-2">Log In</a>
+          <a href="{{ route('register') }}" class="btn btn-light">Get Started</a>
         </div>
       </div>
-      <div class="row m-b-lg justify-content-center">
-        <div class="col-lg-3">
-          <address>
-            <strong><span class="navy">Company name, Inc.</span></strong><br />
-            795 Folsom Ave, Suite 600<br />
-            San Francisco, CA 94107<br />
-            <abbr title="Phone">P:</abbr> (123) 456-7890
-          </address>
+    </div>
+  </nav>
+
+  <section class="hero-section">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6">
+          <h1 class="hero-text">TES KECERMATAN KEPOLISIAN</h1>
+          <p class="hero-subtext">Gapai Harapan anda masuk Kepolisian bersama kami</p>
+          <a href="{{ route('trial') }}" class="get-started-btn">Mulai</a>
         </div>
-        <div class="col-lg-4">
-          <p class="text-color">
-            Consectetur adipisicing elit. Aut eaque, totam corporis laboriosam veritatis quis ad perspiciatis, totam
-            corporis laboriosam veritatis, consectetur adipisicing elit quos non quis ad perspiciatis, totam corporis
-            ea,
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <a href="mailto:test@email.com" class="btn btn-primary">Send us mail</a>
-          <p class="m-t-sm">
-            Or follow us on social platform
-          </p>
-          <ul class="list-inline social-icon">
-            <li class="list-inline-item"><a href="#"><i class="fa fa-twitter"></i></a>
-            </li>
-            <li class="list-inline-item"><a href="#"><i class="fa fa-facebook"></i></a>
-            </li>
-            <li class="list-inline-item"><a href="#"><i class="fa fa-linkedin"></i></a>
-            </li>
-          </ul>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-lg-12 m-t-lg m-b-lg text-center">
-          <p><strong>&copy; 2015 Company Name</strong><br /> consectetur adipisicing elit. Aut eaque, laboriosam
-            veritatis, quos non quis ad perspiciatis, totam corporis ea, alias ut unde.</p>
+        <div class="col-lg-6">
+          <div class="laptop-container">
+            <div class="laptop-frame">
+              <img src="{{ asset('img/laptop_image.png') }}" alt="Laptop Frame" class="laptop-base">
+              <div class="screen-content">
+                <img src="{{ asset('img/soal_cermat.png') }}" alt="Soal Image">
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-
-
-
-  <!-- Mainly scripts -->
-  <script src={{ asset('js/jquery-3.1.1.min.js') }}></script>
-  <script src={{ asset('js/popper.min.j') }}></script>
-  <script src={{ asset('js/bootstrap.js') }}></script>
-  <script src={{ asset('js/plugins/metisMenu/jquery.metisMenu.js') }}></script>
-  <script src={{ asset('js/plugins/slimscroll/jquery.slimscroll.min.js') }}></script>
-
-  <!-- Custom and plugin javascript -->
-  <script src={{ asset('js/inspinia.js') }}></script>
-  <script src={{ asset('js/plugins/pace/pace.min.js') }}></script>
-  <script src={{ asset('js/plugins/wow/wow.min.js') }}></script>
-
-  <script>
-    $(document).ready(function() {
-
-      $('body').scrollspy({
-        target: '#navbar',
-        offset: 80
-      });
-
-      // Page scrolling feature
-      $('a.page-scroll').bind('click', function(event) {
-        var link = $(this);
-        $('html, body').stop().animate({
-          scrollTop: $(link.attr('href')).offset().top - 50
-        }, 500);
-        event.preventDefault();
-        $("#navbar").collapse('hide');
-      });
-    });
-
-    var cbpAnimatedHeader = (function() {
-      var docElem = document.documentElement,
-        header = document.querySelector('.navbar-default'),
-        didScroll = false,
-        changeHeaderOn = 200;
-
-      function init() {
-        window.addEventListener('scroll', function(event) {
-          if (!didScroll) {
-            didScroll = true;
-            setTimeout(scrollPage, 250);
-          }
-        }, false);
-      }
-
-      function scrollPage() {
-        var sy = scrollY();
-        if (sy >= changeHeaderOn) {
-          $(header).addClass('navbar-scroll')
-        } else {
-          $(header).removeClass('navbar-scroll')
-        }
-        didScroll = false;
-      }
-
-      function scrollY() {
-        return window.pageYOffset || docElem.scrollTop;
-      }
-      init();
-
-    })();
-
-    // Activate WOW.js plugin for animation on scrol
-    new WOW().init();
-  </script>
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
