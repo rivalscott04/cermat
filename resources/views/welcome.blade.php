@@ -127,7 +127,7 @@
         </ul>
         <div class="d-flex">
           <a href="{{ route('login') }}" class="btn btn-outline-light me-2">Log In</a>
-          <a href="{{ route('register') }}" class="btn btn-light">Get Started</a>
+          <a href="{{ route('trial') }}" class="btn btn-light">Trial</a>
         </div>
       </div>
     </div>
@@ -138,8 +138,8 @@
       <div class="row align-items-center">
         <div class="col-lg-6">
           <h1 class="hero-text">TES KECERMATAN KEPOLISIAN</h1>
-          <p class="hero-subtext">Gapai Harapan anda masuk Kepolisian bersama kami</p>
-          <a href="{{ route('trial') }}" class="get-started-btn">Mulai</a>
+          <p class="hero-subtext">Cermat dan Cepat: Tes Kecermatan Terbaik</p>
+          <a href="{{ route('register') }}" class="get-started-btn">Mulai</a>
         </div>
         <div class="col-lg-6">
           <div class="laptop-container">
