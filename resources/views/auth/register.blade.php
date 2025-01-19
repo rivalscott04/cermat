@@ -54,13 +54,13 @@
     <form class="m-t" role="form" method="POST" action="{{ route('post.register') }}">
       @csrf
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Name" name="name" required>
+        <input type="text" class="form-control" placeholder="Nama" name="name" required>
       </div>
       <div class="form-group">
         <input type="email" class="form-control" placeholder="Email" name="email" required>
       </div>
       <div class="form-group">
-        <input type="text" class="form-control" placeholder="Phone Number" name="phone_number" required>
+        <input type="text" class="form-control" placeholder="No Hp" name="phone_number" required>
       </div>
       <div class="form-group">
         <select class="form-control" id="province" name="province" required>
@@ -76,7 +76,7 @@
         <input type="password" class="form-control" placeholder="Password" name="password" required>
       </div>
       <div class="form-group">
-        <input type="password" class="form-control" placeholder="Confirm Password" name="password_confirmation"
+        <input type="password" class="form-control" placeholder="Konfirmasi Password" name="password_confirmation"
           required>
       </div>
       <button type="submit" class="btn btn-primary full-width m-b block">Daftar</button>
