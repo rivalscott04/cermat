@@ -240,10 +240,10 @@
 
     .screen-content {
       position: absolute;
-      top: 6%;
-      left: 13.5%;
-      width: 73%;
-      height: 77%;
+      top: 5%;
+      left: 15.2%;
+      width: 70%;
+      height: 78%;
       background: white;
       overflow: hidden;
       border-radius: 3px;
