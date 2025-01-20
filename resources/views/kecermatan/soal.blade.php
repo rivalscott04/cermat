@@ -91,7 +91,7 @@
     <div class="question-container">
       <table class="soal-table">
         <tr class="title-row">
-          <td colspan="5">Kolom <span id="current-set">1</span></td>
+          <td colspan="5">Soal <span id="current-set">1</span></td>
         </tr>
         <tr id="kolom-merah">
           <!-- Will be populated dynamically -->
