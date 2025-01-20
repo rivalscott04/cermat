@@ -73,7 +73,7 @@
     }
 
     .option-btn:hover {
-      background-color: #18a689;
+      background-color: #;
     }
 
     .title-row {
