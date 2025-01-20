@@ -174,6 +174,24 @@
   @push('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.min.js"></script>
     <script>
+      function toggleDetail(index) {
+        // Get the detail section element
+        const detailSection = document.getElementById(`detail-${index}`);
+
+        // Toggle the active class
+        if (detailSection) {
+          // Close all other detail sections first
+          const allDetails = document.querySelectorAll('.detail-section');
+          allDetails.forEach(detail => {
+            if (detail !== detailSection) {
+              detail.classList.remove('active');
+            }
+          });
+
+          // Toggle the clicked section
+          detailSection.classList.toggle('active');
+        }
+      }
       document.addEventListener('DOMContentLoaded', function() {
         // Mengambil data dari server
         const detailJawaban = @json($detailJawaban);

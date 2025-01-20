@@ -26,16 +26,17 @@
       border: 1px solid #333;
       text-align: center;
       padding: 0.75rem;
+      font-size: 1.8rem;
     }
 
     .karakter {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: bold;
       color: #444;
     }
 
     .label {
-      font-size: 1.2rem;
+      font-size: 1.6rem;
       color: #666;
     }
 
@@ -47,13 +48,13 @@
     }
 
     .answer-box {
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       border: 1px solid #333;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: bold;
     }
 
@@ -64,22 +65,22 @@
     }
 
     .option-btn {
-      width: 100px;
-      height: 50px;
+      width: 110px;
+      height: 55px;
       background-color: white;
       border: none;
-      font-size: 1.2rem;
+      font-size: 1.6rem;
       transition: all 0.2s;
     }
 
     .option-btn:hover {
-      background-color: #;
+      background-color: #18a689;
     }
 
     .title-row {
       background-color: white;
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.8rem;
     }
   </style>
 @endpush
@@ -91,7 +92,7 @@
     <div class="question-container">
       <table class="soal-table">
         <tr class="title-row">
-          <td colspan="5">Soal <span id="current-set">1</span></td>
+          <td colspan="5">Kolom <span id="current-set">1</span></td>
         </tr>
         <tr id="kolom-merah">
           <!-- Will be populated dynamically -->

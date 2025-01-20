@@ -37,16 +37,17 @@
       border: 1px solid #333;
       text-align: center;
       padding: 0.75rem;
+      font-size: 1.8rem;
     }
 
     .karakter {
-      font-size: 2rem;
+      font-size: 2.2rem;
       font-weight: bold;
       color: #444;
     }
 
     .label {
-      font-size: 1.2rem;
+      font-size: 1.6rem;
       color: #666;
     }
 
@@ -58,13 +59,13 @@
     }
 
     .answer-box {
-      width: 60px;
-      height: 60px;
+      width: 70px;
+      height: 70px;
       border: 1px solid #333;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       font-weight: bold;
     }
 
@@ -75,13 +76,13 @@
     }
 
     .option-btn {
-      width: 100px;
-      height: 50px;
+      width: 110px;
+      height: 55px;
       background-color: white;
       border: 2px solid #ddd;
-      font-size: 1.2rem;
-      transition: all 0.2s;
+      font-size: 1.6rem;
       cursor: pointer;
+      transition: all 0.2s;
     }
 
     .option-btn:hover {
@@ -92,14 +93,31 @@
     .title-row {
       background-color: white;
       font-weight: bold;
-      font-size: 1.2rem;
+      font-size: 1.8rem;
     }
 
     .score-display {
       text-align: center;
       margin-bottom: 1rem;
-      font-size: 1.2rem;
+      font-size: 1.8rem;
       display: none;
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin: 0 2px;
+    }
+
+    .score-badge.benar {
+      background-color: #28a745;
+      color: white;
+    }
+
+    .score-badge.salah {
+      background-color: #dc3545;
+      color: white;
     }
   </style>
 </head>
@@ -286,7 +304,7 @@
           Swal.fire({
             title: "Persiapan Soal Berikutnya",
             html: "Soal berikutnya akan dimulai dalam <b></b> detik.",
-            timer: 5000,
+            timer: 3000,
             timerProgressBar: true,
             allowOutsideClick: false,
             didOpen: () => {
@@ -346,9 +364,17 @@
         Swal.fire({
           title: "Tes Selesai!",
           html: `
-            <p>Skor Benar: ${skorBenar}</p>
-            <p>Skor Salah: ${skorSalah}</p>
-            <p>Total Skor: ${skorBenar - skorSalah}</p>
+            <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+              <div>
+                <span class="score-badge benar">Benar: ${skorBenar}</span>
+              </div>
+              <div>
+                <span class="score-badge salah">Salah: ${skorSalah}</span>
+              </div>
+            </div>
+            <div style="margin-top: 1rem;">
+              <strong>Total Skor: ${skorBenar - skorSalah}</strong>
+            </div>
           `,
           icon: "success",
           confirmButtonText: "OK",
