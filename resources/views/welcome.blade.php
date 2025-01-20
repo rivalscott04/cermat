@@ -347,13 +347,13 @@
         <ul class="navbar-nav me-auto">
         </ul>
         <div class="d-flex">
-          <a href="{{ route('login') }}" class="btn btn-outline-light me-2">Masuk</a>
+          <a href="{{ route('login') }}" class="btn btn-light me-2">Masuk</a>
         </div>
       </div>
     </div>
   </nav>
 
-  <section class="hero-section mt-2">
+  <section class="hero-section">
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6">
@@ -364,31 +364,21 @@
             <a href="{{ route('register') }}" class="get-started-btn">Daftar</a>
           </div>
         </div>
-        </nav>
-
-        <section class="hero-section">
-          <div class="container">
-            <div class="row align-items-center">
-              <div class="col-lg-6">
-                <h1 class="hero-text">TES KECERMATAN KEPOLISIAN</h1>
-                <p class="hero-subtext">Cermat dan Cepat: Tes Kecermatan Terbaik</p>
-                <a href="{{ route('register') }}" class="get-started-btn">Mulai</a>
-              </div>
-              <div class="col-lg-6">
-                <div class="laptop-container">
-                  <div class="laptop-frame">
-                    <img src="{{ asset('img/laptop_image.png') }}" alt="Laptop Frame" class="laptop-base">
-                    <div class="screen-content">
-                      <img src="{{ asset('img/soal_cermat.png') }}" alt="Soal Image">
-                    </div>
-                  </div>
-                </div>
+        <div class="col-lg-6">
+          <div class="laptop-container">
+            <div class="laptop-frame">
+              <img src="{{ asset('img/laptop_image.png') }}" alt="Laptop Frame" class="laptop-base">
+              <div class="screen-content">
+                <img src="{{ asset('img/soal_cermat.png') }}" alt="Soal Image">
               </div>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
+    </div>
+  </section>
 
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

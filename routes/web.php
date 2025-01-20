@@ -27,6 +27,9 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('post.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('reset-password');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('post.reset-password');
+
 Route::get('/trial', function () {
     return view('kecermatan.trial');
 })->name('trial');
@@ -68,4 +71,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/subscriptions', [AdminController::class, 'subscriptionList'])->name('subscriptions.index');
     Route::get('/revenue', [AdminController::class, 'revenueReport'])->name('revenue.report');
     Route::put('/users/{id}', [AdminController::class, 'update'])->name('users.update');
+    Route::get('/riwayat-tes', [AdminController::class, 'riwayatTes'])->name('riwayat.tes');
 });

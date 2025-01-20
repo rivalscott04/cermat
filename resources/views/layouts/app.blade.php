@@ -13,6 +13,18 @@
   <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
   <link href="{{ asset('css/style.css') }}" rel="stylesheet">
   <link href="{{ asset('css/plugins/dataTables/datatables.min.css') }}" rel="stylesheet">
+  <style>
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: white;
+    }
+  </style>
   @stack('styles')
 </head>
 

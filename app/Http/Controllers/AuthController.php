@@ -99,4 +99,35 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
         return redirect('/');
     }
+
+    // Add this to your existing AuthController class
+
+    public function showResetPassword()
+    {
+        return view('auth.reset-password');
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+            'new_password' => 'required|min:8|confirmed',
+        ]);
+
+        $user = User::where('email', $request->email)
+            ->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'message' => 'Email tidak cocok.'
+            ]);
+        }
+
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+
+        return redirect()
+            ->route('login')
+            ->with('message', 'Password berhasil diubah. Silahkan login dengan password baru.');
+    }
 }

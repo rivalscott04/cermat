@@ -86,7 +86,7 @@ class AdminController extends Controller
         $user = User::findOrFail($id);
 
         $validatedData = $request->validate([
-            'is_active' => 'required|boolean', // Pastikan hanya menerima nilai boolean (1/0)
+            'is_active' => 'required|boolean',
         ]);
 
         $user->update([
@@ -94,5 +94,21 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Status berhasil diperbarui.');
+    }
+
+    public function riwayatTes()
+    {
+        $hasil = \DB::table('users')
+            ->join('hasil_tes', 'users.id', '=', 'hasil_tes.user_id')
+            ->select('users.name', 'hasil_tes.*')
+            ->whereIn('hasil_tes.id', function ($query) {
+                $query->select(\DB::raw('MAX(id)'))
+                    ->from('hasil_tes')
+                    ->groupBy('user_id');
+            })
+            ->orderBy('hasil_tes.tanggal_tes', 'desc')
+            ->get();
+
+        return view('admin.riwayat-tes', compact('hasil'));
     }
 }

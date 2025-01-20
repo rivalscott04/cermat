@@ -3,22 +3,29 @@
     <ul class="nav metismenu" id="side-menu">
       <li class="nav-header">
         <div class="dropdown profile-element">
-          <img alt="image" class="rounded-circle mb-1" src="{{ asset('img/profile_small.jpg') }}" />
+          <div
+            class="avatar bg-{{ ['primary', 'success', 'info', 'warning', 'danger'][array_rand(['primary', 'success', 'info', 'warning', 'danger'])] }} mb-1">
+            {{ strtoupper(substr(Auth::user()->name, 0, 2)) }}
+          </div>
           <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-            <span class="font-weight-bold font-size-lg block">
-              {{-- {{ Auth::user()->name }} --}}
-            </span>
             <span class="text-medium mt-3 block">
-              {{ Auth::user()->role == 'admin' ? 'Admin' : 'User' }}
+              {{ Auth::user()->name }}
             </span>
           </a>
         </div>
+
         <div class="logo-element">
           IN+
         </div>
       </li>
 
       @if (Auth::user()->role == 'admin')
+        <li>
+          <a href="{{ route('admin.dashboard') }}">
+            <i class="fa fa-dashboard"></i>
+            <span class="nav-label">Dashboard</span>
+          </a>
+        </li>
         <li>
           <a href="{{ route('admin.users.index') }}">
             <i class="fa fa-user"></i>
@@ -34,28 +41,36 @@
             <span class="nav-label">Profile</span>
           </a>
         </li>
+
+        <li>
+          <a href="{{ route('subscription.checkout') }}">
+            <i class="fa fa-money"></i>
+            <span class="nav-label">Pembayaran</span>
+          </a>
+        </li>
+
+        <li>
+          <a href="{{ route('kecermatan') }}">
+            <i class="fa fa-user"></i>
+            <span class="nav-label">Tes Kecermatan</span>
+          </a>
+        </li>
       @endif
 
       <li>
-        <a href="{{ route('subscription.checkout') }}">
-          <i class="fa fa-money"></i>
-          <span class="nav-label">Pembayaran</span>
-        </a>
+        @if (Auth::user()->role == 'admin')
+          <a href="{{ route('admin.riwayat.tes') }}">
+            <i class="fa fa-history"></i>
+            <span class="nav-label">Riwayat Tes</span>
+          </a>
+        @else
+          <a href="{{ route('kecermatan.riwayat', ['userId' => Auth::user()->id]) }}">
+            <i class="fa fa-history"></i>
+            <span class="nav-label">Riwayat Tes</span>
+          </a>
+        @endif
       </li>
 
-      <li>
-        <a href="{{ route('kecermatan') }}">
-          <i class="fa fa-user"></i>
-          <span class="nav-label">Tes Kecermatan</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="{{ route('kecermatan.riwayat', ['userId' => Auth::user()->id]) }}">
-          <i class="fa fa-history"></i>
-          <span class="nav-label">Riwayat Tes</span>
-        </a>
-      </li>
     </ul>
   </div>
 </nav>
