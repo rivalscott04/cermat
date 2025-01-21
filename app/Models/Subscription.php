@@ -13,12 +13,14 @@ class Subscription extends Model
         'amount_paid',
         'payment_status',
         'payment_method',
+        'payment_details',
         'transaction_id'
     ];
 
     protected $dates = [
         'start_date',
-        'end_date'
+        'end_date',
+        'payment_details' => 'array'
     ];
 
     public function user()

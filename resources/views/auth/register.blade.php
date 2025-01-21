@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mahir Cermat |  Buat Akun</title>
+  <title>Mahir Cermat | Buat Akun</title>
   <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('font-awesome/css/font-awesome.css') }}" rel="stylesheet">
   <link href="{{ asset('css/plugins/iCheck/custom.css') }}" rel="stylesheet">
@@ -17,6 +17,48 @@
       width: 100%;
       padding: 20px;
       z-index: 1000;
+    }
+
+    .payment-option {
+      border: 1px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 15px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .payment-option:hover {
+      border-color: #0dcaf0;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .payment-option.selected {
+      border-color: #0dcaf0;
+      background-color: #e3f8fb;
+    }
+
+    .payment-logo {
+      height: 40px;
+      object-fit: contain;
+    }
+
+    .subscription-box {
+      background-color: #20B2AA;
+      color: white;
+      border-radius: 8px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .subscription-box h4 {
+      margin: 0;
+      font-weight: bold;
+    }
+
+    .subscription-box p {
+      margin: 10px 0;
     }
 
     @media (max-width: 768px) {
@@ -34,75 +76,173 @@
       <i class="fa fa-arrow-left"></i> Kembali
     </a>
   </div>
-  <div class="middle-box loginscreen animated fadeInDown text-center">
 
-    <div>
-      <img src="{{ asset('img/regis-removebg-preview.png') }}" alt="dashboard" class="img-fluid float-right">
+  <div class="container py-4">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-body">
+            <div class="mb-4 text-center">
+              <img src="{{ asset('img/regis-removebg-preview.png') }}" alt="dashboard" class="img-fluid"
+                style="max-width: 200px;">
+              <h3 class="mt-3">Buat Akun Mahir Cermat</h3>
+
+              <!-- New subscription details box -->
+              <div class="subscription-box">
+                <h4>PAKET CERMAT</h4>
+                <p>(Persiapan Tes BINTARA POLRI T.A. 2025)</p>
+                <h4>Rp. 100.000</h4>
+              </div>
+            </div>
+
+            @if ($errors->any())
+              <div class="alert alert-danger">
+                <ul>
+                  @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                  @endforeach
+                </ul>
+              </div>
+            @endif
+
+            <form class="m-t" role="form" method="POST" action="{{ route('post.register') }}">
+              @csrf
+
+              <!-- Data Diri -->
+              <h5 class="mb-3">Data Diri</h5>
+              <div class="mb-4">
+                <div class="form-group mb-3">
+                  <input type="text" class="form-control" placeholder="Nama" name="name" required>
+                </div>
+                <div class="form-group mb-3">
+                  <input type="email" class="form-control" placeholder="Email" name="email" required>
+                </div>
+                <div class="form-group mb-3">
+                  <input type="text" class="form-control" placeholder="No Hp" name="phone_number" required>
+                </div>
+                <div class="form-group mb-3">
+                  <select class="form-control" id="province" name="province" required>
+                    <option value="">Pilih Provinsi</option>
+                  </select>
+                </div>
+                <div class="form-group mb-3">
+                  <select class="form-control" id="regency" name="regency" required disabled>
+                    <option value="">Pilih Kabupaten/Kota</option>
+                  </select>
+                </div>
+                <div class="form-group mb-3">
+                  <input type="password" class="form-control" placeholder="Password" name="password" required>
+                </div>
+                <div class="form-group mb-3">
+                  <input type="password" class="form-control" placeholder="Konfirmasi Password"
+                    name="password_confirmation" required>
+                </div>
+              </div>
+
+              <!-- Paket Berlangganan -->
+              <h5 class="mb-3">Paket Berlangganan</h5>
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h6 class="mb-1">Paket Cermat</h6>
+                    </div>
+                    <h6 class="mb-0">Rp. 100.000</h6>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Metode Pembayaran -->
+              <h5 class="mb-3">Metode Pembayaran</h5>
+              <div class="row g-3 mb-4">
+                <input type="hidden" name="payment_method" id="payment_method" required>
+
+                <!-- Bank Transfer -->
+                <div class="col-md-6">
+                  <div class="payment-option" data-payment="bank_transfer">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/Mandiri.svg"
+                      alt="Mandiri" class="payment-logo">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="payment-option" data-payment="briva">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BRI.svg"
+                      alt="BRIVA" class="payment-logo">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="payment-option" data-payment="bni">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BNI.svg"
+                      alt="BNI" class="payment-logo">
+                  </div>
+                </div>
+
+                <!-- E-Wallet -->
+                <div class="col-md-6">
+                  <div class="payment-option" data-payment="qris">
+                    <img
+                      src="https://raw.githubusercontent.com/Adekabang/indonesia-logo-library/main/Payment%20Channel/Miscellaneous/QRIS.png"
+                      alt="QRIS" class="payment-logo">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="payment-option" data-payment="ovo">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/E-Wallet/OVO.png"
+                      alt="OVO" class="payment-logo">
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="payment-option" data-payment="dana">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/E-Wallet/DANA.png"
+                      alt="DANA" class="payment-logo">
+                  </div>
+                </div>
+              </div>
+
+              <!-- Summary -->
+              <div class="card mb-4">
+                <div class="card-body">
+                  <div class="d-flex justify-content-between mb-2">
+                    <div>Total Pembayaran</div>
+                    <div><strong>Rp. 100.000</strong></div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Terms & Submit -->
+              <div class="form-check mb-3">
+                <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                <label class="form-check-label" for="terms">
+                  Dengan mengklik tombol ini, anda setuju dengan syarat & ketentuan
+                </label>
+              </div>
+
+              <button type="submit" class="btn btn-primary w-100">Daftar & Lanjutkan ke Pembayaran</button>
+
+              <p class="mt-3 text-center">
+                <small>Sudah Memiliki Akun? <a href="{{ route('login') }}">Masuk</a></small>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
-    <h3>Buat Akun Mahir Cermat</h3>
-
-    @if ($errors->any())
-      <div class="alert alert-danger">
-        <ul>
-          @foreach ($errors->all() as $error)
-            <li>{{ $error }}</li>
-          @endforeach
-        </ul>
-      </div>
-    @endif
-
-    <form class="m-t" role="form" method="POST" action="{{ route('post.register') }}">
-      @csrf
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="Nama" name="name" required>
-      </div>
-      <div class="form-group">
-        <input type="email" class="form-control" placeholder="Email" name="email" required>
-      </div>
-      <div class="form-group">
-        <input type="text" class="form-control" placeholder="No Hp" name="phone_number" required>
-      </div>
-      <div class="form-group">
-        <select class="form-control" id="province" name="province" required>
-          <option value="">Pilih Provinsi</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <select class="form-control" id="regency" name="regency" required disabled>
-          <option value="">Pilih Kabupaten/Kota</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <input type="password" class="form-control" placeholder="Password" name="password" required>
-      </div>
-      <div class="form-group">
-        <input type="password" class="form-control" placeholder="Konfirmasi Password" name="password_confirmation"
-          required>
-      </div>
-      <button type="submit" class="btn btn-primary full-width m-b block">Daftar</button>
-
-      <p class="text-muted text-center"><small>Sudah Memiliki Akun?</small></p>
-      <a class="btn btn-sm btn-white btn-block" href="{{ route('login') }}">Masuk</a>
-    </form>
-    <p class="m-t"> <small>Mahir Cermat &copy; 2025</small> </p>
-  </div>
   </div>
 
-  <!-- Mainly scripts -->
+  <!-- Scripts remain unchanged -->
   <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
   <script src="{{ asset('js/popper.min.js') }}"></script>
   <script src="{{ asset('js/bootstrap.js') }}"></script>
-  <!-- iCheck -->
   <script src="{{ asset('js/plugins/iCheck/icheck.min.js') }}"></script>
 
-  <!-- Province/Regency Script -->
   <script>
     $(document).ready(function() {
-      $('.i-checks').iCheck({
-        checkboxClass: 'icheckbox_square-green',
-        radioClass: 'iradio_square-green',
-      });
-
+      // Province & Regency API
       fetch('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json')
         .then(response => response.json())
         .then(provinces => {
@@ -122,7 +262,7 @@
         const provinceId = selectedOption.dataset.id;
         const regencySelect = $('#regency');
 
-        regencySelect.empty().append('<option value="">Select Regency</option>');
+        regencySelect.empty().append('<option value="">Pilih Kabupaten/Kota</option>');
 
         if (provinceId) {
           regencySelect.prop('disabled', false);
@@ -141,6 +281,19 @@
         } else {
           regencySelect.prop('disabled', true);
         }
+      });
+
+      // Payment Method Selection
+      $('.payment-option').click(function() {
+        $('.payment-option').removeClass('selected');
+        $(this).addClass('selected');
+        $('#payment_method').val($(this).data('payment'));
+      });
+
+      // iCheck initialization
+      $('.i-checks').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
       });
     });
   </script>

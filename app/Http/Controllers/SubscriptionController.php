@@ -13,24 +13,6 @@ class SubscriptionController extends Controller
         return view('subscription.checkout');
     }
 
-    public function process(Request $request)
-    {
-        // Di sini paymaant gateway
-
-        $user = auth()->user();
-
-        $subscription = Subscription::create([
-            'user_id' => $user->id,
-            'start_date' => Carbon::now(),
-            'end_date' => Carbon::now()->addYear(),
-            'amount_paid' => 1000000, // Rp 1.000.000
-            'payment_status' => 'paid',
-            'payment_method' => 'transfer_bank',
-            'transaction_id' => 'TRX-' . time()
-        ]);
-
-        return redirect()->route('dashboard')->with('success', 'Berlangganan berhasil diaktifkan!');
-    }
 
     public function expired()
     {
@@ -46,5 +28,49 @@ class SubscriptionController extends Controller
             'has_active_subscription' => $user->hasActiveSubscription(),
             'subscription' => $subscription
         ]);
+    }
+
+    public function process($transaction_id)
+    {
+        $subscription = Subscription::where('transaction_id', $transaction_id)
+            ->with('user')
+            ->firstOrFail();
+
+        // Cek status pembayaran
+        if ($subscription->payment_status == 'paid') {
+            return redirect()->route('login')
+                ->with('message', 'Pembayaran sudah selesai, silahkan login');
+        }
+
+        // Siapkan data instruksi pembayaran berdasarkan payment_method
+        $paymentInstructions = $this->getPaymentInstructions($subscription->payment_method);
+
+        return view('subscription.payment', [
+            'subscription' => $subscription,
+            'instructions' => $paymentInstructions
+        ]);
+    }
+
+    private function getPaymentInstructions($method)
+    {
+        // Contoh instruksi pembayaran
+        $instructions = [
+            'bank_transfer' => [
+                'Masuk ke menu Transfer',
+                'Pilih Transfer ke rekening Bank XXX',
+                'Masukkan nomor rekening: 123456789',
+                'Masukkan nominal sesuai tagihan',
+                'Konfirmasi dan selesaikan pembayaran'
+            ],
+            'qris' => [
+                'Buka aplikasi e-wallet Anda',
+                'Scan QRIS code di bawah ini',
+                'Pastikan nominal pembayaran sesuai',
+                'Selesaikan pembayaran'
+            ],
+            // Instruksi untuk metode pembayaran lain
+        ];
+
+        return $instructions[$method] ?? [];
     }
 }

@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -23,31 +24,53 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
+        // Validasi ditambah untuk payment
         $request->validate([
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
             'phone_number' => 'required|digits_between:10,15',
             'province' => 'required',
             'regency' => 'required',
+            'payment_method' => 'required',
+            'terms' => 'required'
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'phone_number' => $request->phone_number,
-            'is_active' => false,
-            'province' => $request->province,
-            'regency' => $request->regency,
-            'role' => 'user'
-        ]);
+        DB::beginTransaction();
+        try {
+            // Create user
+            $user = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'phone_number' => $request->phone_number,
+                'is_active' => false,
+                'province' => $request->province,
+                'regency' => $request->regency,
+                'role' => 'user'
+            ]);
 
-        if (Auth::check()) {
-            return redirect()->route('user.profile', ['userId' => Auth::user()->id]);
-        } else {
-            return redirect()
-                ->route('login')
-                ->with('message', 'Silahkan login menggunakan email dan password yang telah dibuat');
+            // Create subscription
+            $subscription = Subscription::create([
+                'user_id' => $user->id,
+                'start_date' => now(),
+                'end_date' => now()->addDays(30), // Sesuaikan dengan durasi paket
+                'amount_paid' => 49900, // Dari harga paket yang dipilih
+                'payment_status' => 'pending',
+                'payment_method' => $request->payment_method,
+                'payment_details' => json_encode([
+                    'package' => 'SILVER',
+                    'package_type' => 'TRYOUT'
+                ]),
+                'transaction_id' => 'TRX-' . time() // Generate transaction ID
+            ]);
+
+            DB::commit();
+
+            // Redirect ke halaman pembayaran dengan membawa transaction_id
+            return redirect()->route('payment.process', ['transaction_id' => $subscription->transaction_id]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('error', 'Terjadi kesalahan dalam proses pendaftaran');
         }
     }
 

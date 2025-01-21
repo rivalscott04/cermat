@@ -26,6 +26,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('post.regist
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('post.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('payment/process/{transaction_id}', [SubscriptionController::class, 'process'])->name('payment.process');
 
 Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('reset-password');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('post.reset-password');
