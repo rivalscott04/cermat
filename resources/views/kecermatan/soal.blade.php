@@ -2,6 +2,11 @@
 
 @push('styles')
   <style>
+    .container {
+      background-color: white;
+      min-height: 90vh;
+    }
+
     .timer {
       font-size: 2rem;
       font-weight: bold;
@@ -23,21 +28,35 @@
 
     .soal-table th,
     .soal-table td {
-      border: 1px solid #333;
+      border: 2px solid #333;
       text-align: center;
       padding: 0.75rem;
       font-size: 1.8rem;
     }
 
-    .karakter {
-      font-size: 2.2rem;
+    #kolom-merah td {
+      font-size: 2.5rem !important;
       font-weight: bold;
-      color: #444;
+    }
+
+    .soal-table tr:last-child td,
+    .label {
+      background-color: white !important;
+    }
+
+    .soal-table td {
+      background-color: white !important;
     }
 
     .label {
       font-size: 1.6rem;
       color: #666;
+    }
+
+    .karakter {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #444;
     }
 
     .answer-container {
@@ -50,11 +69,11 @@
     .answer-box {
       width: 70px;
       height: 70px;
-      border: 1px solid #333;
+      border: 2px solid #333;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 1.8rem;
+      font-size: 2.5rem;
       font-weight: bold;
     }
 
@@ -68,7 +87,7 @@
       width: 110px;
       height: 55px;
       background-color: white;
-      border: none;
+      border: 1.5px solid #adabab !important;
       font-size: 1.6rem;
       transition: all 0.2s;
     }

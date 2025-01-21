@@ -23,7 +23,7 @@
                 @forelse ($hasil as $index => $tes)
                   <tr>
                     <td>{{ $index + 1 }}</td>
-                    <td>{{ date('l, d F Y', strtotime($tes->tanggal_tes)) }}</td>
+                    <td>{{ \Carbon\Carbon::parse($tes->tanggal_tes)->isoFormat('dddd, D MMMM Y') }}</td>
                     <td>{{ $tes->skor_benar }}</td>
                     <td>{{ $tes->skor_salah }}</td>
                     <td>

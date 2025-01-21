@@ -17,7 +17,7 @@
     }
 
     .payment-logo {
-      max-height: 40px;
+      max-height: 50px;
       object-fit: contain;
     }
 
@@ -45,14 +45,23 @@
               <!-- E-Wallet Options -->
               <div class="mb-4">
                 <div class="payment-option">
-                  <img src="path/to/paypal-logo.png" alt="PayPal" class="payment-logo">
+                  <img src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Remittance/PayPal.svg"
+                    alt="PayPal" class="payment-logo">
                 </div>
                 <div class="payment-option">
                   <div class="d-flex gap-2">
-                    <img src="path/to/visa-logo.png" alt="Visa" class="payment-logo">
-                    <img src="path/to/mastercard-logo.png" alt="Mastercard" class="payment-logo">
-                    <img src="path/to/discover-logo.png" alt="Discover" class="payment-logo">
-                    <img src="path/to/amex-logo.png" alt="American Express" class="payment-logo">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/Card%20Payment/VISA.svg"
+                      alt="Visa" class="payment-logo">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/Card%20Payment/Mastercard.svg"
+                      alt="Mastercard" class="payment-logo">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/Card%20Payment/Discover.svg"
+                      alt="Discover" class="payment-logo">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/Card%20Payment/American%20Express.svg"
+                      alt="American Express" class="payment-logo">
                   </div>
                 </div>
               </div>
@@ -62,32 +71,41 @@
               <div class="row">
                 <div class="col-md-6">
                   <div class="payment-option">
-                    <img src="{{ asset('img/BSI.png') }}" alt="BSI" class="payment-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BSI.svg"
+                      alt="BSI" class="payment-logo">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="payment-option">
-                    <img src="path/to/bni-logo.png" alt="BNI" class="payment-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BNI.svg"
+                      alt="BNI Logo" class="payment-logo">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="payment-option">
-                    <img src="path/to/briva-logo.png" alt="BRIVA" class="payment-logo">
+                    <img src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BRI.svg"
+                      alt="BRIVA" class="payment-logo">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="payment-option">
-                    <img src="path/to/mandiri-logo.png" alt="Mandiri" class="payment-logo">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/Mandiri.svg"
+                      alt="Mandiri" class="payment-logo">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="payment-option">
-                    <img src="path/to/ovo-logo.png" alt="OVO" class="payment-logo">
+                    <img
+                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/E-Wallet/OVO.png"
+                      alt="OVO" class="payment-logo">
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="payment-option">
-                    <img src="path/to/qris-logo.png" alt="QRIS" class="payment-logo">
+                    <img
+                      src="https://raw.githubusercontent.com/Adekabang/indonesia-logo-library/main/Payment%20Channel/Miscellaneous/QRIS.png"
+                      alt="QRIS" class="payment-logo">
                   </div>
                 </div>
               </div>

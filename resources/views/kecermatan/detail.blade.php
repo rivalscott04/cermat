@@ -78,6 +78,7 @@
             <thead>
               <tr>
                 <th>Soal</th>
+                <th>Kolom</th>
                 <th>Terjawab</th>
                 <th>Skor</th>
                 <th>Persentase</th>
@@ -94,6 +95,11 @@
                   $setJawaban = array_filter($detailJawaban, function ($jawaban) use ($soal) {
                       return $jawaban['soal_asli'] === $soal;
                   });
+
+                  // Get unique sets for this soal
+                  $sets = array_unique(array_column($setJawaban, 'set'));
+                  sort($sets);
+
                   $skorBenar = count(
                       array_filter($setJawaban, function ($jawaban) {
                           return $jawaban['benar'];
@@ -105,6 +111,11 @@
 
                 <tr class="clickable-row" onclick="toggleDetail({{ $index }})">
                   <td><strong>{{ $soal }}</strong></td>
+                  <td>
+                    @foreach ($sets as $set)
+                      <span class="set-badge">{{ $set }}</span>
+                    @endforeach
+                  </td>
                   <td>{{ count($setJawaban) }}</td>
                   <td>
                     <span class="score-badge benar">{{ $skorBenar }} benar</span>
@@ -113,7 +124,7 @@
                   <td>{{ number_format($persentase, 2) }}/100</td>
                 </tr>
                 <tr>
-                  <td colspan="4" class="p-0">
+                  <td colspan="5" class="p-0">
                     <div id="detail-{{ $index }}" class="detail-section">
                       <table class="table-bordered mb-0 table">
                         <thead>
@@ -196,28 +207,36 @@
         // Mengambil data dari server
         const detailJawaban = @json($detailJawaban);
 
-        // Group answers by set
+        // Find the minimum and maximum set numbers
+        const setNumbers = detailJawaban.map(jawaban => parseInt(jawaban.set));
+        const minSet = Math.min(...setNumbers);
+        const maxSet = Math.max(...setNumbers);
+
+        // Ensure we have at least 10 columns by adjusting maxSet if needed
+        const adjustedMaxSet = Math.max(maxSet, minSet + 9);
+
+        // Initialize data for all sets, including those with no data
         const setData = {};
+        for (let i = minSet; i <= adjustedMaxSet; i++) {
+          setData[i] = {
+            total: 0,
+            benar: 0
+          };
+        }
+
+        // Populate the data
         detailJawaban.forEach(jawaban => {
-          if (!setData[jawaban.set]) {
-            setData[jawaban.set] = {
-              total: 0,
-              benar: 0
-            };
-          }
-          setData[jawaban.set].total++;
+          const setNumber = parseInt(jawaban.set);
+          setData[setNumber].total++;
           if (jawaban.benar) {
-            setData[jawaban.set].benar++;
+            setData[setNumber].benar++;
           }
         });
 
-        // Urutkan berdasarkan kunci `set`
-        const sortedSets = Object.keys(setData).sort((a, b) => a - b);
-
-        // Siapkan data untuk chart
-        const labels = sortedSets.map(set => `Kolom ${set}`);
-        const totalData = labels.map((_, index) => setData[sortedSets[index]].total);
-        const benarData = labels.map((_, index) => setData[sortedSets[index]].benar);
+        // Create arrays for chart data ensuring all sets are included
+        const labels = Object.keys(setData).map(set => `Kolom ${set}`);
+        const totalData = Object.values(setData).map(data => data.total);
+        const benarData = Object.values(setData).map(data => data.benar);
 
         // Membuat chart
         const chartData = {
@@ -242,9 +261,12 @@
         const chartOptions = {
           responsive: true,
           scales: {
-            y: {
-              beginAtZero: true
-            }
+            yAxes: [{
+              ticks: {
+                beginAtZero: true,
+                stepSize: 1
+              }
+            }]
           },
           plugins: {
             title: {
