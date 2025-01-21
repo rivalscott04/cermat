@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background-color: #f8f9fa;
+      background-color: #FFF;
       padding: 20px;
     }
 
@@ -34,10 +34,24 @@
 
     .soal-table th,
     .soal-table td {
-      border: 1px solid #333;
+      border: 2px solid #333;
       text-align: center;
       padding: 0.75rem;
       font-size: 1.8rem;
+    }
+
+    #kolom-merah td {
+      font-size: 2.5rem !important;
+      font-weight: bold;
+    }
+
+    .soal-table tr:last-child td,
+    .label {
+      background-color: white !important;
+    }
+
+    .soal-table td {
+      background-color: white !important;
     }
 
     .karakter {
@@ -61,7 +75,7 @@
     .answer-box {
       width: 70px;
       height: 70px;
-      border: 1px solid #333;
+      border: 2px solid #333;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -79,7 +93,7 @@
       width: 110px;
       height: 55px;
       background-color: white;
-      border: 2px solid #ddd;
+      border: 1.5px solid #adabab !important;
       font-size: 1.6rem;
       cursor: pointer;
       transition: all 0.2s;
