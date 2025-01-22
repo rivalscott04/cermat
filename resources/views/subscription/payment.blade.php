@@ -73,11 +73,29 @@
             <div class="transaction-detail">
               <h5>Detail Transaksi</h5>
               <div class="row mt-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <p class="mb-2">ID Transaksi:</p>
                   <p class="mb-2"><strong>{{ $subscription->transaction_id }}</strong></p>
                 </div>
-                <div class="col-md-6 text-md-end">
+                <div class="col-md-4">
+                  <p class="mb-2">Jenis Pembayaran:</p>
+                  <p class="mb-2">
+                    @if ($subscription->payment_method == 'bank_transfer')
+                      @php
+                        $paymentDetails = json_decode($subscription->payment_details, true);
+                        $bankName = strtoupper($paymentDetails['bank'] ?? '');
+                      @endphp
+                      <strong>{{ $bankName }}</strong>
+                    @elseif($subscription->payment_method == 'qris')
+                      <strong>QRIS</strong>
+                    @elseif($subscription->payment_method == 'ovo')
+                      <strong>OVO</strong>
+                    @elseif($subscription->payment_method == 'dana')
+                      <strong>DANA</strong>
+                    @endif
+                  </p>
+                </div>
+                <div class="col-md-4">
                   <p class="mb-2">Total Pembayaran:</p>
                   <p class="mb-2"><strong>Rp {{ number_format($subscription->amount_paid) }}</strong></p>
                 </div>
@@ -86,8 +104,8 @@
 
             <h5 class="mt-4">Cara Pembayaran</h5>
             <ol class="mt-3">
-              @foreach ($instructions as $instruction)
-                <li>{{ $instruction }}</li>
+              @foreach ($instructions as $step)
+                <li>{{ $step }}</li>
               @endforeach
             </ol>
 

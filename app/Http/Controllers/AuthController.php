@@ -49,24 +49,23 @@ class AuthController extends Controller
                 'role' => 'user'
             ]);
 
-            // Create subscription
+            // In your register method
             $subscription = Subscription::create([
                 'user_id' => $user->id,
                 'start_date' => now(),
-                'end_date' => now()->addDays(30), // Sesuaikan dengan durasi paket
-                'amount_paid' => 49900, // Dari harga paket yang dipilih
+                'end_date' => now()->addDays(30),
+                'amount_paid' => 100000,
                 'payment_status' => 'pending',
                 'payment_method' => $request->payment_method,
                 'payment_details' => json_encode([
+                    'bank' => $request->payment_details,
                     'package' => 'SILVER',
                     'package_type' => 'TRYOUT'
                 ]),
-                'transaction_id' => 'TRX-' . time() // Generate transaction ID
+                'transaction_id' => 'TRX-' . time()
             ]);
-
             DB::commit();
 
-            // Redirect ke halaman pembayaran dengan membawa transaction_id
             return redirect()->route('payment.process', ['transaction_id' => $subscription->transaction_id]);
         } catch (\Exception $e) {
             DB::rollback();

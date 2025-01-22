@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionController extends Controller
 {
@@ -42,35 +43,61 @@ class SubscriptionController extends Controller
                 ->with('message', 'Pembayaran sudah selesai, silahkan login');
         }
 
-        // Siapkan data instruksi pembayaran berdasarkan payment_method
-        $paymentInstructions = $this->getPaymentInstructions($subscription->payment_method);
+        // Dapatkan payment details
+        $paymentDetails = json_decode($subscription->payment_details, true);
+        $bank = $paymentDetails['bank'] ?? 'mandiri';
+
+        // Dapatkan instruksi berdasarkan metode pembayaran
+        $paymentInstructions = $this->getPaymentInstructions($subscription->payment_method, $bank);
 
         return view('subscription.payment', [
             'subscription' => $subscription,
-            'instructions' => $paymentInstructions
+            'instructions' => $paymentInstructions,
+            'bank' => $bank  // tambahkan ini untuk debugging
         ]);
     }
 
-    private function getPaymentInstructions($method)
+    private function getPaymentInstructions($method, $bank = null)
     {
-        // Contoh instruksi pembayaran
         $instructions = [
             'bank_transfer' => [
-                'Masuk ke menu Transfer',
-                'Pilih Transfer ke rekening Bank XXX',
-                'Masukkan nomor rekening: 123456789',
-                'Masukkan nominal sesuai tagihan',
-                'Konfirmasi dan selesaikan pembayaran'
+                'mandiri' => [
+                    'Masuk ke menu Transfer',
+                    'Pilih Transfer ke rekening Bank Mandiri',
+                    'Masukkan nomor rekening: 1234567890',
+                    'Masukkan nominal sesuai tagihan: Rp 100.000',
+                    'Konfirmasi dan selesaikan pembayaran',
+                    'Simpan bukti pembayaran'
+                ],
+                'bri' => [
+                    'Masuk ke menu Transfer',
+                    'Pilih Transfer ke rekening BRI',
+                    'Masukkan nomor rekening: 9876543210',
+                    'Masukkan nominal sesuai tagihan: Rp 100.000',
+                    'Konfirmasi dan selesaikan pembayaran',
+                    'Simpan bukti pembayaran'
+                ],
+                'bni' => [
+                    'Masuk ke menu Transfer',
+                    'Pilih Transfer ke rekening BNI',
+                    'Masukkan nomor rekening: 5432167890',
+                    'Masukkan nominal sesuai tagihan: Rp 100.000',
+                    'Konfirmasi dan selesaikan pembayaran',
+                    'Simpan bukti pembayaran'
+                ]
             ],
             'qris' => [
-                'Buka aplikasi e-wallet Anda',
+                'Buka aplikasi e-wallet Anda (OVO, DANA, GoPay, dll)',
                 'Scan QRIS code di bawah ini',
-                'Pastikan nominal pembayaran sesuai',
-                'Selesaikan pembayaran'
-            ],
-            // Instruksi untuk metode pembayaran lain
+                'Pastikan nominal pembayaran sesuai: Rp 100.000',
+                'Konfirmasi dan selesaikan pembayaran'
+            ]
         ];
 
-        return $instructions[$method] ?? [];
+        if ($method === 'bank_transfer' && $bank) {
+            return $instructions['bank_transfer'][$bank];
+        }
+
+        return $instructions[$method] ?? ['Mohon maaf, instruksi pembayaran untuk metode ini belum tersedia'];
     }
 }

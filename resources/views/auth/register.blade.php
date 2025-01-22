@@ -156,24 +156,24 @@
               <h5 class="mb-3">Metode Pembayaran</h5>
               <div class="row g-3 mb-4">
                 <input type="hidden" name="payment_method" id="payment_method" required>
-
+                <input type="hidden" name="payment_details" id="selected_bank">
                 <!-- Bank Transfer -->
                 <div class="col-md-6">
-                  <div class="payment-option" data-payment="bank_transfer">
+                  <div class="payment-option" data-payment="bank_transfer" data-bank="mandiri">
                     <img
                       src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/Mandiri.svg"
                       alt="Mandiri" class="payment-logo">
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="payment-option" data-payment="briva">
+                  <div class="payment-option" data-payment="bank_transfer" data-bank="bri">
                     <img
                       src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BRI.svg"
                       alt="BRIVA" class="payment-logo">
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <div class="payment-option" data-payment="bni">
+                  <div class="payment-option" data-payment="bank_transfer" data-bank="bni">
                     <img
                       src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BNI.svg"
                       alt="BNI" class="payment-logo">
@@ -287,9 +287,14 @@
       $('.payment-option').click(function() {
         $('.payment-option').removeClass('selected');
         $(this).addClass('selected');
-        $('#payment_method').val($(this).data('payment'));
-      });
 
+        let paymentMethod = $(this).data('payment');
+        let bank = $(this).data('bank');
+
+        $('#payment_method').val(paymentMethod);
+        // Update this line - we were using wrong ID before
+        $('#selected_bank').val(bank); // This stores the selected bank value
+      });
       // iCheck initialization
       $('.i-checks').iCheck({
         checkboxClass: 'icheckbox_square-green',
