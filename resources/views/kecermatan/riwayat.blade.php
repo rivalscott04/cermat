@@ -24,8 +24,8 @@
                   <tr>
                     <td>{{ $index + 1 }}</td>
                     <td>{{ \Carbon\Carbon::parse($tes->tanggal_tes)->isoFormat('dddd, D MMMM Y') }}</td>
-                    <td>{{ $tes->skor_benar }}</td>
-                    <td>{{ $tes->skor_salah }}</td>
+                    <td class="table-success">{{ $tes->skor_benar }}</td>
+                    <td class="table-danger">{{ $tes->skor_salah }}</td>
                     <td>
                       <a href="{{ route('kecermatan.detail', $tes->id) }}" class="btn btn-primary btn-sm">
                         Lihat Detail

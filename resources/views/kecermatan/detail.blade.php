@@ -50,15 +50,58 @@
     .clickable-row:hover {
       background-color: #f5f5f5;
     }
+
+    .back-section {
+      margin-bottom: 10px;
+    }
+
+    .btn-back {
+      padding: 8px 15px;
+      border-radius: 4px;
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      color: #333;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    .btn-back:hover {
+      background-color: #e9ecef;
+      text-decoration: none;
+      color: #333;
+    }
+
+    .btn-back i {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+    }
+
+    .title-container {
+      display: flex;
+      align-items: center;
+    }
   </style>
 @endpush
+
 
 @section('content')
   <div class="container">
     <div class="wrapper wrapper-content animated fadeInRight">
+      <div class="back-section">
+        <a href="{{ route('kecermatan.riwayat', ['userId' => Auth::user()->id]) }}" class="btn-back">
+          <i class="fa fa-arrow-left"></i> Kembali
+        </a>
+      </div>
       <div class="ibox">
         <div class="ibox-title">
-          <h5>Hasil Tes</h5>
+          <div class="title-container">
+            <h5>Hasil Tes</h5>
+          </div>
         </div>
         <div class="ibox-content">
           <!-- Bagian statistik -->

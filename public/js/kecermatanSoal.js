@@ -155,69 +155,6 @@ document.addEventListener("DOMContentLoaded", function () {
     function selesaiTes() {
         clearInterval(timerInterval);
 
-        const soalSummary = {};
-        detailJawaban.forEach((jawaban) => {
-            if (!soalSummary[jawaban.soal_asli]) {
-                soalSummary[jawaban.soal_asli] = {
-                    terjawab: 0,
-                    benar: 0,
-                    salah: 0,
-                };
-            }
-            soalSummary[jawaban.soal_asli].terjawab++;
-            if (jawaban.benar) {
-                soalSummary[jawaban.soal_asli].benar++;
-            } else {
-                soalSummary[jawaban.soal_asli].salah++;
-            }
-        });
-
-        let tableHTML = `
-            <style>
-                .score-badge {
-                    display: inline-block;
-                    padding: 2px 8px;
-                    border-radius: 4px;
-                    margin: 0 2px;
-                }
-                .score-badge.benar {
-                    background-color: #28a745;
-                    color: white;
-                }
-                .score-badge.salah {
-                    background-color: #dc3545;
-                    color: white;
-                }
-            </style>
-            <table class="table table-bordered table-hover text-center">
-                <thead>
-                    <tr>
-                        <th>Soal</th>
-                        <th>Terjawab</th>
-                        <th>Skor</th>
-                        <th>Persentase</th>
-                    </tr>
-                </thead>
-                <tbody>
-        `;
-
-        Object.entries(soalSummary).forEach(([soal, data], index) => {
-            const persentase = ((data.benar / data.terjawab) * 100).toFixed(2);
-            tableHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${data.terjawab}</td>
-                    <td>
-                        <span class="score-badge benar">Benar: ${data.benar}</span>
-                        <span class="score-badge salah">Salah: ${data.salah}</span>
-                    </td>
-                    <td>${persentase}%</td>
-                </tr>
-            `;
-        });
-
-        tableHTML += "</tbody></table>";
-
         const csrfToken = document.querySelector(
             'meta[name="csrf-token"]'
         )?.content;
@@ -249,10 +186,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (result.success) {
                     Swal.fire({
                         title: "Tes Selesai!",
-                        html: tableHTML,
                         icon: "success",
+                        showCloseButton: true,
                         confirmButtonText: "OK",
                         width: "600px",
+                        allowOutsideClick: false,
                     }).then(() => {
                         window.location.href = `${baseUrl}/tes-kecermatan/hasil`;
                     });
