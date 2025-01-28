@@ -24,7 +24,7 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    public function subscription()
+    public function subscriptions()
     {
         return $this->hasOne(Subscription::class)->latest();
     }

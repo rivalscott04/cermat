@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\KecermatanController;
 use App\Http\Controllers\SubscriptionController;
@@ -69,7 +70,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'userList'])->name('users.index');
     Route::get('/users/{id}', [AdminController::class, 'userDetail'])->name('users.detail');
     Route::get('/subscriptions', [AdminController::class, 'subscriptionList'])->name('subscriptions.index');
