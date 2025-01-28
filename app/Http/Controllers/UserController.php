@@ -4,9 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -44,9 +45,10 @@ class UserController extends Controller
                 }
             }
 
-            // Get subscription details
-            $subscription = $user->subscription()
-                ->select('end_date', 'payment_method', 'payment_details')
+            // Get latest subscription
+            $subscription = DB::table('subscriptions')
+                ->where('user_id', $userId)
+                ->select('id', 'user_id', 'end_date', 'payment_method', 'payment_details', 'payment_status')
                 ->latest('end_date')
                 ->first();
 
@@ -62,11 +64,9 @@ class UserController extends Controller
                 'provinces' => [],
                 'regencies' => [],
                 'subscription' => null
-            ])->with('error', 'Terjadi kesalahan saat memuat data wilayah');
+            ])->with('error', 'Terjadi kesalahan saat memuat data');
         }
     }
-
-
     public function update(Request $request)
     {
         try {

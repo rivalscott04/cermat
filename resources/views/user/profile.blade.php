@@ -52,7 +52,7 @@
                             <div class="col-6">
                                 <div class="mb-4">
                                     <p class="mb-1"><strong>Status:</strong></p>
-                                    <p class="mb-0">{{ $user->is_active ? 'Aktif' : 'Tidak Aktif' }}</p>
+                                    <p class="mb-0">{{ $user->hasActiveSubscription() ? 'Aktif' : 'Tidak Aktif' }}</p>
                                 </div>
                                 <div class="mb-4">
                                     <p class="mb-1"><strong>Masa Aktif Langganan:</strong></p>

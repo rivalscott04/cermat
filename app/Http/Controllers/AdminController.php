@@ -33,7 +33,7 @@ class AdminController extends Controller
     public function userList()
     {
         $users = User::where('role', 'user')
-            ->with('subscription')
+            ->with('subscriptions')
             ->latest()
             ->paginate(10);
 
