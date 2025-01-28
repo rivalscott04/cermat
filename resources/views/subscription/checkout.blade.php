@@ -1,170 +1,140 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="id">
 
-@push('styles')
-  <style>
-    .payment-option {
-      border: 1px solid #dee2e6;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahir Cermat | Checkout</title>
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 
-    .payment-option:hover {
-      border-color: #0d6efd;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    }
+    <style>
+        .package-card {
+            border: 1px solid #e7eaec;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
 
-    .payment-logo {
-      max-height: 50px;
-      object-fit: contain;
-    }
+        .package-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
 
-    .order-summary {
-      background-color: #f8f9fa;
-      border-radius: 8px;
-      padding: 20px;
-    }
-  </style>
-@endpush
+        .package-header {
+            background: #1ab394;
+            color: white;
+            padding: 15px;
+            border-radius: 8px 8px 0 0;
+        }
 
-@section('content')
-  <div class="container">
-    <div class="wrapper wrapper-content animated fadeInRight">
-      <div class="ibox">
-        <div class="ibox-title">
-          <h5>Pilih Metode Pembayaran</h5>
-        </div>
-        <div class="ibox-content">
-          <div class="row">
-            <!-- Payment Methods Section -->
-            <div class="col-md-8">
-              <h2 class="mb-4">Metode Pembayaran yang Tersedia</h2>
+        .package-features {
+            padding: 20px;
+        }
 
-              <!-- E-Wallet Options -->
-              <div class="mb-4">
-                <div class="payment-option">
-                  <img src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Remittance/PayPal.svg"
-                    alt="PayPal" class="payment-logo">
-                </div>
-                <div class="payment-option">
-                  <div class="d-flex gap-2">
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/Card%20Payment/VISA.svg"
-                      alt="Visa" class="payment-logo">
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/Card%20Payment/Mastercard.svg"
-                      alt="Mastercard" class="payment-logo">
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/Card%20Payment/Discover.svg"
-                      alt="Discover" class="payment-logo">
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/Card%20Payment/American%20Express.svg"
-                      alt="American Express" class="payment-logo">
-                  </div>
-                </div>
-              </div>
+        .feature-item {
+            margin: 10px 0;
+        }
 
-              <!-- Bank Transfer Options -->
-              <h3 class="mb-3">Metode pembayaran lainnya</h3>
-              <div class="row">
-                <div class="col-md-6">
-                  <div class="payment-option">
-                    <img src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BSI.svg"
-                      alt="BSI" class="payment-logo">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="payment-option">
-                    <img src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BNI.svg"
-                      alt="BNI Logo" class="payment-logo">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="payment-option">
-                    <img src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/BRI.svg"
-                      alt="BRIVA" class="payment-logo">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="payment-option">
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Bank/Bank%20Logo/Mandiri.svg"
-                      alt="Mandiri" class="payment-logo">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="payment-option">
-                    <img
-                      src="https://cdn.jsdelivr.net/gh/Adekabang/indonesia-logo-library@main/Payment%20Channel/E-Wallet/OVO.png"
-                      alt="OVO" class="payment-logo">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="payment-option">
-                    <img
-                      src="https://raw.githubusercontent.com/Adekabang/indonesia-logo-library/main/Payment%20Channel/Miscellaneous/QRIS.png"
-                      alt="QRIS" class="payment-logo">
-                  </div>
-                </div>
-              </div>
-            </div>
+        .package-price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1ab394;
+        }
 
-            <!-- Order Summary Section -->
-            <div class="col-md-4">
-              <div class="order-summary">
-                <h3 class="mb-4">Ringkasan Order</h3>
-                <div class="mb-2">
-                  <small class="text-muted">Nomor Tagihan: hb_24215313</small>
-                </div>
+        .back-button-container {
+            position: relative;
+            width: 100%;
+            padding: 20px;
+            z-index: 1000;
+        }
+    </style>
+</head>
 
-                <div class="mb-3">
-                  <div class="d-flex justify-content-between mb-2">
-                    <span>.COM Domain</span>
-                    <span>Rp319.800</span>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span>Domain WHOIS Protection</span>
-                    <span>Rp0</span>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span>ICANN fee</span>
-                    <span>Rp5.620</span>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span>PPN 11%</span>
-                    <span>Rp35.796</span>
-                  </div>
-                  <div class="d-flex justify-content-between mb-2">
-                    <span>Kredit</span>
-                    <span>Rp0</span>
-                  </div>
-                </div>
-
-                <div class="d-flex justify-content-between border-top pt-3">
-                  <h4>Total</h4>
-                  <h4 class="text-primary">Rp 361.216</h4>
-                </div>
-
-                <div class="mt-4">
-                  <div class="d-flex align-items-center text-success gap-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                      class="bi bi-shield-check" viewBox="0 0 16 16">
-                      <path
-                        d="M8 1a2 2 0 0 1 2 2v4H6V3a2 2 0 0 1 2-2zm3 6V3a3 3 0 0 0-6 0v4a2 2 0 0 0-2 2v5a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z" />
-                    </svg>
-                    <div>
-                      <strong>Transaksi Aman dengan SSL</strong>
-                      <p class="small mb-0">Enkripsi Anda dilindungi oleh enkripsi SSL 256-bit</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<body class="gray-bg">
+    <div class="back-button-container">
+        <a href="{{ url()->previous() }}" class="btn btn-default">
+            <i class="fa fa-arrow-left"></i> Kembali
+        </a>
     </div>
-  </div>
-@endsection
+
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="text-center mb-4">
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="img-fluid" style="max-width: 200px;">
+                    <h2 class="mt-3">Pilih Paket Berlangganan</h2>
+                    <p>Akses penuh ke semua fitur persiapan tes BINTARA POLRI</p>
+                </div>
+
+                @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
+                @if (session('error'))
+                    <div class="alert alert-danger">
+                        {{ session('error') }}
+                    </div>
+                @endif
+
+                @if (session('warning'))
+                    <div class="alert alert-warning">
+                        {{ session('warning') }}
+                    </div>
+                @endif
+
+                <div class="package-card mb-4">
+                    <div class="package-header text-center">
+                        <h3 class="mb-0">Paket SILVER</h3>
+                        <p class="mb-0">Persiapan Tes BINTARA POLRI</p>
+                    </div>
+
+                    <div class="package-features">
+                        <div class="text-center mb-4">
+                            <div class="package-price">Rp 100.000</div>
+                            <p class="text-muted">Berlaku 30 hari</p>
+                        </div>
+
+                        <div class="feature-item">
+                            <i class="fa fa-check text-success"></i> Akses ke semua materi pembelajaran
+                        </div>
+                        <div class="feature-item">
+                            <i class="fa fa-check text-success"></i> Latihan soal unlimited
+                        </div>
+                        <div class="feature-item">
+                            <i class="fa fa-check text-success"></i> Try out BINTARA POLRI
+                        </div>
+                        <div class="feature-item">
+                            <i class="fa fa-check text-success"></i> Pembahasan soal detail
+                        </div>
+                        <div class="feature-item">
+                            <i class="fa fa-check text-success"></i> Analisis kemampuan
+                        </div>
+
+                        <a href="{{ route('subscription.process', ['transaction_id' => time() . auth()->id()]) }}"
+                            class="btn btn-primary">Pilih
+                            Paket</a>
+
+                    </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        Dengan membeli paket ini, Anda menyetujui
+                        <a href="#">Syarat & Ketentuan</a> yang berlaku
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+    <script src="{{ asset('js/popper.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.js') }}"></script>
+</body>
+
+</html>

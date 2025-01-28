@@ -3,17 +3,27 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use Midtrans\Snap;
+use Midtrans\Config;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class SubscriptionController extends Controller
 {
+    public function __construct()
+    {
+        Config::$serverKey = config('midtrans.server_key');
+        Config::$isProduction = config('midtrans.is_production');
+        Config::$isSanitized = true;
+        Config::$is3ds = true;
+    }
+
     public function checkout()
     {
         return view('subscription.checkout');
     }
-
 
     public function expired()
     {
@@ -33,71 +43,192 @@ class SubscriptionController extends Controller
 
     public function process($transaction_id)
     {
-        $subscription = Subscription::where('transaction_id', $transaction_id)
-            ->with('user')
-            ->firstOrFail();
+        $subscription = Subscription::where('transaction_id', $transaction_id)->first();
+        $start_date = now();
+        $end_date = $start_date->copy()->addDays(30);
 
-        // Cek status pembayaran
+        if (!$subscription) {
+            $subscription = Subscription::create([
+                'transaction_id' => $transaction_id,
+                'user_id' => auth()->id(),
+                'amount_paid' => 100000,
+                'payment_status' => 'pending',
+                'start_date' => $start_date,
+                'end_date' => $end_date
+            ]);
+        }
+
         if ($subscription->payment_status == 'paid') {
             return redirect()->route('login')
                 ->with('message', 'Pembayaran sudah selesai, silahkan login');
         }
 
-        // Dapatkan payment details
-        $paymentDetails = json_decode($subscription->payment_details, true);
-        $bank = $paymentDetails['bank'] ?? 'mandiri';
+        try {
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $subscription->transaction_id,
+                    'gross_amount' => $subscription->amount_paid,
+                ],
+                'customer_details' => [
+                    'first_name' => $subscription->user->name,
+                    'email' => $subscription->user->email,
+                    'phone' => $subscription->user->phone_number,
+                ],
+                'item_details' => [
+                    [
+                        'id' => 'PAKET_CERMAT',
+                        'price' => $subscription->amount_paid,
+                        'quantity' => 1,
+                        'name' => 'Paket Cermat - Persiapan Tes BINTARA POLRI',
+                    ],
+                ],
+                'enabled_payments' => [
+                    'credit_card',
+                    'bca_va',
+                    'bni_va',
+                    'bri_va',
+                    'mandiri_va',
+                    'permata_va',
+                    'gopay',
+                    'shopeepay'
+                ],
+            ];
 
-        // Dapatkan instruksi berdasarkan metode pembayaran
-        $paymentInstructions = $this->getPaymentInstructions($subscription->payment_method, $bank);
+            $snapToken = Snap::getSnapToken($params);
 
-        return view('subscription.payment', [
-            'subscription' => $subscription,
-            'instructions' => $paymentInstructions,
-            'bank' => $bank  // tambahkan ini untuk debugging
-        ]);
+            $subscription->update([
+                'payment_details' => json_encode([
+                    'snap_token' => $snapToken,
+                    'package' => 'SILVER',
+                    'package_type' => 'TRYOUT'
+                ])
+            ]);
+
+            return view('subscription.payment', [
+                'subscription' => $subscription,
+                'snap_token' => $snapToken
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Midtrans Error: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan dalam memproses pembayaran');
+        }
     }
 
-    private function getPaymentInstructions($method, $bank = null)
+    public function notification(Request $request)
     {
-        $instructions = [
-            'bank_transfer' => [
-                'mandiri' => [
-                    'Masuk ke menu Transfer',
-                    'Pilih Transfer ke rekening Bank Mandiri',
-                    'Masukkan nomor rekening: 1234567890',
-                    'Masukkan nominal sesuai tagihan: Rp 100.000',
-                    'Konfirmasi dan selesaikan pembayaran',
-                    'Simpan bukti pembayaran'
-                ],
-                'bri' => [
-                    'Masuk ke menu Transfer',
-                    'Pilih Transfer ke rekening BRI',
-                    'Masukkan nomor rekening: 9876543210',
-                    'Masukkan nominal sesuai tagihan: Rp 100.000',
-                    'Konfirmasi dan selesaikan pembayaran',
-                    'Simpan bukti pembayaran'
-                ],
-                'bni' => [
-                    'Masuk ke menu Transfer',
-                    'Pilih Transfer ke rekening BNI',
-                    'Masukkan nomor rekening: 5432167890',
-                    'Masukkan nominal sesuai tagihan: Rp 100.000',
-                    'Konfirmasi dan selesaikan pembayaran',
-                    'Simpan bukti pembayaran'
-                ]
-            ],
-            'qris' => [
-                'Buka aplikasi e-wallet Anda (OVO, DANA, GoPay, dll)',
-                'Scan QRIS code di bawah ini',
-                'Pastikan nominal pembayaran sesuai: Rp 100.000',
-                'Konfirmasi dan selesaikan pembayaran'
-            ]
-        ];
+        \Log::info('Raw notification received:', $request->all());
+        try {
+            $notif = new \Midtrans\Notification();
 
-        if ($method === 'bank_transfer' && $bank) {
-            return $instructions['bank_transfer'][$bank];
+            \Log::info('Midtrans Notification:', [
+                'order_id' => $notif->order_id,
+                'transaction_status' => $notif->transaction_status,
+                'payment_type' => $notif->payment_type,
+                'raw' => $request->all()
+            ]);
+
+            $subscription = Subscription::where('transaction_id', $notif->order_id)->firstOrFail();
+
+            // Get payment method specific details
+            $additionalDetails = [];
+
+            switch ($notif->payment_type) {
+                case 'bank_transfer':
+                    if (isset($notif->va_numbers[0])) {
+                        $additionalDetails['bank'] = $notif->va_numbers[0]->bank;
+                    } elseif (isset($notif->permata_va_number)) {
+                        $additionalDetails['bank'] = 'permata';
+                    }
+                    break;
+
+                case 'credit_card':
+                    $additionalDetails['bank'] = $notif->bank ?? '';
+                    $additionalDetails['card_type'] = $notif->card_type ?? '';
+                    break;
+
+                case 'gopay':
+                    $additionalDetails['payment_platform'] = 'GOPAY';
+                    break;
+
+                case 'shopeepay':
+                    $additionalDetails['payment_platform'] = 'SHOPEEPAY';
+                    break;
+
+                case 'qris':
+                    $additionalDetails['payment_platform'] = 'QRIS';
+                    break;
+            }
+
+            // Initialize payment details array with additional details merged
+            $paymentDetails = array_merge([
+                'payment_type' => $notif->payment_type,
+                'transaction_status' => $notif->transaction_status,
+                'transaction_time' => $notif->transaction_time,
+                'package' => 'SILVER',
+                'package_type' => 'TRYOUT',
+                'gross_amount' => $notif->gross_amount,
+                'transaction_id' => $notif->transaction_id,
+            ], $additionalDetails);
+
+            // Handle transaction status
+            switch ($notif->transaction_status) {
+                case 'capture':
+                case 'settlement':
+                    $subscription->update([
+                        'payment_status' => 'paid',
+                        'payment_method' => $notif->payment_type,
+                        'payment_details' => json_encode($paymentDetails)
+                    ]);
+                    $subscription->user->update(['is_active' => true]);
+                    break;
+
+                case 'pending':
+                    $subscription->update([
+                        'payment_status' => 'pending',
+                        'payment_method' => $notif->payment_type,
+                        'payment_details' => json_encode($paymentDetails)
+                    ]);
+                    break;
+
+                case 'deny':
+                case 'expire':
+                case 'cancel':
+                    $subscription->update([
+                        'payment_status' => 'failed',
+                        'payment_method' => $notif->payment_type,
+                        'payment_details' => json_encode($paymentDetails)
+                    ]);
+                    break;
+            }
+
+            return response()->json($paymentDetails);
+        } catch (\Exception $e) {
+            \Log::error('Midtrans Notification Error:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all()
+            ]);
+
+            return response()->json(['error' => $e->getMessage()], 500);
         }
+    }
 
-        return $instructions[$method] ?? ['Mohon maaf, instruksi pembayaran untuk metode ini belum tersedia'];
+    public function finish(Request $request)
+    {
+        return redirect()->route('user.profile', ['userId' => Auth::user()->id])
+            ->with('message', 'Pembayaran berhasil, anda bisa melakukan tes');
+    }
+
+    public function unfinish(Request $request)
+    {
+        return redirect()->route('subscription.checkout')
+            ->with('warning', 'Pembayaran belum selesai');
+    }
+
+    public function error(Request $request)
+    {
+        return redirect()->route('subscription.checkout')
+            ->with('error', 'Pembayaran gagal');
     }
 }

@@ -35,10 +35,13 @@ Route::get('/trial', function () {
     return view('kecermatan.trial');
 })->name('trial');
 
-// Subscription Routes
-Route::post('/subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
-Route::get('/subscription/expired', [SubscriptionController::class, 'expired'])->name('subscription.expired');
-Route::get('/subscription/check', [SubscriptionController::class, 'check'])->name('subscription.check');
+// Route untuk subscription dan proses Midtrans
+Route::get('subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+Route::get('subscription/process/{transaction_id}', [SubscriptionController::class, 'process'])->name('subscription.process');
+Route::post('subscription/notification', [SubscriptionController::class, 'notification'])->name('subscription.notification');
+Route::get('subscription/finish', [SubscriptionController::class, 'finish'])->name('subscription.finish');
+Route::get('subscription/unfinish', [SubscriptionController::class, 'unfinish'])->name('subscription.unfinish');
+Route::get('subscription/error', [SubscriptionController::class, 'error'])->name('subscription.error');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');

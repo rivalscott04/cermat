@@ -2,137 +2,102 @@
 <html lang="id">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Instruksi Pembayaran - Mahir Cermat</title>
-  <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
-  <link href="{{ asset('font-awesome/css/font-awesome.css') }}" rel="stylesheet">
-  <style>
-    body {
-      background-color: #f4f6f9;
-      padding: 20px;
-    }
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mahir Cermat | Pembayaran</title>
+    <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('font-awesome/css/font-awesome.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 
-    .back-button {
-      margin-bottom: 20px;
-    }
+    <style>
+        .back-button-container {
+            position: relative;
+            width: 100%;
+            padding: 20px;
+            z-index: 1000;
+        }
 
-    .card {
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-      border: none;
-      border-radius: 10px;
-    }
+        .payment-summary {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
 
-    .card-header {
-      background-color: #fff;
-      border-bottom: 1px solid #eee;
-      padding: 15px 20px;
-      font-weight: 600;
-      border-radius: 10px 10px 0 0 !important;
-    }
-
-    .card-body {
-      padding: 20px;
-    }
-
-    .transaction-detail {
-      background-color: #f8f9fa;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-    }
-
-    ol li {
-      margin-bottom: 10px;
-    }
-
-    .qr-code-container {
-      padding: 20px;
-      border: 1px dashed #ddd;
-      border-radius: 8px;
-      display: inline-block;
-    }
-  </style>
+        @media (max-width: 768px) {
+            .back-button-container {
+                position: sticky;
+                top: 0;
+            }
+        }
+    </style>
 </head>
 
-<body>
-  <div class="container">
-    <div class="back-button">
-      <a href="{{ url('/') }}" class="btn btn-light">
-        <i class="fa fa-arrow-left"></i> Kembali
-      </a>
+<body class="gray-bg">
+    <div class="back-button-container">
+        <a href="{{ url()->previous() }}" class="btn btn-default">
+            <i class="fa fa-arrow-left"></i> Kembali
+        </a>
     </div>
 
-    <div class="row justify-content-center">
-      <div class="col-md-8">
-        <div class="card">
-          <div class="card-header">
-            Instruksi Pembayaran
-          </div>
-          <div class="card-body">
-            <div class="transaction-detail">
-              <h5>Detail Transaksi</h5>
-              <div class="row mt-3">
-                <div class="col-md-4">
-                  <p class="mb-2">ID Transaksi:</p>
-                  <p class="mb-2"><strong>{{ $subscription->transaction_id }}</strong></p>
+    <div class="container py-4">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="mb-4 text-center">
+                            <img src="{{ asset('img/regis-removebg-preview.png') }}" alt="dashboard" class="img-fluid"
+                                style="max-width: 200px;">
+                            <h3 class="mt-3">Pembayaran Paket Cermat</h3>
+                        </div>
+
+                        <div class="payment-summary">
+                            <h5>Ringkasan Pembayaran</h5>
+                            <div class="row mt-3">
+                                <div class="col-6">Paket</div>
+                                <div class="col-6 text-end">Paket Cermat</div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-6">Total Pembayaran</div>
+                                <div class="col-6 text-end">
+                                    <strong>Rp {{ number_format($subscription->amount_paid, 0, ',', '.') }}</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="text-center">
+                            <button id="pay-button" class="btn btn-primary btn-lg">
+                                Bayar Sekarang
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                  <p class="mb-2">Jenis Pembayaran:</p>
-                  <p class="mb-2">
-                    @if ($subscription->payment_method == 'bank_transfer')
-                      @php
-                        $paymentDetails = json_decode($subscription->payment_details, true);
-                        $bankName = strtoupper($paymentDetails['bank'] ?? '');
-                      @endphp
-                      <strong>{{ $bankName }}</strong>
-                    @elseif($subscription->payment_method == 'qris')
-                      <strong>QRIS</strong>
-                    @elseif($subscription->payment_method == 'ovo')
-                      <strong>OVO</strong>
-                    @elseif($subscription->payment_method == 'dana')
-                      <strong>DANA</strong>
-                    @endif
-                  </p>
-                </div>
-                <div class="col-md-4">
-                  <p class="mb-2">Total Pembayaran:</p>
-                  <p class="mb-2"><strong>Rp {{ number_format($subscription->amount_paid) }}</strong></p>
-                </div>
-              </div>
             </div>
-
-            <h5 class="mt-4">Cara Pembayaran</h5>
-            <ol class="mt-3">
-              @foreach ($instructions as $step)
-                <li>{{ $step }}</li>
-              @endforeach
-            </ol>
-
-            @if ($subscription->payment_method == 'qris')
-              <div class="mt-4 text-center">
-                <div class="qr-code-container">
-                  <img src="qr-code-image-url" alt="QRIS Code" style="max-width: 200px;">
-                  <p class="mb-0 mt-2"><small>Scan QR Code untuk membayar</small></p>
-                </div>
-              </div>
-            @endif
-
-            <div class="alert alert-info mt-4">
-              <small>
-                <i class="fa fa-info-circle"></i> Pembayaran akan diverifikasi otomatis oleh sistem
-                <br>
-                <i class="fa fa-info-circle"></i> Halaman ini dapat ditutup setelah pembayaran selesai
-              </small>
-            </div>
-          </div>
         </div>
-      </div>
     </div>
-  </div>
 
-  <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
-  <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+    <!-- Scripts -->
+    <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
+    <script src="{{ asset('js/popper.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.js') }}"></script>
+    <script src="{{ config('midtrans.snap_url') }}" data-client-key="{{ config('midtrans.client_key') }}"></script>
+    <script>
+        document.getElementById('pay-button').onclick = function() {
+            snap.pay('{{ $snap_token }}', {
+                onSuccess: function(result) {
+                    window.location.href = '{{ route('subscription.finish') }}';
+                },
+                onPending: function(result) {
+                    window.location.href = '{{ route('subscription.unfinish') }}';
+                },
+                onError: function(result) {
+                    window.location.href = '{{ route('subscription.error') }}';
+                },
+                onClose: function() {
+                    alert('Anda menutup popup tanpa menyelesaikan pembayaran');
+                }
+            });
+        };
+    </script>
 </body>
-
-</html>

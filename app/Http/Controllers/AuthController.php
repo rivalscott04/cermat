@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,16 +23,16 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
+
     public function register(Request $request)
     {
-        // Validasi ditambah untuk payment
+        // Simplified validation without payment fields
         $request->validate([
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
             'phone_number' => 'required|digits_between:10,15',
             'province' => 'required',
             'regency' => 'required',
-            'payment_method' => 'required',
             'terms' => 'required'
         ]);
 
@@ -49,29 +50,19 @@ class AuthController extends Controller
                 'role' => 'user'
             ]);
 
-            // In your register method
-            $subscription = Subscription::create([
-                'user_id' => $user->id,
-                'start_date' => now(),
-                'end_date' => now()->addDays(30),
-                'amount_paid' => 100000,
-                'payment_status' => 'pending',
-                'payment_method' => $request->payment_method,
-                'payment_details' => json_encode([
-                    'bank' => $request->payment_details,
-                    'package' => 'SILVER',
-                    'package_type' => 'TRYOUT'
-                ]),
-                'transaction_id' => 'TRX-' . time()
-            ]);
+            // Login user after successful registration
+            Auth::login($user);
+
             DB::commit();
 
-            return redirect()->route('payment.process', ['transaction_id' => $subscription->transaction_id]);
+            // Redirect to payment page
+            return redirect()->route('subscription.checkout')->with('success', 'Pendaftaran berhasil! Silakan pilih paket berlangganan.');
         } catch (\Exception $e) {
             DB::rollback();
             return redirect()->back()->with('error', 'Terjadi kesalahan dalam proses pendaftaran');
         }
     }
+
 
     public function login(Request $request)
     {
