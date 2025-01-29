@@ -44,7 +44,7 @@ Route::get('subscription/finish', [SubscriptionController::class, 'finish'])->na
 Route::get('subscription/unfinish', [SubscriptionController::class, 'unfinish'])->name('subscription.unfinish');
 Route::get('subscription/error', [SubscriptionController::class, 'error'])->name('subscription.error');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'single.session'])->group(function () {
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
 
