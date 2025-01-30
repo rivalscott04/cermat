@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -52,6 +53,10 @@ class AuthController extends Controller
 
             Auth::login($user);
 
+            // Simpan session_id ke database
+            $user->session_id = session()->getId();
+            $user->save();
+
             DB::commit();
 
             return redirect()->route('user.profile', ['userId' => Auth::user()->id])
@@ -73,13 +78,20 @@ class AuthController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
-        // Jika user ditemukan dan memiliki active session
+        // Cek jika user memiliki session_id
         if ($user && $user->session_id) {
-            return back()
-                ->withInput($request->only('email'))
-                ->withErrors([
-                    'email' => 'Akun ini sedang login di perangkat lain.',
-                ]);
+            // Verifikasi apakah session masih valid
+            if (!Session::getHandler()->read($user->session_id)) {
+                // Jika session tidak valid, hapus session_id
+                $user->session_id = null;
+                $user->save();
+            } else {
+                return back()
+                    ->withInput($request->only('email'))
+                    ->withErrors([
+                        'email' => 'Akun ini sedang login di perangkat lain.',
+                    ]);
+            }
         }
 
         if (Auth::attempt($credentials)) {
@@ -109,28 +121,25 @@ class AuthController extends Controller
             'email' => 'Email atau password salah.',
         ]);
     }
+
     public function logout(Request $request)
     {
         $user = Auth::user();
-
         if ($user) {
-            // Hapus session ID dari database
+            // Hapus session_id dari database
             $user->session_id = null;
             $user->save();
-
-            Log::info('User logged out: ' . $user->email);
         }
 
         // Logout user
         Auth::logout();
 
-        // Invalidate session
+        // Invalidate dan regenerate session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect('/');
     }
-
     public function showResetPassword()
     {
         return view('auth.reset-password');
