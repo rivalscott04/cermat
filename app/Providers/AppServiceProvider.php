@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use Carbon\Carbon;
+use App\Models\Subscription;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
+use App\Observers\SubscriptionObserver;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -28,5 +30,7 @@ class AppServiceProvider extends ServiceProvider
 
         Carbon::setLocale('id');
         setlocale(LC_TIME, 'id_ID');
+
+        \App\Models\Subscription::observe(SubscriptionObserver::class);
     }
 }

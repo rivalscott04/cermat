@@ -43,13 +43,6 @@
                 </li>
 
                 <li>
-                    <a href="{{ route('subscription.checkout') }}">
-                        <i class="fa fa-money"></i>
-                        <span class="nav-label">Pembayaran</span>
-                    </a>
-                </li>
-
-                <li>
                     <a href="{{ route('kecermatan') }}">
                         <i class="fa fa-user"></i>
                         <span class="nav-label">Tes Kecermatan</span>

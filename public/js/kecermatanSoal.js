@@ -186,13 +186,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (result.success) {
                     Swal.fire({
                         title: "Tes Selesai!",
+                        html: `
+                            <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
+                                <div>
+                                    <span class="score-badge benar">Benar: ${skorBenar}</span>
+                                </div>
+                                <div>
+                                    <span class="score-badge salah">Salah: ${skorSalah}</span>
+                                </div>
+                            </div>
+                            <div style="margin-top: 1rem;">
+                                <strong>Total Skor: ${
+                                    skorBenar - skorSalah
+                                }</strong>
+                            </div>
+                        `,
                         icon: "success",
                         showCloseButton: true,
                         confirmButtonText: "OK",
                         width: "600px",
                         allowOutsideClick: false,
                     }).then(() => {
-                        window.location.href = `${baseUrl}/tes-kecermatan/hasil`;
+                        // Redirect to riwayat page with userId
+                        window.location.href = `${baseUrl}/tes-kecermatan/riwayat/${userId}`;
                     });
                 }
             })

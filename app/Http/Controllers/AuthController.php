@@ -76,33 +76,12 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        $user = User::where('email', $credentials['email'])->first();
-
-        // Cek jika user memiliki session_id
-        if ($user && $user->session_id) {
-            // Verifikasi apakah session masih valid
-            if (!Session::getHandler()->read($user->session_id)) {
-                // Jika session tidak valid, hapus session_id
-                $user->session_id = null;
-                $user->save();
-            } else {
-                return back()
-                    ->withInput($request->only('email'))
-                    ->withErrors([
-                        'email' => 'Akun ini sedang login di perangkat lain.',
-                    ]);
-            }
-        }
-
         if (Auth::attempt($credentials)) {
-            // Regenerasi session untuk keamanan
             $request->session()->regenerate();
 
             $user = Auth::user();
-            $user->session_id = session()->getId();
-            $user->save();
 
-            Log::info('User logged in: ' . $user->email . ' with session ID: ' . $user->session_id);
+            Log::info('User logged in: ' . $user->email);
 
             if ($user->role == 'admin') {
                 return redirect()->route('admin.dashboard');

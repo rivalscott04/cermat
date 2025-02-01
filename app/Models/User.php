@@ -36,4 +36,9 @@ class User extends Authenticatable
             $this->subscriptions->payment_status === 'paid' &&
             $this->subscriptions->end_date > now();
     }
+
+    public function hasilTes()
+    {
+        return $this->hasMany(HasilTes::class);
+    }
 }

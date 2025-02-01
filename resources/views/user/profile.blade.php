@@ -27,13 +27,13 @@
                         <!-- Free Programs -->
                         <div class="list-group mb-4 text-left">
                             <a href="#" class="list-group-item list-group-item-action">
-                                (CPNS) GRATIS <i class="fa fa-chevron-right float-right"></i>
+                                Kepribadian <i class="fa fa-chevron-right float-right"></i>
                             </a>
                             <a href="#" class="list-group-item list-group-item-action">
-                                (BUMN) GRATIS <i class="fa fa-chevron-right float-right"></i>
+                                Kecerdasan <i class="fa fa-chevron-right float-right"></i>
                             </a>
                             <a href="#" class="list-group-item list-group-item-action">
-                                (POLRI) GRATIS <i class="fa fa-chevron-right float-right"></i>
+                                Kecermatan <i class="fa fa-chevron-right float-right"></i>
                             </a>
                         </div>
                     </div>
