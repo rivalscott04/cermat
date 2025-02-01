@@ -357,8 +357,8 @@
     <div class="container">
       <div class="row align-items-center">
         <div class="col-lg-6">
+          <h1 class="hero-text">Tool Latihan</h1>
           <h1 class="hero-text">TES KECERMATAN KEPOLISIAN</h1>
-          <p class="hero-subtext">Cermat dan Cepat: Tes Kecermatan Terbaik</p>
           <div class="d-flex">
             <a href="{{ route('trial') }}" class="get-started-btn me-2">Coba</a>
             <a href="{{ route('register') }}" class="get-started-btn">Daftar</a>
