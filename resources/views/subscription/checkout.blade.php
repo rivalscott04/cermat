@@ -88,7 +88,7 @@
 
                 <div class="package-card mb-4">
                     <div class="package-header text-center">
-                        <h3 class="mb-0">Paket SILVER</h3>
+                        <h3 class="mb-0">Paket Tes Kecermatan</h3>
                         <p class="mb-0">Persiapan Tes BINTARA POLRI</p>
                     </div>
 
@@ -99,19 +99,10 @@
                         </div>
 
                         <div class="feature-item">
-                            <i class="fa fa-check text-success"></i> Akses ke semua materi pembelajaran
+                            <i class="fa fa-check text-success"></i> Akses latihan soal unlimited
                         </div>
                         <div class="feature-item">
-                            <i class="fa fa-check text-success"></i> Latihan soal unlimited
-                        </div>
-                        <div class="feature-item">
-                            <i class="fa fa-check text-success"></i> Try out BINTARA POLRI
-                        </div>
-                        <div class="feature-item">
-                            <i class="fa fa-check text-success"></i> Pembahasan soal detail
-                        </div>
-                        <div class="feature-item">
-                            <i class="fa fa-check text-success"></i> Analisis kemampuan
+                            <i class="fa fa-check text-success"></i> Riwayat detail hasil tes
                         </div>
 
                         <a href="{{ route('subscription.process', ['transaction_id' => time() . auth()->id()]) }}"

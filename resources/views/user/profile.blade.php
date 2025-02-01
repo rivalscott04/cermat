@@ -42,7 +42,6 @@
 
             <!-- Main Content Column -->
             <div class="col-md-8">
-                <!-- Status Information Card -->
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">STATUS BERLANGGANAN</h5>
@@ -78,19 +77,21 @@
                                                 {{ strtoupper($paymentDetails['bank']) }}
                                             @elseif(isset($paymentDetails['e_wallet']))
                                                 {{ strtoupper($paymentDetails['e_wallet']) }}
-                                            @else
+                                            @elseif(isset($paymentDetails['payment_type']))
                                                 {{ ucfirst($paymentDetails['payment_type']) }}
+                                            @else
+                                                Tidak Ada
                                             @endif
                                         </p>
                                     @else
                                         <p class="mb-0">Tidak Ada</p>
                                     @endif
-
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
 
                 <!-- Profile Form Card -->
                 <div class="card mb-4">

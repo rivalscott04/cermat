@@ -16,7 +16,8 @@ class User extends Authenticatable
         'phone_number',
         'is_active',
         'province',
-        'regency'
+        'regency',
+        'role'
     ];
 
     protected $hidden = [
@@ -31,8 +32,8 @@ class User extends Authenticatable
 
     public function hasActiveSubscription()
     {
-        return $this->subscription &&
-            $this->subscription->payment_status === 'paid' &&
-            $this->subscription->end_date > now();
+        return $this->subscriptions &&
+            $this->subscriptions->payment_status === 'paid' &&
+            $this->subscriptions->end_date > now();
     }
 }

@@ -39,12 +39,13 @@ Route::get('/trial', function () {
 // Route untuk subscription dan proses Midtrans
 Route::get('subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
 Route::get('subscription/process/{transaction_id}', [SubscriptionController::class, 'process'])->name('subscription.process');
+Route::get('subscription/get-fee', [SubscriptionController::class, 'getFee'])->name('subscription.get-fee');
 Route::post('subscription/notification', [SubscriptionController::class, 'notification'])->name('subscription.notification');
 Route::get('subscription/finish', [SubscriptionController::class, 'finish'])->name('subscription.finish');
 Route::get('subscription/unfinish', [SubscriptionController::class, 'unfinish'])->name('subscription.unfinish');
 Route::get('subscription/error', [SubscriptionController::class, 'error'])->name('subscription.error');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'single.session'])->group(function () {
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
 
@@ -53,7 +54,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/regencies/{provinceId}', [UserController::class, 'getRegencies']);
 
     Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
-
 
     Route::middleware(['subscription'])->group(function () {
         Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');

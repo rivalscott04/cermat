@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Session;
 
 class AuthController extends Controller
 {
@@ -23,22 +24,22 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-
     public function register(Request $request)
     {
-        // Simplified validation without payment fields
+        // Validasi input
         $request->validate([
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users',
             'password' => 'required|min:8|confirmed',
             'phone_number' => 'required|digits_between:10,15',
-            'province' => 'required',
-            'regency' => 'required',
-            'terms' => 'required'
+            'province' => 'required|string',
+            'regency' => 'required|string',
+            'terms' => 'required|accepted',
         ]);
 
         DB::beginTransaction();
         try {
-            // Create user
+            // Buat user baru
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
@@ -47,74 +48,98 @@ class AuthController extends Controller
                 'is_active' => false,
                 'province' => $request->province,
                 'regency' => $request->regency,
-                'role' => 'user'
+                'role' => 'user',
             ]);
 
-            // Login user after successful registration
             Auth::login($user);
+
+            // Simpan session_id ke database
+            $user->session_id = session()->getId();
+            $user->save();
 
             DB::commit();
 
-            // Redirect to payment page
-            return redirect()->route('subscription.checkout')->with('success', 'Pendaftaran berhasil! Silakan pilih paket berlangganan.');
+            return redirect()->route('user.profile', ['userId' => Auth::user()->id])
+                ->with('success', 'Pendaftaran berhasil! Silakan pilih paket berlangganan.');
         } catch (\Exception $e) {
             DB::rollback();
-            return redirect()->back()->with('error', 'Terjadi kesalahan dalam proses pendaftaran');
+            Log::error('Error during registration: ' . $e->getMessage());
+            return redirect()->back()
+                ->with('error', 'Terjadi kesalahan dalam proses pendaftaran. Silakan coba lagi.');
         }
     }
 
-
     public function login(Request $request)
     {
-        // Validasi input
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required'
+            'password' => 'required',
         ]);
 
-        // Proses autentikasi
+        $user = User::where('email', $credentials['email'])->first();
+
+        // Cek jika user memiliki session_id
+        if ($user && $user->session_id) {
+            // Verifikasi apakah session masih valid
+            if (!Session::getHandler()->read($user->session_id)) {
+                // Jika session tidak valid, hapus session_id
+                $user->session_id = null;
+                $user->save();
+            } else {
+                return back()
+                    ->withInput($request->only('email'))
+                    ->withErrors([
+                        'email' => 'Akun ini sedang login di perangkat lain.',
+                    ]);
+            }
+        }
+
         if (Auth::attempt($credentials)) {
             // Regenerasi session untuk keamanan
             $request->session()->regenerate();
 
-            // Jika user adalah admin
-            if (Auth::user()->role == 'admin') {
+            $user = Auth::user();
+            $user->session_id = session()->getId();
+            $user->save();
+
+            Log::info('User logged in: ' . $user->email . ' with session ID: ' . $user->session_id);
+
+            if ($user->role == 'admin') {
                 return redirect()->route('admin.dashboard');
             }
 
-            // Jika user adalah user biasa
-            if (Auth::user()->role == 'user') {
-                // Cek status langganan
-                if (Auth::user()->hasActiveSubscription()) {
-                    // Jika memiliki langganan aktif, redirect ke 'kecermatan'
-                    return redirect()->route('kecermatan');
-                } else {
-                    // Jika tidak memiliki langganan, redirect ke 'profile'
-                    return redirect()->route('user.profile', ['userId' => Auth::user()->id]);
-                }
+            if ($user->role == 'user') {
+                return $user->hasActiveSubscription()
+                    ? redirect()->route('kecermatan')
+                    : redirect()->route('user.profile', ['userId' => $user->id]);
             }
 
-            // Redirect default jika role tidak dikenali
-            return redirect()->intended('dashboard');
+            return redirect()->route('dashboard');
         }
 
-        // Jika autentikasi gagal
         return back()->withErrors([
             'email' => 'Email atau password salah.',
         ]);
     }
 
-
     public function logout(Request $request)
     {
+        $user = Auth::user();
+        if ($user) {
+            // Hapus session_id dari database
+            $user->session_id = null;
+            $user->save();
+        }
+
+        // Logout user
         Auth::logout();
+
+        // Invalidate dan regenerate session
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
         return redirect('/');
     }
-
-    // Add this to your existing AuthController class
-
     public function showResetPassword()
     {
         return view('auth.reset-password');
@@ -122,25 +147,28 @@ class AuthController extends Controller
 
     public function resetPassword(Request $request)
     {
+        // Validasi input
         $request->validate([
             'email' => 'required|email|exists:users,email',
             'new_password' => 'required|min:8|confirmed',
         ]);
 
-        $user = User::where('email', $request->email)
-            ->first();
+        // Cari user berdasarkan email
+        $user = User::where('email', $request->email)->first();
 
         if (!$user) {
             return back()->withErrors([
-                'message' => 'Email tidak cocok.'
+                'email' => 'Email tidak ditemukan.',
             ]);
         }
 
+        // Update password
         $user->password = Hash::make($request->new_password);
         $user->save();
 
-        return redirect()
-            ->route('login')
-            ->with('message', 'Password berhasil diubah. Silahkan login dengan password baru.');
+        Log::info('Password reset for user: ' . $user->email);
+
+        return redirect()->route('login')
+            ->with('message', 'Password berhasil diubah. Silakan login dengan password baru.');
     }
 }
