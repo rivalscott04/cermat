@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PricingController;
 use App\Http\Controllers\KecermatanController;
 use App\Http\Controllers\SubscriptionController;
@@ -26,6 +27,7 @@ Route::post('/register', [AuthController::class, 'register'])->name('post.regist
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('post.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('payment/process/{transaction_id}', [SubscriptionController::class, 'process'])->name('payment.process');
 
 Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('reset-password');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('post.reset-password');
@@ -34,12 +36,16 @@ Route::get('/trial', function () {
     return view('kecermatan.trial');
 })->name('trial');
 
-// Subscription Routes
-Route::post('/subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
-Route::get('/subscription/expired', [SubscriptionController::class, 'expired'])->name('subscription.expired');
-Route::get('/subscription/check', [SubscriptionController::class, 'check'])->name('subscription.check');
+// Route untuk subscription dan proses Midtrans
+Route::get('subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+Route::get('subscription/process/{transaction_id}', [SubscriptionController::class, 'process'])->name('subscription.process');
+Route::get('subscription/get-fee', [SubscriptionController::class, 'getFee'])->name('subscription.get-fee');
+Route::post('subscription/notification', [SubscriptionController::class, 'notification'])->name('subscription.notification');
+Route::get('subscription/finish', [SubscriptionController::class, 'finish'])->name('subscription.finish');
+Route::get('subscription/unfinish', [SubscriptionController::class, 'unfinish'])->name('subscription.unfinish');
+Route::get('subscription/error', [SubscriptionController::class, 'error'])->name('subscription.error');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'single.session'])->group(function () {
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
 
@@ -48,7 +54,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/regencies/{provinceId}', [UserController::class, 'getRegencies']);
 
     Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
-
 
     Route::middleware(['subscription'])->group(function () {
         Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
@@ -65,7 +70,7 @@ Route::middleware(['auth'])->group(function () {
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::get('/users', [AdminController::class, 'userList'])->name('users.index');
     Route::get('/users/{id}', [AdminController::class, 'userDetail'])->name('users.detail');
     Route::get('/subscriptions', [AdminController::class, 'subscriptionList'])->name('subscriptions.index');
