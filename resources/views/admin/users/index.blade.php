@@ -159,11 +159,27 @@
                                                     </div>
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="{{ route('user.profile', $user->id) }}" class="action-icon">
-                                                        <i class="fa fa-info-circle"></i>
-                                                    </a>
-                                                    <i class="fa fa-trash action-icon"></i>
-                                                    <i class="fa fa-edit action-icon"></i>
+                                                    <div class="d-flex justify-content-center align-items-center">
+                                                        <a href="{{ route('user.profile', $user->id) }}"
+                                                            class="action-icon">
+                                                            <i class="fa fa-info-circle"></i>
+                                                        </a>
+                                                        <form action="{{ route('admin.users.delete', $user->id) }}"
+                                                            method="POST"
+                                                            onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');"
+                                                            class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger"
+                                                                style="border: none; background: none; padding: 0;">
+                                                                <i class="fa fa-trash action-icon"
+                                                                    style="color: red; cursor: pointer;"></i>
+                                                            </button>
+                                                        </form>
+                                                        <a href="#" class="action-icon">
+                                                            <i class="fa fa-edit"></i>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach

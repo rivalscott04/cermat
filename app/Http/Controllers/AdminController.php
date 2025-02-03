@@ -111,4 +111,17 @@ class AdminController extends Controller
 
         return view('admin.riwayat-tes', compact('hasil'));
     }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Hapus semua langganan terkait sebelum menghapus user
+        Subscription::where('user_id', $id)->delete();
+
+        // Hapus user
+        $user->delete();
+
+        return redirect()->route('admin.users.index')->with('success', 'Akun pengguna berhasil dihapus.');
+    }
 }

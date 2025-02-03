@@ -77,4 +77,5 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/revenue', [AdminController::class, 'revenueReport'])->name('revenue.report');
     Route::put('/users/{id}', [AdminController::class, 'update'])->name('users.update');
     Route::get('/riwayat-tes', [AdminController::class, 'riwayatTes'])->name('riwayat.tes');
+    Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
 });
