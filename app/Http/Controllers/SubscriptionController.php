@@ -51,7 +51,7 @@ class SubscriptionController extends Controller
             $subscription = Subscription::create([
                 'transaction_id' => $transaction_id,
                 'user_id' => auth()->id(),
-                'amount_paid' => 100000,
+                'amount_paid' => 105000,
                 'payment_status' => 'pending',
                 'start_date' => $start_date,
                 'end_date' => $end_date
