@@ -199,6 +199,7 @@
             width: 80px;
             height: 50px;
             object-fit: contain;
+            filter: invert(10%) brightness(200%);
         }
 
 
