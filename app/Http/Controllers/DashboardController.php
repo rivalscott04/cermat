@@ -18,7 +18,8 @@ class DashboardController extends Controller
         $pendingTransactions = Subscription::where('payment_status', 'pending')
             ->sum('amount_paid');
 
-        $totalUsers = User::count();
+        $totalUsers = User::where('role', 'user')->count();
+
 
         $activeSubscribers = User::whereHas('subscriptions', function ($query) {
             $query->where('payment_status', 'paid')
