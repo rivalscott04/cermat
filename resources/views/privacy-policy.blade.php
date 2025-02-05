@@ -52,19 +52,26 @@
             border-radius: 8px;
             margin-top: 20px;
         }
+
+        .btn-info {
+            background-color: #1ab394;
+        }
     </style>
 </head>
 
 <body class="bg-light">
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">Police Academy Test Prep</a>
+            <a class="navbar-brand" href="#">Syarat dan Ketentuan</a>
         </div>
     </nav>
 
-    <div class="container py-5">
+    <div class="container py-3">
         <div class="row justify-content-center">
             <div class="col-lg-10">
+                <!-- Back Button -->
+                <a href="\" class="btn btn-info mb-5">&larr; Kembali</a>
+
                 <!-- Privacy Policy Section -->
                 <div class="policy-section">
                     <h2>Privacy Policy</h2>
@@ -100,34 +107,6 @@
                     </ol>
                 </div>
 
-                <!-- Delivery Policy Section -->
-                <div class="policy-section">
-                    <h2>Kebijakan Pengiriman</h2>
-                    <ol class="policy-list">
-                        <li><strong>Produk Digital:</strong> Semua produk digital akan dikirimkan secara elektronik
-                            melalui email atau aplikasi kami setelah konfirmasi pembelian.</li>
-                        <li><strong>Waktu Pengiriman:</strong> Produk digital biasanya tersedia untuk diunduh atau
-                            diakses dalam beberapa menit setelah pembelian.</li>
-                        <li><strong>Masalah:</strong> Jika Anda mengalami masalah dengan pengiriman materi Anda, silakan
-                            hubungi tim dukungan kami.</li>
-                    </ol>
-                </div>
-
-                <!-- Terms & Conditions Section -->
-                <div class="policy-section">
-                    <h2>Syarat & Ketentuan</h2>
-                    <ol class="policy-list">
-                        <li><strong>Penggunaan Layanan:</strong> Anda setuju untuk menggunakan aplikasi hanya untuk
-                            tujuan persiapan tes dan bukan untuk kegiatan yang melanggar hukum.</li>
-                        <li><strong>Tanggung Jawab Akun:</strong> Anda bertanggung jawab untuk menjaga kerahasiaan
-                            informasi akun Anda dan untuk semua aktivitas yang terjadi di bawah akun Anda.</li>
-                        <li><strong>Kepemilikan Konten:</strong> Semua konten yang disediakan dalam aplikasi adalah
-                            milik kami dan dilindungi oleh undang-undang hak cipta.</li>
-                        <li><strong>Penghentian:</strong> Kami berhak menghentikan akses Anda ke aplikasi jika Anda
-                            melanggar ketentuan ini.</li>
-                    </ol>
-                </div>
-
                 <!-- Contact Section -->
                 <div class="contact-info">
                     <h2>Hubungi Kami</h2>
@@ -145,11 +124,12 @@
 
     <footer class="bg-dark text-white py-4 mt-5">
         <div class="container text-center">
-            <p class="mb-0">© 2025 Police Academy Test Prep. All rights reserved.</p>
+            <strong>Copyright</strong> Mahir Cermat &copy; {{ date('Y') }}
         </div>
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
+
 
 </html>
