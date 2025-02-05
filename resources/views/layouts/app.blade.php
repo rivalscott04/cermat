@@ -24,6 +24,25 @@
             font-weight: bold;
             color: white;
         }
+
+        .logo {
+            max-width: 100%;
+            height: auto;
+            display: none;
+            /* hidden by default */
+            filter: invert(10%) brightness(200%);
+        }
+
+        .mini-navbar .logo {
+            display: block;
+            max-width: 50px;
+            margin: 5px auto;
+        }
+
+        .mini-navbar .logo-element {
+            display: block;
+            padding: 10px 0;
+        }
     </style>
     @stack('styles')
 </head>

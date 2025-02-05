@@ -15,7 +15,7 @@
                 </div>
 
                 <div class="logo-element">
-                    IN+
+                    <img src="{{ asset('img/logo.png') }}" alt="Logo" class="logo">
                 </div>
             </li>
 
