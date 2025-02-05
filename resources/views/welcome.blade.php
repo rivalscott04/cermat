@@ -358,6 +358,7 @@
                 </ul>
                 <div class="d-flex">
                     <a href="{{ route('login') }}" class="btn btn-light me-2">Masuk</a>
+                    <a href="{{ route('privacy') }}" class="btn btn-light me-2">Informasi</a>
                 </div>
             </div>
         </div>

@@ -32,6 +32,10 @@ Route::get('payment/process/{transaction_id}', [SubscriptionController::class, '
 Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('reset-password');
 Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('post.reset-password');
 
+Route::get('/privacy-policy', function () {
+    return view('privacy-policy');
+})->name('privacy');
+
 Route::get('/trial', function () {
     return view('kecermatan.trial');
 })->name('trial');

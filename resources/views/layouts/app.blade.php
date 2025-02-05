@@ -29,7 +29,6 @@
             max-width: 100%;
             height: auto;
             display: none;
-            /* hidden by default */
             filter: invert(10%) brightness(200%);
         }
 
