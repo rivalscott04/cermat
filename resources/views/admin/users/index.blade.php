@@ -135,10 +135,22 @@
                                                     {{ $user->subscriptions ? json_decode($user->subscriptions->payment_details, true)['package'] ?? '-' : '-' }}
                                                 </td>
                                                 <td class="text-center">
-                                                    <span
-                                                        class="status-select {{ $user->hasActiveSubscription() ? 'active' : 'inactive' }}">
-                                                        {{ $user->hasActiveSubscription() ? 'Active' : 'Inactive' }}
-                                                    </span>
+                                                    <div class="status-wrapper">
+                                                        <form method="POST"
+                                                            action="{{ route('admin.users.update', $user->id) }}"
+                                                            class="m-0">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <select name="is_active" onchange="this.form.submit()"
+                                                                class="status-select {{ $user->is_active ? 'active' : 'inactive' }}">
+                                                                <option value="1"
+                                                                    {{ $user->is_active ? 'selected' : '' }}>Active</option>
+                                                                <option value="0"
+                                                                    {{ !$user->is_active ? 'selected' : '' }}>Inactive
+                                                                </option>
+                                                            </select>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="d-flex justify-content-center align-items-center">

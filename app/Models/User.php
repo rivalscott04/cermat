@@ -32,10 +32,15 @@ class User extends Authenticatable
 
     public function hasActiveSubscription()
     {
+        if ($this->is_active) {
+            return true;
+        }
+
         return $this->subscriptions &&
             $this->subscriptions->payment_status === 'paid' &&
             $this->subscriptions->end_date > now();
     }
+
 
     public function hasilTes()
     {
