@@ -1,107 +1,99 @@
 @extends('layouts.app')
 
-@section('title', 'User')
+@section('content')
 
-@section('page-title', 'Tabel User')
+    @push('styles')
+        <style>
+            .avatar {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                color: white;
+            }
 
-@push('breadcrumbs')
-    <li class="breadcrumb-item active">
-        <strong>Tabel User</strong>
-    </li>
-@endpush
+            .status-select {
+                padding: 4px 30px;
+                border-radius: 16px;
+                font-size: 14px;
+                font-weight: 500;
+                border: none;
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                cursor: pointer;
+            }
 
-@push('styles')
-    <style>
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            color: white;
-        }
+            .status-select option[value="1"],
+            .status-select.active {
+                background-color: #ecfdf3;
+                color: #027a48;
+            }
 
-        .status-select {
-            padding: 4px 30px;
-            border-radius: 16px;
-            font-size: 14px;
-            font-weight: 500;
-            border: none;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            cursor: pointer;
-        }
+            .status-select option[value="0"],
+            .status-select.inactive {
+                background-color: #f2f4f7;
+                color: #344054;
+            }
 
-        .status-select option[value="1"],
-        .status-select.active {
-            background-color: #ecfdf3;
-            color: #027a48;
-        }
+            .action-icon {
+                color: #667085;
+                margin: 0 4px;
+                cursor: pointer;
+            }
 
-        .status-select option[value="0"],
-        .status-select.inactive {
-            background-color: #f2f4f7;
-            color: #344054;
-        }
+            .fa-trash {
+                color: #f13535;
+                font-size: 20px;
+            }
 
-        .action-icon {
-            color: #667085;
-            margin: 0 4px;
-            cursor: pointer;
-        }
+            .fa-edit {
+                color: #007BFF;
+                font-size: 18px;
+            }
 
-        .fa-trash {
-            color: #f13535;
-            font-size: 20px;
-        }
+            .fa-info-circle {
+                color: #000;
+                font-size: 18px;
+            }
 
-        .fa-edit {
-            color: #007BFF;
-            font-size: 18px;
-        }
+            .username {
+                font-weight: 500;
+                color: #101828;
+            }
 
-        .fa-info-circle {
-            color: #000;
-            font-size: 18px;
-        }
+            .handle {
+                color: #667085;
+                font-size: 14px;
+            }
 
-        .username {
-            font-weight: 500;
-            color: #101828;
-        }
+            .status-select:focus {
+                outline: none;
+            }
 
-        .handle {
-            color: #667085;
-            font-size: 14px;
-        }
+            .status-wrapper {
+                position: relative;
+                display: inline-block;
+            }
 
-        .status-select:focus {
-            outline: none;
-        }
-
-        .status-wrapper {
-            position: relative;
-            display: inline-block;
-        }
-
-        .status-wrapper::after {
-            content: '';
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 5px solid currentColor;
-            pointer-events: none;
-        }
-    </style>
-@endpush
+            .status-wrapper::after {
+                content: '';
+                position: absolute;
+                right: 12px;
+                top: 50%;
+                transform: translateY(-50%);
+                width: 0;
+                height: 0;
+                border-left: 5px solid transparent;
+                border-right: 5px solid transparent;
+                border-top: 5px solid currentColor;
+                pointer-events: none;
+            }
+        </style>
+    @endpush
 
 @section('content')
     <div class="container">
@@ -114,7 +106,7 @@
                         </div>
                         <div class="ibox-content">
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-bordered table-hover dataTables-example">
                                     <thead>
                                         <tr>
                                             <th>USER</th>
@@ -139,7 +131,9 @@
                                                     </div>
                                                 </td>
                                                 <td>{{ $user->email }}</td>
-                                                <td class="text-center">temp</td>
+                                                <td class="text-center">
+                                                    {{ $user->subscriptions ? json_decode($user->subscriptions->payment_details, true)['package'] ?? '-' : '-' }}
+                                                </td>
                                                 <td class="text-center">
                                                     <div class="status-wrapper">
                                                         <form method="POST"
@@ -196,10 +190,26 @@
 
 @push('scripts')
     <script>
-        // Update select background color when value changes
-        document.querySelectorAll('.status-select').forEach(select => {
-            select.addEventListener('change', function() {
-                this.className = 'status-select ' + (this.value === '1' ? 'active' : 'inactive');
+        $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn btn-white btn-sm';
+
+        $(document).ready(function() {
+            $('.dataTables-example').DataTable({
+                pageLength: 25,
+                responsive: true,
+                dom: 'tp<"bottom"l>',
+                searching: true,
+                buttons: [],
+                language: {
+                    lengthMenu: "Show _MENU_ entries"
+                }
+            });
+
+            // Update select background color when value changes
+            document.querySelectorAll('.status-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    this.className = 'status-select ' + (this.value === '1' ? 'active' :
+                    'inactive');
+                });
             });
         });
     </script>
