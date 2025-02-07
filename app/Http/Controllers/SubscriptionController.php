@@ -41,26 +41,31 @@ class SubscriptionController extends Controller
         ]);
     }
 
-    public function process($transaction_id)
+    public function process()
     {
-        $subscription = Subscription::where('transaction_id', $transaction_id)->first();
-        $start_date = now();
-        $end_date = $start_date->copy()->addDays(30);
+        $user = auth()->user();
+
+        // Cek apakah user sudah memiliki transaksi yang belum selesai
+        $subscription = Subscription::where('user_id', $user->id)
+            ->whereIn('payment_status', ['pending', 'failed'])
+            ->latest()
+            ->first();
 
         if (!$subscription) {
+            // Jika tidak ada transaksi sebelumnya, buat yang baru
+            $transaction_id = 'ORD-' . time() . '-' . $user->id;
             $subscription = Subscription::create([
                 'transaction_id' => $transaction_id,
-                'user_id' => auth()->id(),
+                'user_id' => $user->id,
                 'amount_paid' => 105000,
                 'payment_status' => 'pending',
-                'start_date' => $start_date,
-                'end_date' => $end_date
+                'start_date' => now(),
+                'end_date' => now()->addDays(30),
             ]);
         }
 
         if ($subscription->payment_status == 'paid') {
-            return redirect()->route('login')
-                ->with('message', 'Pembayaran sudah selesai, silahkan login');
+            return redirect()->route('login')->with('message', 'Pembayaran sudah selesai, silakan login.');
         }
 
         try {
@@ -70,9 +75,9 @@ class SubscriptionController extends Controller
                     'gross_amount' => $subscription->amount_paid,
                 ],
                 'customer_details' => [
-                    'first_name' => $subscription->user->name,
-                    'email' => $subscription->user->email,
-                    'phone' => $subscription->user->phone_number,
+                    'first_name' => $user->name,
+                    'email' => $user->email,
+                    'phone' => $user->phone_number,
                 ],
                 'item_details' => [
                     [
@@ -99,8 +104,8 @@ class SubscriptionController extends Controller
             $subscription->update([
                 'payment_details' => json_encode([
                     'snap_token' => $snapToken,
-                    'package' => 'SILVER',
-                    'package_type' => 'TRYOUT'
+                    'package' => 'PAKET_CERMAT',
+                    'package_type' => 'PAKET_CERMAT'
                 ])
             ]);
 
@@ -110,10 +115,10 @@ class SubscriptionController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Midtrans Error: ' . $e->getMessage());
-            return redirect()->back()
-                ->with('error', 'Terjadi kesalahan dalam memproses pembayaran');
+            return redirect()->back()->with('error', 'Terjadi kesalahan dalam memproses pembayaran');
         }
     }
+
 
     public function notification(Request $request)
     {
@@ -165,8 +170,8 @@ class SubscriptionController extends Controller
                 'payment_type' => $notif->payment_type,
                 'transaction_status' => $notif->transaction_status,
                 'transaction_time' => $notif->transaction_time,
-                'package' => 'SILVER',
-                'package_type' => 'TRYOUT',
+                'package' => 'PAKET_CERMAT',
+                'package_type' => 'PAKET_CERMAT',
                 'gross_amount' => $notif->gross_amount,
                 'transaction_id' => $notif->transaction_id,
             ], $additionalDetails);
