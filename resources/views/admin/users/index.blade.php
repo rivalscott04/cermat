@@ -132,7 +132,11 @@
                                                 </td>
                                                 <td>{{ $user->email }}</td>
                                                 <td class="text-center">
-                                                    {{ $user->subscriptions ? json_decode($user->subscriptions->payment_details, true)['package'] ?? '-' : '-' }}
+                                                    @if ($user->hasActiveSubscription())
+                                                        {{ $user->subscriptions ? json_decode($user->subscriptions->payment_details, true)['package'] ?? '-' : '-' }}
+                                                    @else
+                                                        -
+                                                    @endif
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="status-wrapper">
