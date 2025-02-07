@@ -17,14 +17,11 @@ Route::get('/', function () {
 
 //Routes Harga Paket
 Route::get('/pricing', [PricingController::class, 'index'])->name('pricing.index');
-// Routes for Tes Kecermatan
-
-
 
 // Authentication Routes
-Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('post.register');;
-Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::get('/register', [AuthController::class, 'showRegister'])->middleware('guest')->name('register');
+Route::post('/register', [AuthController::class, 'register'])->name('post.register');
+Route::get('/login', [AuthController::class, 'showLogin'])->middleware('guest')->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('post.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('payment/process/{transaction_id}', [SubscriptionController::class, 'process'])->name('payment.process');
@@ -42,9 +39,9 @@ Route::get('/trial', function () {
 
 // Route untuk subscription dan proses Midtrans
 Route::get('subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
-Route::get('subscription/process/{transaction_id}', [SubscriptionController::class, 'process'])->name('subscription.process');
+Route::get('subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
 Route::get('subscription/get-fee', [SubscriptionController::class, 'getFee'])->name('subscription.get-fee');
-Route::post('subscription/notification', [SubscriptionController::class, 'notification'])->name('subscription.notification');
+Route::post('subscription/notification', [SubscriptionController::class, 'notification'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->name('subscription.notification');
 Route::get('subscription/finish', [SubscriptionController::class, 'finish'])->name('subscription.finish');
 Route::get('subscription/unfinish', [SubscriptionController::class, 'unfinish'])->name('subscription.unfinish');
 Route::get('subscription/error', [SubscriptionController::class, 'error'])->name('subscription.error');

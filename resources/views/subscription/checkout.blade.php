@@ -105,8 +105,7 @@
                             <i class="fa fa-check text-success"></i> Riwayat detail hasil tes
                         </div>
 
-                        <a href="{{ route('subscription.process', ['transaction_id' => time() . auth()->id()]) }}"
-                            class="btn btn-primary">Pilih
+                        <a href="{{ route('subscription.process') }}" class="btn btn-primary">Pilih
                             Paket</a>
 
                     </div>
