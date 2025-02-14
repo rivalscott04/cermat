@@ -35,7 +35,7 @@ class AdminController extends Controller
         $users = User::where('role', 'user')
             ->with('subscriptions')
             ->latest()
-            ->paginate(10);
+            ->paginate(25);
 
         return view('admin.users.index', compact('users'));
     }
@@ -44,7 +44,7 @@ class AdminController extends Controller
     {
         $subscriptions = Subscription::with('user')
             ->latest()
-            ->paginate(10);
+            ->paginate(25);
 
         return view('admin.subscriptions.index', compact('subscriptions'));
     }
