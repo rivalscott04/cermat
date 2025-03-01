@@ -56,6 +56,28 @@
         .btn-info {
             background-color: #1ab394;
         }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            max-width: 100%;
+            margin: 30px 0;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
     </style>
 </head>
 
@@ -71,6 +93,20 @@
             <div class="col-lg-10">
                 <!-- Back Button -->
                 <a href="\" class="btn btn-info mb-5">&larr; Kembali</a>
+
+                <!-- Video Section -->
+                <div class="policy-section">
+                    <h2>Video Panduan</h2>
+                    <p class="lead">Tonton video panduan ini untuk memahami lebih lanjut tentang layanan kami:</p>
+
+                    <div class="video-container">
+                        <!-- Replace VIDEO_ID with your actual YouTube video ID -->
+                        <iframe src="https://www.youtube.com/embed/wU8hKwhPF_k?si=R1mkGo6BJVft-wpN"
+                            title="YouTube video player"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowfullscreen></iframe>
+                    </div>
+                </div>
 
                 <!-- Privacy Policy Section -->
                 <div class="policy-section">
@@ -130,6 +166,5 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
 </body>
-
 
 </html>

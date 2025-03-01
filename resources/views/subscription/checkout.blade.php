@@ -54,7 +54,7 @@
 
 <body class="gray-bg">
     <div class="back-button-container">
-        <a href="{{ url()->previous() }}" class="btn btn-default">
+        <a href="{{ route('user.profile', ['userId' => Auth::user()->id]) }}" class="btn btn-default">
             <i class="fa fa-arrow-left"></i> Kembali
         </a>
     </div>
