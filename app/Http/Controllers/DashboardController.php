@@ -21,9 +21,12 @@ class DashboardController extends Controller
         $totalUsers = User::where('role', 'user')->count();
 
 
-        $activeSubscribers = User::whereHas('subscriptions', function ($query) {
-            $query->where('payment_status', 'paid')
-                ->where('end_date', '>', Carbon::now());
+        $activeSubscribers = User::where(function ($query) {
+            $query->where('is_active', true)
+                ->orWhereHas('subscriptions', function ($subQuery) {
+                    $subQuery->where('payment_status', 'paid')
+                        ->where('end_date', '>', Carbon::now());
+                });
         })->count();
 
         $previousMonthIncome = Subscription::where('payment_status', 'paid')
