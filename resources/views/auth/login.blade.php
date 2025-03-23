@@ -52,8 +52,10 @@
                 </div>
                 <button type="submit" class="btn btn-primary full-width m-b block">Masuk</button>
 
-                <a href="{{ route('reset-password') }}"><small>Lupa Password?</small></a>
-                <p class="text-muted text-center"><small>Belum memiliki akun?</small></p>
+                <a href="{{ route('reset-password') }}">Lupa Password?</a>
+                <p class="text-muted text-center">
+                    Belum memiliki akun?
+                </p>
                 <a class="btn btn-sm btn-white btn-block" href="{{ url('register') }}">Buat Akun</a>
             </form>
             <p class="m-t"> <small>Mahir Cermat &copy; 2025</small> </p>

@@ -110,6 +110,22 @@
 
                 <!-- Privacy Policy Section -->
                 <div class="policy-section">
+                    <h2>Lupa password</h2>
+                    <p class="lead">Ikuti langkah ini jika anda lupa password.</p>
+                    <ol class="policy-list">
+                        <li style="font-size: 18px">Tekan tombol "Lupa password" seperti yang tertera di gambar <br><br>
+                            <img src="{{ asset('img/lupa password.jpeg') }}" alt="" class="img-fluid">
+                        </li>
+                        <li style="font-size: 18px">Kemudian isi alamat email beserta password baru anda, dan tekan
+                            tombol "Reset Password".<br><br>
+                            <img src="{{ asset('img/lupa password 2.png') }}" alt="" class="img-fluid">
+                        </li>
+
+                    </ol>
+                </div>
+
+                <!-- Privacy Policy Section -->
+                <div class="policy-section">
                     <h2>Privacy Policy</h2>
                     <p class="lead">Privasi Anda penting bagi kami. Kebijakan Privasi ini menjelaskan bagaimana kami
                         mengumpulkan, menggunakan, mengungkapkan, dan melindungi informasi Anda.</p>
