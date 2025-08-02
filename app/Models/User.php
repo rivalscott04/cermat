@@ -46,4 +46,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(HasilTes::class);
     }
+
+    public function userTryoutSoal()
+    {
+        return $this->hasMany(UserTryoutSoal::class);
+    }
+
+    public function getPaketAksesAttribute()
+    {
+        if (!$this->hasActiveSubscription()) {
+            return 'free';
+        }
+        
+        // Logika untuk menentukan paket berdasarkan subscription
+        // Bisa disesuaikan dengan kebutuhan bisnis
+        return 'premium'; // Default untuk sementara
+    }
 }

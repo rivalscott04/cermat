@@ -32,6 +32,26 @@
                         <span class="nav-label">User</span>
                     </a>
                 </li>
+
+                <!-- CBT Management -->
+                <li>
+                    <a href="{{ route('admin.kategori.index') }}">
+                        <i class="fa fa-tags"></i>
+                        <span class="nav-label">Kategori Soal</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.soal.index') }}">
+                        <i class="fa fa-question-circle"></i>
+                        <span class="nav-label">Soal</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.tryout.index') }}">
+                        <i class="fa fa-graduation-cap"></i>
+                        <span class="nav-label">Tryout</span>
+                    </a>
+                </li>
             @endif
 
             @if (Auth::user()->role == 'user')
@@ -44,8 +64,15 @@
 
                 <li>
                     <a href="{{ route('kecermatan') }}">
-                        <i class="fa fa-user"></i>
+                        <i class="fa fa-eye"></i>
                         <span class="nav-label">Tes Kecermatan</span>
+                    </a>
+                </li>
+
+                <li>
+                    <a href="{{ route('user.tryout.index') }}">
+                        <i class="fa fa-graduation-cap"></i>
+                        <span class="nav-label">Tryout CBT</span>
                     </a>
                 </li>
             @endif

@@ -9,6 +9,9 @@ use App\Http\Controllers\KecermatanController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\SoalKecermatanController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\SoalController;
+use App\Http\Controllers\TryoutController;
+use App\Http\Controllers\KategoriSoalController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -63,6 +66,13 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/tes-kecermatan/next-soal', [SoalKecermatanController::class, 'getNextSoal'])->name('kecermatan.nextSoal');
         Route::post('/tes-kecermatan/simpan-hasil', [SoalKecermatanController::class, 'simpanHasil'])->name('kecermatan.simpanHasil');
         Route::get('/tes-kecermatan/hasil', [SoalKecermatanController::class, 'hasilTes'])->name('kecermatan.hasil');
+        
+        // CBT Routes
+        Route::get('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index');
+        Route::get('/tryout/{tryout}/start', [TryoutController::class, 'start'])->name('user.tryout.start');
+        Route::get('/tryout/{tryout}/work', [TryoutController::class, 'work'])->name('user.tryout.work');
+        Route::post('/tryout/{tryout}/submit-answer', [TryoutController::class, 'submitAnswer'])->name('user.tryout.submit-answer');
+        Route::get('/tryout/{tryout}/finish', [TryoutController::class, 'finish'])->name('user.tryout.finish');
     });
 
     Route::get('/tes-kecermatan/riwayat/{userId}', [KecermatanController::class, 'riwayat'])->name('kecermatan.riwayat');
@@ -79,4 +89,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/users/{id}', [AdminController::class, 'update'])->name('users.update');
     Route::get('/riwayat-tes', [AdminController::class, 'riwayatTes'])->name('riwayat.tes');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    
+    // CBT Admin Routes
+    Route::resource('kategori', KategoriSoalController::class);
+    Route::post('kategori/{kategori}/toggle-status', [KategoriSoalController::class, 'toggleStatus'])->name('kategori.toggle-status');
+    
+    Route::resource('soal', SoalController::class);
+    Route::post('soal/upload-word', [SoalController::class, 'uploadWord'])->name('soal.upload-word');
+    
+    Route::resource('tryout', TryoutController::class);
 });

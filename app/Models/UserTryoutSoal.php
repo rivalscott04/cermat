@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class UserTryoutSoal extends Model
+{
+    protected $table = 'user_tryout_soal';
+    
+    protected $fillable = [
+        'user_id',
+        'tryout_id',
+        'soal_id',
+        'urutan',
+        'jawaban_user',
+        'skor',
+        'waktu_jawab',
+        'sudah_dijawab'
+    ];
+
+    protected $casts = [
+        'jawaban_user' => 'array',
+        'skor' => 'decimal:2',
+        'sudah_dijawab' => 'boolean'
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function tryout()
+    {
+        return $this->belongsTo(Tryout::class);
+    }
+
+    public function soal()
+    {
+        return $this->belongsTo(Soal::class, 'soal_id');
+    }
+
+    public function scopeByUser($query, $userId)
+    {
+        return $query->where('user_id', $userId);
+    }
+
+    public function scopeByTryout($query, $tryoutId)
+    {
+        return $query->where('tryout_id', $tryoutId);
+    }
+
+    public function scopeSudahDijawab($query)
+    {
+        return $query->where('sudah_dijawab', true);
+    }
+
+    public function scopeBelumDijawab($query)
+    {
+        return $query->where('sudah_dijawab', false);
+    }
+} 
