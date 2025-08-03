@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class UserTryoutSoal extends Model
 {
     protected $table = 'user_tryout_soal';
-    
+
     protected $fillable = [
         'user_id',
         'tryout_id',
@@ -16,6 +16,7 @@ class UserTryoutSoal extends Model
         'jawaban_user',
         'skor',
         'waktu_jawab',
+        'shuffle_seed',
         'sudah_dijawab'
     ];
 
@@ -59,4 +60,4 @@ class UserTryoutSoal extends Model
     {
         return $query->where('sudah_dijawab', false);
     }
-} 
+}

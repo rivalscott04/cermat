@@ -7,13 +7,14 @@ use Illuminate\Database\Eloquent\Model;
 class Soal extends Model
 {
     protected $table = 'soals';
-    
+
     protected $fillable = [
         'pertanyaan',
         'tipe',
         'kategori_id',
         'pembahasan',
         'jawaban_benar',
+        'gambar',
         'is_active'
     ];
 
@@ -50,4 +51,13 @@ class Soal extends Model
     {
         return $query->where('tipe', $tipe);
     }
-} 
+
+    // Accessor for image URL
+    public function getGambarUrlAttribute()
+    {
+        if ($this->gambar) {
+            return asset('storage/' . $this->gambar);
+        }
+        return null;
+    }
+}

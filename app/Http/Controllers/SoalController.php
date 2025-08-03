@@ -7,6 +7,7 @@ use App\Models\KategoriSoal;
 use App\Models\OpsiSoal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\IOFactory;
 
 class SoalController extends Controller
@@ -15,39 +16,56 @@ class SoalController extends Controller
     {
         $soals = Soal::with(['kategori', 'opsi'])->paginate(20);
         $kategoris = KategoriSoal::active()->get();
-        
+
         return view('admin.soal.index', compact('soals', 'kategoris'));
     }
 
     public function create()
     {
         $kategoris = KategoriSoal::active()->get();
-        $tipes = ['benar_salah', 'pg_satu', 'pg_bobot', 'pg_pilih_2'];
-        
+        $tipes = ['benar_salah', 'pg_satu', 'pg_bobot', 'pg_pilih_2', 'gambar'];
+
         return view('admin.soal.create', compact('kategoris', 'tipes'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'pertanyaan' => 'required|string',
-            'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2',
+            'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2,gambar',
             'kategori_id' => 'required|exists:kategori_soal,id',
             'pembahasan' => 'nullable|string',
             'jawaban_benar' => 'nullable|string',
             'opsi' => 'required|array',
             'opsi.*.teks' => 'required|string',
             'opsi.*.bobot' => 'nullable|numeric|min:0|max:1'
-        ]);
+        ];
+
+        // Add image validation if tipe is gambar
+        if ($request->tipe === 'gambar') {
+            $rules['gambar'] = 'required|image|mimes:jpeg,png,jpg,gif|max:2048';
+        }
+
+        $request->validate($rules);
 
         DB::transaction(function () use ($request) {
-            $soal = Soal::create([
+            $soalData = [
                 'pertanyaan' => $request->pertanyaan,
                 'tipe' => $request->tipe,
                 'kategori_id' => $request->kategori_id,
                 'pembahasan' => $request->pembahasan,
                 'jawaban_benar' => $request->jawaban_benar
-            ]);
+            ];
+
+            // Handle image upload
+            if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
+                $image = $request->file('gambar');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $imagePath = $image->storeAs('soal_images', $imageName, 'public');
+                $soalData['gambar'] = $imagePath;
+            }
+
+            $soal = Soal::create($soalData);
 
             foreach ($request->opsi as $index => $opsiData) {
                 OpsiSoal::create([
@@ -72,9 +90,9 @@ class SoalController extends Controller
         try {
             $file = $request->file('file');
             $phpWord = IOFactory::load($file->getPathname());
-            
+
             $soals = $this->parseWordDocument($phpWord, $request->kategori_id);
-            
+
             DB::transaction(function () use ($soals) {
                 foreach ($soals as $soalData) {
                     $soal = Soal::create([
@@ -106,14 +124,14 @@ class SoalController extends Controller
     {
         $soals = [];
         $currentSoal = null;
-        
+
         foreach ($phpWord->getSections() as $section) {
             foreach ($section->getElements() as $element) {
                 if (method_exists($element, 'getElements')) {
                     foreach ($element->getElements() as $childElement) {
                         if (method_exists($childElement, 'getText')) {
                             $text = trim($childElement->getText());
-                            
+
                             if (preg_match('/\[KATEGORI\]\s*(.+)/', $text, $matches)) {
                                 // Skip kategori parsing for now, use provided kategori_id
                             } elseif (preg_match('/\[TIPE\]\s*(.+)/', $text, $matches)) {
@@ -182,12 +200,12 @@ class SoalController extends Controller
                 }
             }
         }
-        
+
         // Add current soal if exists
         if ($currentSoal && isset($currentSoal['pertanyaan'])) {
             $soals[] = $currentSoal;
         }
-        
+
         return $soals;
     }
 
@@ -195,32 +213,60 @@ class SoalController extends Controller
     {
         $soal->load(['kategori', 'opsi']);
         $kategoris = KategoriSoal::active()->get();
-        $tipes = ['benar_salah', 'pg_satu', 'pg_bobot', 'pg_pilih_2'];
-        
+        $tipes = ['benar_salah', 'pg_satu', 'pg_bobot', 'pg_pilih_2', 'gambar'];
+
         return view('admin.soal.edit', compact('soal', 'kategoris', 'tipes'));
     }
 
     public function update(Request $request, Soal $soal)
     {
-        $request->validate([
+        $rules = [
             'pertanyaan' => 'required|string',
-            'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2',
+            'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2,gambar',
             'kategori_id' => 'required|exists:kategori_soal,id',
             'pembahasan' => 'nullable|string',
             'jawaban_benar' => 'nullable|string',
             'opsi' => 'required|array',
             'opsi.*.teks' => 'required|string',
             'opsi.*.bobot' => 'nullable|numeric|min:0|max:1'
-        ]);
+        ];
+
+        // Add image validation if tipe is gambar and new image is uploaded
+        if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
+            $rules['gambar'] = 'image|mimes:jpeg,png,jpg,gif|max:2048';
+        }
+
+        $request->validate($rules);
 
         DB::transaction(function () use ($request, $soal) {
-            $soal->update([
+            $soalData = [
                 'pertanyaan' => $request->pertanyaan,
                 'tipe' => $request->tipe,
                 'kategori_id' => $request->kategori_id,
                 'pembahasan' => $request->pembahasan,
                 'jawaban_benar' => $request->jawaban_benar
-            ]);
+            ];
+
+            // Handle image upload
+            if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
+                // Delete old image if exists
+                if ($soal->gambar && Storage::disk('public')->exists($soal->gambar)) {
+                    Storage::disk('public')->delete($soal->gambar);
+                }
+
+                $image = $request->file('gambar');
+                $imageName = time() . '_' . $image->getClientOriginalName();
+                $imagePath = $image->storeAs('soal_images', $imageName, 'public');
+                $soalData['gambar'] = $imagePath;
+            } elseif ($request->tipe !== 'gambar' && $soal->gambar) {
+                // Remove image if tipe changed from gambar to something else
+                if (Storage::disk('public')->exists($soal->gambar)) {
+                    Storage::disk('public')->delete($soal->gambar);
+                }
+                $soalData['gambar'] = null;
+            }
+
+            $soal->update($soalData);
 
             // Delete existing options
             $soal->opsi()->delete();
@@ -241,7 +287,12 @@ class SoalController extends Controller
 
     public function destroy(Soal $soal)
     {
+        // Delete image if exists
+        if ($soal->gambar && Storage::disk('public')->exists($soal->gambar)) {
+            Storage::disk('public')->delete($soal->gambar);
+        }
+
         $soal->delete();
         return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil dihapus');
     }
-} 
+}
