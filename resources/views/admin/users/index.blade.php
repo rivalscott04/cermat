@@ -162,16 +162,14 @@
                                                             class="action-icon">
                                                             <i class="fa fa-info-circle"></i>
                                                         </a>
-                                                        @if($user->canBeImpersonated())
+                                                        @canBeImpersonated($user)
                                                             <a href="#" 
                                                                 class="action-icon impersonate-btn"
-                                                                data-user-id="{{ $user->id }}"
-                                                                data-user-name="{{ $user->name }}"
-                                                                data-user-email="{{ $user->email }}"
+                                                                onclick="confirmImpersonate({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')"
                                                                 title="Login sebagai user ini">
                                                                 <i class="fa fa-user-secret" style="color: #28a745;"></i>
                                                             </a>
-                                                        @endif
+                                                        @endCanBeImpersonated
                                                         <form action="{{ route('admin.users.delete', $user->id) }}"
                                                             method="POST"
                                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');"
@@ -231,59 +229,51 @@
                 });
             });
 
-            // Impersonate button handler
-            $('.impersonate-btn').on('click', function(e) {
-                e.preventDefault();
-                
-                const userId = $(this).data('user-id');
-                const userName = $(this).data('user-name');
-                const userEmail = $(this).data('user-email');
-                
-                Swal.fire({
-                    title: 'Konfirmasi Impersonate',
-                    html: `
-                        <div class="text-left">
-                            <p><strong>Anda akan login sebagai:</strong></p>
-                            <div class="user-info" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
-                                <p><i class="fa fa-user"></i> <strong>Nama:</strong> ${userName}</p>
-                                <p><i class="fa fa-envelope"></i> <strong>Email:</strong> ${userEmail}</p>
-                                <p><i class="fa fa-id-badge"></i> <strong>ID:</strong> ${userId}</p>
-                            </div>
-                            <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Peringatan:</strong></p>
-                            <ul class="text-left" style="margin-left: 20px;">
-                                <li>Semua aktivitas akan tercatat dalam log</li>
-                                <li>Gunakan fitur ini hanya untuk troubleshooting</li>
-                                <li>Klik "Stop Impersonating" untuk kembali ke akun admin</li>
-                            </ul>
-                        </div>
-                    `,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fa fa-user-secret"></i> Ya, Impersonate',
-                    cancelButtonText: '<i class="fa fa-times"></i> Batal',
-                    reverseButtons: true,
-                    customClass: {
-                        popup: 'swal-wide',
-                        confirmButton: 'btn btn-success',
-                        cancelButton: 'btn btn-secondary'
-                    },
-                    buttonsStyling: false,
-                    showLoaderOnConfirm: true,
-                    preConfirm: () => {
-                        return new Promise((resolve) => {
-                            // Show loading state
-                            Swal.showLoading();
-                            
-                            // Redirect to impersonate route using lab404 package
-                            window.location.href = `{{ route('admin.impersonate', ':userId') }}`.replace(':userId', userId);
-                        });
-                    },
-                    allowOutsideClick: () => !Swal.isLoading()
-                });
-            });
+
         });
+        
+        // Impersonate confirmation function
+        function confirmImpersonate(userId, userName, userEmail) {
+            Swal.fire({
+                title: '<i class="fa fa-user-secret" style="color: #28a745;"></i> Konfirmasi Impersonate',
+                html: `
+                    <div class="text-left">
+                        <p><strong>Anda akan login sebagai user berikut:</strong></p>
+                        <div class="user-info p-3 mb-3" style="background: #f8f9fa; border-radius: 8px;">
+                            <p><strong>Nama:</strong> ${userName}</p>
+                            <p><strong>Email:</strong> ${userEmail}</p>
+                        </div>
+                        <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> 
+                        <strong>Peringatan:</strong> Semua aktivitas akan tercatat sebagai user ini.</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fa fa-sign-in"></i> Ya, Login Sebagai User Ini',
+                cancelButtonText: '<i class="fa fa-times"></i> Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'swal-wide'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Memproses...',
+                        html: 'Sedang login sebagai user lain...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Redirect to impersonate route
+                    window.location.href = "{{ route('admin.impersonate', ':userId') }}".replace(':userId', userId);
+                }
+            });
+        }
     </script>
     
     <style>
