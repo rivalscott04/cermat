@@ -69,6 +69,7 @@ Route::middleware(['auth'])->group(function () {
 
         // CBT Routes
         Route::get('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index');
+        Route::post('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index.post');
         Route::get('/tryout/{tryout}/start', [TryoutController::class, 'start'])->name('user.tryout.start');
         Route::get('/{tryout}/restart', [TryoutController::class, 'restart'])->name('user.tryout.restart'); // Route baru
         Route::get('/tryout/{tryout}/work', [TryoutController::class, 'work'])->name('user.tryout.work');
@@ -95,6 +96,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/users/{id}', [AdminController::class, 'update'])->name('users.update');
     Route::get('/riwayat-tes', [AdminController::class, 'riwayatTes'])->name('riwayat.tes');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+
+    // Impersonate Routes
+    Route::get('/impersonate/{id}', [AdminController::class, 'impersonate'])->name('impersonate');
+    Route::get('/stop-impersonating', [AdminController::class, 'stopImpersonating'])->name('stop-impersonating');
 
     // CBT Admin Routes
     Route::resource('kategori', KategoriSoalController::class);

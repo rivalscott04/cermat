@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Session;
 
 class User extends Authenticatable
 {
@@ -61,5 +62,44 @@ class User extends Authenticatable
         // Logika untuk menentukan paket berdasarkan subscription
         // Bisa disesuaikan dengan kebutuhan bisnis
         return 'premium'; // Default untuk sementara
+    }
+
+    /**
+     * Check if current user is being impersonated
+     */
+    public static function isImpersonating()
+    {
+        return Session::has('impersonate_id');
+    }
+
+    /**
+     * Get the original admin user who is impersonating
+     */
+    public static function getOriginalUser()
+    {
+        if (self::isImpersonating()) {
+            $originalUserId = Session::get('impersonate_id');
+            return self::find($originalUserId);
+        }
+        return null;
+    }
+
+    /**
+     * Get impersonation duration in minutes
+     */
+    public static function getImpersonationDuration()
+    {
+        if (self::isImpersonating() && Session::has('impersonate_started_at')) {
+            return now()->diffInMinutes(Session::get('impersonate_started_at'));
+        }
+        return null;
+    }
+
+    /**
+     * Check if user can be impersonated
+     */
+    public function canBeImpersonated()
+    {
+        return $this->role !== 'admin' && $this->id !== auth()->id();
     }
 }

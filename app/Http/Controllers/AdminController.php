@@ -8,6 +8,8 @@ use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class AdminController extends Controller
 {
@@ -27,7 +29,25 @@ class AdminController extends Controller
         $totalRevenue = Subscription::where('payment_status', 'paid')
             ->sum('amount_paid');
 
-        return view('admin.dashboard', compact('totalUsers', 'activeSubscriptions', 'totalRevenue'));
+        // Get recent impersonation logs (last 10)
+        $recentImpersonations = collect();
+        $logFile = storage_path('logs/laravel.log');
+        
+        if (file_exists($logFile)) {
+            $logContent = file_get_contents($logFile);
+            preg_match_all('/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] .* Admin impersonation (started|ended).*admin_id.*?(\d+).*?target_user_id.*?(\d+)/s', $logContent, $matches, PREG_SET_ORDER);
+            
+            foreach (array_slice($matches, -10) as $match) {
+                $recentImpersonations->push([
+                    'timestamp' => $match[1],
+                    'action' => $match[2],
+                    'admin_id' => $match[3],
+                    'target_user_id' => $match[4]
+                ]);
+            }
+        }
+
+        return view('admin.dashboard', compact('totalUsers', 'activeSubscriptions', 'totalRevenue', 'recentImpersonations'));
     }
 
     public function userList()
@@ -123,5 +143,91 @@ class AdminController extends Controller
         $user->delete();
 
         return redirect()->route('admin.users.index')->with('success', 'Akun pengguna berhasil dihapus.');
+    }
+
+    /**
+     * Impersonate a user (admin only)
+     */
+    public function impersonate($id)
+    {
+        // Check if current user is admin
+        if (Auth::user()->role !== 'admin') {
+            return redirect()->back()->with('error', 'Unauthorized access.');
+        }
+
+        $user = User::findOrFail($id);
+
+        // Prevent admin from impersonating another admin
+        if ($user->role === 'admin') {
+            return redirect()->back()->with('error', 'Tidak dapat impersonate admin lain.');
+        }
+
+        // Prevent impersonating yourself
+        if ($user->id === Auth::id()) {
+            return redirect()->back()->with('error', 'Tidak dapat impersonate diri sendiri.');
+        }
+
+        // Store original admin user ID in session
+        Session::put('impersonate_id', Auth::id());
+        Session::put('impersonating_user_id', $user->id);
+        Session::put('impersonate_started_at', now());
+
+        // Login as the target user
+        Auth::login($user);
+
+        // Log the impersonation for security
+        \Log::info('Admin impersonation started', [
+            'admin_id' => Session::get('impersonate_id'),
+            'admin_name' => User::find(Session::get('impersonate_id'))->name,
+            'target_user_id' => $user->id,
+            'target_user_name' => $user->name,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'timestamp' => now()
+        ]);
+
+        return redirect()->route('user.tryout.index')->with('success', "Sekarang Anda login sebagai {$user->name}");
+    }
+
+    /**
+     * Stop impersonating and return to admin account
+     */
+    public function stopImpersonating()
+    {
+        // Check if currently impersonating
+        if (!Session::has('impersonate_id')) {
+            return redirect()->back()->with('error', 'Tidak sedang dalam mode impersonate.');
+        }
+
+        $originalAdminId = Session::get('impersonate_id');
+        $originalAdmin = User::find($originalAdminId);
+        $impersonatedUser = Auth::user();
+
+        if (!$originalAdmin) {
+            return redirect()->route('login')->with('error', 'Admin account tidak ditemukan.');
+        }
+
+        // Log the impersonation end for security
+        \Log::info('Admin impersonation ended', [
+            'admin_id' => $originalAdminId,
+            'admin_name' => $originalAdmin->name,
+            'target_user_id' => $impersonatedUser->id,
+            'target_user_name' => $impersonatedUser->name,
+            'duration_minutes' => Session::has('impersonate_started_at') ? 
+                now()->diffInMinutes(Session::get('impersonate_started_at')) : null,
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
+            'timestamp' => now()
+        ]);
+
+        // Clear impersonation session
+        Session::forget('impersonate_id');
+        Session::forget('impersonating_user_id');
+        Session::forget('impersonate_started_at');
+
+        // Login back as admin
+        Auth::login($originalAdmin);
+
+        return redirect()->route('admin.dashboard')->with('success', 'Kembali ke akun admin.');
     }
 }

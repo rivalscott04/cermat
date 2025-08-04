@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.tryout')
 
 @section('title', 'Pengerjaan Tryout - ' . $tryout->judul)
 
@@ -16,13 +16,25 @@
                                     {{ $totalQuestions }}</small>
                             </div>
                             <div class="col-auto">
-                                <div class="timer-container">
-                                    <div class="timer-display">
-                                        <i class="fa fa-clock-o"></i>
-                                        <span id="timer">--:--</span>
-                                    </div>
-                                    <div class="progress" style="height: 4px;">
-                                        <div id="timer-progress" class="progress-bar bg-warning" style="width: 100%"></div>
+                                <div class="d-flex align-items-center">
+                                    <!-- Fullscreen Toggle Button -->
+                                    <button class="btn btn-outline-primary btn-sm mr-2" id="tryoutFullscreenToggle" title="Mode Fokus (F11)">
+                                        <i class="fa fa-expand"></i> Mode Fokus
+                                    </button>
+                                    
+                                    <!-- Keyboard Shortcuts Info -->
+                                    <button class="btn btn-outline-info btn-sm mr-2" id="showShortcuts" title="Keyboard Shortcuts">
+                                        <i class="fa fa-keyboard-o"></i> Shortcuts
+                                    </button>
+                                    
+                                    <div class="timer-container">
+                                        <div class="timer-display">
+                                            <i class="fa fa-clock-o"></i>
+                                            <span id="timer">--:--</span>
+                                        </div>
+                                        <div class="progress" style="height: 4px;">
+                                            <div id="timer-progress" class="progress-bar bg-warning" style="width: 100%"></div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -1008,6 +1020,85 @@
             $('#modalImage').on('click', function(e) {
                 e.stopPropagation();
             });
+            
+            // Tryout Fullscreen Toggle Integration
+            const tryoutFullscreenToggle = document.getElementById('tryoutFullscreenToggle');
+            if (tryoutFullscreenToggle) {
+                tryoutFullscreenToggle.addEventListener('click', function() {
+                    // Trigger the main fullscreen toggle
+                    const mainFullscreenToggle = document.getElementById('fullscreenToggle');
+                    if (mainFullscreenToggle) {
+                        mainFullscreenToggle.click();
+                    }
+                });
+            }
+            
+            // Update button text based on fullscreen state
+            function updateFullscreenButtonText() {
+                const body = document.body;
+                const button = document.getElementById('tryoutFullscreenToggle');
+                if (button) {
+                    if (body.classList.contains('tryout-fullscreen')) {
+                        button.innerHTML = '<i class="fa fa-compress"></i> Keluar Fokus';
+                        button.className = 'btn btn-outline-danger btn-sm mr-2';
+                    } else {
+                        button.innerHTML = '<i class="fa fa-expand"></i> Mode Fokus';
+                        button.className = 'btn btn-outline-primary btn-sm mr-2';
+                    }
+                }
+            }
+            
+            // Listen for fullscreen state changes
+            const observer = new MutationObserver(function(mutations) {
+                mutations.forEach(function(mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                        updateFullscreenButtonText();
+                    }
+                });
+            });
+            
+            observer.observe(document.body, {
+                attributes: true,
+                attributeFilter: ['class']
+            });
+            
+            // Initial button text update
+            updateFullscreenButtonText();
+            
+            // Simplified Keyboard Shortcuts Modal
+            const showShortcutsBtn = document.getElementById('showShortcuts');
+            if (showShortcutsBtn) {
+                showShortcutsBtn.addEventListener('click', function() {
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            title: 'Keyboard Shortcuts',
+                            html: `
+                                <div class="text-left">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <h6><i class="fa fa-expand"></i> Mode Fokus</h6>
+                                            <ul class="list-unstyled">
+                                                <li><kbd>F11</kbd> - Toggle Mode Fokus</li>
+                                                <li><kbd>ESC</kbd> - Keluar Mode Fokus</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <h6><i class="fa fa-mouse-pointer"></i> Navigasi</h6>
+                                            <ul class="list-unstyled">
+                                                <li><i class="fa fa-hand-pointer-o"></i> Klik nomor soal</li>
+                                                <li><kbd>Ctrl+S</kbd> - Simpan Jawaban</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            `,
+                            icon: 'info',
+                            confirmButtonText: 'Mengerti',
+                            confirmButtonColor: '#3085d6'
+                        });
+                    }
+                });
+            }
         });
     </script>
 @endpush

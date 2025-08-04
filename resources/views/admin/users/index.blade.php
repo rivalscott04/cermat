@@ -162,6 +162,14 @@
                                                             class="action-icon">
                                                             <i class="fa fa-info-circle"></i>
                                                         </a>
+                                                        @if($user->canBeImpersonated())
+                                                            <a href="{{ route('admin.impersonate', $user->id) }}"
+                                                                class="action-icon"
+                                                                title="Login sebagai user ini"
+                                                                onclick="return confirm('Apakah Anda yakin ingin login sebagai {{ $user->name }}?')">
+                                                                <i class="fa fa-user-secret" style="color: #28a745;"></i>
+                                                            </a>
+                                                        @endif
                                                         <form action="{{ route('admin.users.delete', $user->id) }}"
                                                             method="POST"
                                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');"
