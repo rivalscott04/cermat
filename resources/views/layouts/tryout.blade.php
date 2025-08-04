@@ -276,7 +276,7 @@
             @endif
 
             {{-- Impersonate Warning Banner --}}
-            @if(\App\Models\User::isImpersonating())
+            @if(auth()->user() && app('impersonate')->isImpersonating())
                 <div class="alert alert-warning alert-dismissible fade show impersonate-banner" role="alert" style="margin: 0; border-radius: 0; border-left: none; border-right: none;">
                     <div class="container">
                         <div class="row align-items-center">
@@ -284,14 +284,8 @@
                                 <i class="fa fa-user-secret"></i>
                                 <strong>Mode Impersonate Aktif!</strong> 
                                 Anda sedang login sebagai <strong>{{ auth()->user()->name }}</strong>
-                                @if(\App\Models\User::getOriginalUser())
-                                    (Admin: {{ \App\Models\User::getOriginalUser()->name }})
-                                @endif
-                                @if(\App\Models\User::getImpersonationDuration())
-                                    <span class="badge badge-dark ml-2">
-                                        <i class="fa fa-clock-o"></i> 
-                                        {{ \App\Models\User::getImpersonationDuration() }} menit
-                                    </span>
+                                @if(app('impersonate')->getImpersonator())
+                                    (Admin: {{ app('impersonate')->getImpersonator()->name }})
                                 @endif
                             </div>
                             <div class="col-md-4 text-right">

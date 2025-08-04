@@ -163,10 +163,12 @@
                                                             <i class="fa fa-info-circle"></i>
                                                         </a>
                                                         @if($user->canBeImpersonated())
-                                                            <a href="{{ route('admin.impersonate', $user->id) }}"
-                                                                class="action-icon"
-                                                                title="Login sebagai user ini"
-                                                                onclick="return confirm('Apakah Anda yakin ingin login sebagai {{ $user->name }}?')">
+                                                            <a href="#" 
+                                                                class="action-icon impersonate-btn"
+                                                                data-user-id="{{ $user->id }}"
+                                                                data-user-name="{{ $user->name }}"
+                                                                data-user-email="{{ $user->email }}"
+                                                                title="Login sebagai user ini">
                                                                 <i class="fa fa-user-secret" style="color: #28a745;"></i>
                                                             </a>
                                                         @endif
@@ -201,6 +203,11 @@
 @endsection
 
 @push('scripts')
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
         $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn btn-white btn-sm';
 
@@ -223,6 +230,82 @@
                         'inactive');
                 });
             });
+
+            // Impersonate button handler
+            $('.impersonate-btn').on('click', function(e) {
+                e.preventDefault();
+                
+                const userId = $(this).data('user-id');
+                const userName = $(this).data('user-name');
+                const userEmail = $(this).data('user-email');
+                
+                Swal.fire({
+                    title: 'Konfirmasi Impersonate',
+                    html: `
+                        <div class="text-left">
+                            <p><strong>Anda akan login sebagai:</strong></p>
+                            <div class="user-info" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
+                                <p><i class="fa fa-user"></i> <strong>Nama:</strong> ${userName}</p>
+                                <p><i class="fa fa-envelope"></i> <strong>Email:</strong> ${userEmail}</p>
+                                <p><i class="fa fa-id-badge"></i> <strong>ID:</strong> ${userId}</p>
+                            </div>
+                            <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Peringatan:</strong></p>
+                            <ul class="text-left" style="margin-left: 20px;">
+                                <li>Semua aktivitas akan tercatat dalam log</li>
+                                <li>Gunakan fitur ini hanya untuk troubleshooting</li>
+                                <li>Klik "Stop Impersonating" untuk kembali ke akun admin</li>
+                            </ul>
+                        </div>
+                    `,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#28a745',
+                    cancelButtonColor: '#6c757d',
+                    confirmButtonText: '<i class="fa fa-user-secret"></i> Ya, Impersonate',
+                    cancelButtonText: '<i class="fa fa-times"></i> Batal',
+                    reverseButtons: true,
+                    customClass: {
+                        popup: 'swal-wide',
+                        confirmButton: 'btn btn-success',
+                        cancelButton: 'btn btn-secondary'
+                    },
+                    buttonsStyling: false,
+                    showLoaderOnConfirm: true,
+                    preConfirm: () => {
+                        return new Promise((resolve) => {
+                            // Show loading state
+                            Swal.showLoading();
+                            
+                            // Redirect to impersonate route using lab404 package
+                            window.location.href = `{{ route('admin.impersonate', ':userId') }}`.replace(':userId', userId);
+                        });
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                });
+            });
         });
     </script>
+    
+    <style>
+        .swal-wide {
+            width: 500px !important;
+        }
+        
+        .user-info {
+            border-left: 4px solid #28a745;
+        }
+        
+        .impersonate-btn:hover {
+            transform: scale(1.1);
+            transition: transform 0.2s ease;
+        }
+        
+        .swal2-popup {
+            font-size: 14px;
+        }
+        
+        .swal2-confirm {
+            margin-right: 10px;
+        }
+    </style>
 @endpush

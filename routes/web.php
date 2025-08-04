@@ -97,9 +97,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/riwayat-tes', [AdminController::class, 'riwayatTes'])->name('riwayat.tes');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
 
-    // Impersonate Routes
-    Route::get('/impersonate/{id}', [AdminController::class, 'impersonate'])->name('impersonate');
-    Route::get('/stop-impersonating', [AdminController::class, 'stopImpersonating'])->name('stop-impersonating');
+    // Impersonate Routes (using lab404/laravel-impersonate package)
+    Route::get('/impersonate/{id}', [\Lab404\Impersonate\Controllers\ImpersonateController::class, 'take'])->name('impersonate');
+    Route::get('/stop-impersonating', [\Lab404\Impersonate\Controllers\ImpersonateController::class, 'leave'])->name('stop-impersonating');
 
     // CBT Admin Routes
     Route::resource('kategori', KategoriSoalController::class);

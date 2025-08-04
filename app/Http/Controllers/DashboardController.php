@@ -20,7 +20,6 @@ class DashboardController extends Controller
 
         $totalUsers = User::where('role', 'user')->count();
 
-
         $activeSubscribers = User::where(function ($query) {
             $query->where('is_active', true)
                 ->orWhereHas('subscriptions', function ($subQuery) {
@@ -105,6 +104,24 @@ class DashboardController extends Controller
             $chartData['payments'][] = [$timestamp, $dailyPayments[$timestamp] ?? 0];
         }
 
+        // Get recent impersonation logs (last 10)
+        $recentImpersonations = collect();
+        $logFile = storage_path('logs/laravel.log');
+        
+        if (file_exists($logFile)) {
+            $logContent = file_get_contents($logFile);
+            preg_match_all('/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] .* Admin impersonation (started|ended).*admin_id.*?(\d+).*?target_user_id.*?(\d+)/s', $logContent, $matches, PREG_SET_ORDER);
+            
+            foreach (array_slice($matches, -10) as $match) {
+                $recentImpersonations->push([
+                    'timestamp' => $match[1],
+                    'action' => $match[2],
+                    'admin_id' => $match[3],
+                    'target_user_id' => $match[4]
+                ]);
+            }
+        }
+
         return view('admin.dashboard', compact(
             'totalIncome',
             'pendingTransactions',
@@ -118,7 +135,8 @@ class DashboardController extends Controller
             'currentMonthIncome',
             'totalOrdersPercent',
             'pendingOrdersPercent',
-            'monthlyIncomeGrowth'
+            'monthlyIncomeGrowth',
+            'recentImpersonations'
         ));
     }
 }
