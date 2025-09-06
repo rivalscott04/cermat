@@ -87,6 +87,36 @@
             transform: scale(1.05);
             transition: transform 0.2s ease;
         }
+
+        /* Global Impersonate Styling */
+        .impersonate-banner {
+            border-left: 4px solid #ffc107 !important;
+            background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+            margin: 0;
+            border-radius: 0;
+            border-left: none;
+            border-right: none;
+        }
+
+        .stop-impersonate-btn {
+            transition: all 0.3s ease;
+            border-radius: 6px;
+            font-weight: 500;
+            border: 2px solid #dc3545;
+            color: #dc3545;
+            background: transparent;
+        }
+
+        .stop-impersonate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+            background: #dc3545;
+            color: white;
+        }
+
+        .stop-impersonate-btn i {
+            margin-right: 5px;
+        }
     </style>
     @stack('styles')
 </head>
@@ -154,9 +184,10 @@
                                 @endif
                             </div>
                             <div class="col-md-4 text-right">
-                                <a href="#" class="btn btn-sm btn-outline-warning stop-impersonate-btn">
-                                    <i class="fa fa-sign-out"></i> Kembali ke Admin
-                                </a>
+                                <button onclick="confirmStopImpersonate()"
+                                    class="btn btn-sm btn-outline-danger stop-impersonate-btn">
+                                    <i class="fa fa-stop"></i> Stop Impersonate
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -175,56 +206,43 @@
             simpanHasil: "{{ route('kecermatan.simpanHasil') }}",
         };
 
-        // Stop impersonating handler
-        $(document).ready(function() {
-            $('.stop-impersonate-btn').on('click', function(e) {
-                e.preventDefault();
-
-                Swal.fire({
-                    title: 'Konfirmasi Stop Impersonating',
-                    html: `
-                        <div class="text-left">
-                            <p><strong>Anda akan kembali ke akun admin:</strong></p>
-                            <div class="admin-info" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
-                                <p><i class="fa fa-user-shield"></i> <strong>Admin:</strong> {{ app('impersonate')->getImpersonator() ? app('impersonate')->getImpersonator()->name : 'Unknown' }}</p>
-                                <p><i class="fa fa-user"></i> <strong>User yang di-impersonate:</strong> {{ auth()->user()->name }}</p>
-                            </div>
-                            <p class="text-info"><i class="fa fa-info-circle"></i> <strong>Informasi:</strong></p>
-                            <ul class="text-left" style="margin-left: 20px;">
-                                <li>Semua aktivitas impersonate telah tercatat</li>
-                                <li>Anda akan kembali ke dashboard admin</li>
-                                <li>Session akan dibersihkan secara otomatis</li>
-                            </ul>
+        // Stop impersonate confirmation function
+        function confirmStopImpersonate() {
+            Swal.fire({
+                title: '<i class="fa fa-stop" style="color: #dc3545;"></i> Stop Impersonate',
+                html: `
+                    <div class="text-left">
+                        <p><strong>Anda akan keluar dari mode impersonate dan kembali ke dashboard admin.</strong></p>
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i>
+                            <strong>Info:</strong> Semua perubahan yang dilakukan akan tetap tersimpan.
                         </div>
-                    `,
-                    icon: 'info',
-                    showCancelButton: true,
-                    confirmButtonColor: '#ffc107',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fa fa-sign-out"></i> Ya, Kembali ke Admin',
-                    cancelButtonText: '<i class="fa fa-times"></i> Batal',
-                    reverseButtons: true,
-                    customClass: {
-                        popup: 'swal-wide',
-                        confirmButton: 'btn btn-warning',
-                        cancelButton: 'btn btn-secondary'
-                    },
-                    buttonsStyling: false,
-                    showLoaderOnConfirm: true,
-                    preConfirm: () => {
-                        return new Promise((resolve) => {
-                            // Show loading state
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fa fa-stop"></i> Ya, Stop Impersonate',
+                cancelButtonText: '<i class="fa fa-times"></i> Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Memproses...',
+                        html: 'Sedang keluar dari mode impersonate...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
                             Swal.showLoading();
+                        }
+                    });
 
-                            // Redirect to stop impersonating route
-                            window.location.href =
-                                "{{ route('admin.stop-impersonating') }}";
-                        });
-                    },
-                    allowOutsideClick: () => !Swal.isLoading()
-                });
+                    // Redirect to leave impersonation route
+                    window.location.href = "{{ route('leave.impersonation') }}";
+                }
             });
-        });
+        }
     </script>
     <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
     <script src="{{ asset('js/popper.min.js') }}"></script>

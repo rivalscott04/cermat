@@ -122,6 +122,216 @@
                 border-top: 5px solid currentColor;
                 pointer-events: none;
             }
+
+            /* Search Box Styling */
+            .input-group-addon {
+                background-color: #f3f3f4;
+                border-color: #e7eaec;
+                color: #676a6c;
+            }
+
+            #searchInput {
+                border-color: #e7eaec;
+                transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            }
+
+            #searchInput:focus {
+                border-color: #1ab394;
+                box-shadow: 0 0 0 0.2rem rgba(26, 179, 148, 0.25);
+            }
+
+            #clearSearch {
+                border-color: #e7eaec;
+                color: #676a6c;
+                transition: all 0.15s ease-in-out;
+                border-left: none;
+                border-radius: 0 3px 3px 0;
+            }
+
+            #clearSearch:hover {
+                background-color: #f3f3f4;
+                border-color: #d2d2d2;
+                color: #333;
+            }
+
+            /* Ensure input border radius matches */
+            #searchInput {
+                border-radius: 3px 0 0 3px;
+            }
+
+            /* Page Length Control Styling */
+            #pageLength {
+                border-color: #e7eaec;
+                border-radius: 3px;
+                font-size: 12px;
+                padding: 4px 8px;
+                height: 30px;
+                transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+            }
+
+            #pageLength:focus {
+                border-color: #1ab394;
+                box-shadow: 0 0 0 0.2rem rgba(26, 179, 148, 0.25);
+            }
+
+            /* Align form group elements */
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+            }
+
+            /* Ensure all elements are aligned properly */
+            .align-items-center {
+                align-items: center !important;
+            }
+
+            .row.align-items-center {
+                min-height: 40px;
+            }
+
+            /* Make search results vertically centered */
+            #searchResults {
+                line-height: 34px;
+                display: inline-block;
+            }
+
+            /* Responsive styling for search controls */
+            @media screen and (max-width: 767px) {
+                .row.align-items-center {
+                    flex-direction: column;
+                    align-items: stretch !important;
+                }
+
+                .row.align-items-center>div {
+                    margin-bottom: 10px;
+                }
+
+                .row.align-items-center>div:last-child {
+                    margin-bottom: 0;
+                }
+
+                #searchInput {
+                    border-radius: 3px;
+                }
+
+                #clearSearch {
+                    border-radius: 0 3px 3px 0;
+                }
+
+                .d-flex.align-items-center.justify-content-center {
+                    justify-content: flex-start !important;
+                }
+
+                #searchResults {
+                    text-align: center;
+                    line-height: normal;
+                    margin-top: 5px;
+                }
+            }
+
+            /* DataTable Custom Styling */
+            .dataTables_wrapper .dataTables_length select {
+                border: 1px solid #e7eaec;
+                border-radius: 3px;
+                padding: 4px 8px;
+            }
+
+            /* Responsive DataTable Styling */
+            .dataTables_wrapper .dataTables_processing {
+                background: rgba(255, 255, 255, 0.9);
+                border: 1px solid #e7eaec;
+                border-radius: 3px;
+                color: #676a6c;
+            }
+
+            /* Responsive breakpoints */
+            @media screen and (max-width: 767px) {
+
+                .dataTables_wrapper .dataTables_info,
+                .dataTables_wrapper .dataTables_paginate {
+                    text-align: center;
+                    float: none;
+                    margin-top: 10px;
+                }
+
+                .dataTables_wrapper .dataTables_paginate .paginate_button {
+                    margin: 0 2px;
+                }
+
+                /* Hide less important columns on mobile */
+                .dataTables-example th:nth-child(3),
+                .dataTables-example td:nth-child(3) {
+                    display: none;
+                }
+            }
+
+            @media screen and (max-width: 480px) {
+
+                /* Hide more columns on very small screens */
+                .dataTables-example th:nth-child(4),
+                .dataTables-example td:nth-child(4) {
+                    display: none;
+                }
+
+                .dataTables-example th:nth-child(5),
+                .dataTables-example td:nth-child(5) {
+                    display: none;
+                }
+            }
+
+            .dataTables_wrapper .dataTables_filter input {
+                border: 1px solid #e7eaec;
+                border-radius: 3px;
+                padding: 6px 12px;
+                margin-left: 8px;
+            }
+
+            .dataTables_wrapper .dataTables_filter input:focus {
+                border-color: #1ab394;
+                box-shadow: 0 0 0 0.2rem rgba(26, 179, 148, 0.25);
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button {
+                border: 1px solid #e7eaec;
+                background: #fff;
+                color: #676a6c !important;
+                border-radius: 3px;
+                margin: 0 2px;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+                background: #f3f3f4 !important;
+                border-color: #d2d2d2;
+                color: #333 !important;
+            }
+
+            .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+                background: #1ab394 !important;
+                border-color: #1ab394;
+                color: #fff !important;
+            }
+
+            .dataTables_wrapper .dataTables_info {
+                color: #676a6c;
+                padding-top: 8px;
+            }
+
+            /* Responsive table wrapper */
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* Ensure table doesn't break on mobile */
+            .table-responsive table {
+                min-width: 600px;
+            }
+
+            @media screen and (max-width: 767px) {
+                .table-responsive table {
+                    min-width: 100%;
+                }
+            }
         </style>
     @endpush
 
@@ -135,6 +345,41 @@
                             <h5>Data user</h5>
                         </div>
                         <div class="ibox-content">
+                            <!-- Search Box and Controls -->
+                            <div class="row mb-3 align-items-center">
+                                <div class="col-md-5">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="fa fa-search"></i>
+                                        </span>
+                                        <input type="text" id="searchInput" class="form-control"
+                                            placeholder="Cari berdasarkan nama atau email...">
+                                        <span class="input-group-btn">
+                                            <button type="button" id="clearSearch" class="btn btn-default"
+                                                style="display: none;">
+                                                <i class="fa fa-times"></i>
+                                            </button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-center">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <span style="font-size: 12px; color: #676a6c; margin-right: 8px;">Tampilkan</span>
+                                        <select id="pageLength" class="form-control input-sm"
+                                            style="width: 60px; display: inline-block; margin: 0 5px;">
+                                            <option value="10">10</option>
+                                            <option value="25" selected>25</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                        <span style="font-size: 12px; color: #676a6c; margin-left: 5px;">data</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-right">
+                                    <span id="searchResults" class="text-muted" style="font-size: 12px;"></span>
+                                </div>
+                            </div>
+
                             <div class="table-responsive">
                                 <table class="table table-bordered table-hover dataTables-example">
                                     <thead>
@@ -214,15 +459,13 @@
                                                             class="action-icon">
                                                             <i class="fa fa-info-circle"></i>
                                                         </a>
-                                                        @if ($user->canBeImpersonated())
-                                                            <a href="#" class="action-icon impersonate-btn"
-                                                                data-user-id="{{ $user->id }}"
-                                                                data-user-name="{{ $user->name }}"
-                                                                data-user-email="{{ $user->email }}"
-                                                                title="Login sebagai user ini">
-                                                                <i class="fa fa-user-secret" style="color: #28a745;"></i>
-                                                            </a>
-                                                        @endif
+                                                        @canBeImpersonated($user)
+                                                        <a href="#" class="action-icon impersonate-btn"
+                                                            onclick="confirmImpersonate({{ $user->id }}, '{{ $user->name }}', '{{ $user->email }}')"
+                                                            title="Login sebagai user ini">
+                                                            <i class="fa fa-user-secret" style="color: #28a745;"></i>
+                                                        </a>
+                                                        @endCanBeImpersonated
                                                         <form action="{{ route('admin.users.delete', $user->id) }}"
                                                             method="POST"
                                                             onsubmit="return confirm('Apakah Anda yakin ingin menghapus pengguna ini?');"
@@ -263,101 +506,180 @@
         $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn btn-white btn-sm';
 
         $(document).ready(function() {
-            $('.dataTables-example').DataTable({
-                pageLength: 25,
-                responsive: true,
-                dom: 'tp<"bottom"l>',
-                searching: true,
-                buttons: [],
-                language: {
-                    lengthMenu: "Show _MENU_ entries"
+            // Wait a bit to ensure DOM is fully ready
+            setTimeout(function() {
+                window.userTable = $('.dataTables-example').DataTable({
+                    pageLength: 25,
+                    responsive: true,
+                    dom: 'rt<"bottom"ip><"clear">',
+                    searching: true, // Enable searching functionality
+                    buttons: [],
+                    initComplete: function() {
+                        // DataTable initialized successfully
+                    },
+                    language: {
+                        lengthMenu: "Tampilkan _MENU_ data per halaman",
+                        search: "Cari:",
+                        searchPlaceholder: "Cari nama atau email...",
+                        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+                        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+                        infoFiltered: "(difilter dari _MAX_ total data)",
+                        paginate: {
+                            first: "Pertama",
+                            last: "Terakhir",
+                            next: "Selanjutnya",
+                            previous: "Sebelumnya"
+                        },
+                        emptyTable: "Tidak ada data yang tersedia",
+                        zeroRecords: "Tidak ada data yang cocok dengan pencarian"
+                    },
+                    order: [
+                        [0, 'asc']
+                    ], // Sort by name column ascending
+                    columnDefs: [{
+                            targets: [0, 1], // Name and Email columns
+                            searchable: true
+                        },
+                        {
+                            targets: [2, 3, 4], // Plan, Status, Actions columns
+                            searchable: false
+                        }
+                    ]
+                });
+
+                // Custom search functionality - using event delegation
+                $(document).on('keyup input paste', '#searchInput', function() {
+                    var searchValue = this.value;
+                    if (window.userTable && typeof window.userTable.search === 'function') {
+                        window.userTable.search(searchValue).draw();
+                        updateSearchResults();
+                        toggleClearButton(searchValue);
+                    }
+                });
+
+                // Clear search button - using event delegation
+                $(document).on('click', '#clearSearch', function() {
+                    $('#searchInput').val('').focus();
+                    if (window.userTable) {
+                        window.userTable.search('').draw();
+                        updateSearchResults();
+                        toggleClearButton('');
+                    }
+                });
+
+                // Function to toggle clear button visibility
+                function toggleClearButton(searchValue) {
+                    if (searchValue.length > 0) {
+                        $('#clearSearch').show();
+                    } else {
+                        $('#clearSearch').hide();
+                    }
+                }
+
+                // Function to update search results count
+                function updateSearchResults() {
+                    var searchValue = $('#searchInput').val();
+                    var totalRecords = window.userTable.page.info().recordsTotal;
+                    var filteredRecords = window.userTable.page.info().recordsDisplay;
+
+                    if (searchValue) {
+                        $('#searchResults').html(
+                            '<i class="fa fa-info-circle"></i> ' +
+                            filteredRecords + ' dari ' + totalRecords + ' data ditemukan'
+                        );
+                    } else {
+                        $('#searchResults').html('');
+                    }
+                }
+
+                // Initial call to set up search results
+                updateSearchResults();
+
+                // Initialize clear button state
+                toggleClearButton($('#searchInput').val());
+
+                // Page length control - using event delegation
+                $(document).on('change', '#pageLength', function() {
+                    if (window.userTable) {
+                        window.userTable.page.len($(this).val()).draw();
+                    }
+                });
+
+                // Update select background color when value changes for status
+                document.querySelectorAll('.status-select').forEach(select => {
+                    select.addEventListener('change', function() {
+                        this.className = 'status-select ' + (this.value === '1' ? 'active' :
+                            'inactive');
+                    });
+                });
+
+                // Update select background color when value changes for package
+                document.querySelectorAll('.package-select').forEach(select => {
+                    select.addEventListener('change', function() {
+                        let packageClass = '';
+                        switch (this.value) {
+                            case 'kecermatan':
+                                packageClass = 'kecermatan';
+                                break;
+                            case 'psikologi':
+                                packageClass = 'psikologi';
+                                break;
+                            case 'lengkap':
+                                packageClass = 'lengkap';
+                                break;
+                            default:
+                                packageClass = 'no-package';
+                        }
+                        this.className = 'package-select ' + packageClass;
+                    });
+                });
+
+            }, 100); // 100ms delay to ensure DOM is ready
+        });
+
+        // Impersonate confirmation function
+        function confirmImpersonate(userId, userName, userEmail) {
+            Swal.fire({
+                title: '<i class="fa fa-user-secret" style="color: #28a745;"></i> Konfirmasi Impersonate',
+                html: `
+                    <div class="text-left">
+                        <p><strong>Anda akan login sebagai user berikut:</strong></p>
+                        <div class="user-info p-3 mb-3" style="background: #f8f9fa; border-radius: 8px;">
+                            <p><strong>Nama:</strong> ${userName}</p>
+                            <p><strong>Email:</strong> ${userEmail}</p>
+                        </div>
+                        <p class="text-warning"><i class="fa fa-exclamation-triangle"></i>
+                        <strong>Peringatan:</strong> Semua aktivitas akan tercatat sebagai user ini.</p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fa fa-sign-in"></i> Ya, Login Sebagai User Ini',
+                cancelButtonText: '<i class="fa fa-times"></i> Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'swal-wide'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Memproses...',
+                        html: 'Sedang login sebagai user lain...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+
+                    // Redirect to impersonate route
+                    window.location.href = "{{ route('admin.impersonate', ':userId') }}".replace(':userId',
+                    userId);
                 }
             });
-
-            // Update select background color when value changes for status
-            document.querySelectorAll('.status-select').forEach(select => {
-                select.addEventListener('change', function() {
-                    this.className = 'status-select ' + (this.value === '1' ? 'active' :
-                        'inactive');
-                });
-            });
-
-            // Update select background color when value changes for package
-            document.querySelectorAll('.package-select').forEach(select => {
-                select.addEventListener('change', function() {
-                    let packageClass = '';
-                    switch (this.value) {
-                        case 'kecermatan':
-                            packageClass = 'kecermatan';
-                            break;
-                        case 'psikologi':
-                            packageClass = 'psikologi';
-                            break;
-                        case 'lengkap':
-                            packageClass = 'lengkap';
-                            break;
-                        default:
-                            packageClass = 'no-package';
-                    }
-                    this.className = 'package-select ' + packageClass;
-                });
-            });
-
-            // Impersonate button handler
-            $('.impersonate-btn').on('click', function(e) {
-                e.preventDefault();
-
-                const userId = $(this).data('user-id');
-                const userName = $(this).data('user-name');
-                const userEmail = $(this).data('user-email');
-
-                Swal.fire({
-                    title: 'Konfirmasi Impersonate',
-                    html: `
-                        <div class="text-left">
-                            <p><strong>Anda akan login sebagai:</strong></p>
-                            <div class="user-info" style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin: 10px 0;">
-                                <p><i class="fa fa-user"></i> <strong>Nama:</strong> ${userName}</p>
-                                <p><i class="fa fa-envelope"></i> <strong>Email:</strong> ${userEmail}</p>
-                                <p><i class="fa fa-id-badge"></i> <strong>ID:</strong> ${userId}</p>
-                            </div>
-                            <p class="text-warning"><i class="fa fa-exclamation-triangle"></i> <strong>Peringatan:</strong></p>
-                            <ul class="text-left" style="margin-left: 20px;">
-                                <li>Semua aktivitas akan tercatat dalam log</li>
-                                <li>Gunakan fitur ini hanya untuk troubleshooting</li>
-                                <li>Klik "Stop Impersonating" untuk kembali ke akun admin</li>
-                            </ul>
-                        </div>
-                    `,
-                    icon: 'question',
-                    showCancelButton: true,
-                    confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: '<i class="fa fa-user-secret"></i> Ya, Impersonate',
-                    cancelButtonText: '<i class="fa fa-times"></i> Batal',
-                    reverseButtons: true,
-                    customClass: {
-                        popup: 'swal-wide',
-                        confirmButton: 'btn btn-success',
-                        cancelButton: 'btn btn-secondary'
-                    },
-                    buttonsStyling: false,
-                    showLoaderOnConfirm: true,
-                    preConfirm: () => {
-                        return new Promise((resolve) => {
-                            // Show loading state
-                            Swal.showLoading();
-
-                            // Redirect to impersonate route using lab404 package
-                            window.location.href =
-                                `{{ route('admin.impersonate', ':userId') }}`.replace(
-                                    ':userId', userId);
-                        });
-                    },
-                    allowOutsideClick: () => !Swal.isLoading()
-                });
-            });
-        });
+        }
     </script>
 
     <style>

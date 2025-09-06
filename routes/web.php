@@ -40,6 +40,9 @@ Route::get('/trial', function () {
     return view('kecermatan.trial');
 })->name('trial');
 
+// Special route for leaving impersonation (outside admin middleware)
+Route::get('/leave-impersonation', [App\Http\Controllers\ImpersonateController::class, 'leave'])->name('leave.impersonation');
+
 // Route untuk subscription dan proses Midtrans
 // Route::get('subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
 Route::get('subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
@@ -106,9 +109,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
     Route::put('/users/{user}/package', [AdminController::class, 'updatePackage'])->name('users.updatePackage');
 
-    // Impersonate Routes (using lab404/laravel-impersonate package)
-    Route::get('/impersonate/{id}', [\Lab404\Impersonate\Controllers\ImpersonateController::class, 'take'])->name('impersonate');
-    Route::get('/stop-impersonating', [\Lab404\Impersonate\Controllers\ImpersonateController::class, 'leave'])->name('stop-impersonating');
+    // Impersonate Routes (using custom controller for debugging)
+    Route::get('/impersonate/take/{id}/{guardName?}', [App\Http\Controllers\ImpersonateController::class, 'take'])->name('impersonate');
+    Route::get('/impersonate/leave', [App\Http\Controllers\ImpersonateController::class, 'leave'])->name('impersonate.leave');
 
     // CBT Admin Routes
     Route::resource('kategori', KategoriSoalController::class);

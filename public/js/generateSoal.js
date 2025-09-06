@@ -7,6 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const inputs = document.querySelectorAll(".karakter-input");
     const isiOtomatisBtn = document.getElementById("isiOtomatisBtn");
 
+    // Check if required elements exist
+    if (!form || !dropdownButton || !isiOtomatisBtn) {
+        console.log("Some required elements not found, skipping generateSoal.js initialization");
+        return;
+    }
+
     // Placeholder examples for each type remain the same
     const placeholderExamples = {
         huruf: [
@@ -114,8 +120,8 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentHoverPlaceholders = [];
 
     // Dropdown items click handler
-    // Dropdown items click handler
     dropdownItems.forEach((item) => {
+        if (!item) return; // Skip if item is null
         // Hover handlers
         item.addEventListener("mouseenter", function () {
             const selectedType = this.dataset.value;
@@ -213,6 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Individual character buttons handler
     karakterBtns.forEach((btn) => {
+        if (!btn) return; // Skip if btn is null
         btn.addEventListener("click", function () {
             const index = parseInt(this.dataset.index);
             const selectedType = dropdownButton.textContent.toLowerCase();
@@ -235,6 +242,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Input field validation handler
     inputs.forEach((input) => {
+        if (!input) return; // Skip if input is null
         input.addEventListener("input", function () {
             const selectedType = dropdownButton.textContent.toLowerCase();
 

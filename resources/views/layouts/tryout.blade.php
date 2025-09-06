@@ -169,18 +169,48 @@
             display: block;
         }
         
-        /* Impersonate banner in fullscreen */
-        body.tryout-fullscreen .impersonate-banner {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 9998;
-        }
-        
-        body.tryout-fullscreen .tryout-content {
-            margin-top: 60px; /* Space for impersonate banner */
-        }
+                 /* Impersonate banner in fullscreen */
+         body.tryout-fullscreen .impersonate-banner {
+             position: fixed;
+             top: 0;
+             left: 0;
+             right: 0;
+             z-index: 9998;
+         }
+         
+         body.tryout-fullscreen .tryout-content {
+             margin-top: 60px; /* Space for impersonate banner */
+         }
+         
+         /* Global Impersonate Styling */
+         .impersonate-banner {
+             border-left: 4px solid #ffc107 !important;
+             background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+             margin: 0;
+             border-radius: 0;
+             border-left: none;
+             border-right: none;
+         }
+         
+         .stop-impersonate-btn {
+             transition: all 0.3s ease;
+             border-radius: 6px;
+             font-weight: 500;
+             border: 2px solid #dc3545;
+             color: #dc3545;
+             background: transparent;
+         }
+         
+         .stop-impersonate-btn:hover {
+             transform: translateY(-1px);
+             box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+             background: #dc3545;
+             color: white;
+         }
+         
+         .stop-impersonate-btn i {
+             margin-right: 5px;
+         }
         
         /* Responsive adjustments */
         @media (max-width: 768px) {
@@ -289,9 +319,9 @@
                                 @endif
                             </div>
                             <div class="col-md-4 text-right">
-                                <a href="{{ route('admin.stop-impersonating') }}" class="btn btn-sm btn-outline-warning">
-                                    <i class="fa fa-sign-out"></i> Kembali ke Admin
-                                </a>
+                                <button onclick="confirmStopImpersonate()" class="btn btn-sm btn-outline-danger stop-impersonate-btn">
+                                    <i class="fa fa-stop"></i> Stop Impersonate
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -314,6 +344,45 @@
         window.appRoutes = {
             simpanHasil: "{{ route('kecermatan.simpanHasil') }}",
         };
+        
+        // Stop impersonate confirmation function
+        function confirmStopImpersonate() {
+            Swal.fire({
+                title: '<i class="fa fa-stop" style="color: #dc3545;"></i> Stop Impersonate',
+                html: `
+                    <div class="text-left">
+                        <p><strong>Anda akan keluar dari mode impersonate dan kembali ke dashboard admin.</strong></p>
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i>
+                            <strong>Info:</strong> Semua perubahan yang dilakukan akan tetap tersimpan.
+                        </div>
+                    </div>
+                `,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fa fa-stop"></i> Ya, Stop Impersonate',
+                cancelButtonText: '<i class="fa fa-times"></i> Batal',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Show loading
+                    Swal.fire({
+                        title: 'Memproses...',
+                        html: 'Sedang keluar dari mode impersonate...',
+                        allowOutsideClick: false,
+                        didOpen: () => {
+                            Swal.showLoading();
+                        }
+                    });
+                    
+                    // Redirect to leave impersonation route
+                    window.location.href = "{{ route('leave.impersonation') }}";
+                }
+            });
+        }
+
     </script>
     <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
     <script src="{{ asset('js/popper.min.js') }}"></script>
