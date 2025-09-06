@@ -7,6 +7,7 @@ use Midtrans\Snap;
 use Midtrans\Config;
 use App\Models\Subscription;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
@@ -25,6 +26,11 @@ class SubscriptionController extends Controller
         return view('subscription.checkout');
     }
 
+    public function packages()
+    {
+        return view('subscription.packages');
+    }
+
     public function expired()
     {
         return view('subscription.expired');
@@ -39,6 +45,106 @@ class SubscriptionController extends Controller
             'has_active_subscription' => $user->hasActiveSubscription(),
             'subscription' => $subscription
         ]);
+    }
+
+    public function processSubscription(Request $request, $package)
+    {
+        try {
+            // Validasi package yang dipilih
+            $allowedPackages = ['kecermatan', 'psikologi', 'lengkap'];
+
+            if (!in_array($package, $allowedPackages)) {
+                return redirect()->back()->with('error', 'Paket yang dipilih tidak valid.');
+            }
+
+            // Get authenticated user
+            $user = Auth::user();
+
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+            }
+
+            // Redirect ke halaman checkout dengan parameter package
+            return redirect()->route('subscription.checkout', ['package' => $package]);
+        } catch (\Exception $e) {
+            // Log error jika diperlukan
+            \Log::error('Error processing subscription: ' . $e->getMessage());
+
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses paket berlangganan. Silakan coba lagi.');
+        }
+    }
+
+    public function showCheckout($package)
+    {
+        try {
+            // Validasi package yang dipilih
+            $allowedPackages = ['kecermatan', 'psikologi', 'lengkap'];
+
+            if (!in_array($package, $allowedPackages)) {
+                return redirect()->route('subscription.packages')->with('error', 'Paket yang dipilih tidak valid.');
+            }
+
+            // Get authenticated user
+            $user = Auth::user();
+
+            if (!$user) {
+                return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+            }
+
+            // Data paket berlangganan
+            $packageDetails = [
+                'kecermatan' => [
+                    'name' => 'Paket Kecermatan',
+                    'description' => 'Fokus Tes Kecermatan',
+                    'price' => 75000,
+                    'duration' => 30,
+                    'features' => [
+                        'Bank soal kecermatan lengkap',
+                        'Latihan soal unlimited',
+                        'Analisis kecepatan & akurasi',
+                        'Timer simulasi ujian',
+                        'Riwayat progress harian'
+                    ]
+                ],
+                'psikologi' => [
+                    'name' => 'Paket Psikologi',
+                    'description' => 'Fokus Tes Psikologi',
+                    'price' => 75000,
+                    'duration' => 30,
+                    'features' => [
+                        'Bank soal psikologi lengkap',
+                        'Tes kepribadian & karakter',
+                        'Simulasi wawancara psikologi',
+                        'Tips & strategi psikotes',
+                        'Analisis profil psikologi'
+                    ]
+                ],
+                'lengkap' => [
+                    'name' => 'Paket Lengkap',
+                    'description' => 'Kecermatan + Psikologi',
+                    'price' => 120000,
+                    'duration' => 45,
+                    'features' => [
+                        'Semua fitur Kecermatan',
+                        'Semua fitur Psikologi',
+                        'Try out gabungan berkala',
+                        'Laporan progress lengkap',
+                        'Sertifikat penyelesaian'
+                    ]
+                ]
+            ];
+
+            $selectedPackage = $packageDetails[$package];
+            $selectedPackage['key'] = $package;
+
+            return view('subscription.checkout', [
+                'package' => $selectedPackage,
+                'user' => $user
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error showing checkout: ' . $e->getMessage());
+            return redirect()->route('subscription.packages')->with('error', 'Terjadi kesalahan. Silakan coba lagi.');
+        }
     }
 
     public function process()

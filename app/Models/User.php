@@ -18,13 +18,19 @@ class User extends Authenticatable
         'is_active',
         'province',
         'regency',
-        'role'
+        'role',
+        'package' // Tambahkan field package
     ];
 
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    // Konstanta untuk package types
+    const PACKAGE_KECERMATAN = 'kecermatan';
+    const PACKAGE_PSIKOLOGI = 'psikologi';
+    const PACKAGE_LENGKAP = 'lengkap';
 
     public function subscriptions()
     {
@@ -57,10 +63,58 @@ class User extends Authenticatable
         if (!$this->hasActiveSubscription()) {
             return 'free';
         }
-        
+
         // Logika untuk menentukan paket berdasarkan subscription
         // Bisa disesuaikan dengan kebutuhan bisnis
         return 'premium'; // Default untuk sementara
+    }
+
+    /**
+     * Check if user can access Tes Kecermatan
+     */
+    public function canAccessKecermatan()
+    {
+        if (!$this->hasActiveSubscription()) {
+            return false;
+        }
+
+        return in_array($this->package, [
+            self::PACKAGE_KECERMATAN,
+            self::PACKAGE_LENGKAP
+        ]);
+    }
+
+    /**
+     * Check if user can access Tryout CBT
+     */
+    public function canAccessTryout()
+    {
+        if (!$this->hasActiveSubscription()) {
+            return false;
+        }
+
+        return in_array($this->package, [
+            self::PACKAGE_PSIKOLOGI,
+            self::PACKAGE_LENGKAP
+        ]);
+    }
+
+    /**
+     * Get available menu items based on package
+     */
+    public function getAvailableMenus()
+    {
+        $menus = [];
+
+        if ($this->canAccessKecermatan()) {
+            $menus[] = 'kecermatan';
+        }
+
+        if ($this->canAccessTryout()) {
+            $menus[] = 'tryout';
+        }
+
+        return $menus;
     }
 
     /**

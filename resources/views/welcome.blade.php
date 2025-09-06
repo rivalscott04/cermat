@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mahir Cermat</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @keyframes animate {
             0% {
@@ -202,7 +203,6 @@
             filter: invert(10%) brightness(200%);
         }
 
-
         /* Hero Section Styles */
         .hero-section {
             min-height: 100vh;
@@ -281,6 +281,210 @@
             color: #333;
         }
 
+        /* Packages Section */
+        .packages-section {
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px);
+            padding: 5rem 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-title h2 {
+            color: #1ab394;
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .section-title p {
+            color: #6c757d;
+            font-size: 1.2rem;
+        }
+
+        .package-card {
+            border: 2px solid #e9ecef;
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            transition: all 0.4s ease;
+            background: white;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .package-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(45deg, #1ab394, #0f8a73);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .package-card:hover {
+            border-color: #1ab394;
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(26, 179, 148, 0.15);
+        }
+
+        .package-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .popular-package {
+            border-color: #1ab394;
+            position: relative;
+            background: linear-gradient(135deg, #fff 0%, #f8fffd 100%);
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(45deg, #1ab394, #0f8a73);
+            color: white;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            box-shadow: 0 6px 20px rgba(26, 179, 148, 0.3);
+            z-index: 10;
+        }
+
+        .package-header {
+            text-align: center;
+            margin-block: 1.5rem;
+        }
+
+        .package-header h3 {
+            color: #2c3e50;
+            font-weight: 700;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .package-header p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+
+        .package-features {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        .features-list {
+            flex: 1;
+            margin-bottom: 2rem;
+        }
+
+        .button-container {
+            margin-top: auto;
+        }
+
+        .package-price {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1ab394;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #1ab394, #0f8a73);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .price-period {
+            color: #6c757d;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateX(5px);
+            color: #1ab394;
+        }
+
+        .feature-item i {
+            margin-right: 1rem;
+            font-size: 1.2rem;
+            color: #1ab394;
+            min-width: 20px;
+        }
+
+        .btn-package {
+            padding: 1rem 2rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            width: 100%;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            border: 2px solid transparent;
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #1e7e34);
+            border: none;
+            color: white;
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+            color: white;
+        }
+
+        .btn-outline-info {
+            border-color: #17a2b8;
+            color: #17a2b8;
+            background: transparent;
+        }
+
+        .btn-outline-info:hover {
+            background: linear-gradient(45deg, #17a2b8, #138496);
+            border-color: #17a2b8;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
+        }
+
+        .btn-outline-primary {
+            border-color: #007bff;
+            color: #007bff;
+            background: transparent;
+        }
+
+        .btn-outline-primary:hover {
+            background: linear-gradient(45deg, #007bff, #0056b3);
+            border-color: #007bff;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        }
+
         /* Responsive Adjustments */
         @media (max-width: 991px) {
             .hero-section {
@@ -303,6 +507,19 @@
                 justify-content: center;
                 margin-top: 1rem;
             }
+
+            .packages-section {
+                padding: 3rem 0;
+            }
+
+            .section-title h2 {
+                font-size: 2rem;
+            }
+
+            .package-card {
+                margin-bottom: 2rem;
+                padding: 2rem 1.5rem;
+            }
         }
 
         @media (max-width: 576px) {
@@ -316,6 +533,64 @@
 
             .get-started-btn {
                 padding: 0.6rem 1.5rem;
+            }
+
+            .package-price {
+                font-size: 2rem;
+            }
+
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+
+            .section-title p {
+                font-size: 1rem;
+            }
+        }
+
+        /* Smooth scroll between sections */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Add scroll indicator */
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.3s ease;
+        }
+
+        .scroll-indicator:hover {
+            opacity: 1;
+        }
+
+        .scroll-indicator i {
+            font-size: 2rem;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
             }
         }
     </style>
@@ -355,6 +630,7 @@
             </button>
             <div class="navbar-collapse collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
+
                 </ul>
                 <div class="d-flex">
                     <a href="{{ route('login') }}" class="btn btn-light me-2">Masuk</a>
@@ -364,16 +640,16 @@
         </div>
     </nav>
 
-    <section class="hero-section">
+    <section class="hero-section" id="hero">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h2 style="color: white" font-weight: bold>Tool Latihan</h3>
-                        <h1 class="hero-text">TES KECERMATAN</h1>
-                        <div class="d-flex">
-                            <a href="{{ route('trial') }}" class="get-started-btn me-2">Coba</a>
-                            <a href="{{ route('register') }}" class="get-started-btn">Daftar</a>
-                        </div>
+                    <h2 style="color: white; font-weight: bold;">Tool Latihan</h2>
+                    <h1 class="hero-text">TES KECERMATAN</h1>
+                    <div class="d-flex">
+                        <a href="{{ route('trial') }}" class="get-started-btn me-2">Coba</a>
+                        <a href="{{ route('register') }}" class="get-started-btn">Daftar</a>
+                    </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="laptop-container">
@@ -387,9 +663,208 @@
                 </div>
             </div>
         </div>
+        <div class="scroll-indicator" onclick="document.getElementById('packages').scrollIntoView()">
+            <div>Lihat Paket</div>
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </section>
+
+    <!-- Packages Section -->
+    <section class="packages-section" id="packages">
+        <div class="container" style="padding-top:25px">
+            <div class="section-title">
+                <h2>Pilih Paket Berlangganan</h2>
+                <p>Akses penuh ke semua fitur persiapan tes BINTARA POLRI</p>
+            </div>
+
+            <div class="row">
+                <!-- Paket Tes Kecermatan -->
+                <div class="col-md-4 mb-4">
+                    <div class="package-card h-100">
+                        <div class="package-header">
+                            <h3>Paket Kecermatan</h3>
+                            <p>Fokus Tes Kecermatan</p>
+                        </div>
+
+                        <div class="package-features">
+                            <div class="text-center mb-4">
+                                <div class="package-price">Rp 75.000</div>
+                                <p class="price-period">Berlaku 30 hari</p>
+                            </div>
+
+                            <div class="features-list">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Bank soal kecermatan lengkap
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Latihan soal unlimited
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Analisis kecepatan & akurasi
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Timer simulasi ujian
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Riwayat progress harian
+                                </div>
+                            </div>
+
+                            <div class="button-container">
+                                <a href="{{ route('subscription.packages') }}"
+                                    class="btn btn-outline-primary btn-package">
+                                    Pilih Paket
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paket Psikologi -->
+                <div class="col-md-4 mb-4">
+                    <div class="package-card h-100">
+                        <div class="package-header">
+                            <h3>Paket Psikologi</h3>
+                            <p>Fokus Tes Psikologi</p>
+                        </div>
+
+                        <div class="package-features">
+                            <div class="text-center mb-4">
+                                <div class="package-price">Rp 75.000</div>
+                                <p class="price-period">Berlaku 30 hari</p>
+                            </div>
+
+                            <div class="features-list">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Bank soal psikologi lengkap
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Tes kepribadian & karakter
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Simulasi wawancara psikologi
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Tips & strategi psikotes
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Analisis profil psikologi
+                                </div>
+                            </div>
+
+                            <div class="button-container">
+                                <a href="{{ route('subscription.packages') }}"
+                                    class="btn btn-outline-info btn-package">
+                                    Pilih Paket
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paket Lengkap -->
+                <div class="col-md-4 mb-4">
+                    <div class="package-card h-100 popular-package">
+                        <div class="popular-badge">
+                            <span>Terpopuler</span>
+                        </div>
+                        <div class="package-header">
+                            <h3>Paket Lengkap</h3>
+                            <p>Kecermatan + Psikologi</p>
+                        </div>
+
+                        <div class="package-features">
+                            <div class="text-center mb-4">
+                                <div class="package-price">Rp 120.000</div>
+                                <p class="price-period">Berlaku 45 hari</p>
+                            </div>
+
+                            <div class="features-list">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Semua fitur Kecermatan
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Semua fitur Psikologi
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Try out gabungan berkala
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Laporan progress lengkap
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Sertifikat penyelesaian
+                                </div>
+                            </div>
+
+                            <div class="button-container">
+                                <a href="{{ route('subscription.packages') }}" class="btn btn-success btn-package">
+                                    Pilih Paket
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <small class="text-muted">
+                    Dengan membeli paket ini, Anda menyetujui
+                    <a href="#" style="color: #1ab394;">Syarat & Ketentuan</a> yang berlaku
+                </small>
+            </div>
+        </div>
     </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Smooth scroll for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to navbar
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 100) {
+                navbar.style.background = 'rgba(26, 179, 148, 0.98)';
+            } else {
+                navbar.style.background = 'rgba(26, 179, 148, 0.95)';
+            }
+        });
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Observe package cards
+        document.querySelectorAll('.package-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(card);
+        });
+    </script>
 </body>
 
 </html>

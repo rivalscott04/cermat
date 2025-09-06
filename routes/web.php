@@ -41,7 +41,7 @@ Route::get('/trial', function () {
 })->name('trial');
 
 // Route untuk subscription dan proses Midtrans
-Route::get('subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+// Route::get('subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
 Route::get('subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
 Route::get('subscription/get-fee', [SubscriptionController::class, 'getFee'])->name('subscription.get-fee');
 Route::post('subscription/notification', [SubscriptionController::class, 'notification'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->name('subscription.notification');
@@ -57,29 +57,37 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/api/provinces', [UserController::class, 'getProvinces']);
     Route::get('/api/regencies/{provinceId}', [UserController::class, 'getRegencies']);
 
-    Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    // Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
+    Route::get('/subscription/packages', [SubscriptionController::class, 'packages'])->name('subscription.packages');
+    Route::get('/subscription/process/{package}', [SubscriptionController::class, 'processSubscription'])->name('subscription.process.packages');
+    Route::get('/subscription/checkout/{package}', [SubscriptionController::class, 'showCheckout'])->name('subscription.checkout');
+    Route::get('/test', [UserController::class, 'showTest'])->name('show.test');
+
 
     Route::middleware(['subscription'])->group(function () {
-        Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
-        Route::post('/kecermatan/generate', [KecermatanController::class, 'generateKarakter'])->name('kecermatan.generateKarakter');
-        Route::get('/tes-kecermatan/soal', [SoalKecermatanController::class, 'index'])->name('kecermatan.soal');
-        Route::post('/tes-kecermatan/next-soal', [SoalKecermatanController::class, 'getNextSoal'])->name('kecermatan.nextSoal');
-        Route::post('/tes-kecermatan/simpan-hasil', [SoalKecermatanController::class, 'simpanHasil'])->name('kecermatan.simpanHasil');
-        Route::get('/tes-kecermatan/hasil', [SoalKecermatanController::class, 'hasilTes'])->name('kecermatan.hasil');
+        //Tes Kecermatan Routes dengan middleware package tambahan
+        Route::middleware(['check.package:kecermatan'])->group(function () {
+            Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
+            Route::post('/kecermatan/generate', [KecermatanController::class, 'generateKarakter'])->name('kecermatan.generateKarakter');
+            Route::get('/tes-kecermatan/soal', [SoalKecermatanController::class, 'index'])->name('kecermatan.soal');
+            Route::post('/tes-kecermatan/next-soal', [SoalKecermatanController::class, 'getNextSoal'])->name('kecermatan.nextSoal');
+            Route::post('/tes-kecermatan/simpan-hasil', [SoalKecermatanController::class, 'simpanHasil'])->name('kecermatan.simpanHasil');
+            Route::get('/tes-kecermatan/hasil', [SoalKecermatanController::class, 'hasilTes'])->name('kecermatan.hasil');
+        });
 
-        // CBT Routes
-        Route::get('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index');
-        Route::post('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index.post');
-        Route::get('/tryout/{tryout}/start', [TryoutController::class, 'start'])->name('user.tryout.start');
-        Route::get('/{tryout}/restart', [TryoutController::class, 'restart'])->name('user.tryout.restart'); // Route baru
-        Route::get('/tryout/{tryout}/work', [TryoutController::class, 'work'])->name('user.tryout.work');
-        Route::get('{tryout}/remaining-time', [TryoutController::class, 'getRemainingTime'])->name('remaining-time');
-        Route::post('/tryout/{tryout}/reset-answer', [TryoutController::class, 'resetAnswer'])->name('user.tryout.reset-answer');
-        Route::post('/tryout/{tryout}/submit-answer', [TryoutController::class, 'submitAnswer'])->name('user.tryout.submit-answer');
-        // routes/web.php
-        Route::get('/debug-seed/{tryout}', [TryoutController::class, 'debugSessionSeed'])
-            ->name('debug.session.seed');
-        Route::get('/tryout/{tryout}/finish', [TryoutController::class, 'finish'])->name('user.tryout.finish');
+        // Tryout CBT Routes dengan middleware package tambahan
+        Route::middleware(['check.package:tryout'])->group(function () {
+            Route::get('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index');
+            Route::post('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index.post');
+            Route::get('/tryout/{tryout}/start', [TryoutController::class, 'start'])->name('user.tryout.start');
+            Route::get('/{tryout}/restart', [TryoutController::class, 'restart'])->name('user.tryout.restart');
+            Route::get('/tryout/{tryout}/work', [TryoutController::class, 'work'])->name('user.tryout.work');
+            Route::get('{tryout}/remaining-time', [TryoutController::class, 'getRemainingTime'])->name('remaining-time');
+            Route::post('/tryout/{tryout}/reset-answer', [TryoutController::class, 'resetAnswer'])->name('user.tryout.reset-answer');
+            Route::post('/tryout/{tryout}/submit-answer', [TryoutController::class, 'submitAnswer'])->name('user.tryout.submit-answer');
+            Route::get('/debug-seed/{tryout}', [TryoutController::class, 'debugSessionSeed'])->name('debug.session.seed');
+            Route::get('/tryout/{tryout}/finish', [TryoutController::class, 'finish'])->name('user.tryout.finish');
+        });
     });
 
     Route::get('/tes-kecermatan/riwayat/{userId}', [KecermatanController::class, 'riwayat'])->name('kecermatan.riwayat');
@@ -96,6 +104,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/users/{id}', [AdminController::class, 'update'])->name('users.update');
     Route::get('/riwayat-tes', [AdminController::class, 'riwayatTes'])->name('riwayat.tes');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
+    Route::put('/users/{user}/package', [AdminController::class, 'updatePackage'])->name('users.updatePackage');
 
     // Impersonate Routes (using lab404/laravel-impersonate package)
     Route::get('/impersonate/{id}', [\Lab404\Impersonate\Controllers\ImpersonateController::class, 'take'])->name('impersonate');

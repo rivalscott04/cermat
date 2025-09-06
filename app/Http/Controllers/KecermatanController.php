@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\HasilTes;
 use Illuminate\Http\Request;
 use App\Models\TesKecermatan;
-use App\Models\HasilTes;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class KecermatanController extends Controller
@@ -14,7 +15,42 @@ class KecermatanController extends Controller
      */
     public function index()
     {
-        return view('kecermatan.index');
+        // Middleware sudah menghandle validasi, tapi Anda bisa menambah validasi extra jika diperlukan
+        $user = Auth::user();
+
+        // Optional: Double check di controller level
+        if (!$user->canAccessKecermatan()) {
+            return redirect()->route('user.profile', ['userId' => $user->id])
+                ->with('error', 'Anda tidak memiliki akses ke Tes Kecermatan.');
+        }
+
+        return view('kecermatan.index', [
+            'user' => $user,
+            'packageInfo' => $this->getPackageInfo($user->package)
+        ]);
+    }
+
+    private function getPackageInfo($package)
+    {
+        $packageInfo = [
+            'kecermatan' => [
+                'name' => 'Paket Kecermatan',
+                'features' => ['Tes Kecermatan'],
+                'description' => 'Akses khusus untuk Tes Kecermatan'
+            ],
+            'psikologi' => [
+                'name' => 'Paket Psikologi',
+                'features' => ['Tryout CBT'],
+                'description' => 'Akses khusus untuk Tryout CBT'
+            ],
+            'lengkap' => [
+                'name' => 'Paket Lengkap',
+                'features' => ['Tes Kecermatan', 'Tryout CBT'],
+                'description' => 'Akses lengkap untuk semua fitur'
+            ]
+        ];
+
+        return $packageInfo[$package] ?? $packageInfo['kecermatan'];
     }
 
     /**

@@ -13,6 +13,7 @@
     <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
     <link href="{{ asset('css/plugins/dataTables/datatables.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         .avatar {
             width: 40px;
@@ -59,28 +60,29 @@
             background-color: #000;
             color: #fff;
         }
-        
+
         /* SweetAlert Custom Styling */
         .swal-wide {
             width: 500px !important;
         }
-        
+
         .admin-info {
             border-left: 4px solid #ffc107;
         }
-        
+
         .user-info {
             border-left: 4px solid #28a745;
+            padding-left: 10px;
         }
-        
+
         .swal2-popup {
             font-size: 14px;
         }
-        
+
         .swal2-confirm {
             margin-right: 10px;
         }
-        
+
         .stop-impersonate-btn:hover {
             transform: scale(1.05);
             transition: transform 0.2s ease;
@@ -136,39 +138,18 @@
                     });
                 </script>
             @endif
-            @if (session('subscriptionError'))
-                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        Swal.fire({
-                            icon: 'warning',
-                            title: 'Akses Ditolak',
-                            text: '{{ session('subscriptionError') }}',
-                            showCloseButton: true,
-                            showCancelButton: true,
-                            cancelButtonText: 'Tutup',
-                            confirmButtonText: 'Berlangganan sekarang',
-                            confirmButtonColor: '#3085d6'
-
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.href = "{{ route('subscription.checkout') }}";
-                            }
-                        });
-                    });
-                </script>
-            @endif
 
             {{-- Impersonate Warning Banner --}}
-            @if(auth()->user() && app('impersonate')->isImpersonating())
-                <div class="alert alert-warning alert-dismissible fade show impersonate-banner" role="alert" style="margin: 0; border-radius: 0; border-left: none; border-right: none;">
+            @if (auth()->user() && app('impersonate')->isImpersonating())
+                <div class="alert alert-warning alert-dismissible fade show impersonate-banner" role="alert"
+                    style="margin: 0; border-radius: 0; border-left: none; border-right: none;">
                     <div class="container">
                         <div class="row align-items-center">
                             <div class="col-md-8">
                                 <i class="fa fa-user-secret"></i>
-                                <strong>Mode Impersonate Aktif!</strong> 
+                                <strong>Mode Impersonate Aktif!</strong>
                                 Anda sedang login sebagai <strong>{{ auth()->user()->name }}</strong>
-                                @if(app('impersonate')->getImpersonator())
+                                @if (app('impersonate')->getImpersonator())
                                     (Admin: {{ app('impersonate')->getImpersonator()->name }})
                                 @endif
                             </div>
@@ -193,12 +174,12 @@
         window.appRoutes = {
             simpanHasil: "{{ route('kecermatan.simpanHasil') }}",
         };
-        
+
         // Stop impersonating handler
         $(document).ready(function() {
             $('.stop-impersonate-btn').on('click', function(e) {
                 e.preventDefault();
-                
+
                 Swal.fire({
                     title: 'Konfirmasi Stop Impersonating',
                     html: `
@@ -234,9 +215,10 @@
                         return new Promise((resolve) => {
                             // Show loading state
                             Swal.showLoading();
-                            
+
                             // Redirect to stop impersonating route
-                            window.location.href = "{{ route('admin.stop-impersonating') }}";
+                            window.location.href =
+                                "{{ route('admin.stop-impersonating') }}";
                         });
                     },
                     allowOutsideClick: () => !Swal.isLoading()

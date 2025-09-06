@@ -9844,3 +9844,78 @@ body.md-skin {
     margin: 0;
   }
 }
+
+/* Custom class for package subscription buttons */
+.btn-package {
+    width: 100%;
+    font-weight: 600;
+    border-radius: 8px;
+    margin-top: 1.5rem;
+    transition: all 0.3s ease;
+    padding: 12px 20px;
+    text-align: center;
+    display: block;
+}
+
+/* Variants for different package buttons */
+.btn-package.btn-outline-primary {
+    border-color: #007bff;
+    color: #007bff;
+    background-color: transparent;
+}
+
+.btn-package.btn-outline-primary:hover {
+    background-color: #007bff;
+    border-color: #007bff;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+}
+
+.btn-package.btn-outline-info {
+    border-color: #17a2b8;
+    color: #17a2b8;
+    background-color: transparent;
+}
+
+.btn-package.btn-outline-info:hover {
+    background-color: #17a2b8;
+    border-color: #17a2b8;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+}
+
+.btn-package.btn-success {
+    background: linear-gradient(45deg, #28a745, #1e7e34);
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.btn-package.btn-success:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+    background: linear-gradient(45deg, #218838, #1c7430);
+}
+
+/* Loading state for package buttons */
+.btn-package:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Focus states for accessibility */
+.btn-package:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+.btn-package.btn-success:focus {
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.25);
+}
+
+.btn-package.btn-outline-info:focus {
+    box-shadow: 0 0 0 3px rgba(23, 162, 184, 0.25);
+}

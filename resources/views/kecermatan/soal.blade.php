@@ -67,9 +67,11 @@
 
         .answer-container {
             display: flex;
-            justify-content: center;
-            gap: 12px;
+            justify-content: left;
+            /* gap: 12px; */
             margin-bottom: 2rem;
+            width: 40%;
+            border: solid black 2px;
         }
 
         .answer-box {
@@ -77,7 +79,7 @@
             /* Reduced from 90px */
             height: 80px;
             /* Reduced from 90px */
-            border: 2px solid #333;
+            /* border: 2px solid #333; */
             display: flex;
             justify-content: center;
             align-items: center;

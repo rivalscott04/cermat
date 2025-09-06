@@ -23,11 +23,12 @@ class CheckSubscription
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Anda harus memiliki langganan aktif untuk melakukan tes kecermatan.'
+                    'message' => 'Anda harus memiliki langganan aktif untuk mengakses fitur ini.'
                 ], 403);
             }
 
-            return redirect()->route('user.profile', ['userId' => Auth::user()->id])->with('subscriptionError', 'Anda harus memiliki langganan aktif untuk melakukan tes kecermatan.');
+            return redirect()->route('user.profile', ['userId' => Auth::user()->id])
+                ->with('subscriptionError', 'Anda harus memiliki langganan aktif untuk mengakses fitur ini.');
         }
 
         return $next($request);

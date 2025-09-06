@@ -15,7 +15,8 @@
                 color: white;
             }
 
-            .status-select {
+            .status-select,
+            .package-select {
                 padding: 4px 30px;
                 border-radius: 16px;
                 font-size: 14px;
@@ -25,6 +26,7 @@
                 -webkit-appearance: none;
                 -moz-appearance: none;
                 cursor: pointer;
+                min-width: 120px;
             }
 
             .status-select option[value="1"],
@@ -37,6 +39,31 @@
             .status-select.inactive {
                 background-color: #f2f4f7;
                 color: #344054;
+            }
+
+            /* Package select styling */
+            .package-select option[value="kecermatan"],
+            .package-select.kecermatan {
+                background-color: #eff6ff;
+                color: #1d4ed8;
+            }
+
+            .package-select option[value="psikologi"],
+            .package-select.psikologi {
+                background-color: #fdf4ff;
+                color: #a21caf;
+            }
+
+            .package-select option[value="lengkap"],
+            .package-select.lengkap {
+                background-color: #f0fdf4;
+                color: #15803d;
+            }
+
+            .package-select option[value=""],
+            .package-select.no-package {
+                background-color: #f9fafb;
+                color: #6b7280;
             }
 
             .action-icon {
@@ -70,16 +97,19 @@
                 font-size: 14px;
             }
 
-            .status-select:focus {
+            .status-select:focus,
+            .package-select:focus {
                 outline: none;
             }
 
-            .status-wrapper {
+            .status-wrapper,
+            .package-wrapper {
                 position: relative;
                 display: inline-block;
             }
 
-            .status-wrapper::after {
+            .status-wrapper::after,
+            .package-wrapper::after {
                 content: '';
                 position: absolute;
                 right: 12px;
@@ -111,7 +141,7 @@
                                         <tr>
                                             <th>USER</th>
                                             <th>EMAIL</th>
-                                            <th class="text-center">PLAN</th>
+                                            <th class="text-center">PACKAGE</th>
                                             <th class="text-center">STATUS</th>
                                             <th class="text-center">ACTIONS</th>
                                         </tr>
@@ -132,11 +162,32 @@
                                                 </td>
                                                 <td>{{ $user->email }}</td>
                                                 <td class="text-center">
-                                                    @if ($user->hasActiveSubscription())
-                                                        {{ $user->subscriptions ? json_decode($user->subscriptions->payment_details, true)['package'] ?? '-' : '-' }}
-                                                    @else
-                                                        -
-                                                    @endif
+                                                    <div class="package-wrapper">
+                                                        <form method="POST"
+                                                            action="{{ route('admin.users.updatePackage', $user->id) }}"
+                                                            class="m-0">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            @php
+                                                                $currentPackage = $user->package ?? '';
+                                                            @endphp
+                                                            <select name="package" onchange="this.form.submit()"
+                                                                class="package-select {{ $currentPackage ? strtolower($currentPackage) : 'no-package' }}">
+                                                                <option value=""
+                                                                    {{ !$currentPackage ? 'selected' : '' }}>No Package
+                                                                </option>
+                                                                <option value="kecermatan"
+                                                                    {{ $currentPackage === 'kecermatan' ? 'selected' : '' }}>
+                                                                    Kecermatan</option>
+                                                                <option value="psikologi"
+                                                                    {{ $currentPackage === 'psikologi' ? 'selected' : '' }}>
+                                                                    Psikologi</option>
+                                                                <option value="lengkap"
+                                                                    {{ $currentPackage === 'lengkap' ? 'selected' : '' }}>
+                                                                    Lengkap</option>
+                                                            </select>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="status-wrapper">
@@ -148,7 +199,8 @@
                                                             <select name="is_active" onchange="this.form.submit()"
                                                                 class="status-select {{ $user->is_active ? 'active' : 'inactive' }}">
                                                                 <option value="1"
-                                                                    {{ $user->is_active ? 'selected' : '' }}>Active</option>
+                                                                    {{ $user->is_active ? 'selected' : '' }}>Active
+                                                                </option>
                                                                 <option value="0"
                                                                     {{ !$user->is_active ? 'selected' : '' }}>Inactive
                                                                 </option>
@@ -162,9 +214,8 @@
                                                             class="action-icon">
                                                             <i class="fa fa-info-circle"></i>
                                                         </a>
-                                                        @if($user->canBeImpersonated())
-                                                            <a href="#" 
-                                                                class="action-icon impersonate-btn"
+                                                        @if ($user->canBeImpersonated())
+                                                            <a href="#" class="action-icon impersonate-btn"
                                                                 data-user-id="{{ $user->id }}"
                                                                 data-user-name="{{ $user->name }}"
                                                                 data-user-email="{{ $user->email }}"
@@ -207,7 +258,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <!-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
+
     <script>
         $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn btn-white btn-sm';
 
@@ -223,7 +274,7 @@
                 }
             });
 
-            // Update select background color when value changes
+            // Update select background color when value changes for status
             document.querySelectorAll('.status-select').forEach(select => {
                 select.addEventListener('change', function() {
                     this.className = 'status-select ' + (this.value === '1' ? 'active' :
@@ -231,14 +282,35 @@
                 });
             });
 
+            // Update select background color when value changes for package
+            document.querySelectorAll('.package-select').forEach(select => {
+                select.addEventListener('change', function() {
+                    let packageClass = '';
+                    switch (this.value) {
+                        case 'kecermatan':
+                            packageClass = 'kecermatan';
+                            break;
+                        case 'psikologi':
+                            packageClass = 'psikologi';
+                            break;
+                        case 'lengkap':
+                            packageClass = 'lengkap';
+                            break;
+                        default:
+                            packageClass = 'no-package';
+                    }
+                    this.className = 'package-select ' + packageClass;
+                });
+            });
+
             // Impersonate button handler
             $('.impersonate-btn').on('click', function(e) {
                 e.preventDefault();
-                
+
                 const userId = $(this).data('user-id');
                 const userName = $(this).data('user-name');
                 const userEmail = $(this).data('user-email');
-                
+
                 Swal.fire({
                     title: 'Konfirmasi Impersonate',
                     html: `
@@ -275,9 +347,11 @@
                         return new Promise((resolve) => {
                             // Show loading state
                             Swal.showLoading();
-                            
+
                             // Redirect to impersonate route using lab404 package
-                            window.location.href = `{{ route('admin.impersonate', ':userId') }}`.replace(':userId', userId);
+                            window.location.href =
+                                `{{ route('admin.impersonate', ':userId') }}`.replace(
+                                    ':userId', userId);
                         });
                     },
                     allowOutsideClick: () => !Swal.isLoading()
@@ -285,25 +359,25 @@
             });
         });
     </script>
-    
+
     <style>
         .swal-wide {
             width: 500px !important;
         }
-        
+
         .user-info {
             border-left: 4px solid #28a745;
         }
-        
+
         .impersonate-btn:hover {
             transform: scale(1.1);
             transition: transform 0.2s ease;
         }
-        
+
         .swal2-popup {
             font-size: 14px;
         }
-        
+
         .swal2-confirm {
             margin-right: 10px;
         }

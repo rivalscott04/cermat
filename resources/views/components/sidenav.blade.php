@@ -62,19 +62,35 @@
                     </a>
                 </li>
 
+                {{-- Menu Paket - Selalu tampil untuk semua user --}}
                 <li>
-                    <a href="{{ route('kecermatan') }}">
-                        <i class="fa fa-eye"></i>
-                        <span class="nav-label">Tes Kecermatan</span>
+                    <a href="{{ route('subscription.packages') }}">
+                        <i class="fa fa-gem"></i>
+                        <span class="nav-label">Paket</span>
+                        {{-- Badge untuk menunjukkan paket saat ini --}}
+                        <span class="badge badge-primary pull-right" style="font-size: 10px;">
+                            {{ ucfirst(Auth::user()->package ?? 'Free') }}
+                        </span>
                     </a>
                 </li>
 
                 <li>
-                    <a href="{{ route('user.tryout.index') }}">
-                        <i class="fa fa-graduation-cap"></i>
-                        <span class="nav-label">Tryout CBT</span>
+                    <a href="{{ route('show.test') }}">
+                        <i class="fa fa-check-square-o"></i>
+                        <span class="nav-label">Tes</span>
                     </a>
                 </li>
+
+                {{-- Tampilkan pesan jika tidak ada subscription aktif --}}
+                @if (!Auth::user()->hasActiveSubscription())
+                    <li class="text-warning" style="padding: 8px 20px; border-left: 3px solid #f8ac59;">
+                        <small>
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <strong>Langganan Diperlukan</strong><br>
+                            <span style="color: #676a6c;">Pilih paket untuk akses fitur</span>
+                        </small>
+                    </li>
+                @endif
             @endif
 
             <li>

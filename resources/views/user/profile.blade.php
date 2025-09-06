@@ -12,6 +12,33 @@
 
 @section('content')
     <div class="wrapper wrapper-content animated fadeInRight">
+        {{-- Error Messages for Subscription/Package Issues --}}
+        @if (session('subscriptionError'))
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fa fa-exclamation-triangle"></i>
+                <strong>Langganan Diperlukan!</strong> {{ session('subscriptionError') }}
+                <a href="{{ route('subscription.packages') }}" class="btn btn-sm btn-primary ml-2">
+                    <i class="fa fa-shopping-cart"></i> Berlangganan Sekarang
+                </a>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
+        @if (session('packageError'))
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fa fa-info-circle"></i>
+                <strong>Upgrade Paket!</strong> {{ session('packageError') }}
+                <a href="{{ route('subscription.packages') }}" class="btn btn-sm btn-success ml-2">
+                    <i class="fa fa-arrow-up"></i> Upgrade Paket
+                </a>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        @endif
+
         <div class="row">
             <!-- Profile Card -->
             <div class="col-md-4">
@@ -26,14 +53,14 @@
 
                         <!-- Free Programs -->
                         <div class="list-group mb-4 text-left">
-                            <a href="#" class="list-group-item list-group-item-action">
-                                Kepribadian <i class="fa fa-chevron-right float-right"></i>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
-                                Kecerdasan <i class="fa fa-chevron-right float-right"></i>
-                            </a>
-                            <a href="#" class="list-group-item list-group-item-action">
+                            <a href="{{ route('subscription.packages') }}" class="list-group-item list-group-item-action">
                                 Kecermatan <i class="fa fa-chevron-right float-right"></i>
+                            </a>
+                            <a href="{{ route('subscription.packages') }}" class="list-group-item list-group-item-action">
+                                Psikologi <i class="fa fa-chevron-right float-right"></i>
+                            </a>
+                            <a href="{{ route('subscription.packages') }}" class="list-group-item list-group-item-action">
+                                Lengkap <i class="fa fa-chevron-right float-right"></i>
                             </a>
                         </div>
                     </div>
@@ -267,6 +294,19 @@
                         submitButton.disabled = false;
                     }
                 }
+            });
+
+            // Auto-hide alerts after 5 seconds
+            const alerts = document.querySelectorAll('.alert-dismissible');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert && alert.parentNode) {
+                        alert.style.opacity = '0';
+                        setTimeout(() => {
+                            alert.remove();
+                        }, 300);
+                    }
+                }, 5000);
             });
         });
     </script>

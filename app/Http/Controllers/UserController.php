@@ -147,4 +147,9 @@ class UserController extends Controller
 
         return response()->json($regencies);
     }
+
+    public function showTest()
+    {
+        return view('user.test');
+    }
 }

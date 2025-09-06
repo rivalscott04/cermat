@@ -184,8 +184,12 @@ class TryoutController extends Controller
         if ($request->has('clear_auto_fullscreen') || $request->isMethod('post')) {
             session()->forget('auto_fullscreen_tryout');
         }
-        
+
         $user = auth()->user();
+        if (!$user->canAccessTryout()) {
+            return redirect()->route('user.profile', ['userId' => $user->id])
+                ->with('subscriptionError', 'Anda tidak memiliki akses ke Tryout CBT.');
+        }
         $paket = $user->paket_akses;
 
         $tryouts = Tryout::active()
@@ -204,7 +208,11 @@ class TryoutController extends Controller
             })
             ->get();
 
-        return view('user.tryout.index', compact('tryouts'));
+        return view('user.tryout.index', [
+            'user' => $user,
+            'tryouts' => $tryouts,
+            'availableMenus' => $user->getAvailableMenus()
+        ]);
     }
 
     public function start(Tryout $tryout, Request $request)
@@ -251,7 +259,7 @@ class TryoutController extends Controller
 
         // Set session flag untuk auto fullscreen
         session(['auto_fullscreen_tryout' => $tryout->id]);
-        
+
         return redirect()->route('user.tryout.work', $tryout);
     }
 

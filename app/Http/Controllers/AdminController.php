@@ -77,16 +77,64 @@ class AdminController extends Controller
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        
+
+        // Cek apakah request hanya untuk update status
+        if ($request->has('is_active') && !$request->has('name')) {
+            $request->validate([
+                'is_active' => 'required|in:0,1'
+            ]);
+
+            $user->update([
+                'is_active' => (bool) $request->is_active
+            ]);
+
+            return redirect()->route('admin.users.index')
+                ->with('success', 'Status pengguna berhasil diperbarui.');
+        }
+
+        // Untuk update data lengkap
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
-            'role' => 'required|in:user,admin'
+            'role' => 'required|in:user,admin',
+            'is_active' => 'sometimes|in:0,1' // sometimes untuk optional
         ]);
 
-        $user->update($request->only(['name', 'email', 'role']));
+        $updateData = $request->only(['name', 'email', 'role']);
 
-        return redirect()->route('admin.users.index')->with('success', 'Data pengguna berhasil diperbarui.');
+        // Tambahkan is_active jika ada di request
+        if ($request->has('is_active')) {
+            $updateData['is_active'] = (bool) $request->is_active;
+        }
+
+        $user->update($updateData);
+
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Data pengguna berhasil diperbarui.');
+    }
+
+    public function updatePackage(Request $request, $userId)
+    {
+        $user = User::findOrFail($userId);
+
+        $request->validate([
+            'package' => 'nullable|in:,kecermatan,psikologi,lengkap'
+        ]);
+
+        $package = $request->input('package');
+
+        try {
+            // Update package field directly in users table
+            $user->update([
+                'package' => $package === '' ? null : $package
+            ]);
+
+            return redirect()->route('admin.users.index')
+                ->with('success', 'Package pengguna berhasil diperbarui.');
+        } catch (\Exception $e) {
+            return redirect()->route('admin.users.index')
+                ->with('error', 'Gagal memperbarui package pengguna: ' . $e->getMessage());
+        }
     }
 
     public function riwayatTes()
@@ -103,7 +151,7 @@ class AdminController extends Controller
     public function deleteUser($id)
     {
         $user = User::findOrFail($id);
-        
+
         // Prevent deleting admin users
         if ($user->role === 'admin') {
             return redirect()->route('admin.users.index')->with('error', 'Tidak dapat menghapus akun admin.');
@@ -112,7 +160,7 @@ class AdminController extends Controller
         // Delete related data first
         $user->subscriptions()->delete();
         DB::table('hasil_tes')->where('user_id', $id)->delete();
-        
+
         // Delete the user
         $user->delete();
 
