@@ -33,24 +33,36 @@
                     </a>
                 </li>
 
-                <!-- CBT Management -->
+                <!-- Master Soal -->
                 <li>
-                    <a href="{{ route('admin.kategori.index') }}">
-                        <i class="fa fa-tags"></i>
-                        <span class="nav-label">Kategori Soal</span>
-                    </a>
+                    <a href="#"><i class="fa fa-book"></i> <span class="nav-label">Master Soal</span> <span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse">
+                        <li>
+                            <a href="{{ route('admin.kategori.index') }}">
+                                <i class="fa fa-tags"></i>
+                                <span class="nav-label">Kategori Soal</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('admin.soal.index') }}">
+                                <i class="fa fa-question-circle"></i>
+                                <span class="nav-label">Soal</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
+
+                <!-- Manajemen Tes -->
                 <li>
-                    <a href="{{ route('admin.soal.index') }}">
-                        <i class="fa fa-question-circle"></i>
-                        <span class="nav-label">Soal</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="{{ route('admin.tryout.index') }}">
-                        <i class="fa fa-graduation-cap"></i>
-                        <span class="nav-label">Tryout</span>
-                    </a>
+                    <a href="#"><i class="fa fa-graduation-cap"></i> <span class="nav-label">Manajemen Tes</span> <span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse">
+                        <li>
+                            <a href="{{ route('admin.tryout.index') }}">
+                                <i class="fa fa-graduation-cap"></i>
+                                <span class="nav-label">Tryout</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
             @endif
 
@@ -74,11 +86,23 @@
                     </a>
                 </li>
 
+                <!-- Manajemen Tes -->
                 <li>
-                    <a href="{{ route('show.test') }}">
-                        <i class="fa fa-check-square-o"></i>
-                        <span class="nav-label">Tes</span>
-                    </a>
+                    <a href="#"><i class="fa fa-graduation-cap"></i> <span class="nav-label">Manajemen Tes</span> <span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse">
+                        <li>
+                            <a href="{{ route('show.test') }}">
+                                <i class="fa fa-check-square-o"></i>
+                                <span class="nav-label">Tes</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('kecermatan.riwayat', ['userId' => Auth::user()->id]) }}">
+                                <i class="fa fa-history"></i>
+                                <span class="nav-label">Riwayat Tes</span>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 {{-- Tampilkan pesan jika tidak ada subscription aktif --}}
@@ -93,19 +117,14 @@
                 @endif
             @endif
 
-            <li>
-                @if (Auth::user()->role == 'admin')
+            @if (Auth::user()->role == 'admin')
+                <li>
                     <a href="{{ route('admin.riwayat.tes') }}">
                         <i class="fa fa-history"></i>
                         <span class="nav-label">Riwayat Tes</span>
                     </a>
-                @else
-                    <a href="{{ route('kecermatan.riwayat', ['userId' => Auth::user()->id]) }}">
-                        <i class="fa fa-history"></i>
-                        <span class="nav-label">Riwayat Tes</span>
-                    </a>
-                @endif
-            </li>
+                </li>
+            @endif
 
         </ul>
     </div>

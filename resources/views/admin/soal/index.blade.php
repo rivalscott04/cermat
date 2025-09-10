@@ -154,7 +154,7 @@
                             </div>
 
                             <div class="d-flex justify-content-center">
-                                {{ $soals->links() }}
+                                {{ $soals->appends(request()->query())->links('pagination::bootstrap-4') }}
                             </div>
                         </div>
                     </div>
@@ -285,6 +285,53 @@
             </div>
         </div>
     @endsection
+
+    @push('styles')
+        <style>
+            .pagination {
+                margin: 0;
+            }
+            
+            .pagination .page-link {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.875rem;
+                border: 1px solid #dee2e6;
+                color: #007bff;
+                background-color: #fff;
+            }
+            
+            .pagination .page-link:hover {
+                color: #0056b3;
+                background-color: #e9ecef;
+                border-color: #dee2e6;
+            }
+            
+            .pagination .page-item.active .page-link {
+                color: #fff;
+                background-color: #007bff;
+                border-color: #007bff;
+            }
+            
+            .pagination .page-item.disabled .page-link {
+                color: #6c757d;
+                background-color: #fff;
+                border-color: #dee2e6;
+            }
+            
+            .pagination .page-link i {
+                font-size: 0.75rem;
+            }
+            
+            /* Ensure proper spacing from footer */
+            .card {
+                margin-bottom: 30px;
+            }
+            
+            .table-responsive {
+                margin-bottom: 20px;
+            }
+        </style>
+    @endpush
 
     @push('scripts')
         <script>

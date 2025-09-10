@@ -145,7 +145,7 @@ class AdminController extends Controller
             ->orderBy('hasil_tes.created_at', 'desc')
             ->paginate(15);
 
-        return view('admin.riwayat.tes', compact('hasilTes'));
+        return view('admin.riwayat-tes', compact('hasilTes'));
     }
 
     public function deleteUser($id)

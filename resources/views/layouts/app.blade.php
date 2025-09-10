@@ -117,6 +117,28 @@
         .stop-impersonate-btn i {
             margin-right: 5px;
         }
+
+        /* Fix footer spacing */
+        #page-wrapper {
+            padding-bottom: 80px !important;
+            position: relative;
+            min-height: 100vh;
+        }
+        
+        .footer {
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0;
+            right: 0;
+            margin-top: 0;
+            border-top: 1px solid #e7eaec;
+            background: #f8f9fa;
+            padding: 15px 20px;
+        }
+        
+        .container-fluid {
+            margin-bottom: 20px;
+        }
     </style>
     @stack('styles')
 </head>

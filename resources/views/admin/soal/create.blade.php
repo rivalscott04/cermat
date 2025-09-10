@@ -183,7 +183,7 @@
                                     <input type="file" class="custom-file-input @error('pembahasan_image') is-invalid @enderror" id="pembahasan_image" name="pembahasan_image" accept="image/*">
                                     <label class="custom-file-label" for="pembahasan_image">Pilih gambar...</label>
                                 </div>
-                                <small class="form-text text-muted">Format: JPEG, PNG, JPG, GIF. Maks: 2MB</small>
+                                <small class="form-text text-muted">Format: JPEG, PNG, JPG, GIF. Maks: 1MB</small>
                                 @error('pembahasan_image')
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
@@ -247,6 +247,16 @@
                 $('#pembahasan_image').on('change', function() {
                     const file = this.files[0];
                     if (file) {
+                        // Check file size (1MB = 1024 * 1024 bytes)
+                        const maxSize = 1024 * 1024; // 1MB in bytes
+                        if (file.size > maxSize) {
+                            alert('Ukuran file gambar pembahasan maksimal 1MB. File yang dipilih: ' + (file.size / (1024 * 1024)).toFixed(2) + 'MB');
+                            $(this).val('');
+                            $('.custom-file-label[for="pembahasan_image"]').text('Pilih gambar...');
+                            $('#pembahasan-image-preview').hide();
+                            return;
+                        }
+                        
                         $('.custom-file-label[for="pembahasan_image"]').text(file.name);
                         const reader = new FileReader();
                         reader.onload = function(e) {
