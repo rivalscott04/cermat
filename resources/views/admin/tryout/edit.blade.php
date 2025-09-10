@@ -68,47 +68,87 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Struktur Soal <span class="text-danger">*</span></label>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="shuffle_questions" name="shuffle_questions" value="1" {{ old('shuffle_questions', $tryout->shuffle_questions) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="shuffle_questions">Acak Urutan Nomor Soal</label>
+                                </div>
+                                <small class="text-muted">Jika aktif, urutan nomor soal diacak per user secara deterministik. Opsi jawaban tetap diacak seperti biasa.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Blueprint Per Kategori & Level <span class="text-danger">*</span></label>
                                 <div class="alert alert-info">
                                     <i class="fa fa-info-circle"></i>
-                                    Tentukan jumlah soal untuk setiap kategori. Total soal akan dihitung otomatis.
+                                    Tentukan jumlah soal untuk setiap kombinasi kategori dan level.
                                 </div>
                                 <div class="alert alert-warning">
                                     <i class="fa fa-warning"></i>
-                                    <strong>Perhatian:</strong> Mengubah struktur soal akan menghapus semua jawaban user
+                                    <strong>Perhatian:</strong> Mengubah blueprint soal akan menghapus semua jawaban user
                                     yang sudah ada untuk tryout ini.
                                 </div>
 
-                                @foreach ($kategoris as $kategori)
-                                    <div class="row mb-2">
-                                        <div class="col-md-6">
-                                            <label for="struktur_{{ $kategori->id }}">
-                                                {{ $kategori->nama }} ({{ $kategori->kode }})
-                                            </label>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <input type="number" class="form-control struktur-input"
-                                                id="struktur_{{ $kategori->id }}" name="struktur[{{ $kategori->id }}]"
-                                                value="{{ old("struktur.{$kategori->id}", $tryout->struktur[$kategori->id] ?? 0) }}"
-                                                min="0" max="100">
-                                            <small class="form-text text-muted">
-                                                Tersedia: {{ $kategori->soals()->count() }} soal
-                                                @if (isset($tryout->struktur[$kategori->id]) && $tryout->struktur[$kategori->id] > 0)
-                                                    | Saat ini: {{ $tryout->struktur[$kategori->id] }} soal
-                                                @endif
-                                            </small>
-                                        </div>
-                                    </div>
-                                @endforeach
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Kategori</th>
+                                                <th class="text-center">Mudah</th>
+                                                <th class="text-center">Sedang</th>
+                                                <th class="text-center">Sulit</th>
+                                                <th>Tersedia</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @php
+                                                $bp = $tryout->blueprints->groupBy('kategori_id')->map(function($rows){
+                                                    return [
+                                                        'mudah' => optional($rows->firstWhere('level','mudah'))->jumlah ?? 0,
+                                                        'sedang' => optional($rows->firstWhere('level','sedang'))->jumlah ?? 0,
+                                                        'sulit' => optional($rows->firstWhere('level','sulit'))->jumlah ?? 0,
+                                                    ];
+                                                });
+                                            @endphp
+                                            @foreach ($kategoris as $kategori)
+                                                @php
+                                                    $row = $bp[$kategori->id] ?? ['mudah'=>0,'sedang'=>0,'sulit'=>0];
+                                                @endphp
+                                                <tr>
+                                                    <td>{{ $kategori->nama }} ({{ $kategori->kode }})</td>
+                                                    <td width="140">
+                                                        <input type="number" class="form-control blueprint-input" min="0" max="100"
+                                                               name="blueprint[{{ $kategori->id }}][mudah]"
+                                                               value="{{ old("blueprint.{$kategori->id}.mudah", $row['mudah']) }}">
+                                                    </td>
+                                                    <td width="140">
+                                                        <input type="number" class="form-control blueprint-input" min="0" max="100"
+                                                               name="blueprint[{{ $kategori->id }}][sedang]"
+                                                               value="{{ old("blueprint.{$kategori->id}.sedang", $row['sedang']) }}">
+                                                    </td>
+                                                    <td width="140">
+                                                        <input type="number" class="form-control blueprint-input" min="0" max="100"
+                                                               name="blueprint[{{ $kategori->id }}][sulit]"
+                                                               value="{{ old("blueprint.{$kategori->id}.sulit", $row['sulit']) }}">
+                                                    </td>
+                                                    <td>
+                                                        <small class="text-muted">
+                                                            Mudah: {{ $kategori->soals()->where('level','mudah')->count() }} |
+                                                            Sedang: {{ $kategori->soals()->where('level','sedang')->count() }} |
+                                                            Sulit: {{ $kategori->soals()->where('level','sulit')->count() }}
+                                                        </small>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
 
-                                @error('struktur')
+                                @error('blueprint')
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
 
                                 <div class="mt-3">
                                     <div class="alert alert-secondary">
-                                        <strong>Total Soal: <span
-                                                id="total-soal">{{ array_sum($tryout->struktur) }}</span></strong>
+                                        <strong>Total Soal: <span id="total-soal">0</span></strong>
                                     </div>
                                 </div>
                             </div>
@@ -187,13 +227,12 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            let originalStruktur = @json($tryout->struktur);
-            let strukturChanged = false;
+            let blueprintChanged = false;
 
             // Calculate total questions
             function calculateTotal() {
                 let total = 0;
-                $('.struktur-input').each(function() {
+                $('.blueprint-input').each(function() {
                     total += parseInt($(this).val()) || 0;
                 });
                 $('#total-soal').text(total);
@@ -201,28 +240,19 @@
             }
 
             // Check if structure changed
-            function checkStrukturChange() {
-                let currentStruktur = {};
-                $('.struktur-input').each(function() {
-                    let name = $(this).attr('name');
-                    let kategoriId = name.match(/struktur\[(\d+)\]/)[1];
-                    currentStruktur[kategoriId] = parseInt($(this).val()) || 0;
-                });
-
-                strukturChanged = JSON.stringify(originalStruktur) !== JSON.stringify(currentStruktur);
+            function checkBlueprintChange() {
+                blueprintChanged = true; // simple flag since we don't load original blueprint here
             }
 
             // Update total when structure changes
-            $('.struktur-input').on('input', function() {
+            $('.blueprint-input').on('input', function() {
                 calculateTotal();
-                checkStrukturChange();
+                checkBlueprintChange();
             });
 
             // Form submission with confirmation if structure changed
             $('form').on('submit', function(e) {
-                checkStrukturChange();
-
-                if (strukturChanged) {
+                if (blueprintChanged) {
                     e.preventDefault();
                     $('#confirmModal').modal('show');
                 }

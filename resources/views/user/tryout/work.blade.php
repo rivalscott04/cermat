@@ -5,6 +5,124 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
+            <!-- Sidebar - Question Navigator -->
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Navigasi Soal</h5>
+                        @if(isset($categoryCounts) && $categoryCounts->count())
+                            <div class="mt-2 d-flex align-items-center justify-content-between">
+                                <div>
+                                    <form method="GET" action="{{ route('user.tryout.work', $tryout->id) }}" id="kategoriFilterForm" class="form-inline">
+                                        <input type="hidden" name="question" value="{{ request('question', $currentQuestion->urutan) }}">
+                                        <select name="kategori_id" class="form-control form-control-sm" onchange="document.getElementById('kategoriFilterForm').submit()">
+                                            <option value="">Semua Kategori</option>
+                                            @foreach($categoryCounts as $catId => $cnt)
+                                                @php $cat = $userSoals->firstWhere('soal.kategori_id', (int)$catId)->soal->kategori ?? null; @endphp
+                                                <option value="{{ $catId }}" {{ ($kategoriFilterId == $catId) ? 'selected' : '' }}>
+                                                    {{ $cat ? $cat->nama : 'Kategori '.$catId }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </form>
+                                </div>
+                                <div class="text-muted small ml-2">
+                                    @foreach($categoryCounts as $catId => $cnt)
+                                        <span class="ml-2">{{ $cnt }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                        <!-- TAMBAHAN: Tampilkan info session -->
+                        @if ($session && $session->shuffle_seed)
+                            <small class="text-muted">Session: {{ substr(md5($session->shuffle_seed), 0, 8) }}</small>
+                        @endif
+                    </div>
+                    <div class="card-body">
+                        <div class="question-grid">
+                            @for ($i = 1; $i <= $totalQuestions; $i++)
+                                @php
+                                    $questionStatus = $userSoals->where('urutan', $i)->first();
+                                    $statusClass = '';
+                                    $statusText = '';
+
+                                    if ($i == $currentQuestion->urutan) {
+                                        $statusClass = 'current';
+                                        $statusText = 'Sedang dikerjakan';
+                                    } elseif ($questionStatus && $questionStatus->sudah_dijawab) {
+                                        $statusClass = 'answered';
+                                        $statusText = 'Sudah dijawab';
+                                    } else {
+                                        $statusClass = 'unanswered';
+                                        $statusText = 'Belum dijawab';
+                                    }
+                                @endphp
+
+                                <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $i, 'kategori_id' => request('kategori_id')]) }}"
+                                    class="question-number {{ $statusClass }} {{ ($questionStatus && $questionStatus->is_marked) ? 'marked' : '' }}" title="{{ $statusText }}"
+                                    onclick="allowTryoutNavigation()">
+                                    {{ $i }}
+                                </a>
+                            @endfor
+                        </div>
+
+                        <div class="mt-3">
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="question-legend current"></span>
+                                <small>Sedang dikerjakan</small>
+                            </div>
+                            <div class="d-flex align-items-center mb-2">
+                                <span class="question-legend answered"></span>
+                                <small>Sudah dijawab</small>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <span class="question-legend unanswered"></span>
+                                <small>Belum dijawab</small>
+                            </div>
+                            <div class="d-flex align-items-center mt-2">
+                                <span class="question-legend" style="background-color:#ffc107"></span>
+                                <small>Ditandai</small>
+                            </div>
+                        </div>
+
+                        <!-- Session Info -->
+                        <div class="mt-3 pt-3 border-top">
+                            <small class="text-muted">
+                                <div class="d-flex justify-content-between">
+                                    <span>Total Soal:</span>
+                                    <span>{{ $totalQuestions }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Terjawab:</span>
+                                    <span
+                                        class="text-success">{{ $userSoals->where('sudah_dijawab', true)->count() }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Belum:</span>
+                                    <span
+                                        class="text-warning">{{ $userSoals->where('sudah_dijawab', false)->count() }}</span>
+                                </div>
+                            </small>
+                        </div>
+
+                        <!-- Finish Tryout Button in Sidebar -->
+                        <div class="mt-3 pt-3 border-top">
+                            <button type="button" class="btn btn-success btn-block" onclick="showFinishConfirmation()">
+                                <i class="fa fa-check"></i> Selesaikan Tryout
+                            </button>
+                        </div>
+
+                        <!-- TAMBAHAN: Restart Button dengan konfirmasi -->
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-outline-danger btn-block btn-sm"
+                                onclick="showRestartConfirmation()">
+                                <i class="fa fa-refresh"></i> Restart Tryout
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Main Content -->
             <div class="col-lg-9">
                 <div class="card mt-2 mb-5">
@@ -68,7 +186,7 @@
 
                             @if ($currentQuestion->soal->tipe == 'benar_salah')
                                 <!-- True/False Options -->
-                                <div class="options-container mt-3">
+                                <div class="options-container mt-3" @if ($currentQuestion->soal->tipe == 'pg_pilih_2') data-max-select="2" @endif>
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="jawaban" id="benar"
                                             value="benar"
@@ -120,11 +238,15 @@
                                 </div>
                             @endif
 
-                            <!-- Reset Answer Button -->
-                            <div class="reset-answer-container mt-3">
-                                <button type="button" class="btn btn-outline-warning btn-sm" id="resetAnswerBtn"
+                            <!-- Action Buttons -->
+                            <div class="d-flex align-items-center mt-3">
+                                <button type="button" class="btn btn-outline-warning btn-sm mr-2" id="resetAnswerBtn"
                                     onclick="resetAnswer()" title="Hapus pilihan jawaban">
                                     <i class="fa fa-eraser"></i> Reset Jawaban
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" id="toggleMarkBtn"
+                                    onclick="toggleMark()" title="Tandai soal ini">
+                                    <i class="fa fa-flag"></i> Tandai
                                 </button>
                             </div>
                         </div>
@@ -153,97 +275,6 @@
                                     @endif
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Sidebar - Question Navigator -->
-            <div class="col-lg-3">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">Navigasi Soal</h5>
-                        <!-- TAMBAHAN: Tampilkan info session -->
-                        @if ($session && $session->shuffle_seed)
-                            <small class="text-muted">Session: {{ substr(md5($session->shuffle_seed), 0, 8) }}</small>
-                        @endif
-                    </div>
-                    <div class="card-body">
-                        <div class="question-grid">
-                            @for ($i = 1; $i <= $totalQuestions; $i++)
-                                @php
-                                    $questionStatus = $userSoals->where('urutan', $i)->first();
-                                    $statusClass = '';
-                                    $statusText = '';
-
-                                    if ($i == $currentQuestion->urutan) {
-                                        $statusClass = 'current';
-                                        $statusText = 'Sedang dikerjakan';
-                                    } elseif ($questionStatus && $questionStatus->sudah_dijawab) {
-                                        $statusClass = 'answered';
-                                        $statusText = 'Sudah dijawab';
-                                    } else {
-                                        $statusClass = 'unanswered';
-                                        $statusText = 'Belum dijawab';
-                                    }
-                                @endphp
-
-                                <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $i]) }}"
-                                    class="question-number {{ $statusClass }}" title="{{ $statusText }}"
-                                    onclick="allowTryoutNavigation()">
-                                    {{ $i }}
-                                </a>
-                            @endfor
-                        </div>
-
-                        <div class="mt-3">
-                            <div class="d-flex align-items-center mb-2">
-                                <span class="question-legend current"></span>
-                                <small>Sedang dikerjakan</small>
-                            </div>
-                            <div class="d-flex align-items-center mb-2">
-                                <span class="question-legend answered"></span>
-                                <small>Sudah dijawab</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <span class="question-legend unanswered"></span>
-                                <small>Belum dijawab</small>
-                            </div>
-                        </div>
-
-                        <!-- Session Info -->
-                        <div class="mt-3 pt-3 border-top">
-                            <small class="text-muted">
-                                <div class="d-flex justify-content-between">
-                                    <span>Total Soal:</span>
-                                    <span>{{ $totalQuestions }}</span>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span>Terjawab:</span>
-                                    <span
-                                        class="text-success">{{ $userSoals->where('sudah_dijawab', true)->count() }}</span>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <span>Belum:</span>
-                                    <span
-                                        class="text-warning">{{ $userSoals->where('sudah_dijawab', false)->count() }}</span>
-                                </div>
-                            </small>
-                        </div>
-
-                        <!-- Finish Tryout Button in Sidebar -->
-                        <div class="mt-3 pt-3 border-top">
-                            <button type="button" class="btn btn-success btn-block" onclick="showFinishConfirmation()">
-                                <i class="fa fa-check"></i> Selesaikan Tryout
-                            </button>
-                        </div>
-
-                        <!-- TAMBAHAN: Restart Button dengan konfirmasi -->
-                        <div class="mt-2">
-                            <button type="button" class="btn btn-outline-danger btn-block btn-sm"
-                                onclick="showRestartConfirmation()">
-                                <i class="fa fa-refresh"></i> Restart Tryout
-                            </button>
                         </div>
                     </div>
                 </div>
@@ -465,7 +496,7 @@
         }
 
         .question-text {
-            font-size: 1.1rem;
+            font-size: 1.3rem;
             line-height: 1.6;
             margin-bottom: 1.5rem;
         }
@@ -476,6 +507,11 @@
             border: 1px solid #e9ecef;
             border-radius: 0.25rem;
             transition: all 0.2s;
+        }
+
+        .options-container .form-check-label {
+            font-size: 1.1rem;
+            line-height: 1.6;
         }
 
         .options-container .form-check:hover {
@@ -535,6 +571,10 @@
         .question-number:hover {
             transform: scale(1.1);
             text-decoration: none;
+        }
+
+        .question-number.marked {
+            box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.6);
         }
 
         .question-legend {
@@ -675,6 +715,9 @@
 
             // Check if there's any answer selected to show/hide reset button
             updateResetButtonVisibility();
+
+            // Initialize mark button state
+            updateMarkButtonState({{ (int)($currentQuestion->is_marked ?? 0) }} === 1);
         });
 
         function saveAnswer() {
@@ -859,6 +902,54 @@
             }
         }
 
+        function updateMarkButtonState(isMarked) {
+            const btn = document.getElementById('toggleMarkBtn');
+            if (!btn) return;
+            if (isMarked) {
+                btn.classList.remove('btn-outline-secondary');
+                btn.classList.add('btn-warning');
+                btn.innerHTML = '<i class="fa fa-flag"></i> Ditandai';
+            } else {
+                btn.classList.remove('btn-warning');
+                btn.classList.add('btn-outline-secondary');
+                btn.innerHTML = '<i class="fa fa-flag"></i> Tandai';
+            }
+        }
+
+        function toggleMark() {
+            const btn = document.getElementById('toggleMarkBtn');
+            const original = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> ...';
+
+            fetch('{{ route('user.tryout.toggle-mark', $tryout->id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    soal_id: {{ $currentQuestion->soal_id }}
+                })
+            }).then(r => r.json()).then(data => {
+                if (data.success) {
+                    updateMarkButtonState(data.is_marked === true);
+                    // Update current dot style
+                    const currentLink = document.querySelector('.question-number.current');
+                    if (currentLink) {
+                        currentLink.classList.toggle('marked', data.is_marked === true);
+                    }
+                } else {
+                    showNotification('Gagal mengubah tanda: ' + (data.message || 'Unknown error'), 'error');
+                }
+            }).catch(() => {
+                showNotification('Gagal mengubah tanda', 'error');
+            }).finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = original;
+            });
+        }
+
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('auto-save-notification');
             const alert = notification.querySelector('.alert');
@@ -968,6 +1059,23 @@
         document.addEventListener('change', function(e) {
             if (e.target.matches('.options-container input')) {
                 updateResetButtonVisibility();
+            }
+        });
+
+        // Enforce max selections for checkbox-based questions (e.g., pg_pilih_2)
+        document.addEventListener('change', function(e) {
+            if (e.target.matches('.options-container input[type="checkbox"]')) {
+                const container = e.target.closest('.options-container');
+                if (!container) return;
+                const max = parseInt(container.getAttribute('data-max-select') || '0', 10);
+                if (!max || isNaN(max)) return;
+
+                const checkedCount = container.querySelectorAll('input[type="checkbox"]:checked').length;
+                if (checkedCount > max) {
+                    // Revert the newly checked input and inform the user
+                    e.target.checked = false;
+                    showNotification(`Maksimal ${max} jawaban boleh dipilih untuk soal ini.`, 'warning');
+                }
             }
         });
 

@@ -74,6 +74,23 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="level">Level Kesulitan <span class="text-danger">*</span></label>
+                                        <select class="form-control @error('level') is-invalid @enderror" id="level" name="level" required>
+                                            <option value="">Pilih Level</option>
+                                            <option value="mudah" {{ (old('level') ?? $soal->level) == 'mudah' ? 'selected' : '' }}>Mudah</option>
+                                            <option value="sedang" {{ (old('level') ?? $soal->level) == 'sedang' ? 'selected' : '' }}>Sedang</option>
+                                            <option value="sulit" {{ (old('level') ?? $soal->level) == 'sulit' ? 'selected' : '' }}>Sulit</option>
+                                        </select>
+                                        @error('level')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <!-- Image Upload Section -->
                             <div class="form-group" id="gambar-group" style="display: none;">
                                 <label for="gambar">Upload Gambar</label>
@@ -145,6 +162,26 @@
                             </div>
 
                             <div class="form-group">
+                                <label class="d-block">Tipe Pembahasan</label>
+                                @php $pType = old('pembahasan_type') ?? ($soal->pembahasan_type ?? 'text'); @endphp
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_text" value="text" {{ $pType == 'text' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="pembahasan_type_text">Text</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_image" value="image" {{ $pType == 'image' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="pembahasan_type_image">Gambar</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_both" value="both" {{ $pType == 'both' ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="pembahasan_type_both">Keduanya</label>
+                                </div>
+                                @error('pembahasan_type')
+                                    <div class="text-danger small">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="form-group" id="pembahasan-text-group" style="display: none;">
                                 <label for="pembahasan">Pembahasan</label>
                                 <textarea class="form-control @error('pembahasan') is-invalid @enderror" id="pembahasan" name="pembahasan"
                                     rows="3">{{ old('pembahasan') ?? $soal->pembahasan }}</textarea>
@@ -152,6 +189,34 @@
                                 @error('pembahasan')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
+                            </div>
+
+                            <div class="form-group" id="pembahasan-image-group" style="display: none;">
+                                <label for="pembahasan_image">Upload Gambar Pembahasan</label>
+
+                                @if ($soal->pembahasan_image_url)
+                                    <div class="mb-2">
+                                        <p class="mb-1"><strong>Gambar pembahasan saat ini:</strong></p>
+                                        <img src="{{ $soal->pembahasan_image_url }}" class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
+                                    </div>
+                                @endif
+
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input @error('pembahasan_image') is-invalid @enderror" id="pembahasan_image" name="pembahasan_image" accept="image/*">
+                                    <label class="custom-file-label" for="pembahasan_image">Pilih gambar...</label>
+                                </div>
+                                <small class="form-text text-muted">Format: JPEG, PNG, JPG, GIF. Maks: 2MB</small>
+                                @error('pembahasan_image')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+
+                                <div id="pembahasan-image-preview" class="mt-3" style="display: none;">
+                                    <p class="mb-1"><strong>Preview gambar baru:</strong></p>
+                                    <img id="pembahasan-preview-img" src="" alt="Preview Pembahasan" class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
+                                    <button type="button" class="btn btn-sm btn-danger ml-2" id="remove-pembahasan-image">
+                                        <i class="fa fa-times"></i> Hapus
+                                    </button>
+                                </div>
                             </div>
 
                             <div class="form-group">
@@ -179,6 +244,11 @@
 
                 // Initialize form
                 $('#tipe').trigger('change');
+                
+                // Load existing data after form is initialized
+                setTimeout(function() {
+                    loadExistingData(existingTipe);
+                }, 200);
 
                 // Handle tipe change
                 $('#tipe').on('change', function() {
@@ -187,7 +257,6 @@
                     toggleJawabanBenar(tipe);
                     toggleGambarUpload(tipe);
                     setupJawabanHandling(tipe);
-                    loadExistingData(tipe);
                 });
 
                 // Toggle gambar upload visibility
@@ -203,30 +272,44 @@
                     }
                 }
 
-                // Handle file input change
-                $('#gambar').on('change', function() {
+                function togglePembahasanControls() {
+                    const type = $('input[name="pembahasan_type"]:checked').val();
+                    if (type === 'text') {
+                        $('#pembahasan-text-group').show();
+                        $('#pembahasan-image-group').hide();
+                        $('#pembahasan_image').val('');
+                        $('#pembahasan-image-preview').hide();
+                    } else if (type === 'image') {
+                        $('#pembahasan-text-group').hide();
+                        $('#pembahasan').val('');
+                        $('#pembahasan-image-group').show();
+                    } else {
+                        $('#pembahasan-text-group').show();
+                        $('#pembahasan-image-group').show();
+                    }
+                }
+
+                $('input[name="pembahasan_type"]').on('change', togglePembahasanControls);
+                togglePembahasanControls();
+
+                $('#pembahasan_image').on('change', function() {
                     const file = this.files[0];
                     if (file) {
-                        const fileName = file.name;
-                        $('.custom-file-label').text(fileName);
-
-                        // Show preview
+                        $('.custom-file-label[for="pembahasan_image"]').text(file.name);
                         const reader = new FileReader();
                         reader.onload = function(e) {
-                            $('#preview-img').attr('src', e.target.result);
-                            $('#image-preview').show();
+                            $('#pembahasan-preview-img').attr('src', e.target.result);
+                            $('#pembahasan-image-preview').show();
                         };
                         reader.readAsDataURL(file);
                     }
                 });
 
-                // Remove image
-                $('#remove-image').on('click', function() {
-                    $('#gambar').val('');
-                    $('.custom-file-label').text(
-                        '{{ $soal->gambar ? 'Pilih gambar baru...' : 'Pilih gambar...' }}');
-                    $('#image-preview').hide();
-                    $('#preview-img').attr('src', '');
+                $('#remove-pembahasan-image').on('click', function() {
+                    $('#pembahasan_image').val('');
+                    $('.custom-file-label[for="pembahasan_image"]').text('Pilih gambar...');
+                    $('#pembahasan-image-preview').hide();
+                    $('#pembahasan-preview-img').attr('src', '');
                 });
 
                 // Generate opsi based on tipe
@@ -542,6 +625,17 @@
 
                     if (!valid) {
                         e.preventDefault();
+                    }
+
+                    const pembType = $('input[name="pembahasan_type"]:checked').val();
+                    if (pembType === 'image' || pembType === 'both') {
+                        if (!$('#pembahasan_image')[0].files.length && !{{ $soal->pembahasan_image ? 'true' : 'false' }}) {
+                            alert('Gambar pembahasan harus diupload untuk tipe pembahasan ini');
+                            e.preventDefault();
+                        }
+                    }
+                    if (pembType === 'image') {
+                        $('#pembahasan').val('');
                     }
                 });
             });

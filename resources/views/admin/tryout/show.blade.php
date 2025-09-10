@@ -201,6 +201,39 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- Per Level Breakdown (minimal) -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <h6>Ringkasan Per Level</h6>
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-bordered">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>Level</th>
+                                                    <th class="text-center">Jumlah Soal</th>
+                                                    <th class="text-center">Skor Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @php
+                                                    $levelSummary = \App\Models\UserTryoutSoal::where('tryout_id', $tryout->id)
+                                                        ->select('level', \DB::raw('COUNT(*) as cnt'), \DB::raw('SUM(skor) as total_skor'))
+                                                        ->groupBy('level')
+                                                        ->get();
+                                                @endphp
+                                                @foreach ($levelSummary as $row)
+                                                    <tr>
+                                                        <td>{{ ucfirst($row->level ?? '-') }}</td>
+                                                        <td class="text-center">{{ $row->cnt }}</td>
+                                                        <td class="text-center">{{ number_format($row->total_skor ?? 0, 2) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>

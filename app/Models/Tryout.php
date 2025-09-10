@@ -10,6 +10,7 @@ class Tryout extends Model
         'judul',
         'deskripsi',
         'struktur',
+        'shuffle_questions',
         'durasi_menit',
         'akses_paket',
         'is_active'
@@ -17,12 +18,18 @@ class Tryout extends Model
 
     protected $casts = [
         'struktur' => 'array',
+        'shuffle_questions' => 'boolean',
         'is_active' => 'boolean'
     ];
 
     public function userTryoutSoal()
     {
         return $this->hasMany(UserTryoutSoal::class);
+    }
+
+    public function blueprints()
+    {
+        return $this->hasMany(TryoutBlueprint::class);
     }
 
     public function scopeActive($query)

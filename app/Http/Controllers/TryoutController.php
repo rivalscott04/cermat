@@ -7,6 +7,8 @@ use App\Models\KategoriSoal;
 use App\Models\Soal;
 use App\Models\UserTryoutSoal;
 use App\Models\UserTryoutSession; // Tambahkan model ini untuk tracking session
+use App\Models\TryoutBlueprint;
+use App\Services\QuestionSelector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -32,36 +34,47 @@ class TryoutController extends Controller
             'deskripsi' => 'nullable|string',
             'durasi_menit' => 'required|integer|min:1',
             'akses_paket' => 'required|in:free,premium,vip',
-            'struktur' => 'required|array',
-            'struktur.*' => 'required|integer|min:0'
+            'blueprint' => 'required|array'
         ]);
 
-        // Validate that we have enough questions for each category
-        foreach ($request->struktur as $kategoriId => $jumlah) {
-            if ($jumlah > 0) {
-                $availableSoals = Soal::active()->byKategori($kategoriId)->count();
-                if ($availableSoals < $jumlah) {
-                    return back()->withErrors([
-                        "struktur.{$kategoriId}" => "Kategori ini hanya memiliki {$availableSoals} soal, tidak cukup untuk {$jumlah} soal"
-                    ]);
+        $tryout = Tryout::create([
+            'judul' => $request->judul,
+            'deskripsi' => $request->deskripsi,
+            'struktur' => [],
+            'shuffle_questions' => (bool)$request->get('shuffle_questions', false),
+            'durasi_menit' => $request->durasi_menit,
+            'akses_paket' => $request->akses_paket
+        ]);
+
+        // Persist blueprints
+        $blueprint = $request->blueprint;
+        $rows = [];
+        foreach ($blueprint as $kategoriId => $levels) {
+            foreach (['mudah','sedang','sulit'] as $level) {
+                $jumlah = intval($levels[$level] ?? 0);
+                if ($jumlah > 0) {
+                    $rows[] = [
+                        'tryout_id' => $tryout->id,
+                        'kategori_id' => $kategoriId,
+                        'level' => $level,
+                        'jumlah' => $jumlah,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
                 }
             }
         }
 
-        Tryout::create([
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'struktur' => $request->struktur,
-            'durasi_menit' => $request->durasi_menit,
-            'akses_paket' => $request->akses_paket
-        ]);
+        if (!empty($rows)) {
+            TryoutBlueprint::insert($rows);
+        }
 
         return redirect()->route('admin.tryout.index')->with('success', 'Tryout berhasil dibuat');
     }
 
     public function show(Tryout $tryout)
     {
-        $tryout->load(['userTryoutSoal.soal.kategori']);
+        $tryout->load(['userTryoutSoal.soal.kategori', 'blueprints']);
 
         // Statistik Penggunaan
         $totalPeserta = $tryout->userTryoutSoal()->distinct('user_id')->count();
@@ -84,23 +97,49 @@ class TryoutController extends Controller
             $averageScore = $scores->avg();
         }
 
-        // Struktur soal dengan informasi kategori
+        // Struktur soal dengan informasi kategori (fallback lama)
         $strukturSoal = [];
-        $totalSoal = array_sum($tryout->struktur ?? []);
+        $totalSoal = 0;
 
-        foreach ($tryout->struktur ?? [] as $kategoriId => $jumlah) {
-            if ($jumlah > 0) {
-                $kategori = KategoriSoal::find($kategoriId);
-                $soalTersedia = $kategori ? $kategori->soals()->count() : 0;
-                $persentase = $totalSoal > 0 ? round(($jumlah / $totalSoal) * 100, 1) : 0;
+        if ($tryout->blueprints && $tryout->blueprints->count() > 0) {
+            // Hitung total dari blueprint
+            $grouped = $tryout->blueprints->groupBy('kategori_id');
+            foreach ($grouped as $kategoriId => $rows) {
+                $jumlah = $rows->sum('jumlah');
+                if ($jumlah > 0) {
+                    $kategori = KategoriSoal::find($kategoriId);
+                    $soalTersedia = $kategori ? $kategori->soals()->count() : 0;
+                    $strukturSoal[] = [
+                        'kategori_id' => $kategoriId,
+                        'kategori' => $kategori,
+                        'jumlah' => $jumlah,
+                        'soal_tersedia' => $soalTersedia,
+                        'persentase' => 0
+                    ];
+                    $totalSoal += $jumlah;
+                }
+            }
+            // Set persentase
+            foreach ($strukturSoal as &$item) {
+                $item['persentase'] = $totalSoal > 0 ? round(($item['jumlah'] / $totalSoal) * 100, 1) : 0;
+            }
+        } else {
+            $totalSoal = array_sum($tryout->struktur ?? []);
 
-                $strukturSoal[] = [
-                    'kategori_id' => $kategoriId,
-                    'kategori' => $kategori,
-                    'jumlah' => $jumlah,
-                    'soal_tersedia' => $soalTersedia,
-                    'persentase' => $persentase
-                ];
+            foreach ($tryout->struktur ?? [] as $kategoriId => $jumlah) {
+                if ($jumlah > 0) {
+                    $kategori = KategoriSoal::find($kategoriId);
+                    $soalTersedia = $kategori ? $kategori->soals()->count() : 0;
+                    $persentase = $totalSoal > 0 ? round(($jumlah / $totalSoal) * 100, 1) : 0;
+
+                    $strukturSoal[] = [
+                        'kategori_id' => $kategoriId,
+                        'kategori' => $kategori,
+                        'jumlah' => $jumlah,
+                        'soal_tersedia' => $soalTersedia,
+                        'persentase' => $persentase
+                    ];
+                }
             }
         }
 
@@ -156,17 +195,39 @@ class TryoutController extends Controller
             'deskripsi' => 'nullable|string',
             'durasi_menit' => 'required|integer|min:1',
             'akses_paket' => 'required|in:free,premium,vip',
-            'struktur' => 'required|array',
-            'struktur.*' => 'required|integer|min:0'
+            'blueprint' => 'required|array'
         ]);
 
         $tryout->update([
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
-            'struktur' => $request->struktur,
+            'struktur' => [],
+            'shuffle_questions' => (bool)$request->get('shuffle_questions', false),
             'durasi_menit' => $request->durasi_menit,
             'akses_paket' => $request->akses_paket
         ]);
+
+        // Replace blueprints
+        $tryout->blueprints()->delete();
+        $rows = [];
+        foreach ($request->blueprint as $kategoriId => $levels) {
+            foreach (['mudah','sedang','sulit'] as $level) {
+                $jumlah = intval($levels[$level] ?? 0);
+                if ($jumlah > 0) {
+                    $rows[] = [
+                        'tryout_id' => $tryout->id,
+                        'kategori_id' => $kategoriId,
+                        'level' => $level,
+                        'jumlah' => $jumlah,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+            }
+        }
+        if (!empty($rows)) {
+            TryoutBlueprint::insert($rows);
+        }
 
         return redirect()->route('admin.tryout.index')->with('success', 'Tryout berhasil diperbarui');
     }
@@ -304,6 +365,7 @@ class TryoutController extends Controller
     {
         $user = auth()->user();
         $questionNumber = $request->get('question', 1);
+        $kategoriFilterId = $request->get('kategori_id');
 
         // Get or create active session
         $session = UserTryoutSession::where('user_id', $user->id)
@@ -317,11 +379,23 @@ class TryoutController extends Controller
         }
 
         // Get user questions
-        $userSoals = UserTryoutSoal::where('user_id', $user->id)
+        $baseQuery = UserTryoutSoal::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
-            ->with(['soal.opsi', 'soal.kategori'])
-            ->orderBy('urutan')
-            ->get();
+            ->with(['soal.opsi', 'soal.kategori']);
+
+        // Build per-category counts on full set (before filter)
+        $allForCount = (clone $baseQuery)->with('soal')->get();
+        $categoryCounts = $allForCount->groupBy(function ($row) {
+            return $row->soal->kategori_id;
+        })->map->count();
+
+        if (!empty($kategoriFilterId)) {
+            $baseQuery->whereHas('soal', function ($q) use ($kategoriFilterId) {
+                $q->where('kategori_id', $kategoriFilterId);
+            });
+        }
+
+        $userSoals = $baseQuery->orderBy('urutan')->get();
 
         // If no questions found, generate them
         if ($userSoals->isEmpty()) {
@@ -373,7 +447,9 @@ class TryoutController extends Controller
             'currentQuestion',
             'totalQuestions',
             'timeLeft',
-            'session'
+            'session',
+            'categoryCounts',
+            'kategoriFilterId'
         ));
     }
 
@@ -457,6 +533,15 @@ class TryoutController extends Controller
             $jawabanArray = [$jawabanArray];
         }
 
+        // Backend guard: enforce max selections for multi-correct (e.g., pg_pilih_2)
+        $soalForValidation = $userSoal->soal;
+        if ($soalForValidation && $soalForValidation->tipe === 'pg_pilih_2' && count($jawabanArray) > 2) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Maksimal 2 jawaban boleh dipilih untuk soal ini.'
+            ], 422);
+        }
+
         // PERUBAHAN: Convert shuffled answer back to original using session seed
         $originalJawaban = $this->convertShuffledAnswerToOriginal($jawabanArray, $userSoal, $session->shuffle_seed);
 
@@ -474,6 +559,35 @@ class TryoutController extends Controller
         return response()->json([
             'success' => true,
             'skor' => $skor
+        ]);
+    }
+
+    public function toggleMark(Request $request, Tryout $tryout)
+    {
+        $request->validate([
+            'soal_id' => 'required|exists:soals,id',
+            'is_marked' => 'nullable|boolean'
+        ]);
+
+        $user = auth()->user();
+
+        $userSoal = UserTryoutSoal::where('user_id', $user->id)
+            ->where('tryout_id', $tryout->id)
+            ->where('soal_id', $request->soal_id)
+            ->first();
+
+        if (!$userSoal) {
+            return response()->json(['success' => false, 'message' => 'Soal tidak ditemukan'], 404);
+        }
+
+        $current = (bool)$userSoal->is_marked;
+        $newState = $request->has('is_marked') ? (bool)$request->boolean('is_marked') : !$current;
+
+        $userSoal->update(['is_marked' => $newState]);
+
+        return response()->json([
+            'success' => true,
+            'is_marked' => $newState
         ]);
     }
 
@@ -803,34 +917,71 @@ class TryoutController extends Controller
         DB::beginTransaction();
 
         try {
-            foreach ($tryout->struktur as $kategoriId => $jumlah) {
-                if ($jumlah > 0) {
-                    // Get available questions
-                    $availableSoals = Soal::active()
-                        ->byKategori($kategoriId)
-                        ->count();
+            // Jika ada blueprint, gunakan blueprint per kategori-level.
+            if ($tryout->relationLoaded('blueprints') || $tryout->blueprints()->exists()) {
+                $tryout->load('blueprints');
+                $selector = new QuestionSelector();
+                $selector->validateBlueprintAvailability($tryout);
 
-                    if ($availableSoals < $jumlah) {
-                        throw new \Exception("Kategori ID {$kategoriId} tidak memiliki cukup soal aktif. Tersedia: {$availableSoals}, Dibutuhkan: {$jumlah}");
-                    }
+                $soals = $selector->pickByBlueprint($tryout);
 
-                    $soals = Soal::active()
-                        ->byKategori($kategoriId)
-                        ->inRandomOrder()
-                        ->limit($jumlah)
-                        ->get();
+                // Optional: shuffle question order deterministically per session if enabled
+                if ($tryout->shuffle_questions) {
+                    $seed = crc32($sessionSeed . '_' . $tryout->id . '_' . $user->id);
+                    mt_srand($seed);
+                    $soals = $soals->shuffle();
+                }
 
-                    foreach ($soals as $soal) {
-                        UserTryoutSoal::create([
-                            'user_id' => $user->id,
-                            'tryout_id' => $tryout->id,
-                            'soal_id' => $soal->id,
-                            'urutan' => $urutan++,
-                            'session_seed' => $sessionSeed, // Simpan session seed untuk referensi
-                            'created_at' => now(),
-                            'updated_at' => now()
-                        ]);
-                        $totalGenerated++;
+                foreach ($soals as $soal) {
+                    UserTryoutSoal::create([
+                        'user_id' => $user->id,
+                        'tryout_id' => $tryout->id,
+                        'soal_id' => $soal->id,
+                        'level' => $soal->level, // snapshot level
+                        'urutan' => $urutan++,
+                        'session_seed' => $sessionSeed,
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ]);
+                    $totalGenerated++;
+                }
+            } else {
+                // Backward compatibility: gunakan struktur lama per kategori saja
+                foreach ($tryout->struktur as $kategoriId => $jumlah) {
+                    if ($jumlah > 0) {
+                        $availableSoals = Soal::active()
+                            ->byKategori($kategoriId)
+                            ->count();
+
+                        if ($availableSoals < $jumlah) {
+                            throw new \Exception("Kategori ID {$kategoriId} tidak memiliki cukup soal aktif. Tersedia: {$availableSoals}, Dibutuhkan: {$jumlah}");
+                        }
+
+                        $soals = Soal::active()
+                            ->byKategori($kategoriId)
+                            ->inRandomOrder()
+                            ->limit($jumlah)
+                            ->get();
+
+                        if ($tryout->shuffle_questions) {
+                            $seed = crc32($sessionSeed . '_' . $tryout->id . '_' . $user->id . '_' . $kategoriId);
+                            mt_srand($seed);
+                            $soals = $soals->shuffle();
+                        }
+
+                        foreach ($soals as $soal) {
+                            UserTryoutSoal::create([
+                                'user_id' => $user->id,
+                                'tryout_id' => $tryout->id,
+                                'soal_id' => $soal->id,
+                                'level' => $soal->level ?? null, // snapshot jika ada
+                                'urutan' => $urutan++,
+                                'session_seed' => $sessionSeed,
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ]);
+                            $totalGenerated++;
+                        }
                     }
                 }
             }

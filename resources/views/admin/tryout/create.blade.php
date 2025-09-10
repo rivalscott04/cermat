@@ -60,33 +60,66 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Struktur Soal <span class="text-danger">*</span></label>
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="shuffle_questions" name="shuffle_questions" value="1" {{ old('shuffle_questions') ? 'checked' : '' }}>
+                                <label class="custom-control-label" for="shuffle_questions">Acak Urutan Nomor Soal</label>
+                            </div>
+                            <small class="text-muted">Jika aktif, urutan nomor soal diacak per user secara deterministik. Opsi jawaban tetap diacak seperti biasa.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Blueprint Per Kategori & Level <span class="text-danger">*</span></label>
                             <div class="alert alert-info">
                                 <i class="fa fa-info-circle"></i>
-                                Tentukan jumlah soal untuk setiap kategori. Total soal akan dihitung otomatis.
+                                Tentukan jumlah soal untuk setiap kombinasi kategori dan level.
                             </div>
-                            
-                            @foreach($kategoris as $kategori)
-                            <div class="row mb-2">
-                                <div class="col-md-6">
-                                    <label for="struktur_{{ $kategori->id }}">
-                                        {{ $kategori->nama }} ({{ $kategori->kode }})
-                                    </label>
-                                </div>
-                                <div class="col-md-6">
-                                    <input type="number" class="form-control" 
-                                           id="struktur_{{ $kategori->id }}" 
-                                           name="struktur[{{ $kategori->id }}]" 
-                                           value="{{ old("struktur.{$kategori->id}", 0) }}" 
-                                           min="0" max="100">
-                                    <small class="form-text text-muted">
-                                        Tersedia: {{ $kategori->soals()->count() }} soal
-                                    </small>
-                                </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Kategori</th>
+                                            <th class="text-center">Mudah</th>
+                                            <th class="text-center">Sedang</th>
+                                            <th class="text-center">Sulit</th>
+                                            <th>Tersedia</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($kategoris as $kategori)
+                                            <tr>
+                                                <td>
+                                                    {{ $kategori->nama }} ({{ $kategori->kode }})
+                                                </td>
+                                                <td width="140">
+                                                    <input type="number" class="form-control blueprint-input" min="0" max="100"
+                                                           name="blueprint[{{ $kategori->id }}][mudah]"
+                                                           value="{{ old("blueprint.{$kategori->id}.mudah", 0) }}">
+                                                </td>
+                                                <td width="140">
+                                                    <input type="number" class="form-control blueprint-input" min="0" max="100"
+                                                           name="blueprint[{{ $kategori->id }}][sedang]"
+                                                           value="{{ old("blueprint.{$kategori->id}.sedang", 0) }}">
+                                                </td>
+                                                <td width="140">
+                                                    <input type="number" class="form-control blueprint-input" min="0" max="100"
+                                                           name="blueprint[{{ $kategori->id }}][sulit]"
+                                                           value="{{ old("blueprint.{$kategori->id}.sulit", 0) }}">
+                                                </td>
+                                                <td>
+                                                    <small class="text-muted">
+                                                        Mudah: {{ $kategori->soals()->where('level','mudah')->count() }} |
+                                                        Sedang: {{ $kategori->soals()->where('level','sedang')->count() }} |
+                                                        Sulit: {{ $kategori->soals()->where('level','sulit')->count() }}
+                                                    </small>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
-                            @endforeach
-                            
-                            @error('struktur')
+
+                            @error('blueprint')
                                 <div class="text-danger">{{ $message }}</div>
                             @enderror
                         </div>

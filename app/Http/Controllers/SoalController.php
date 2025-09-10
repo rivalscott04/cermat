@@ -12,9 +12,21 @@ use PhpOffice\PhpWord\IOFactory;
 
 class SoalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $soals = Soal::with(['kategori', 'opsi'])->paginate(20);
+        $query = Soal::with(['kategori', 'opsi']);
+
+        // Apply kategori filter
+        if ($request->filled('kategori')) {
+            $query->byKategori($request->kategori);
+        }
+
+        // Apply tipe filter
+        if ($request->filled('tipe')) {
+            $query->byTipe($request->tipe);
+        }
+
+        $soals = $query->paginate(20)->withQueryString();
         $kategoris = KategoriSoal::active()->get();
 
         return view('admin.soal.index', compact('soals', 'kategoris'));
@@ -33,8 +45,11 @@ class SoalController extends Controller
         $rules = [
             'pertanyaan' => 'required|string',
             'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2,gambar',
+            'level' => 'required|in:mudah,sedang,sulit',
             'kategori_id' => 'required|exists:kategori_soal,id',
             'pembahasan' => 'nullable|string',
+            'pembahasan_type' => 'nullable|in:text,image,both',
+            'pembahasan_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'jawaban_benar' => 'nullable|string',
             'opsi' => 'required|array',
             'opsi.*.teks' => 'required|string',
@@ -52,8 +67,10 @@ class SoalController extends Controller
             $soalData = [
                 'pertanyaan' => $request->pertanyaan,
                 'tipe' => $request->tipe,
+                'level' => $request->level,
                 'kategori_id' => $request->kategori_id,
                 'pembahasan' => $request->pembahasan,
+                'pembahasan_type' => $request->pembahasan_type ?? 'text',
                 'jawaban_benar' => $request->jawaban_benar
             ];
 
@@ -63,6 +80,14 @@ class SoalController extends Controller
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $imagePath = $image->storeAs('soal_images', $imageName, 'public');
                 $soalData['gambar'] = $imagePath;
+            }
+
+            // Pembahasan image upload
+            if (in_array($request->pembahasan_type, ['image', 'both']) && $request->hasFile('pembahasan_image')) {
+                $img = $request->file('pembahasan_image');
+                $name = time() . '_' . $img->getClientOriginalName();
+                $path = $img->storeAs('pembahasan_images', $name, 'public');
+                $soalData['pembahasan_image'] = $path;
             }
 
             $soal = Soal::create($soalData);
@@ -98,6 +123,7 @@ class SoalController extends Controller
                     $soal = Soal::create([
                         'pertanyaan' => $soalData['pertanyaan'],
                         'tipe' => $soalData['tipe'],
+                        'level' => $soalData['level'] ?? 'mudah',
                         'kategori_id' => $soalData['kategori_id'],
                         'pembahasan' => $soalData['pembahasan'] ?? null,
                         'jawaban_benar' => $soalData['jawaban_benar'] ?? null
@@ -140,6 +166,10 @@ class SoalController extends Controller
                                     'kategori_id' => $kategoriId,
                                     'opsi' => []
                                 ];
+                            } elseif (preg_match('/\[LEVEL\]\s*(mudah|sedang|sulit)/i', $text, $matches)) {
+                                if ($currentSoal) {
+                                    $currentSoal['level'] = strtolower(trim($matches[1]));
+                                }
                             } elseif (preg_match('/\[SOAL\]/', $text)) {
                                 // Start of question
                             } elseif (preg_match('/\[A\](.+?)\[(\d+(?:\.\d+)?)\]/', $text, $matches)) {
@@ -223,8 +253,11 @@ class SoalController extends Controller
         $rules = [
             'pertanyaan' => 'required|string',
             'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2,gambar',
+            'level' => 'required|in:mudah,sedang,sulit',
             'kategori_id' => 'required|exists:kategori_soal,id',
             'pembahasan' => 'nullable|string',
+            'pembahasan_type' => 'nullable|in:text,image,both',
+            'pembahasan_image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'jawaban_benar' => 'nullable|string',
             'opsi' => 'required|array',
             'opsi.*.teks' => 'required|string',
@@ -242,8 +275,10 @@ class SoalController extends Controller
             $soalData = [
                 'pertanyaan' => $request->pertanyaan,
                 'tipe' => $request->tipe,
+                'level' => $request->level,
                 'kategori_id' => $request->kategori_id,
                 'pembahasan' => $request->pembahasan,
+                'pembahasan_type' => $request->pembahasan_type ?? $soal->pembahasan_type ?? 'text',
                 'jawaban_benar' => $request->jawaban_benar
             ];
 
@@ -264,6 +299,23 @@ class SoalController extends Controller
                     Storage::disk('public')->delete($soal->gambar);
                 }
                 $soalData['gambar'] = null;
+            }
+
+            // Handle pembahasan image upload/update
+            if (in_array($request->pembahasan_type, ['image', 'both']) && $request->hasFile('pembahasan_image')) {
+                if ($soal->pembahasan_image && Storage::disk('public')->exists($soal->pembahasan_image)) {
+                    Storage::disk('public')->delete($soal->pembahasan_image);
+                }
+                $img = $request->file('pembahasan_image');
+                $name = time() . '_' . $img->getClientOriginalName();
+                $path = $img->storeAs('pembahasan_images', $name, 'public');
+                $soalData['pembahasan_image'] = $path;
+            } elseif ($request->pembahasan_type === 'text') {
+                // If switching to text-only, remove existing image
+                if ($soal->pembahasan_image && Storage::disk('public')->exists($soal->pembahasan_image)) {
+                    Storage::disk('public')->delete($soal->pembahasan_image);
+                }
+                $soalData['pembahasan_image'] = null;
             }
 
             $soal->update($soalData);

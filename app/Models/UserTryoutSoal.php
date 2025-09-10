@@ -12,12 +12,14 @@ class UserTryoutSoal extends Model
         'user_id',
         'tryout_id',
         'soal_id',
+        'level',
         'urutan',
         'jawaban_user',
         'skor',
         'waktu_jawab',
         'shuffle_seed',
-        'sudah_dijawab'
+        'sudah_dijawab',
+        'is_marked'
     ];
 
     protected $casts = [

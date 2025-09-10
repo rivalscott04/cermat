@@ -7,6 +7,7 @@ Buat file Word (.docx) dengan format berikut untuk setiap soal:
 ```
 [KATEGORI] TWK
 [TIPE] pg_bobot
+[LEVEL] mudah|sedang|sulit
 [SOAL]
 Apa makna Pancasila?
 
@@ -27,6 +28,7 @@ Pancasila adalah dasar negara Indonesia yang terdiri dari lima sila.
 ```
 [KATEGORI] TWK
 [TIPE] benar_salah
+[LEVEL] mudah|sedang|sulit
 [SOAL]
 Pancasila adalah dasar negara Indonesia.
 
@@ -42,6 +44,7 @@ Pancasila adalah dasar negara Indonesia yang benar.
 ```
 [KATEGORI] TWK
 [TIPE] pg_satu
+[LEVEL] mudah|sedang|sulit
 [SOAL]
 Siapa yang menciptakan Pancasila?
 
@@ -60,6 +63,7 @@ Pancasila diciptakan oleh Soekarno dan Hatta.
 ```
 [KATEGORI] TWK
 [TIPE] pg_bobot
+[LEVEL] mudah|sedang|sulit
 [SOAL]
 Pilih jawaban yang benar tentang Pancasila:
 
@@ -78,6 +82,7 @@ Pancasila adalah lima sila yang menjadi dasar negara Indonesia.
 ```
 [KATEGORI] TWK
 [TIPE] pg_pilih_2
+[LEVEL] mudah|sedang|sulit
 [SOAL]
 Pilih 2 yang benar tentang Pancasila:
 
@@ -95,7 +100,7 @@ Pancasila adalah lima sila yang menjadi dasar negara Indonesia.
 ## ⚠️ Aturan Penting
 
 1. **Format Harus Konsisten**
-   - Setiap soal harus dimulai dengan `[KATEGORI]` dan `[TIPE]`
+   - Setiap soal harus dimulai dengan `[KATEGORI]`, `[TIPE]`, dan `[LEVEL]`
    - Opsi jawaban harus dalam format `[A] teks [bobot]`
    - Bobot harus berupa angka (0, 0.5, 1, dll)
 

@@ -11,8 +11,11 @@ class Soal extends Model
     protected $fillable = [
         'pertanyaan',
         'tipe',
+        'level',
         'kategori_id',
         'pembahasan',
+        'pembahasan_type',
+        'pembahasan_image',
         'jawaban_benar',
         'gambar',
         'is_active'
@@ -52,11 +55,30 @@ class Soal extends Model
         return $query->where('tipe', $tipe);
     }
 
+    public function scopeByLevel($query, $level)
+    {
+        return $query->where('level', $level);
+    }
+
+    public function scopeByKategoriLevel($query, $kategoriId, $level)
+    {
+        return $query->where('kategori_id', $kategoriId)->where('level', $level);
+    }
+
     // Accessor for image URL
     public function getGambarUrlAttribute()
     {
         if ($this->gambar) {
             return asset('storage/' . $this->gambar);
+        }
+        return null;
+    }
+
+    // Accessor for pembahasan image URL
+    public function getPembahasanImageUrlAttribute()
+    {
+        if ($this->pembahasan_image) {
+            return asset('storage/' . $this->pembahasan_image);
         }
         return null;
     }

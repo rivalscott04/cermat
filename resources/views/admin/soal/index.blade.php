@@ -24,21 +24,46 @@
                                 <select class="form-control" id="filterKategori">
                                     <option value="">Semua Kategori</option>
                                     @foreach ($kategoris as $kategori)
-                                        <option value="{{ $kategori->id }}">{{ $kategori->nama }}</option>
+                                        <option value="{{ $kategori->id }}" {{ request('kategori') == $kategori->id ? 'selected' : '' }}>{{ $kategori->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div class="col-md-3">
                                 <select class="form-control" id="filterTipe">
                                     <option value="">Semua Tipe</option>
-                                    <option value="benar_salah">Benar/Salah</option>
-                                    <option value="pg_satu">Pilihan Ganda (1 Jawaban)</option>
-                                    <option value="pg_bobot">Pilihan Ganda (Bobot)</option>
-                                    <option value="pg_pilih_2">Pilih 2 Jawaban</option>
-                                    <option value="gambar">Soal Gambar</option>
+                                    <option value="benar_salah" {{ request('tipe') == 'benar_salah' ? 'selected' : '' }}>Benar/Salah</option>
+                                    <option value="pg_satu" {{ request('tipe') == 'pg_satu' ? 'selected' : '' }}>Pilihan Ganda (1 Jawaban)</option>
+                                    <option value="pg_bobot" {{ request('tipe') == 'pg_bobot' ? 'selected' : '' }}>Pilihan Ganda (Bobot)</option>
+                                    <option value="pg_pilih_2" {{ request('tipe') == 'pg_pilih_2' ? 'selected' : '' }}>Pilih 2 Jawaban</option>
+                                    <option value="gambar" {{ request('tipe') == 'gambar' ? 'selected' : '' }}>Soal Gambar</option>
                                 </select>
                             </div>
                         </div>
+
+                        <!-- Filter Info -->
+                        @if(request('kategori') || request('tipe'))
+                            <div class="alert alert-info mb-3">
+                                <strong>Filter Aktif:</strong>
+                                @if(request('kategori'))
+                                    Kategori: {{ $kategoris->where('id', request('kategori'))->first()->nama ?? 'Tidak ditemukan' }}
+                                @endif
+                                @if(request('kategori') && request('tipe'))
+                                    |
+                                @endif
+                                @if(request('tipe'))
+                                    Tipe: 
+                                    @switch(request('tipe'))
+                                        @case('benar_salah') Benar/Salah @break
+                                        @case('pg_satu') Pilihan Ganda (1 Jawaban) @break
+                                        @case('pg_bobot') Pilihan Ganda (Bobot) @break
+                                        @case('pg_pilih_2') Pilih 2 Jawaban @break
+                                        @case('gambar') Soal Gambar @break
+                                    @endswitch
+                                @endif
+                                | <strong>Total: {{ $soals->total() }} soal</strong>
+                                <a href="{{ route('admin.soal.index') }}" class="btn btn-sm btn-outline-secondary ml-2">Hapus Filter</a>
+                            </div>
+                        @endif
 
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">

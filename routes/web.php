@@ -88,6 +88,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('{tryout}/remaining-time', [TryoutController::class, 'getRemainingTime'])->name('remaining-time');
             Route::post('/tryout/{tryout}/reset-answer', [TryoutController::class, 'resetAnswer'])->name('user.tryout.reset-answer');
             Route::post('/tryout/{tryout}/submit-answer', [TryoutController::class, 'submitAnswer'])->name('user.tryout.submit-answer');
+            Route::post('/tryout/{tryout}/toggle-mark', [TryoutController::class, 'toggleMark'])->name('user.tryout.toggle-mark');
             Route::get('/debug-seed/{tryout}', [TryoutController::class, 'debugSessionSeed'])->name('debug.session.seed');
             Route::get('/tryout/{tryout}/finish', [TryoutController::class, 'finish'])->name('user.tryout.finish');
         });
