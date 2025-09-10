@@ -34,6 +34,7 @@ class TryoutController extends Controller
             'deskripsi' => 'nullable|string',
             'durasi_menit' => 'required|integer|min:1',
             'akses_paket' => 'required|in:free,premium,vip',
+            'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
             'blueprint' => 'required|array'
         ]);
 
@@ -43,7 +44,8 @@ class TryoutController extends Controller
             'struktur' => [],
             'shuffle_questions' => (bool)$request->get('shuffle_questions', false),
             'durasi_menit' => $request->durasi_menit,
-            'akses_paket' => $request->akses_paket
+            'akses_paket' => $request->akses_paket,
+            'jenis_paket' => $request->jenis_paket
         ]);
 
         // Persist blueprints
@@ -195,6 +197,7 @@ class TryoutController extends Controller
             'deskripsi' => 'nullable|string',
             'durasi_menit' => 'required|integer|min:1',
             'akses_paket' => 'required|in:free,premium,vip',
+            'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
             'blueprint' => 'required|array'
         ]);
 
@@ -204,7 +207,8 @@ class TryoutController extends Controller
             'struktur' => [],
             'shuffle_questions' => (bool)$request->get('shuffle_questions', false),
             'durasi_menit' => $request->durasi_menit,
-            'akses_paket' => $request->akses_paket
+            'akses_paket' => $request->akses_paket,
+            'jenis_paket' => $request->jenis_paket
         ]);
 
         // Replace blueprints
@@ -251,22 +255,11 @@ class TryoutController extends Controller
             return redirect()->route('user.profile', ['userId' => $user->id])
                 ->with('subscriptionError', 'Anda tidak memiliki akses ke Tryout CBT.');
         }
-        $paket = $user->paket_akses;
 
+        // Get tryouts based on user package
         $tryouts = Tryout::active()
-            ->where(function ($query) use ($paket) {
-                switch ($paket) {
-                    case 'free':
-                        $query->where('akses_paket', 'free');
-                        break;
-                    case 'premium':
-                        $query->whereIn('akses_paket', ['free', 'premium']);
-                        break;
-                    case 'vip':
-                        $query->whereIn('akses_paket', ['free', 'premium', 'vip']);
-                        break;
-                }
-            })
+            ->forUserPackage($user->paket_akses)
+            ->limit($user->getMaxTryouts())
             ->get();
 
         return view('user.tryout.index', [
@@ -889,18 +882,8 @@ class TryoutController extends Controller
 
     private function canAccessTryout($user, $tryout)
     {
-        $paket = $user->paket_akses;
-
-        switch ($tryout->akses_paket) {
-            case 'free':
-                return true;
-            case 'premium':
-                return in_array($paket, ['premium', 'vip']);
-            case 'vip':
-                return $paket === 'vip';
-            default:
-                return false;
-        }
+        // Use new package system
+        return $user->canAccessSpecificTryout($tryout);
     }
 
     // PERUBAHAN: Generate questions dengan session seed

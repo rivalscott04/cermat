@@ -9,9 +9,14 @@
                     <h4>Daftar Tryout Tersedia</h4>
                     <p class="text-muted mb-0">
                         Paket Anda: 
-                        <span class="badge badge-{{ auth()->user()->paket_akses === 'vip' ? 'danger' : (auth()->user()->paket_akses === 'premium' ? 'primary' : 'success') }}">
+                        <span class="badge badge-{{ auth()->user()->paket_akses === 'lengkap' ? 'danger' : (auth()->user()->paket_akses === 'kecerdasan' || auth()->user()->paket_akses === 'kepribadian' ? 'primary' : 'success') }}">
                             {{ strtoupper(auth()->user()->paket_akses) }}
                         </span>
+                        @if(auth()->user()->paket_akses === 'free')
+                            <small class="text-muted">(1 tryout tersedia)</small>
+                        @else
+                            <small class="text-muted">({{ auth()->user()->getMaxTryouts() }} tryout tersedia)</small>
+                        @endif
                     </p>
                 </div>
                 <div class="card-body">
@@ -63,9 +68,18 @@
                                     </div>
 
                                     <div class="text-center">
-                                        <span class="badge badge-{{ $tryout->akses_paket === 'vip' ? 'danger' : ($tryout->akses_paket === 'premium' ? 'primary' : 'success') }} mb-2">
-                                            {{ strtoupper($tryout->akses_paket) }}
+                                        <span class="badge badge-{{ $tryout->jenis_paket === 'lengkap' ? 'danger' : ($tryout->jenis_paket === 'kecerdasan' || $tryout->jenis_paket === 'kepribadian' ? 'primary' : 'success') }} mb-2">
+                                            {{ strtoupper($tryout->jenis_paket) }}
                                         </span>
+                                        @if($tryout->jenis_paket === 'free')
+                                            <br><small class="text-muted">Gratis untuk semua user</small>
+                                        @elseif($tryout->jenis_paket === 'kecerdasan')
+                                            <br><small class="text-muted">Paket Kecerdasan</small>
+                                        @elseif($tryout->jenis_paket === 'kepribadian')
+                                            <br><small class="text-muted">Paket Kepribadian</small>
+                                        @elseif($tryout->jenis_paket === 'lengkap')
+                                            <br><small class="text-muted">Paket Lengkap</small>
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="card-footer">

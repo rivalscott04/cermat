@@ -241,22 +241,41 @@
                 const existingOpsi = @json($soal->opsi);
                 const existingTipe = '{{ $soal->tipe }}';
                 const existingJawabanBenar = '{{ $soal->jawaban_benar }}';
+                
+                // Debug: Log data yang diterima
+                console.log('=== DEBUG EDIT FORM ===');
+                console.log('Existing Opsi:', existingOpsi);
+                console.log('Existing Opsi Length:', existingOpsi ? existingOpsi.length : 'undefined');
+                console.log('Existing Tipe:', existingTipe);
+                console.log('Existing Jawaban Benar:', existingJawabanBenar);
+                console.log('========================');
 
-                // Initialize form
+                // Initialize form - trigger change to generate opsi first
+                console.log('Initializing form with tipe:', existingTipe);
+                
+                // Set the tipe value first
+                $('#tipe').val(existingTipe);
+                
+                // Then trigger change to generate opsi
                 $('#tipe').trigger('change');
                 
-                // Load existing data after form is initialized
-                setTimeout(function() {
-                    loadExistingData(existingTipe);
-                }, 200);
+                // Load existing data after form is initialized - wait longer for generateOpsi to complete
+                // This will be handled by the tipe change event instead
 
                 // Handle tipe change
                 $('#tipe').on('change', function() {
                     const tipe = $(this).val();
+                    console.log('Tipe changed to:', tipe);
                     generateOpsi(tipe);
                     toggleJawabanBenar(tipe);
                     toggleGambarUpload(tipe);
                     setupJawabanHandling(tipe);
+                    
+                    // Load existing data after opsi is generated
+                    setTimeout(function() {
+                        console.log('Loading existing data after generateOpsi...');
+                        loadExistingData(tipe);
+                    }, 30000);
                 });
 
                 // Toggle gambar upload visibility
@@ -324,6 +343,10 @@
 
                 // Generate opsi based on tipe
                 function generateOpsi(tipe) {
+                    console.log('=== GENERATE OPSI ===');
+                    console.log('Tipe:', tipe);
+                    console.log('Existing Opsi Length:', existingOpsi.length);
+                    
                     const wrapper = $('#opsi-wrapper');
                     wrapper.empty();
                     opsiCount = 0;
@@ -355,43 +378,44 @@
                     }
 
                     updateJawabanBenarOptions();
+                    console.log('=== END GENERATE OPSI ===');
+                    console.log('Final opsi count:', opsiCount);
                 }
 
                 // Load existing data
                 function loadExistingData(tipe) {
-                    setTimeout(function() {
-                        // Load existing opsi
+                    console.log('=== LOADING EXISTING DATA ===');
+                    console.log('Opsi Count:', opsiCount);
+                    console.log('Existing Opsi:', existingOpsi);
+                    
+                    // Load existing opsi
+                    if (existingOpsi && existingOpsi.length > 0) {
                         existingOpsi.forEach(function(opsi, index) {
+                            console.log('Processing opsi', index, ':', opsi);
                             if (index < opsiCount) {
                                 $(`input[name="opsi[${index}][teks]"]`).val(opsi.teks);
                                 $(`input[name="opsi[${index}][bobot]"]`).val(opsi.bobot);
 
-                                // Handle checkboxes for multi-answer types
-                                if (tipe === 'pg_pilih_2' || tipe === 'benar_salah') {
-                                    const jawabanArray = existingJawabanBenar.split(',');
-                                    if (jawabanArray.includes(opsi.opsi)) {
-                                        $(`.jawaban-checkbox[data-letter="${opsi.opsi}"]`).prop(
-                                            'checked', true);
-                                    }
+                                // Handle checkboxes for all types (semua tipe menggunakan checkbox)
+                                const jawabanArray = existingJawabanBenar.split(',');
+                                if (jawabanArray.includes(opsi.opsi)) {
+                                    $(`.jawaban-checkbox[data-letter="${opsi.opsi}"]`).prop(
+                                        'checked', true);
                                 }
                             }
                         });
+                    } else {
+                        console.log('No existing opsi found!');
+                    }
 
-                        // Set jawaban benar for single answer types
-                        if (tipe === 'pg_satu' || tipe === 'gambar') {
-                            $('#jawaban_benar').val(existingJawabanBenar);
-                        }
-
-                        // Update UI
-                        updateJawabanBenarOptions();
-                        if (tipe === 'pg_pilih_2' || tipe === 'benar_salah') {
-                            updateJawabanBenarFromCheckboxes(tipe);
-                        }
-                    }, 100);
+                    // Update UI
+                    updateJawabanBenarOptions();
+                    updateJawabanBenarFromCheckboxes(tipe);
                 }
 
                 // Add opsi item
                 function addOpsiItem(letter, defaultText = '', showBobot = false) {
+                    console.log('Adding opsi item:', letter, defaultText, showBobot);
                     const opsiHtml = `
             <div class="row mb-2 opsi-item" data-letter="${letter}">
                 <div class="col-1">
@@ -426,6 +450,7 @@
 
                     $('#opsi-wrapper').append(opsiHtml);
                     opsiCount++;
+                    console.log('Opsi count after adding:', opsiCount);
                 }
 
                 // Add opsi button click
@@ -467,11 +492,8 @@
 
                 // Toggle jawaban benar visibility
                 function toggleJawabanBenar(tipe) {
-                    if (tipe === 'pg_satu' || tipe === 'gambar') {
-                        $('#jawaban-benar-group').show();
-                    } else {
-                        $('#jawaban-benar-group').hide();
-                    }
+                    // Semua tipe menggunakan checkbox, tidak ada yang menggunakan dropdown
+                    $('#jawaban-benar-group').hide();
                 }
 
                 // Setup jawaban handling based on tipe
@@ -479,28 +501,36 @@
                     // Remove existing hidden inputs
                     $('input[name="jawaban_benar_hidden"]').remove();
 
-                    if (tipe === 'pg_pilih_2' || tipe === 'benar_salah') {
-                        // For pg_pilih_2 and benar_salah, use checkboxes
-                        $(document).off('change', '.jawaban-checkbox').on('change', '.jawaban-checkbox', function() {
-                            updateJawabanBenarFromCheckboxes(tipe);
-                        });
-                    }
+                    // All types use checkboxes for consistency
+                    $(document).off('change', '.jawaban-checkbox').on('change', '.jawaban-checkbox', function() {
+                        updateJawabanBenarFromCheckboxes(tipe);
+                    });
                 }
 
                 // Update jawaban benar from checkboxes
                 function updateJawabanBenarFromCheckboxes(tipe) {
                     const checkedBoxes = $('.jawaban-checkbox:checked');
 
-                    if (tipe === 'pg_pilih_2' && checkedBoxes.length > 2) {
-                        // Uncheck the last checked if more than 2
-                        checkedBoxes.last().prop('checked', false);
-                        alert('Maksimal pilih 2 jawaban benar');
-                        return;
-                    }
-
-                    if (tipe === 'benar_salah' && checkedBoxes.length > 1) {
-                        // For benar_salah, only allow one selection
-                        $('.jawaban-checkbox').not(':last').prop('checked', false);
+                    // Validasi berdasarkan tipe
+                    if (tipe === 'pg_satu' || tipe === 'gambar') {
+                        if (checkedBoxes.length > 1) {
+                            // Untuk pg_satu dan gambar, hanya boleh 1 jawaban
+                            checkedBoxes.not(':last').prop('checked', false);
+                            alert('Hanya boleh memilih 1 jawaban benar untuk tipe ini');
+                            return;
+                        }
+                    } else if (tipe === 'pg_pilih_2') {
+                        if (checkedBoxes.length > 2) {
+                            // Uncheck the last checked if more than 2
+                            checkedBoxes.last().prop('checked', false);
+                            alert('Maksimal pilih 2 jawaban benar');
+                            return;
+                        }
+                    } else if (tipe === 'benar_salah') {
+                        if (checkedBoxes.length > 1) {
+                            // For benar_salah, only allow one selection
+                            $('.jawaban-checkbox').not(':last').prop('checked', false);
+                        }
                     }
 
                     // Update bobot values for all opsi
@@ -555,25 +585,8 @@
                     updateJawabanBenarOptions();
                 });
 
-                // Update bobot when jawaban_benar dropdown changes (for pg_satu and gambar)
-                $('#jawaban_benar').on('change', function() {
-                    const selectedLetter = $(this).val();
-                    const currentTipe = $('#tipe').val();
-
-                    // Update bobot for pg_satu and gambar type
-                    if (currentTipe === 'pg_satu' || currentTipe === 'gambar') {
-                        $('.opsi-item').each(function() {
-                            const letter = $(this).attr('data-letter');
-                            const bobotInput = $(this).find('.bobot-input');
-
-                            if (letter === selectedLetter) {
-                                bobotInput.val(1);
-                            } else {
-                                bobotInput.val(0);
-                            }
-                        });
-                    }
-                });
+                // Update bobot when jawaban_benar dropdown changes (DIHAPUS karena tidak dipakai lagi)
+                // Fungsi ini dihapus karena kita hanya menggunakan checkbox
 
                 // Form validation
                 $('#soalForm').on('submit', function(e) {
@@ -595,10 +608,13 @@
                         }
                     }
 
-                    // Check jawaban benar for pg_satu and gambar
-                    if ((tipe === 'pg_satu' || tipe === 'gambar') && $('#jawaban_benar').val() === '') {
-                        alert('Jawaban benar harus dipilih untuk tipe ini');
-                        valid = false;
+                    // Check jawaban benar untuk semua tipe (menggunakan checkbox)
+                    if (tipe === 'pg_satu' || tipe === 'gambar') {
+                        const checkedCount = $('.jawaban-checkbox:checked').length;
+                        if (checkedCount !== 1) {
+                            alert('Harus memilih tepat 1 jawaban benar untuk tipe ini');
+                            valid = false;
+                        }
                     }
 
                     // Check jawaban benar for pg_pilih_2
@@ -673,10 +689,18 @@
                 align-items: center;
                 justify-content: center;
                 height: 100%;
+                padding: 8px;
             }
 
             .form-check-input {
-                margin-right: 5px;
+                margin-right: 20px;
+                transform: scale(1.2);
+            }
+
+            .form-check-label {
+                font-size: 14px;
+                font-weight: 500;
+                margin-left: 10px;
             }
 
             input[type="number"] {
@@ -691,7 +715,12 @@
             }
 
             .opsi-item:last-child {
-                margin-bottom: 0 !important;
+                margin-bottom: 20px !important;
+            }
+
+            #add-opsi {
+                margin-top: 15px;
+                margin-bottom: 10px;
             }
 
             #gambar-group {

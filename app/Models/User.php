@@ -28,8 +28,10 @@ class User extends Authenticatable
     ];
 
     // Konstanta untuk package types
+    const PACKAGE_FREE = 'free';
     const PACKAGE_KECERMATAN = 'kecermatan';
-    const PACKAGE_PSIKOLOGI = 'psikologi';
+    const PACKAGE_KECERDASAN = 'kecerdasan';
+    const PACKAGE_KEPRIBADIAN = 'kepribadian';
     const PACKAGE_LENGKAP = 'lengkap';
 
     public function subscriptions()
@@ -64,9 +66,35 @@ class User extends Authenticatable
             return 'free';
         }
 
-        // Logika untuk menentukan paket berdasarkan subscription
-        // Bisa disesuaikan dengan kebutuhan bisnis
-        return 'premium'; // Default untuk sementara
+        // Return package dari field package user
+        return $this->package ?? 'free';
+    }
+
+    /**
+     * Get package limits for current user
+     */
+    public function getPackageLimits()
+    {
+        $packageConfig = config('packages.package_limits');
+        $userPackage = $this->paket_akses;
+        
+        return $packageConfig[$userPackage] ?? $packageConfig['free'];
+    }
+
+    /**
+     * Get maximum tryouts allowed for current user
+     */
+    public function getMaxTryouts()
+    {
+        return $this->getPackageLimits()['max_tryouts'];
+    }
+
+    /**
+     * Get allowed categories for current user
+     */
+    public function getAllowedCategories()
+    {
+        return $this->getPackageLimits()['allowed_categories'];
     }
 
     /**
@@ -89,12 +117,14 @@ class User extends Authenticatable
      */
     public function canAccessTryout()
     {
+        // Free user bisa akses 1 tryout
         if (!$this->hasActiveSubscription()) {
-            return false;
+            return true;
         }
 
         return in_array($this->package, [
-            self::PACKAGE_PSIKOLOGI,
+            self::PACKAGE_KECERDASAN,
+            self::PACKAGE_KEPRIBADIAN,
             self::PACKAGE_LENGKAP
         ]);
     }
@@ -115,6 +145,32 @@ class User extends Authenticatable
         }
 
         return $menus;
+    }
+
+    /**
+     * Check if user can access specific tryout based on package
+     */
+    public function canAccessSpecificTryout($tryout)
+    {
+        $userPackage = $this->paket_akses;
+        $allowedTypes = $this->getAllowedPackageTypes($userPackage);
+        
+        return in_array($tryout->jenis_paket, $allowedTypes);
+    }
+
+    /**
+     * Get allowed package types for user
+     */
+    private function getAllowedPackageTypes($userPackage)
+    {
+        $mapping = [
+            'free' => ['free'],
+            'kecerdasan' => ['free', 'kecerdasan'],
+            'kepribadian' => ['free', 'kepribadian'],
+            'lengkap' => ['free', 'kecerdasan', 'kepribadian', 'lengkap']
+        ];
+        
+        return $mapping[$userPackage] ?? ['free'];
     }
 
     /**

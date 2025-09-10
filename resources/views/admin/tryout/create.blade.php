@@ -44,7 +44,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="akses_paket">Akses Paket <span class="text-danger">*</span></label>
+                                    <label for="akses_paket">Akses Paket (Legacy) <span class="text-danger">*</span></label>
                                     <select class="form-control @error('akses_paket') is-invalid @enderror" 
                                             id="akses_paket" name="akses_paket" required>
                                         <option value="">Pilih Paket</option>
@@ -55,6 +55,39 @@
                                     @error('akses_paket')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="jenis_paket">Jenis Paket <span class="text-danger">*</span></label>
+                                    <select class="form-control @error('jenis_paket') is-invalid @enderror" 
+                                            id="jenis_paket" name="jenis_paket" required>
+                                        <option value="">Pilih Jenis Paket</option>
+                                        <option value="free" {{ old('jenis_paket') == 'free' ? 'selected' : '' }}>Free - 1 tryout untuk semua user</option>
+                                        <option value="kecerdasan" {{ old('jenis_paket') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan - TIU, TWK, TKD</option>
+                                        <option value="kepribadian" {{ old('jenis_paket') == 'kepribadian' ? 'selected' : '' }}>Kepribadian - TKP, PSIKOTES</option>
+                                        <option value="lengkap" {{ old('jenis_paket') == 'lengkap' ? 'selected' : '' }}>Lengkap - Semua kategori</option>
+                                    </select>
+                                    @error('jenis_paket')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                    <small class="text-muted">
+                                        <strong>Free:</strong> User free bisa akses 1 tryout<br>
+                                        <strong>Kecerdasan:</strong> User paket kecerdasan bisa akses<br>
+                                        <strong>Kepribadian:</strong> User paket kepribadian bisa akses<br>
+                                        <strong>Lengkap:</strong> User paket lengkap bisa akses
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Preview Kategori yang Akan Muncul:</label>
+                                    <div id="kategori-preview" class="alert alert-info">
+                                        <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -143,17 +176,43 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
+    // Package mapping
+    const packageMapping = {
+        'free': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
+        'kecerdasan': ['TIU', 'TWK', 'TKD'],
+        'kepribadian': ['TKP', 'PSIKOTES'],
+        'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
+    };
+
+    // Update kategori preview when jenis paket changes
+    $('#jenis_paket').on('change', function() {
+        const selectedPackage = $(this).val();
+        const allowedCategories = packageMapping[selectedPackage] || [];
+        
+        if (allowedCategories.length > 0) {
+            $('#kategori-preview').html(`
+                <i class="fa fa-check text-success"></i> 
+                <strong>Kategori yang akan muncul:</strong><br>
+                ${allowedCategories.map(cat => `<span class="badge badge-primary mr-1">${cat}</span>`).join('')}
+            `).removeClass('alert-info').addClass('alert-success');
+        } else {
+            $('#kategori-preview').html(`
+                <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
+            `).removeClass('alert-success').addClass('alert-info');
+        }
+    });
+
     // Calculate total questions
     function calculateTotal() {
         let total = 0;
-        $('input[name^="struktur["]').each(function() {
+        $('input[name^="blueprint["]').each(function() {
             total += parseInt($(this).val()) || 0;
         });
         return total;
     }
     
     // Update total when structure changes
-    $('input[name^="struktur["]').on('input', function() {
+    $('input[name^="blueprint["]').on('input', function() {
         const total = calculateTotal();
         console.log('Total soal:', total);
     });

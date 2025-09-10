@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             KategoriSoalSeeder::class,
             SoalSeeder::class,
+            PackageLimitsSeeder::class,
         ]);
     }
 }

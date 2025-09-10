@@ -662,10 +662,18 @@
                 align-items: center;
                 justify-content: center;
                 height: 100%;
+                padding: 8px;
             }
 
             .form-check-input {
-                margin-right: 5px;
+                margin-right: 20px;
+                transform: scale(1.2);
+            }
+
+            .form-check-label {
+                font-size: 14px;
+                font-weight: 500;
+                margin-left: 10px;
             }
 
             input[type="number"] {
@@ -680,7 +688,12 @@
             }
 
             .opsi-item:last-child {
-                margin-bottom: 0 !important;
+                margin-bottom: 20px !important;
+            }
+
+            #add-opsi {
+                margin-top: 15px;
+                margin-bottom: 10px;
             }
 
             #gambar-group {

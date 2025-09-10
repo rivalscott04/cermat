@@ -13,6 +13,7 @@ class Tryout extends Model
         'shuffle_questions',
         'durasi_menit',
         'akses_paket',
+        'jenis_paket',
         'is_active'
     ];
 
@@ -40,6 +41,29 @@ class Tryout extends Model
     public function scopeByPaket($query, $paket)
     {
         return $query->where('akses_paket', $paket);
+    }
+
+    public function scopeByJenisPaket($query, $jenisPaket)
+    {
+        return $query->where('jenis_paket', $jenisPaket);
+    }
+
+    public function scopeForUserPackage($query, $userPackage)
+    {
+        $allowedTypes = $this->getAllowedPackageTypes($userPackage);
+        return $query->whereIn('jenis_paket', $allowedTypes);
+    }
+
+    private function getAllowedPackageTypes($userPackage)
+    {
+        $mapping = [
+            'free' => ['free'],
+            'kecerdasan' => ['free', 'kecerdasan'],
+            'kepribadian' => ['free', 'kepribadian'],
+            'lengkap' => ['free', 'kecerdasan', 'kepribadian', 'lengkap']
+        ];
+        
+        return $mapping[$userPackage] ?? ['free'];
     }
 
     public function getTotalSoalAttribute()
