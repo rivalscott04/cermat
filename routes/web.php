@@ -24,7 +24,7 @@ Route::get('/pricing', [PricingController::class, 'index'])->name('pricing.index
 
 // Authentication Routes
 Route::get('/register', [AuthController::class, 'showRegister'])->middleware('guest')->name('register');
-Route::post('/register', [AuthController::class, 'register'])->name('post.register');
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1')->name('post.register');
 Route::get('/login', [AuthController::class, 'showLogin'])->middleware('guest')->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('post.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

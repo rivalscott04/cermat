@@ -26,16 +26,38 @@ class AuthController extends Controller
 
     public function register(Request $request)
     {
-        // Validasi input
+        // Anti-bot protection: Check honeypot field
+        if (!empty($request->website)) {
+            return redirect()->back()->with('error', 'Akses ditolak.');
+        }
+
+        // Validasi input dengan pesan error yang lebih spesifik
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users',
+            'name' => 'required|string|min:2|max:255',
+            'email' => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'phone_number' => 'required|digits_between:10,15',
-            'province' => 'required|string',
-            'regency' => 'required|string',
+            'phone_number' => 'required|regex:/^[0-9]{10,15}$/',
+            'province' => 'required|string|max:255',
+            'regency' => 'required|string|max:255',
             'terms' => 'required|accepted',
+        ], [
+            'name.required' => 'Nama wajib diisi.',
+            'name.min' => 'Nama minimal 2 karakter.',
+            'name.max' => 'Nama maksimal 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.email' => 'Format email tidak valid.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'password.required' => 'Password wajib diisi.',
+            'password.min' => 'Password minimal 8 karakter.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'phone_number.required' => 'Nomor HP wajib diisi.',
+            'phone_number.regex' => 'Nomor HP harus 10-15 digit angka.',
+            'province.required' => 'Provinsi wajib dipilih.',
+            'regency.required' => 'Kabupaten/Kota wajib dipilih.',
+            'terms.required' => 'Anda harus menyetujui syarat & ketentuan.',
+            'terms.accepted' => 'Anda harus menyetujui syarat & ketentuan.',
         ]);
+
 
         DB::beginTransaction();
         try {
@@ -65,6 +87,7 @@ class AuthController extends Controller
             DB::rollback();
             Log::error('Error during registration: ' . $e->getMessage());
             return redirect()->back()
+                ->withInput()
                 ->with('error', 'Terjadi kesalahan dalam proses pendaftaran. Silakan coba lagi.');
         }
     }
