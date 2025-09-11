@@ -469,12 +469,12 @@
         }
 
         .score-number {
-            font-size: 2rem;
+            font-size: 24px;
             font-weight: bold;
         }
 
         .score-label {
-            font-size: 0.9rem;
+            font-size: 12px;
             opacity: 0.9;
         }
 
@@ -486,25 +486,25 @@
         }
 
         .stat-number {
-            font-size: 1.5rem;
+            font-size: 18px;
             font-weight: bold;
             color: #495057;
         }
 
         .stat-label {
-            font-size: 0.8rem;
+            font-size: 12px;
             color: #6c757d;
-            margin-top: 0.25rem;
+            margin-top: 4px;
         }
 
         .score-badge {
-            font-size: 1.2rem;
+            font-size: 16px;
             font-weight: bold;
             color: #28a745;
         }
 
         .percentage {
-            font-size: 0.8rem;
+            font-size: 12px;
             color: #6c757d;
         }
 
@@ -552,15 +552,15 @@
         .question-legend.unanswered { background-color: #dc3545; }
 
         .answer-review .question-text {
-            font-size: 1.6rem;
-            line-height: 1.8;
-            margin-bottom: 2rem;
+            font-size: 14px;
+            line-height: 22px;
+            margin-bottom: 24px;
             font-weight: 500;
         }
 
         .answer-review .option-content {
-            font-size: 1.4rem;
-            line-height: 1.8;
+            font-size: 13px;
+            line-height: 20px;
             font-weight: 500;
         }
 
@@ -578,9 +578,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.25rem;
-            margin-bottom: 1rem;
-            border-radius: 0.5rem;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
             border: 2px solid #e9ecef;
             background-color: #fafafa;
         }
@@ -606,7 +606,7 @@
 
         .option-label {
             font-weight: bold;
-            margin-right: 0.5rem;
+            margin-right: 8px;
         }
 
         .option-weight {
@@ -652,36 +652,15 @@
 
         /* Responsive design untuk tampilan hasil */
         @media (max-width: 768px) {
-            .answer-review .question-text {
-                font-size: 1.4rem;
-                line-height: 1.6;
-            }
-
-            .answer-review .option-content {
-                font-size: 1.2rem;
-                line-height: 1.6;
-            }
-
-            .option-item {
-                padding: 1rem;
-                margin-bottom: 0.75rem;
-            }
+            .answer-review .question-text { font-size: 14px; line-height: 22px; }
+            .answer-review .option-content { font-size: 13px; line-height: 20px; }
+            .option-item { padding: 10px; margin-bottom: 8px; }
         }
 
         @media (max-width: 576px) {
-            .answer-review .question-text {
-                font-size: 1.2rem;
-                line-height: 1.5;
-            }
-
-            .answer-review .option-content {
-                font-size: 1.1rem;
-                line-height: 1.5;
-            }
-
-            .option-item {
-                padding: 0.75rem;
-            }
+            .answer-review .question-text { font-size: 13px; line-height: 20px; }
+            .answer-review .option-content { font-size: 12px; line-height: 18px; }
+            .option-item { padding: 8px; }
         }
 
         @media print {

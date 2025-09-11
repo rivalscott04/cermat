@@ -496,9 +496,9 @@
         }
 
         .question-text {
-            font-size: 0.85rem;
-            line-height: 1.8;
-            margin-bottom: 2rem;
+            font-size: 14px;
+            line-height: 22px;
+            margin-bottom: 24px;
             font-weight: 500;
         }
 
@@ -512,26 +512,26 @@
         }
 
         .options-container .form-check-label {
-            font-size: 0.8rem;
-            line-height: 1.6;
+            font-size: 13px;
+            line-height: 20px;
             font-weight: 500;
-            margin-left: 0.5rem;
+            margin-left: 8px;
         }
 
         .options-container .form-check-input {
-            width: 1.1rem;
-            height: 1.1rem;
-            margin-top: 0.15rem;
+            width: 16px;
+            height: 16px;
+            margin-top: 2px;
         }
 
         .options-container .form-check-input[type="radio"] {
-            width: 1.1rem;
-            height: 1.1rem;
+            width: 16px;
+            height: 16px;
         }
 
         .options-container .form-check-input[type="checkbox"] {
-            width: 1.1rem;
-            height: 1.1rem;
+            width: 16px;
+            height: 16px;
         }
 
         .options-container .form-check:hover {
@@ -553,7 +553,7 @@
 
         /* Styling khusus untuk opsi benar/salah */
         .options-container .form-check-label strong {
-            font-size: 1.1rem;
+            font-size: 16px;
             font-weight: 700;
         }
 
@@ -698,13 +698,13 @@
         /* Responsive design untuk tampilan soal */
         @media (max-width: 768px) {
             .question-text {
-                font-size: 1rem;
-                line-height: 1.5;
+                font-size: 14px;
+                line-height: 22px;
             }
 
             .options-container .form-check-label {
-                font-size: 0.95rem;
-                line-height: 1.5;
+                font-size: 13px;
+                line-height: 20px;
             }
 
             .options-container .form-check {
@@ -713,12 +713,12 @@
             }
 
             .options-container .form-check-input {
-                width: 1rem;
-                height: 1rem;
+                width: 15px;
+                height: 15px;
             }
 
             .options-container .form-check-label strong {
-                font-size: 1rem;
+                font-size: 15px;
             }
 
             .question-image-container {
@@ -736,13 +736,13 @@
 
         @media (max-width: 576px) {
             .question-text {
-                font-size: 0.95rem;
-                line-height: 1.45;
+                font-size: 13px;
+                line-height: 20px;
             }
 
             .options-container .form-check-label {
-                font-size: 0.9rem;
-                line-height: 1.45;
+                font-size: 12px;
+                line-height: 18px;
             }
 
             .options-container .form-check {
@@ -750,12 +750,12 @@
             }
 
             .options-container .form-check-input {
-                width: 0.95rem;
-                height: 0.95rem;
+                width: 14px;
+                height: 14px;
             }
 
             .options-container .form-check-label strong {
-                font-size: 0.95rem;
+                font-size: 14px;
             }
         }
     </style>
