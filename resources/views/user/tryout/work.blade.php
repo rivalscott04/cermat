@@ -503,8 +503,8 @@
         }
 
         .options-container .form-check {
-            margin-bottom: 1.5rem;
-            padding: 1.25rem;
+            margin-bottom: 0.75rem;
+            padding: 0.75rem;
             border: 2px solid #e9ecef;
             border-radius: 0.5rem;
             transition: all 0.2s;
@@ -512,26 +512,26 @@
         }
 
         .options-container .form-check-label {
-            font-size: 0.85rem;
-            line-height: 1.8;
+            font-size: 0.8rem;
+            line-height: 1.6;
             font-weight: 500;
-            margin-left: 0.75rem;
+            margin-left: 0.5rem;
         }
 
         .options-container .form-check-input {
-            width: 1.5rem;
-            height: 1.5rem;
-            margin-top: 0.25rem;
+            width: 1.1rem;
+            height: 1.1rem;
+            margin-top: 0.15rem;
         }
 
         .options-container .form-check-input[type="radio"] {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1.1rem;
+            height: 1.1rem;
         }
 
         .options-container .form-check-input[type="checkbox"] {
-            width: 1.5rem;
-            height: 1.5rem;
+            width: 1.1rem;
+            height: 1.1rem;
         }
 
         .options-container .form-check:hover {
@@ -553,7 +553,7 @@
 
         /* Styling khusus untuk opsi benar/salah */
         .options-container .form-check-label strong {
-            font-size: 1.5rem;
+            font-size: 1.1rem;
             font-weight: 700;
         }
 
@@ -698,27 +698,27 @@
         /* Responsive design untuk tampilan soal */
         @media (max-width: 768px) {
             .question-text {
-                font-size: 1.4rem;
-                line-height: 1.6;
+                font-size: 1rem;
+                line-height: 1.5;
             }
 
             .options-container .form-check-label {
-                font-size: 1.2rem;
-                line-height: 1.6;
+                font-size: 0.95rem;
+                line-height: 1.5;
             }
 
             .options-container .form-check {
-                padding: 1rem;
-                margin-bottom: 1rem;
+                padding: 0.75rem;
+                margin-bottom: 0.75rem;
             }
 
             .options-container .form-check-input {
-                width: 1.25rem;
-                height: 1.25rem;
+                width: 1rem;
+                height: 1rem;
             }
 
             .options-container .form-check-label strong {
-                font-size: 1.3rem;
+                font-size: 1rem;
             }
 
             .question-image-container {
@@ -736,26 +736,26 @@
 
         @media (max-width: 576px) {
             .question-text {
-                font-size: 1.2rem;
-                line-height: 1.5;
+                font-size: 0.95rem;
+                line-height: 1.45;
             }
 
             .options-container .form-check-label {
-                font-size: 1.1rem;
-                line-height: 1.5;
+                font-size: 0.9rem;
+                line-height: 1.45;
             }
 
             .options-container .form-check {
-                padding: 0.75rem;
+                padding: 0.6rem;
             }
 
             .options-container .form-check-input {
-                width: 1.1rem;
-                height: 1.1rem;
+                width: 0.95rem;
+                height: 0.95rem;
             }
 
             .options-container .form-check-label strong {
-                font-size: 1.2rem;
+                font-size: 0.95rem;
             }
         }
     </style>
