@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             SoalSeeder::class,
             PackageLimitsSeeder::class,
             PackageMappingSeeder::class,
+            TryoutSeeder::class,
         ]);
     }
 }
