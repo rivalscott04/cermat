@@ -269,9 +269,9 @@
                                             Selanjutnya <i class="fa fa-arrow-right"></i>
                                         </a>
                                     @else
-                                        <button type="button" class="btn btn-success" onclick="showFinishConfirmation()">
+                                        <a href="{{ route('user.tryout.finish', $tryout->id) }}" class="btn btn-success" onclick="allowTryoutNavigation()">
                                             <i class="fa fa-check"></i> Selesai
-                                        </button>
+                                        </a>
                                     @endif
                                 </div>
                             </div>
@@ -496,7 +496,7 @@
         }
 
         .question-text {
-            font-size: 1.6rem;
+            font-size: 0.85rem;
             line-height: 1.8;
             margin-bottom: 2rem;
             font-weight: 500;
@@ -512,7 +512,7 @@
         }
 
         .options-container .form-check-label {
-            font-size: 1.4rem;
+            font-size: 0.85rem;
             line-height: 1.8;
             font-weight: 500;
             margin-left: 0.75rem;

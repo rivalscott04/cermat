@@ -852,6 +852,11 @@ class TryoutController extends Controller
             ];
         }
 
+        // Server-side per-question review support
+        $requestedReview = request()->get('review');
+        $currentReviewNumber = is_numeric($requestedReview) ? max(1, min((int)$requestedReview, $totalQuestions)) : 1;
+        $currentReviewItem = $userAnswers->firstWhere('urutan', $currentReviewNumber) ?? $userAnswers->first();
+
         return view('user.tryout.result', compact(
             'tryout',
             'userAnswers',
@@ -860,7 +865,9 @@ class TryoutController extends Controller
             'totalQuestions',
             'correctAnswers',
             'wrongAnswers',
-            'categoryScores'
+            'categoryScores',
+            'currentReviewNumber',
+            'currentReviewItem'
         ));
     }
 

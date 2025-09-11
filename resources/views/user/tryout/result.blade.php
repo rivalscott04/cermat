@@ -201,247 +201,246 @@
                 </div>
 
                 <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fa fa-list"></i> Review Jawaban
-                        </h5>
-                        <div class="mt-2">
-                            <button class="btn btn-sm btn-outline-primary" id="expandAll">Expand All</button>
-                            <button class="btn btn-sm btn-outline-secondary" id="collapseAll">Collapse All</button>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-0"><i class="fa fa-list"></i> Review Jawaban</h5>
+                            <small class="text-muted">Soal {{ $currentReviewNumber }} dari {{ $totalQuestions }}</small>
+                        </div>
+                        <div>
+                            <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => max(1, $currentReviewNumber - 1)]) }}" class="btn btn-sm btn-secondary {{ $currentReviewNumber <= 1 ? 'disabled' : '' }}" {{ $currentReviewNumber <= 1 ? 'aria-disabled=true' : '' }}>
+                                <i class="fa fa-arrow-left"></i> Sebelumnya
+                            </a>
+                            <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => min($totalQuestions, $currentReviewNumber + 1)]) }}" class="btn btn-sm btn-primary {{ $currentReviewNumber >= $totalQuestions ? 'disabled' : '' }}" {{ $currentReviewNumber >= $totalQuestions ? 'aria-disabled=true' : '' }}>
+                                Selanjutnya <i class="fa fa-arrow-right"></i>
+                            </a>
                         </div>
                     </div>
                     <div class="card-body">
-                        @foreach ($userAnswers as $index => $userAnswer)
-                            @php
-                                // Ambil review data yang sudah diproses dari controller
-                                $reviewInfo = $reviewData[$userAnswer->id] ?? null;
+                        @php
+                            $userAnswer = $currentReviewItem;
+                            // Ambil review data yang sudah diproses dari controller
+                            $reviewInfo = $reviewData[$userAnswer->id] ?? null;
+                            $shuffledOptions = $reviewInfo['shuffledOptions'] ?? collect();
+                            $correctAnswerShuffled = $reviewInfo['correctAnswerShuffled'] ?? [];
+                            $userAnswerShuffled = $reviewInfo['userAnswerShuffled'] ?? [];
+                            $letters = ['A', 'B', 'C', 'D', 'E'];
+                        @endphp
 
-                                if (!$reviewInfo) {
-                                    continue; // Skip jika tidak ada review data
-                                }
-
-                                $shuffledOptions = $reviewInfo['shuffledOptions'];
-                                $correctAnswerShuffled = $reviewInfo['correctAnswerShuffled'];
-                                $userAnswerShuffled = $reviewInfo['userAnswerShuffled'];
-                                $letters = ['A', 'B', 'C', 'D', 'E'];
-                            @endphp
-
-                            <div id="review-soal-{{ $userAnswer->urutan }}" class="answer-review mb-4 {{ $userAnswer->skor > 0 ? 'correct' : 'incorrect' }}">
-                                <div class="question-header">
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <h6 class="mb-1">Soal {{ $userAnswer->urutan }}</h6>
-                                        <div class="score-indicator">
-                                            @if ($userAnswer->skor > 0)
-                                                <span class="badge badge-success">
-                                                    <i class="fa fa-check"></i> Benar ({{ $userAnswer->skor }})
-                                                </span>
-                                            @else
-                                                <span class="badge badge-danger">
-                                                    <i class="fa fa-times"></i> Salah (0)
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <small class="text-muted">{{ $userAnswer->soal->kategori->nama }} -
-                                        {{ ucfirst(str_replace('_', ' ', $userAnswer->soal->tipe)) }}</small>
-                                </div>
-
-                                <div class="question-content mt-3">
-                                    <div class="question-text">
-                                        {!! nl2br(e($userAnswer->soal->pertanyaan)) !!}
-                                    </div>
-
-                                    <div class="options-review mt-3">
-                                        @if ($userAnswer->soal->tipe == 'benar_salah')
-                                            <!-- Handle True/False Questions -->
-                                            @php
-                                                $correctAnswerOrig = is_array($userAnswer->soal->jawaban_benar)
-                                                    ? $userAnswer->soal->jawaban_benar
-                                                    : [$userAnswer->soal->jawaban_benar];
-
-                                                $trueCorrect = in_array('benar', $correctAnswerOrig);
-                                                $falseCorrect = in_array('salah', $correctAnswerOrig);
-                                                $userSelectedTrue = in_array('benar', $userAnswerShuffled);
-                                                $userSelectedFalse = in_array('salah', $userAnswerShuffled);
-                                            @endphp
-
-                                            <div
-                                                class="option-item {{ $trueCorrect && $userSelectedTrue ? 'correct-answer' : ($trueCorrect && !$userSelectedTrue ? 'correct-not-selected' : (!$trueCorrect && $userSelectedTrue ? 'incorrect-answer' : '')) }}">
-                                                <div class="option-content">
-                                                    <span class="option-label">BENAR</span>
-                                                </div>
-                                                <div class="option-indicators">
-                                                    @if ($trueCorrect)
-                                                        <i class="fa fa-check text-success" title="Jawaban Benar"></i>
-                                                    @endif
-                                                    @if ($userSelectedTrue)
-                                                        @if ($trueCorrect)
-                                                            <i class="fa fa-user-check text-success"
-                                                                title="Pilihan Anda - Benar"></i>
-                                                        @else
-                                                            <i class="fa fa-user-times text-danger"
-                                                                title="Pilihan Anda - Salah"></i>
-                                                        @endif
-                                                    @endif
-                                                </div>
-                                            </div>
-
-                                            <div
-                                                class="option-item {{ $falseCorrect && $userSelectedFalse ? 'correct-answer' : ($falseCorrect && !$userSelectedFalse ? 'correct-not-selected' : (!$falseCorrect && $userSelectedFalse ? 'incorrect-answer' : '')) }}">
-                                                <div class="option-content">
-                                                    <span class="option-label">SALAH</span>
-                                                </div>
-                                                <div class="option-indicators">
-                                                    @if ($falseCorrect)
-                                                        <i class="fa fa-check text-success" title="Jawaban Benar"></i>
-                                                    @endif
-                                                    @if ($userSelectedFalse)
-                                                        @if ($falseCorrect)
-                                                            <i class="fa fa-user-check text-success"
-                                                                title="Pilihan Anda - Benar"></i>
-                                                        @else
-                                                            <i class="fa fa-user-times text-danger"
-                                                                title="Pilihan Anda - Salah"></i>
-                                                        @endif
-                                                    @endif
-                                                </div>
-                                            </div>
+                        <div id="review-soal-{{ $userAnswer->urutan }}" class="answer-review mb-4 {{ $userAnswer->skor > 0 ? 'correct' : 'incorrect' }}">
+                            <div class="question-header">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h6 class="mb-1">Soal {{ $userAnswer->urutan }}</h6>
+                                    <div class="score-indicator">
+                                        @if ($userAnswer->skor > 0)
+                                            <span class="badge badge-success">
+                                                <i class="fa fa-check"></i> Benar ({{ $userAnswer->skor }})
+                                            </span>
                                         @else
-                                            <!-- Handle Multiple Choice Questions dengan Shuffled Options -->
-                                            @foreach ($shuffledOptions as $shuffleIndex => $opsi)
-                                                @php
-                                                    $shuffledLetter = $letters[$shuffleIndex];
-
-                                                    // Check if this shuffled option is correct
-                                                    $isCorrect = in_array($shuffledLetter, $correctAnswerShuffled);
-
-                                                    // Check if user selected this shuffled option
-                                                    $isUserAnswer = in_array($shuffledLetter, $userAnswerShuffled);
-
-                                                    // PERBAIKAN: Logika untuk menentukan class CSS
-                                                    $optionClass = '';
-
-                                                    // Untuk tipe pg_pilih_2 dan pg_bobot, cek bobot dari opsi asli
-                                                    if (in_array($userAnswer->soal->tipe, ['pg_pilih_2', 'pg_bobot'])) {
-                                                        // Ambil bobot dari opsi asli
-                                                        $opsiBobot = is_array($opsi)
-                                                            ? $opsi['bobot'] ?? 0
-                                                            : $opsi->bobot ?? 0;
-                                                        $isCorrectOption = $opsiBobot > 0;
-
-                                                        if ($isUserAnswer && $isCorrectOption) {
-                                                            $optionClass = 'correct-answer'; // User pilih dan benar
-                                                        } elseif (!$isUserAnswer && $isCorrectOption) {
-                                                            $optionClass = 'correct-not-selected'; // Benar tapi tidak dipilih user
-                                                        } elseif ($isUserAnswer && !$isCorrectOption) {
-                                                            $optionClass = 'incorrect-answer'; // User pilih tapi salah
-                                                        }
-                                                        // Jika tidak dipilih user dan salah, tidak ada class khusus
-                                                    } else {
-                                                        // Untuk tipe pg_satu dan benar_salah (logic lama)
-                                                        if ($isCorrect && $isUserAnswer) {
-                                                            $optionClass = 'correct-answer'; // Benar dan dipilih user
-                                                        } elseif ($isCorrect && !$isUserAnswer) {
-                                                            $optionClass = 'correct-not-selected'; // Benar tapi tidak dipilih user
-                                                        } elseif (!$isCorrect && $isUserAnswer) {
-                                                            $optionClass = 'incorrect-answer'; // Salah tapi dipilih user
-                                                        }
-                                                    }
-                                                @endphp
-
-                                                <div class="option-item {{ $optionClass }}">
-                                                    <div class="option-content">
-                                                        <span class="option-label">{{ $shuffledLetter }}.</span>
-                                                        <span
-                                                            class="option-text">{{ is_array($opsi) ? $opsi['teks'] : $opsi->teks }}</span>
-
-                                                    </div>
-                                                    <div class="option-indicators">
-                                                        @php
-                                                            // PERBAIKAN: Indikator untuk tipe soal yang berbeda
-                                                            if (
-                                                                in_array($userAnswer->soal->tipe, [
-                                                                    'pg_pilih_2',
-                                                                    'pg_bobot',
-                                                                ])
-                                                            ) {
-                                                                $opsiBobot = is_array($opsi)
-                                                                    ? $opsi['bobot'] ?? 0
-                                                                    : $opsi->bobot ?? 0;
-                                                                $showCorrectIcon = $opsiBobot > 0;
-                                                            } else {
-                                                                $showCorrectIcon = $isCorrect;
-                                                            }
-                                                        @endphp
-
-                                                        @if ($showCorrectIcon)
-                                                            <i class="fa fa-check text-success" title="Jawaban Benar"></i>
-                                                        @endif
-                                                        @if ($isUserAnswer)
-                                                            @if ($showCorrectIcon)
-                                                                <i class="fa fa-user-check text-success"
-                                                                    title="Pilihan Anda - Benar"></i>
-                                                            @else
-                                                                <i class="fa fa-user-times text-danger"
-                                                                    title="Pilihan Anda - Salah"></i>
-                                                            @endif
-                                                        @endif
-                                                    </div>
-                                                </div>
-                                            @endforeach
+                                            <span class="badge badge-danger">
+                                                <i class="fa fa-times"></i> Salah (0)
+                                            </span>
                                         @endif
                                     </div>
+                                </div>
+                                <small class="text-muted">{{ $userAnswer->soal->kategori->nama }} - {{ ucfirst(str_replace('_', ' ', $userAnswer->soal->tipe)) }}</small>
+                            </div>
 
-                                    @php
-                                        $pType = $userAnswer->soal->pembahasan_type ?? 'text';
-                                        $hasText = !empty($userAnswer->soal->pembahasan);
-                                        $hasImage = !empty($userAnswer->soal->pembahasan_image_url);
-                                    @endphp
+                            <div class="question-content mt-3">
+                                <div class="question-text">
+                                    {!! nl2br(e($userAnswer->soal->pertanyaan)) !!}
+                                </div>
 
-                                    @if ($hasText || $hasImage)
-                                        <div class="mt-3">
-                                            <div class="card">
-                                                <div class="card-header p-2" id="heading-{{ $userAnswer->id }}">
-                                                    <h6 class="mb-0">
-                                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ $userAnswer->id }}" aria-expanded="false" aria-controls="collapse-{{ $userAnswer->id }}">
-                                                            <i class="fa fa-lightbulb-o"></i> Pembahasan Soal {{ $userAnswer->urutan }}
-                                                        </button>
-                                                    </h6>
+                                <div class="options-review mt-3">
+                                    @if ($userAnswer->soal->tipe == 'benar_salah')
+                                        @php
+                                            $correctAnswerOrig = is_array($userAnswer->soal->jawaban_benar)
+                                                ? $userAnswer->soal->jawaban_benar
+                                                : [$userAnswer->soal->jawaban_benar];
+                                            $trueCorrect = in_array('benar', $correctAnswerOrig);
+                                            $falseCorrect = in_array('salah', $correctAnswerOrig);
+                                            $userSelectedTrue = in_array('benar', $userAnswerShuffled);
+                                            $userSelectedFalse = in_array('salah', $userAnswerShuffled);
+                                        @endphp
+
+                                        <div class="option-item {{ $trueCorrect && $userSelectedTrue ? 'correct-answer' : ($trueCorrect && !$userSelectedTrue ? 'correct-not-selected' : (!$trueCorrect && $userSelectedTrue ? 'incorrect-answer' : '')) }}">
+                                            <div class="option-content">
+                                                <span class="option-label">BENAR</span>
+                                            </div>
+                                            <div class="option-indicators">
+                                                @if ($trueCorrect)
+                                                    <i class="fa fa-check text-success" title="Jawaban Benar"></i>
+                                                @endif
+                                                @if ($userSelectedTrue)
+                                                    @if ($trueCorrect)
+                                                        <i class="fa fa-user-check text-success" title="Pilihan Anda - Benar"></i>
+                                                    @else
+                                                        <i class="fa fa-user-times text-danger" title="Pilihan Anda - Salah"></i>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="option-item {{ $falseCorrect && $userSelectedFalse ? 'correct-answer' : ($falseCorrect && !$userSelectedFalse ? 'correct-not-selected' : (!$falseCorrect && $userSelectedFalse ? 'incorrect-answer' : '')) }}">
+                                            <div class="option-content">
+                                                <span class="option-label">SALAH</span>
+                                            </div>
+                                            <div class="option-indicators">
+                                                @if ($falseCorrect)
+                                                    <i class="fa fa-check text-success" title="Jawaban Benar"></i>
+                                                @endif
+                                                @if ($userSelectedFalse)
+                                                    @if ($falseCorrect)
+                                                        <i class="fa fa-user-check text-success" title="Pilihan Anda - Benar"></i>
+                                                    @else
+                                                        <i class="fa fa-user-times text-danger" title="Pilihan Anda - Salah"></i>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </div>
+                                        @if ($userAnswer->skor <= 0)
+                                            @php
+                                                $correctTexts = [];
+                                                if ($trueCorrect) { $correctTexts[] = 'BENAR'; }
+                                                if ($falseCorrect) { $correctTexts[] = 'SALAH'; }
+                                            @endphp
+                                            @if (count($correctTexts))
+                                                <div class="alert alert-success py-2 px-3" role="alert">
+                                                    Jawaban yang benar: {{ implode(', ', $correctTexts) }}
                                                 </div>
-                                                <div id="collapse-{{ $userAnswer->id }}" class="collapse" aria-labelledby="heading-{{ $userAnswer->id }}">
-                                                    <div class="card-body">
-                                                        @if ($pType === 'text' || $pType === 'both')
-                                                            <div class="explanation mb-3">
-                                                                <div class="explanation-header">
-                                                                    <i class="fa fa-sticky-note"></i> Teks Pembahasan
-                                                                </div>
-                                                                <div class="explanation-content">
-                                                                    {!! nl2br(e($userAnswer->soal->pembahasan)) !!}
-                                                                </div>
-                                                            </div>
-                                                        @endif
+                                            @endif
+                                        @endif
+                                    @else
+                                        @foreach ($shuffledOptions as $shuffleIndex => $opsi)
+                                            @php
+                                                $shuffledLetter = $letters[$shuffleIndex];
+                                                $isCorrect = in_array($shuffledLetter, $correctAnswerShuffled);
+                                                $isUserAnswer = in_array($shuffledLetter, $userAnswerShuffled);
+                                                $optionClass = '';
 
-                                                        @if ($hasImage && ($pType === 'image' || $pType === 'both'))
-                                                            <div class="explanation">
-                                                                <div class="explanation-header">
-                                                                    <i class="fa fa-image"></i> Gambar Pembahasan
-                                                                </div>
-                                                                <div class="text-center mt-2">
-                                                                    <img src="{{ $userAnswer->soal->pembahasan_image_url }}" alt="Gambar Pembahasan" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: contain; cursor: pointer;" onclick="showPembahasanImageModal('{{ $userAnswer->soal->pembahasan_image_url }}')">
-                                                                    <div class="mt-2">
-                                                                        <small class="text-muted"><i class="fa fa-search-plus"></i> Klik untuk memperbesar</small>
-                                                                    </div>
+                                                if (in_array($userAnswer->soal->tipe, ['pg_pilih_2', 'pg_bobot'])) {
+                                                    $opsiBobot = is_array($opsi) ? $opsi['bobot'] ?? 0 : $opsi->bobot ?? 0;
+                                                    $isCorrectOption = $opsiBobot > 0;
+                                                    if ($isUserAnswer && $isCorrectOption) {
+                                                        $optionClass = 'correct-answer';
+                                                    } elseif (!$isUserAnswer && $isCorrectOption) {
+                                                        $optionClass = 'correct-not-selected';
+                                                    } elseif ($isUserAnswer && !$isCorrectOption) {
+                                                        $optionClass = 'incorrect-answer';
+                                                    }
+                                                } else {
+                                                    if ($isCorrect && $isUserAnswer) {
+                                                        $optionClass = 'correct-answer';
+                                                    } elseif ($isCorrect && !$isUserAnswer) {
+                                                        $optionClass = 'correct-not-selected';
+                                                    } elseif (!$isCorrect && $isUserAnswer) {
+                                                        $optionClass = 'incorrect-answer';
+                                                    }
+                                                }
+                                            @endphp
+
+                                            <div class="option-item {{ $optionClass }}">
+                                                <div class="option-content">
+                                                    <span class="option-label">{{ $shuffledLetter }}.</span>
+                                                    <span class="option-text">{{ is_array($opsi) ? $opsi['teks'] : $opsi->teks }}</span>
+                                                </div>
+                                                <div class="option-indicators">
+                                                    @php
+                                                        if (in_array($userAnswer->soal->tipe, ['pg_pilih_2', 'pg_bobot'])) {
+                                                            $opsiBobot = is_array($opsi) ? $opsi['bobot'] ?? 0 : $opsi->bobot ?? 0;
+                                                            $showCorrectIcon = $opsiBobot > 0;
+                                                        } else {
+                                                            $showCorrectIcon = $isCorrect;
+                                                        }
+                                                    @endphp
+
+                                                    @if ($showCorrectIcon)
+                                                        <i class="fa fa-check text-success" title="Jawaban Benar"></i>
+                                                    @endif
+                                                    @if ($isUserAnswer)
+                                                        @if ($showCorrectIcon)
+                                                            <i class="fa fa-user-check text-success" title="Pilihan Anda - Benar"></i>
+                                                        @else
+                                                            <i class="fa fa-user-times text-danger" title="Pilihan Anda - Salah"></i>
+                                                        @endif
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                        @php
+                                            $correctTexts = [];
+                                            if (in_array($userAnswer->soal->tipe, ['pg_pilih_2', 'pg_bobot'])) {
+                                                foreach ($shuffledOptions as $opsi) {
+                                                    $opsiBobot = is_array($opsi) ? ($opsi['bobot'] ?? 0) : ($opsi->bobot ?? 0);
+                                                    if ($opsiBobot > 0) {
+                                                        $correctTexts[] = is_array($opsi) ? $opsi['teks'] : $opsi->teks;
+                                                    }
+                                                }
+                                            } else {
+                                                foreach ($shuffledOptions as $idx => $opsi) {
+                                                    $letter = $letters[$idx];
+                                                    if (in_array($letter, $correctAnswerShuffled)) {
+                                                        $correctTexts[] = is_array($opsi) ? $opsi['teks'] : $opsi->teks;
+                                                    }
+                                                }
+                                            }
+                                        @endphp
+                                        @if ($userAnswer->skor <= 0 && count($correctTexts))
+                                            <div class="alert alert-success py-2 px-3" role="alert">
+                                                Jawaban yang benar: {{ implode(', ', $correctTexts) }}
+                                            </div>
+                                        @endif
+                                    @endif
+                                </div>
+
+                                @php
+                                    $pType = $userAnswer->soal->pembahasan_type ?? 'text';
+                                    $hasText = !empty($userAnswer->soal->pembahasan);
+                                    $hasImage = !empty($userAnswer->soal->pembahasan_image_url);
+                                @endphp
+
+                                @if ($hasText || $hasImage)
+                                    <div class="mt-3">
+                                        <div class="card">
+                                            <div class="card-header p-2" id="heading-{{ $userAnswer->id }}">
+                                                <h6 class="mb-0">
+                                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ $userAnswer->id }}" aria-expanded="false" aria-controls="collapse-{{ $userAnswer->id }}">
+                                                        <i class="fa fa-lightbulb-o"></i> Pembahasan Soal {{ $userAnswer->urutan }}
+                                                    </button>
+                                                </h6>
+                                            </div>
+                                            <div id="collapse-{{ $userAnswer->id }}" class="collapse" aria-labelledby="heading-{{ $userAnswer->id }}">
+                                                <div class="card-body">
+                                                    @if ($pType === 'text' || $pType === 'both')
+                                                        <div class="explanation mb-3">
+                                                            <div class="explanation-header">
+                                                                <i class="fa fa-sticky-note"></i> Teks Pembahasan
+                                                            </div>
+                                                            <div class="explanation-content">
+                                                                {!! nl2br(e($userAnswer->soal->pembahasan)) !!}
+                                                            </div>
+                                                        </div>
+                                                    @endif
+
+                                                    @if ($hasImage && ($pType === 'image' || $pType === 'both'))
+                                                        <div class="explanation">
+                                                            <div class="explanation-header">
+                                                                <i class="fa fa-image"></i> Gambar Pembahasan
+                                                            </div>
+                                                            <div class="text-center mt-2">
+                                                                <img src="{{ $userAnswer->soal->pembahasan_image_url }}" alt="Gambar Pembahasan" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: contain; cursor: pointer;" onclick="showPembahasanImageModal('{{ $userAnswer->soal->pembahasan_image_url }}')">
+                                                                <div class="mt-2">
+                                                                    <small class="text-muted"><i class="fa fa-search-plus"></i> Klik untuk memperbesar</small>
                                                                 </div>
                                                             </div>
-                                                        @endif
-                                                    </div>
+                                                        </div>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
-                                    @endif
-                                </div>
+                                    </div>
+                                @endif
                             </div>
-                        @endforeach
+                        </div>
                     </div>
                 </div>
             </div>
@@ -787,6 +786,28 @@
                 $('#pembahasanImageModal').modal('show');
             }
         }
+        
+        // Ensure modal can always be closed via buttons/X or ESC
+        $(document).ready(function() {
+            // Close handlers for Tutup button and X icon
+            $(document).on('click', '#pembahasanImageModal .close, #pembahasanImageModal [data-dismiss="modal"]', function() {
+                $('#pembahasanImageModal').modal('hide');
+            });
+
+            // ESC key to close when modal open
+            $(document).on('keydown', function(e) {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    if ($('#pembahasanImageModal').hasClass('show')) {
+                        $('#pembahasanImageModal').modal('hide');
+                    }
+                }
+            });
+
+            // Prevent click on image from closing the modal accidentally
+            $(document).on('click', '#modalPembahasanImage', function(e) {
+                e.stopPropagation();
+            });
+        });
     </script>
     <!-- Modal Preview Pembahasan Image -->
     <div class="modal fade" id="pembahasanImageModal" tabindex="-1" role="dialog" aria-hidden="true">
