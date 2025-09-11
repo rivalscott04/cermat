@@ -12,6 +12,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SoalController;
 use App\Http\Controllers\TryoutController;
 use App\Http\Controllers\KategoriSoalController;
+use App\Http\Controllers\PackageMappingController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -122,4 +123,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('soal/upload-word', [SoalController::class, 'uploadWord'])->name('soal.upload-word');
 
     Route::resource('tryout', TryoutController::class);
+    
+    // Package Mapping Routes
+    Route::get('package-mapping', [PackageMappingController::class, 'index'])->name('package-mapping.index');
+    Route::put('package-mapping', [PackageMappingController::class, 'update'])->name('package-mapping.update');
+    Route::post('package-mapping/reset', [PackageMappingController::class, 'reset'])->name('package-mapping.reset');
+    Route::get('package-mapping/api', [PackageMappingController::class, 'api'])->name('package-mapping.api');
 });

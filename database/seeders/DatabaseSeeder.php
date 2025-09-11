@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
             KategoriSoalSeeder::class,
             SoalSeeder::class,
             PackageLimitsSeeder::class,
+            PackageMappingSeeder::class,
         ]);
     }
 }

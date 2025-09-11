@@ -8,6 +8,7 @@ use App\Models\Soal;
 use App\Models\UserTryoutSoal;
 use App\Models\UserTryoutSession; // Tambahkan model ini untuk tracking session
 use App\Models\TryoutBlueprint;
+use App\Models\PackageCategoryMapping;
 use App\Services\QuestionSelector;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,8 @@ class TryoutController extends Controller
     public function create()
     {
         $kategoris = KategoriSoal::active()->get();
-        return view('admin.tryout.create', compact('kategoris'));
+        $packageMappings = PackageCategoryMapping::getAllMappings();
+        return view('admin.tryout.create', compact('kategoris', 'packageMappings'));
     }
 
     public function store(Request $request)
@@ -189,7 +191,8 @@ class TryoutController extends Controller
     public function edit(Tryout $tryout)
     {
         $kategoris = KategoriSoal::active()->get();
-        return view('admin.tryout.edit', compact('tryout', 'kategoris'));
+        $packageMappings = PackageCategoryMapping::getAllMappings();
+        return view('admin.tryout.edit', compact('tryout', 'kategoris', 'packageMappings'));
     }
 
     public function update(Request $request, Tryout $tryout)

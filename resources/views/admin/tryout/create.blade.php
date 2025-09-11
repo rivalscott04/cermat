@@ -161,13 +161,35 @@
 @push('scripts')
 <script>
 $(document).ready(function() {
-    // Package mapping
-    const packageMapping = {
+    // Package mapping - akan diambil dari server
+    let packageMapping = {
         'free': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
-        'kecerdasan': ['TIU', 'TWK', 'TKD'],
-        'kepribadian': ['TKP', 'PSIKOTES'],
-        'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
+        'kecerdasan': [],
+        'kepribadian': [],
+        'lengkap': []
     };
+
+    // Load dynamic package mapping from server
+    function loadPackageMapping() {
+        fetch('/admin/package-mapping/api')
+            .then(response => response.json())
+            .then(data => {
+                packageMapping = data;
+            })
+            .catch(error => {
+                console.error('Error loading package mapping:', error);
+                // Fallback to default mapping
+                packageMapping = {
+                    'free': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
+                    'kecerdasan': ['TIU', 'TWK', 'TKD'],
+                    'kepribadian': ['TKP', 'PSIKOTES'],
+                    'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
+                };
+            });
+    }
+
+    // Load mapping on page load
+    loadPackageMapping();
 
     // Update kategori preview and filter table when jenis paket changes
     $('#jenis_paket').on('change', function() {

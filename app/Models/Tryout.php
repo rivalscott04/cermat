@@ -66,6 +66,14 @@ class Tryout extends Model
         return $mapping[$userPackage] ?? ['free'];
     }
 
+    /**
+     * Get dynamic package mapping from database
+     */
+    public static function getDynamicPackageMapping()
+    {
+        return \App\Models\PackageCategoryMapping::getAllMappings();
+    }
+
     public function getTotalSoalAttribute()
     {
         return array_sum($this->struktur);
