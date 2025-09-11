@@ -64,6 +64,19 @@
                         </li>
                     </ul>
                 </li>
+
+                <!-- Pengaturan -->
+                <li>
+                    <a href="#"><i class="fa fa-cogs"></i> <span class="nav-label">Pengaturan</span> <span class="fa arrow"></span></a>
+                    <ul class="nav nav-second-level collapse">
+                        <li>
+                            <a href="{{ route('admin.package-mapping.index') }}">
+                                <i class="fa fa-gem"></i>
+                                <span class="nav-label">Pengaturan Paket</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
             @endif
 
             @if (Auth::user()->role == 'user')
