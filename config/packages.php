@@ -38,6 +38,11 @@ return [
         ]
     ],
 
+    // Mapping untuk backward compatibility dengan menu pricing lama
+    'legacy_mapping' => [
+        'psikologi' => 'kepribadian', // Menu pricing lama 'psikologi' = 'kepribadian' baru
+    ],
+
     'package_mapping' => [
         'kecerdasan' => ['TIU', 'TWK', 'TKD'],
         'kepribadian' => ['TKP', 'PSIKOTES'],

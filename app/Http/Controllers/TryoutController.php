@@ -33,10 +33,12 @@ class TryoutController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'durasi_menit' => 'required|integer|min:1',
-            'akses_paket' => 'required|in:free,premium,vip',
             'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
             'blueprint' => 'required|array'
         ]);
+
+        // Validasi jumlah soal tidak melebihi yang tersedia
+        $this->validateBlueprint($request->blueprint);
 
         $tryout = Tryout::create([
             'judul' => $request->judul,
@@ -44,7 +46,7 @@ class TryoutController extends Controller
             'struktur' => [],
             'shuffle_questions' => (bool)$request->get('shuffle_questions', false),
             'durasi_menit' => $request->durasi_menit,
-            'akses_paket' => $request->akses_paket,
+            'akses_paket' => 'free', // Default untuk backward compatibility
             'jenis_paket' => $request->jenis_paket
         ]);
 
@@ -196,10 +198,12 @@ class TryoutController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'durasi_menit' => 'required|integer|min:1',
-            'akses_paket' => 'required|in:free,premium,vip',
             'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
             'blueprint' => 'required|array'
         ]);
+
+        // Validasi jumlah soal tidak melebihi yang tersedia
+        $this->validateBlueprint($request->blueprint);
 
         $tryout->update([
             'judul' => $request->judul,
@@ -207,7 +211,6 @@ class TryoutController extends Controller
             'struktur' => [],
             'shuffle_questions' => (bool)$request->get('shuffle_questions', false),
             'durasi_menit' => $request->durasi_menit,
-            'akses_paket' => $request->akses_paket,
             'jenis_paket' => $request->jenis_paket
         ]);
 
@@ -884,6 +887,38 @@ class TryoutController extends Controller
     {
         // Use new package system
         return $user->canAccessSpecificTryout($tryout);
+    }
+
+    /**
+     * Validate blueprint against available questions
+     */
+    private function validateBlueprint($blueprint)
+    {
+        $errors = [];
+
+        foreach ($blueprint as $kategoriId => $levels) {
+            $kategori = KategoriSoal::find($kategoriId);
+            if (!$kategori) continue;
+
+            foreach ($levels as $level => $jumlah) {
+                $jumlah = (int) $jumlah;
+                if ($jumlah <= 0) continue;
+
+                $available = $kategori->soals()->where('level', $level)->count();
+                
+                if ($jumlah > $available) {
+                    $levelText = ucfirst($level);
+                    $errors[] = "Kategori {$kategori->nama} ({$kategori->kode}): Jumlah soal {$levelText} yang diminta ({$jumlah}) melebihi soal yang tersedia ({$available})";
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new \Illuminate\Validation\ValidationException(
+                validator([], []),
+                ['blueprint' => $errors]
+            );
+        }
     }
 
     // PERUBAHAN: Generate questions dengan session seed

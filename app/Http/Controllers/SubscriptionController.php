@@ -78,7 +78,7 @@ class SubscriptionController extends Controller
     {
         try {
             // Validasi package yang dipilih
-            $allowedPackages = ['kecermatan', 'psikologi', 'lengkap'];
+            $allowedPackages = ['kecermatan', 'kecerdasan', 'kepribadian', 'lengkap'];
 
             if (!in_array($package, $allowedPackages)) {
                 return redirect()->route('subscription.packages')->with('error', 'Paket yang dipilih tidak valid.');
@@ -106,27 +106,41 @@ class SubscriptionController extends Controller
                         'Riwayat progress harian'
                     ]
                 ],
-                'psikologi' => [
-                    'name' => 'Paket Psikologi',
-                    'description' => 'Fokus Tes Psikologi',
+                'kecerdasan' => [
+                    'name' => 'Paket Kecerdasan',
+                    'description' => 'Fokus Tes Kecerdasan',
                     'price' => 75000,
                     'duration' => 30,
                     'features' => [
-                        'Bank soal psikologi lengkap',
-                        'Tes kepribadian & karakter',
-                        'Simulasi wawancara psikologi',
-                        'Tips & strategi psikotes',
-                        'Analisis profil psikologi'
+                        'Bank soal TIU, TWK, TKD lengkap',
+                        'Tes intelejensi umum',
+                        'Tes wawasan kebangsaan',
+                        'Tes kemampuan dasar',
+                        'Analisis kemampuan kognitif'
+                    ]
+                ],
+                'kepribadian' => [
+                    'name' => 'Paket Kepribadian',
+                    'description' => 'Fokus Tes Kepribadian',
+                    'price' => 75000,
+                    'duration' => 30,
+                    'features' => [
+                        'Bank soal TKP, PSIKOTES lengkap',
+                        'Tes karakteristik pribadi',
+                        'Tes psikotes komprehensif',
+                        'Analisis kepribadian',
+                        'Tips & strategi psikotes'
                     ]
                 ],
                 'lengkap' => [
                     'name' => 'Paket Lengkap',
-                    'description' => 'Kecermatan + Psikologi',
+                    'description' => 'Semua Jenis Tes',
                     'price' => 120000,
                     'duration' => 45,
                     'features' => [
                         'Semua fitur Kecermatan',
-                        'Semua fitur Psikologi',
+                        'Semua fitur Kecerdasan',
+                        'Semua fitur Kepribadian',
                         'Try out gabungan berkala',
                         'Laporan progress lengkap',
                         'Sertifikat penyelesaian'

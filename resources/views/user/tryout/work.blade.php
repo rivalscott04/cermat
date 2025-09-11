@@ -496,32 +496,65 @@
         }
 
         .question-text {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
+            font-size: 1.6rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-weight: 500;
         }
 
         .options-container .form-check {
-            margin-bottom: 1rem;
-            padding: 0.75rem;
-            border: 1px solid #e9ecef;
-            border-radius: 0.25rem;
+            margin-bottom: 1.5rem;
+            padding: 1.25rem;
+            border: 2px solid #e9ecef;
+            border-radius: 0.5rem;
             transition: all 0.2s;
+            background-color: #fafafa;
         }
 
         .options-container .form-check-label {
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            font-weight: 500;
+            margin-left: 0.75rem;
+        }
+
+        .options-container .form-check-input {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin-top: 0.25rem;
+        }
+
+        .options-container .form-check-input[type="radio"] {
+            width: 1.5rem;
+            height: 1.5rem;
+        }
+
+        .options-container .form-check-input[type="checkbox"] {
+            width: 1.5rem;
+            height: 1.5rem;
         }
 
         .options-container .form-check:hover {
-            background-color: #f8f9fa;
+            background-color: #f0f8ff;
             border-color: #007bff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 123, 255, 0.15);
         }
 
         .options-container .form-check-input:checked+.form-check-label {
             font-weight: bold;
             color: #007bff;
+        }
+
+        .options-container .form-check-input:checked {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+
+        /* Styling khusus untuk opsi benar/salah */
+        .options-container .form-check-label strong {
+            font-size: 1.5rem;
+            font-weight: 700;
         }
 
         .reset-answer-container {
@@ -662,8 +695,32 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
 
-        /* Responsive image container */
+        /* Responsive design untuk tampilan soal */
         @media (max-width: 768px) {
+            .question-text {
+                font-size: 1.4rem;
+                line-height: 1.6;
+            }
+
+            .options-container .form-check-label {
+                font-size: 1.2rem;
+                line-height: 1.6;
+            }
+
+            .options-container .form-check {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .options-container .form-check-input {
+                width: 1.25rem;
+                height: 1.25rem;
+            }
+
+            .options-container .form-check-label strong {
+                font-size: 1.3rem;
+            }
+
             .question-image-container {
                 padding: 10px;
             }
@@ -674,6 +731,31 @@
 
             .modal-xl {
                 max-width: 95%;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .question-text {
+                font-size: 1.2rem;
+                line-height: 1.5;
+            }
+
+            .options-container .form-check-label {
+                font-size: 1.1rem;
+                line-height: 1.5;
+            }
+
+            .options-container .form-check {
+                padding: 0.75rem;
+            }
+
+            .options-container .form-check-input {
+                width: 1.1rem;
+                height: 1.1rem;
+            }
+
+            .options-container .form-check-label strong {
+                font-size: 1.2rem;
             }
         }
     </style>

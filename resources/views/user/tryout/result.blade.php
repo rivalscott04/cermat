@@ -553,14 +553,16 @@
         .question-legend.unanswered { background-color: #dc3545; }
 
         .answer-review .question-text {
-            font-size: 1.3rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
+            font-size: 1.6rem;
+            line-height: 1.8;
+            margin-bottom: 2rem;
+            font-weight: 500;
         }
 
         .answer-review .option-content {
-            font-size: 1.1rem;
-            line-height: 1.6;
+            font-size: 1.4rem;
+            line-height: 1.8;
+            font-weight: 500;
         }
 
         .answer-review.correct {
@@ -577,10 +579,11 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 0.75rem;
-            margin-bottom: 0.5rem;
-            border-radius: 6px;
-            border: 1px solid #e9ecef;
+            padding: 1.25rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            border: 2px solid #e9ecef;
+            background-color: #fafafa;
         }
 
         .option-item.correct-answer {
@@ -646,6 +649,40 @@
 
         .performance-stats .stat-row:last-child {
             border-bottom: none;
+        }
+
+        /* Responsive design untuk tampilan hasil */
+        @media (max-width: 768px) {
+            .answer-review .question-text {
+                font-size: 1.4rem;
+                line-height: 1.6;
+            }
+
+            .answer-review .option-content {
+                font-size: 1.2rem;
+                line-height: 1.6;
+            }
+
+            .option-item {
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .answer-review .question-text {
+                font-size: 1.2rem;
+                line-height: 1.5;
+            }
+
+            .answer-review .option-content {
+                font-size: 1.1rem;
+                line-height: 1.5;
+            }
+
+            .option-item {
+                padding: 0.75rem;
+            }
         }
 
         @media print {

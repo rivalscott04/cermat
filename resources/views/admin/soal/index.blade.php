@@ -38,16 +38,24 @@
                                     <option value="gambar" {{ request('tipe') == 'gambar' ? 'selected' : '' }}>Soal Gambar</option>
                                 </select>
                             </div>
+                            <div class="col-md-3">
+                                <select class="form-control" id="filterLevel">
+                                    <option value="">Semua Level</option>
+                                    <option value="mudah" {{ request('level') == 'mudah' ? 'selected' : '' }}>Mudah</option>
+                                    <option value="sedang" {{ request('level') == 'sedang' ? 'selected' : '' }}>Sedang</option>
+                                    <option value="sulit" {{ request('level') == 'sulit' ? 'selected' : '' }}>Sulit</option>
+                                </select>
+                            </div>
                         </div>
 
                         <!-- Filter Info -->
-                        @if(request('kategori') || request('tipe'))
+                        @if(request('kategori') || request('tipe') || request('level'))
                             <div class="alert alert-info mb-3">
                                 <strong>Filter Aktif:</strong>
                                 @if(request('kategori'))
                                     Kategori: {{ $kategoris->where('id', request('kategori'))->first()->nama ?? 'Tidak ditemukan' }}
                                 @endif
-                                @if(request('kategori') && request('tipe'))
+                                @if(request('kategori') && (request('tipe') || request('level')))
                                     |
                                 @endif
                                 @if(request('tipe'))
@@ -58,6 +66,17 @@
                                         @case('pg_bobot') Pilihan Ganda (Bobot) @break
                                         @case('pg_pilih_2') Pilih 2 Jawaban @break
                                         @case('gambar') Soal Gambar @break
+                                    @endswitch
+                                @endif
+                                @if((request('kategori') || request('tipe')) && request('level'))
+                                    |
+                                @endif
+                                @if(request('level'))
+                                    Level: 
+                                    @switch(request('level'))
+                                        @case('mudah') Mudah @break
+                                        @case('sedang') Sedang @break
+                                        @case('sulit') Sulit @break
                                     @endswitch
                                 @endif
                                 | <strong>Total: {{ $soals->total() }} soal</strong>
@@ -73,6 +92,7 @@
                                         <th>Pertanyaan</th>
                                         <th>Kategori</th>
                                         <th>Tipe</th>
+                                        <th>Level</th>
                                         <th>Opsi</th>
                                         <th>Status</th>
                                         <th>Aksi</th>
@@ -114,6 +134,25 @@
                                                 @endswitch
                                             </td>
                                             <td>
+                                                @switch($soal->level)
+                                                    @case('mudah')
+                                                        <span class="badge badge-success">Mudah</span>
+                                                    @break
+
+                                                    @case('sedang')
+                                                        <span class="badge badge-warning">Sedang</span>
+                                                    @break
+
+                                                    @case('sulit')
+                                                        <span class="badge badge-danger">Sulit</span>
+                                                    @break
+
+                                                    @default
+                                                        <span class="badge badge-secondary">Mudah</span>
+                                                    @break
+                                                @endswitch
+                                            </td>
+                                            <td>
                                                 <button type="button" class="btn btn-sm btn-outline-info"
                                                     data-toggle="modal" data-target="#opsiModal{{ $soal->id }}">
                                                     Lihat Opsi ({{ $soal->opsi->count() }})
@@ -146,7 +185,7 @@
                                         </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="7" class="text-center">Tidak ada data soal</td>
+                                                <td colspan="8" class="text-center">Tidak ada data soal</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
@@ -337,14 +376,16 @@
         <script>
             $(document).ready(function() {
                 // Filter functionality
-                $('#filterKategori, #filterTipe').change(function() {
+                $('#filterKategori, #filterTipe, #filterLevel').change(function() {
                     var kategori = $('#filterKategori').val();
                     var tipe = $('#filterTipe').val();
+                    var level = $('#filterLevel').val();
 
                     // Build query string
                     var params = new URLSearchParams();
                     if (kategori) params.append('kategori', kategori);
                     if (tipe) params.append('tipe', tipe);
+                    if (level) params.append('level', level);
 
                     // Redirect with filters
                     var url = window.location.pathname;

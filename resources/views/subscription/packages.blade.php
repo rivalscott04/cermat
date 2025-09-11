@@ -36,7 +36,7 @@
 
                 <div class="row">
                     <!-- Paket Tes Kecermatan -->
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-3 mb-4">
                         <div class="package-card h-100">
                             <div class="package-header text-center">
                                 <h3 class="mb-0">Paket Kecermatan</h3>
@@ -78,11 +78,11 @@
                     </div>
 
                     <!-- Paket Psikologi -->
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-3 mb-4">
                         <div class="package-card h-100">
                             <div class="package-header text-center">
-                                <h3 class="mb-0">Paket Psikologi</h3>
-                                <p class="mb-0">Fokus Tes Psikologi</p>
+                                <h3 class="mb-0">Paket Kecerdasan</h3>
+                                <p class="mb-0">Fokus Tes Kecerdasan</p>
                             </div>
 
                             <div class="package-features">
@@ -93,24 +93,24 @@
 
                                 <div class="features-list">
                                     <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Bank soal psikologi lengkap
+                                        <i class="fa fa-check text-navy"></i> Bank soal TIU, TWK, TKD lengkap
                                     </div>
                                     <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Tes kepribadian & karakter
+                                        <i class="fa fa-check text-navy"></i> Tes intelejensi umum
                                     </div>
                                     <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Simulasi wawancara psikologi
+                                        <i class="fa fa-check text-navy"></i> Tes wawasan kebangsaan
                                     </div>
                                     <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Tips & strategi psikotes
+                                        <i class="fa fa-check text-navy"></i> Tes kemampuan dasar
                                     </div>
                                     <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Analisis profil psikologi
+                                        <i class="fa fa-check text-navy"></i> Analisis kemampuan kognitif
                                     </div>
                                 </div>
 
                                 <div class="button-container">
-                                    <a href="{{ route('subscription.process.packages', ['package' => 'psikologi']) }}"
+                                    <a href="{{ route('subscription.process.packages', ['package' => 'kecerdasan']) }}"
                                         class="btn btn-outline-info btn-package">
                                         Pilih Paket
                                     </a>
@@ -119,15 +119,99 @@
                         </div>
                     </div>
 
+                    <!-- Paket Akademik -->
+                    <div class="col-md-3 mb-4">
+                        <div class="package-card h-100">
+                            <div class="package-header text-center">
+                                <h3 class="mb-0">Paket Akademik</h3>
+                                <p class="mb-0">Fokus Tes Akademik</p>
+                            </div>
+
+                            <div class="package-features">
+                                <div class="text-center mb-4">
+                                    <div class="package-price">Rp 75.000</div>
+                                    <p class="text-muted">Berlaku 30 hari</p>
+                                </div>
+
+                                <div class="features-list">
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Bank soal akademik lengkap
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Matematika, Bahasa Indonesia, PKN
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Pembahasan soal detail
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Simulasi ujian akademik
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Analisis kemampuan per mata pelajaran
+                                    </div>
+                                </div>
+
+                                <div class="button-container">
+                                    <a href="{{ route('subscription.process.packages', ['package' => 'akademik']) }}"
+                                        class="btn btn-outline-warning btn-package">
+                                        Pilih Paket
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Paket Kepribadian -->
+                    <div class="col-md-3 mb-4">
+                        <div class="package-card h-100">
+                            <div class="package-header text-center">
+                                <h3 class="mb-0">Paket Kepribadian</h3>
+                                <p class="mb-0">Fokus Tes Kepribadian</p>
+                            </div>
+
+                            <div class="package-features">
+                                <div class="text-center mb-4">
+                                    <div class="package-price">Rp 75.000</div>
+                                    <p class="text-muted">Berlaku 30 hari</p>
+                                </div>
+
+                                <div class="features-list">
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Bank soal TKP, PSIKOTES lengkap
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Tes karakteristik pribadi
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Tes psikotes komprehensif
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Analisis kepribadian
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Tips & strategi psikotes
+                                    </div>
+                                </div>
+
+                                <div class="button-container">
+                                    <a href="{{ route('subscription.process.packages', ['package' => 'kepribadian']) }}"
+                                        class="btn btn-outline-warning btn-package">
+                                        Pilih Paket
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Paket Lengkap -->
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-3 mb-4">
                         <div class="package-card h-100 popular-package">
                             <div class="popular-badge">
                                 <span>Terpopuler</span>
                             </div>
                             <div class="package-header text-center">
                                 <h3 class="mb-0">Paket Lengkap</h3>
-                                <p class="mb-0">Kecermatan + Psikologi</p>
+                                <p class="mb-0">Semua Jenis Tes</p>
                             </div>
 
                             <div class="package-features">
@@ -141,7 +225,10 @@
                                         <i class="fa fa-check text-navy"></i> Semua fitur Kecermatan
                                     </div>
                                     <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Semua fitur Psikologi
+                                        <i class="fa fa-check text-navy"></i> Semua fitur Kecerdasan
+                                    </div>
+                                    <div class="feature-item">
+                                        <i class="fa fa-check text-navy"></i> Semua fitur Kepribadian
                                     </div>
                                     <div class="feature-item">
                                         <i class="fa fa-check text-navy"></i> Try out gabungan berkala
@@ -291,6 +378,18 @@
         .btn-outline-primary:hover {
             background-color: #007bff;
             border-color: #007bff;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-warning {
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+
+        .btn-outline-warning:hover {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: #212529;
             transform: translateY(-2px);
         }
 

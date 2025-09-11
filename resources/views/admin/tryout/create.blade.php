@@ -44,24 +44,6 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="akses_paket">Akses Paket (Legacy) <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('akses_paket') is-invalid @enderror" 
-                                            id="akses_paket" name="akses_paket" required>
-                                        <option value="">Pilih Paket</option>
-                                        <option value="free" {{ old('akses_paket') == 'free' ? 'selected' : '' }}>Free</option>
-                                        <option value="premium" {{ old('akses_paket') == 'premium' ? 'selected' : '' }}>Premium</option>
-                                        <option value="vip" {{ old('akses_paket') == 'vip' ? 'selected' : '' }}>VIP</option>
-                                    </select>
-                                    @error('akses_paket')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
                                     <label for="jenis_paket">Jenis Paket <span class="text-danger">*</span></label>
                                     <select class="form-control @error('jenis_paket') is-invalid @enderror" 
                                             id="jenis_paket" name="jenis_paket" required>
@@ -82,7 +64,10 @@
                                     </small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
                                 <div class="form-group">
                                     <label>Preview Kategori yang Akan Muncul:</label>
                                     <div id="kategori-preview" class="alert alert-info">
@@ -118,9 +103,9 @@
                                             <th>Tersedia</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                    <tbody id="kategori-table-body">
                                         @foreach($kategoris as $kategori)
-                                            <tr>
+                                            <tr class="kategori-row" data-kode="{{ $kategori->kode }}">
                                                 <td>
                                                     {{ $kategori->nama }} ({{ $kategori->kode }})
                                                 </td>
@@ -184,11 +169,12 @@ $(document).ready(function() {
         'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
     };
 
-    // Update kategori preview when jenis paket changes
+    // Update kategori preview and filter table when jenis paket changes
     $('#jenis_paket').on('change', function() {
         const selectedPackage = $(this).val();
         const allowedCategories = packageMapping[selectedPackage] || [];
         
+        // Update preview
         if (allowedCategories.length > 0) {
             $('#kategori-preview').html(`
                 <i class="fa fa-check text-success"></i> 
@@ -200,6 +186,18 @@ $(document).ready(function() {
                 <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
             `).removeClass('alert-success').addClass('alert-info');
         }
+
+        // Filter kategori table
+        $('.kategori-row').each(function() {
+            const kode = $(this).data('kode');
+            if (allowedCategories.includes(kode)) {
+                $(this).show();
+                $(this).find('input').prop('disabled', false);
+            } else {
+                $(this).hide();
+                $(this).find('input').prop('disabled', true).val(0);
+            }
+        });
     });
 
     // Calculate total questions
@@ -210,12 +208,72 @@ $(document).ready(function() {
         });
         return total;
     }
+
+    // Validate input against available questions
+    function validateInput(input) {
+        const value = parseInt(input.val()) || 0;
+        const row = input.closest('tr');
+        const tersediaText = row.find('td:last-child small').text();
+        
+        // Extract available count from text like "Mudah: 10 | Sedang: 10 | Sulit: 10"
+        const level = input.attr('name').includes('mudah') ? 'Mudah' : 
+                     input.attr('name').includes('sedang') ? 'Sedang' : 'Sulit';
+        const match = tersediaText.match(new RegExp(level + ': (\\d+)'));
+        const available = match ? parseInt(match[1]) : 0;
+        
+        // Remove previous validation classes and messages
+        input.removeClass('is-valid is-invalid');
+        row.find('.validation-message').remove();
+        
+        if (value > available) {
+            input.addClass('is-invalid');
+            row.append(`
+                <tr class="validation-message">
+                    <td colspan="5" class="text-danger small">
+                        <i class="fa fa-exclamation-triangle"></i> 
+                        Jumlah soal ${level.toLowerCase()} yang diminta (${value}) melebihi soal yang tersedia (${available})
+                    </td>
+                </tr>
+            `);
+            return false;
+        } else if (value > 0) {
+            input.addClass('is-valid');
+        }
+        
+        return true;
+    }
+
+    // Check if all inputs are valid
+    function checkAllValidations() {
+        let allValid = true;
+        $('input[name^="blueprint["]').each(function() {
+            if (!validateInput($(this))) {
+                allValid = false;
+            }
+        });
+        
+        // Update submit button state
+        const submitBtn = $('button[type="submit"]');
+        if (allValid) {
+            submitBtn.prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
+        } else {
+            submitBtn.prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
+        }
+        
+        return allValid;
+    }
     
-    // Update total when structure changes
+    // Update total and validate when structure changes
     $('input[name^="blueprint["]').on('input', function() {
+        validateInput($(this));
+        checkAllValidations();
+        
         const total = calculateTotal();
         console.log('Total soal:', total);
     });
+
+    // Initial validation on page load
+    checkAllValidations();
 });
 </script>
 @endpush 

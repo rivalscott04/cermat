@@ -679,7 +679,7 @@
 
             <div class="row">
                 <!-- Paket Tes Kecermatan -->
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 mb-4">
                     <div class="package-card h-100">
                         <div class="package-header">
                             <h3>Paket Kecermatan</h3>
@@ -721,7 +721,7 @@
                 </div>
 
                 <!-- Paket Psikologi -->
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 mb-4">
                     <div class="package-card h-100">
                         <div class="package-header">
                             <h3>Paket Psikologi</h3>
@@ -762,15 +762,57 @@
                     </div>
                 </div>
 
+                <!-- Paket Akademik -->
+                <div class="col-md-3 mb-4">
+                    <div class="package-card h-100">
+                        <div class="package-header">
+                            <h3>Paket Akademik</h3>
+                            <p>Fokus Tes Akademik</p>
+                        </div>
+
+                        <div class="package-features">
+                            <div class="text-center mb-4">
+                                <div class="package-price">Rp 75.000</div>
+                                <p class="price-period">Berlaku 30 hari</p>
+                            </div>
+
+                            <div class="features-list">
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Bank soal akademik lengkap
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Matematika, Bahasa Indonesia, PKN
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Pembahasan soal detail
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Simulasi ujian akademik
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Analisis kemampuan per mata pelajaran
+                                </div>
+                            </div>
+
+                            <div class="button-container">
+                                <a href="{{ route('subscription.packages') }}"
+                                    class="btn btn-outline-warning btn-package">
+                                    Pilih Paket
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Paket Lengkap -->
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 mb-4">
                     <div class="package-card h-100 popular-package">
                         <div class="popular-badge">
                             <span>Terpopuler</span>
                         </div>
                         <div class="package-header">
                             <h3>Paket Lengkap</h3>
-                            <p>Kecermatan + Psikologi</p>
+                            <p>Kecermatan + Psikologi + Akademik</p>
                         </div>
 
                         <div class="package-features">
@@ -785,6 +827,9 @@
                                 </div>
                                 <div class="feature-item">
                                     <i class="fas fa-check"></i> Semua fitur Psikologi
+                                </div>
+                                <div class="feature-item">
+                                    <i class="fas fa-check"></i> Semua fitur Akademik
                                 </div>
                                 <div class="feature-item">
                                     <i class="fas fa-check"></i> Try out gabungan berkala

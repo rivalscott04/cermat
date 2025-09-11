@@ -250,11 +250,26 @@
                 console.log('Existing Jawaban Benar:', existingJawabanBenar);
                 console.log('========================');
 
+                // Function to toggle kecermatan styling
+                function toggleKecermatanStyling() {
+                    const kategoriText = $('#kategori_id option:selected').text();
+                    const isKecermatan = kategoriText.includes('KECERMATAN') || kategoriText.includes('Kecermatan');
+                    
+                    if (isKecermatan) {
+                        $('#opsi-container').addClass('kecermatan-opsi');
+                    } else {
+                        $('#opsi-container').removeClass('kecermatan-opsi');
+                    }
+                }
+
                 // Initialize form - trigger change to generate opsi first
                 console.log('Initializing form with tipe:', existingTipe);
                 
                 // Set the tipe value first
                 $('#tipe').val(existingTipe);
+                
+                // Apply kecermatan styling on initial load
+                toggleKecermatanStyling();
                 
                 // Then trigger change to generate opsi
                 $('#tipe').trigger('change');
@@ -270,12 +285,18 @@
                     toggleJawabanBenar(tipe);
                     toggleGambarUpload(tipe);
                     setupJawabanHandling(tipe);
+                    toggleKecermatanStyling();
                     
                     // Load existing data after opsi is generated
                     setTimeout(function() {
                         console.log('Loading existing data after generateOpsi...');
                         loadExistingData(tipe);
                     }, 30000);
+                });
+
+                // Handle kategori change
+                $('#kategori_id').on('change', function() {
+                    toggleKecermatanStyling();
                 });
 
                 // Toggle gambar upload visibility
@@ -750,6 +771,44 @@
 
             #preview-img {
                 border-radius: 5px;
+            }
+
+            /* Styling khusus untuk soal kecermatan */
+            .kecermatan-opsi .form-control {
+                font-size: 10px !important;
+                height: 30px !important;
+                padding: 4px 8px !important;
+                border-width: 2px !important;
+                border-radius: 4px !important;
+            }
+
+            .kecermatan-opsi .opsi-item {
+                margin-bottom: 6px !important;
+            }
+
+            .kecermatan-opsi .col-8,
+            .kecermatan-opsi .col-6 {
+                padding-left: 3px !important;
+                padding-right: 3px !important;
+            }
+
+            .kecermatan-opsi .col-8 {
+                flex: 0 0 70% !important;
+                max-width: 70% !important;
+            }
+
+            .kecermatan-opsi .col-6 {
+                flex: 0 0 60% !important;
+                max-width: 60% !important;
+            }
+
+            .kecermatan-opsi .badge {
+                font-size: 10px !important;
+                padding: 4px 8px !important;
+            }
+
+            .kecermatan-opsi .form-check-label {
+                font-size: 10px !important;
             }
         </style>
     @endpush

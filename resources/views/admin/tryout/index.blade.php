@@ -91,15 +91,10 @@
                                                class="btn btn-sm btn-warning">
                                                 <i class="fa fa-edit"></i>
                                             </a>
-                                            <form action="{{ route('admin.tryout.destroy', $tryout) }}" 
-                                                  method="POST" class="d-inline"
-                                                  onsubmit="return confirm('Yakin ingin menghapus tryout ini?')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-sm btn-danger">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </form>
+                                            <button type="button" class="btn btn-sm btn-danger" 
+                                                    onclick="showDeleteModal({{ $tryout->id }}, '{{ $tryout->judul }}')">
+                                                <i class="fa fa-trash"></i>
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
@@ -120,4 +115,54 @@
         </div>
     </div>
 </div>
-@endsection 
+
+<!-- Modal Hapus Tryout -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fa fa-exclamation-triangle"></i> Konfirmasi Hapus Tryout
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fa fa-trash fa-3x text-danger"></i>
+                </div>
+                <p class="text-center">
+                    Apakah Anda yakin ingin menghapus tryout <strong id="tryoutTitle"></strong>?
+                </p>
+                <div class="alert alert-warning">
+                    <i class="fa fa-warning"></i>
+                    <strong>Peringatan:</strong> Tindakan ini tidak dapat dibatalkan. Semua data terkait tryout ini akan dihapus permanen.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Batal
+                </button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Ya, Hapus Tryout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@endsection
+
+@push('scripts')
+<script>
+function showDeleteModal(tryoutId, tryoutTitle) {
+    $('#tryoutTitle').text(tryoutTitle);
+    $('#deleteForm').attr('action', `/admin/tryout/${tryoutId}`);
+    $('#deleteModal').modal('show');
+}
+</script>
+@endpush 

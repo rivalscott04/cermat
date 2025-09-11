@@ -26,6 +26,11 @@ class SoalController extends Controller
             $query->byTipe($request->tipe);
         }
 
+        // Apply level filter
+        if ($request->filled('level')) {
+            $query->byLevel($request->level);
+        }
+
         $soals = $query->paginate(20)->withQueryString();
         $kategoris = KategoriSoal::active()->get();
 

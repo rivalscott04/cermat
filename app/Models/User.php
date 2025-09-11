@@ -66,8 +66,12 @@ class User extends Authenticatable
             return 'free';
         }
 
-        // Return package dari field package user
-        return $this->package ?? 'free';
+        // Handle legacy mapping
+        $legacyMapping = config('packages.legacy_mapping', []);
+        $userPackage = $this->package ?? 'free';
+        
+        // Convert legacy package names to new ones
+        return $legacyMapping[$userPackage] ?? $userPackage;
     }
 
     /**
