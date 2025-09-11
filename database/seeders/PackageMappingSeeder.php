@@ -15,6 +15,7 @@ class PackageMappingSeeder extends Seeder
     {
         // Default package mappings
         $defaultMappings = [
+            'free' => ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
             'kecerdasan' => ['TIU', 'TWK', 'TKD'],
             'kepribadian' => ['TKP', 'PSIKOTES'],
             'lengkap' => ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']

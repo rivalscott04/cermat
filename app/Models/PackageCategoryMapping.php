@@ -34,7 +34,7 @@ class PackageCategoryMapping extends Model
     public static function getAllMappings()
     {
         $mappings = [];
-        $packageTypes = ['kecerdasan', 'kepribadian', 'lengkap'];
+        $packageTypes = ['free', 'kecerdasan', 'kepribadian', 'lengkap'];
         
         foreach ($packageTypes as $packageType) {
             $mappings[$packageType] = self::getCategoriesForPackage($packageType);

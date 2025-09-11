@@ -40,12 +40,12 @@
                         @method('PUT')
                         
                         <div class="row">
-                            @foreach(['kecerdasan' => 'Paket Kecerdasan', 'kepribadian' => 'Paket Kepribadian', 'lengkap' => 'Paket Lengkap'] as $packageType => $packageName)
-                            <div class="col-md-4 mb-4">
+                            @foreach(['free' => 'Paket Free', 'kecerdasan' => 'Paket Kecerdasan', 'kepribadian' => 'Paket Kepribadian', 'lengkap' => 'Paket Lengkap'] as $packageType => $packageName)
+                            <div class="col-md-3 mb-4">
                                 <div class="card h-100">
-                                    <div class="card-header bg-{{ $packageType === 'lengkap' ? 'danger' : ($packageType === 'kecerdasan' ? 'primary' : 'warning') }} text-white">
+                                    <div class="card-header bg-{{ $packageType === 'lengkap' ? 'danger' : ($packageType === 'kecerdasan' ? 'primary' : ($packageType === 'free' ? 'success' : 'warning')) }} text-white">
                                         <h5 class="mb-0">
-                                            <i class="fa fa-{{ $packageType === 'lengkap' ? 'star' : ($packageType === 'kecerdasan' ? 'brain' : 'user') }}"></i>
+                                            <i class="fa fa-{{ $packageType === 'lengkap' ? 'star' : ($packageType === 'kecerdasan' ? 'brain' : ($packageType === 'free' ? 'gift' : 'user')) }}"></i>
                                             {{ $packageName }}
                                         </h5>
                                     </div>
@@ -123,7 +123,7 @@
 function saveMappings() {
     // Validate at least one category is selected for each package
     let hasError = false;
-    const packageTypes = ['kecerdasan', 'kepribadian', 'lengkap'];
+    const packageTypes = ['free', 'kecerdasan', 'kepribadian', 'lengkap'];
     
     packageTypes.forEach(packageType => {
         const checkedBoxes = $(`input[name="mappings[${packageType}][]"]:checked`);

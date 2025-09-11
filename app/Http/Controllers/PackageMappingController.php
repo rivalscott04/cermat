@@ -42,6 +42,7 @@ class PackageMappingController extends Controller
         try {
             // Reset to default mappings
             $defaultMappings = [
+                'free' => ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
                 'kecerdasan' => ['TIU', 'TWK', 'TKD'],
                 'kepribadian' => ['TKP', 'PSIKOTES'],
                 'lengkap' => ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
