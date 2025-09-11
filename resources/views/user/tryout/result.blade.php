@@ -78,7 +78,7 @@
                                         $statusText = 'Salah';
                                     }
                                 @endphp
-                                <a href="#review-soal-{{ $i }}" class="question-number {{ $statusClass }}" title="{{ $statusText }}">
+                                <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => $i]) }}" class="question-number {{ $statusClass }}" title="{{ $statusText }}">
                                     {{ $i }}
                                 </a>
                             @endfor
