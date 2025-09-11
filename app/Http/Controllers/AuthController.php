@@ -71,6 +71,7 @@ class AuthController extends Controller
                 'province' => $request->province,
                 'regency' => $request->regency,
                 'role' => 'user',
+                'package' => 'free', // Set default package to free for new users
             ]);
 
             Auth::login($user);

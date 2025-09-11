@@ -15,55 +15,165 @@
                 color: white;
             }
 
-            .status-select,
-            .package-select {
-                padding: 4px 30px;
-                border-radius: 16px;
-                font-size: 14px;
-                font-weight: 500;
-                border: none;
+            /* Status select styling - Clean Inspinia Theme */
+            .status-wrapper {
+                display: inline-block;
+                min-width: 100px;
+            }
+
+            .status-select {
                 appearance: none;
                 -webkit-appearance: none;
                 -moz-appearance: none;
+                background: #fff;
+                border: 1px solid #e1e5e9;
+                border-radius: 4px;
+                padding: 6px 25px 6px 10px;
+                font-size: 12px;
+                font-weight: 500;
+                color: #2c3e50;
                 cursor: pointer;
+                transition: all 0.2s ease;
+                min-width: 100px;
+                text-align: center;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 8px center;
+                background-size: 12px;
+            }
+
+            .status-select:hover {
+                border-color: #1ab394;
+                box-shadow: 0 2px 4px rgba(26, 179, 148, 0.1);
+            }
+
+            .status-select:focus {
+                outline: none;
+                border-color: #1ab394;
+                box-shadow: 0 0 0 2px rgba(26, 179, 148, 0.1);
+            }
+
+            .status-select.active {
+                background-color: #1ab394;
+                color: #FFFFFF;
+                border-color: #1ab394;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            }
+
+            .status-select.active:hover {
+                background-color: #18a085;
+                border-color: #18a085;
+            }
+
+            .status-select.inactive {
+                background-color: #ED5565;
+                color: #FFFFFF;
+                border-color: #ED5565;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            }
+
+            .status-select.inactive:hover {
+                background-color: #e74c3c;
+                border-color: #e74c3c;
+            }
+
+            /* Package select styling - Inspinia Badge Colors */
+            .package-wrapper {
+                display: inline-block;
                 min-width: 120px;
             }
 
-            .status-select option[value="1"],
-            .status-select.active {
-                background-color: #ecfdf3;
-                color: #027a48;
+            .package-select {
+                appearance: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                background: #fff;
+                border: 1px solid #e1e5e9;
+                border-radius: 4px;
+                padding: 6px 25px 6px 10px;
+                font-size: 12px;
+                font-weight: 500;
+                color: #2c3e50;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                min-width: 120px;
+                text-align: center;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+                background-repeat: no-repeat;
+                background-position: right 8px center;
+                background-size: 12px;
             }
 
-            .status-select option[value="0"],
-            .status-select.inactive {
-                background-color: #f2f4f7;
-                color: #344054;
+            .package-select:hover {
+                border-color: #1ab394;
+                box-shadow: 0 2px 4px rgba(26, 179, 148, 0.1);
             }
 
-            /* Package select styling */
-            .package-select option[value="kecermatan"],
+            .package-select:focus {
+                outline: none;
+                border-color: #1ab394;
+                box-shadow: 0 0 0 2px rgba(26, 179, 148, 0.1);
+            }
+
+            /* Package-specific styling using Inspinia badge colors */
+            .package-select.free {
+                background-color: #D1DADE;
+                color: #5E5E5E;
+                border-color: #D1DADE;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E5E5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            }
+
+            .package-select.free:hover {
+                background-color: #c4c9ce;
+                border-color: #c4c9ce;
+            }
+
             .package-select.kecermatan {
-                background-color: #eff6ff;
-                color: #1d4ed8;
+                background-color: #1c84c6;
+                color: #FFFFFF;
+                border-color: #1c84c6;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             }
 
-            .package-select option[value="psikologi"],
+            .package-select.kecermatan:hover {
+                background-color: #1a73b3;
+                border-color: #1a73b3;
+            }
+
             .package-select.psikologi {
-                background-color: #fdf4ff;
-                color: #a21caf;
+                background-color: #23c6c8;
+                color: #FFFFFF;
+                border-color: #23c6c8;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             }
 
-            .package-select option[value="lengkap"],
+            .package-select.psikologi:hover {
+                background-color: #20b2b4;
+                border-color: #20b2b4;
+            }
+
             .package-select.lengkap {
-                background-color: #f0fdf4;
-                color: #15803d;
+                background-color: #1ab394;
+                color: #FFFFFF;
+                border-color: #1ab394;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             }
 
-            .package-select option[value=""],
+            .package-select.lengkap:hover {
+                background-color: #18a085;
+                border-color: #18a085;
+            }
+
             .package-select.no-package {
-                background-color: #f9fafb;
-                color: #6b7280;
+                background-color: #D1DADE;
+                color: #5E5E5E;
+                border-color: #D1DADE;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E5E5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            }
+
+            .package-select.no-package:hover {
+                background-color: #c4c9ce;
+                border-color: #c4c9ce;
             }
 
             .action-icon {
@@ -97,31 +207,8 @@
                 font-size: 14px;
             }
 
-            .status-select:focus,
-            .package-select:focus {
-                outline: none;
-            }
 
-            .status-wrapper,
-            .package-wrapper {
-                position: relative;
-                display: inline-block;
-            }
 
-            .status-wrapper::after,
-            .package-wrapper::after {
-                content: '';
-                position: absolute;
-                right: 12px;
-                top: 50%;
-                transform: translateY(-50%);
-                width: 0;
-                height: 0;
-                border-left: 5px solid transparent;
-                border-right: 5px solid transparent;
-                border-top: 5px solid currentColor;
-                pointer-events: none;
-            }
 
             /* Search Box Styling */
             .input-group-addon {
@@ -348,19 +435,22 @@
                             <!-- Search Box and Controls -->
                             <div class="row mb-3 align-items-center">
                                 <div class="col-md-5">
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <i class="fa fa-search"></i>
-                                        </span>
-                                        <input type="text" id="searchInput" class="form-control"
-                                            placeholder="Cari berdasarkan nama atau email...">
-                                        <span class="input-group-btn">
-                                            <button type="button" id="clearSearch" class="btn btn-default"
-                                                style="display: none;">
-                                                <i class="fa fa-times"></i>
-                                            </button>
-                                        </span>
-                                    </div>
+                                    <form method="GET" action="{{ route('admin.users.index') }}" id="searchForm">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="fa fa-search"></i>
+                                            </span>
+                                            <input type="text" id="searchInput" name="search" class="form-control"
+                                                placeholder="Cari berdasarkan nama atau email..." 
+                                                value="{{ request('search') }}">
+                                            <span class="input-group-btn">
+                                                <button type="button" id="clearSearch" class="btn btn-default"
+                                                    style="display: none;">
+                                                    <i class="fa fa-times"></i>
+                                                </button>
+                                            </span>
+                                        </div>
+                                    </form>
                                 </div>
                                 <div class="col-md-4 text-center">
                                     <div class="d-flex align-items-center justify-content-center">
@@ -376,7 +466,17 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-right">
-                                    <span id="searchResults" class="text-muted" style="font-size: 12px;"></span>
+                                    @if(request('search'))
+                                        <span class="text-muted" style="font-size: 12px;">
+                                            <i class="fa fa-info-circle"></i> 
+                                            {{ $users->total() }} dari {{ $users->total() }} data ditemukan untuk "{{ request('search') }}"
+                                            <a href="{{ route('admin.users.index') }}" class="text-danger ml-2" title="Hapus pencarian">
+                                                <i class="fa fa-times"></i>
+                                            </a>
+                                        </span>
+                                    @else
+                                        <span id="searchResults" class="text-muted" style="font-size: 12px;"></span>
+                                    @endif
                                 </div>
                             </div>
 
@@ -421,6 +521,9 @@
                                                                 <option value=""
                                                                     {{ !$currentPackage ? 'selected' : '' }}>No Package
                                                                 </option>
+                                                                <option value="free"
+                                                                    {{ $currentPackage === 'free' ? 'selected' : '' }}>
+                                                                    Free</option>
                                                                 <option value="kecermatan"
                                                                     {{ $currentPackage === 'kecermatan' ? 'selected' : '' }}>
                                                                     Kecermatan</option>
@@ -548,23 +651,23 @@
                 });
 
                 // Custom search functionality - using event delegation
+                var searchTimeout;
                 $(document).on('keyup input paste', '#searchInput', function() {
                     var searchValue = this.value;
-                    if (window.userTable && typeof window.userTable.search === 'function') {
-                        window.userTable.search(searchValue).draw();
-                        updateSearchResults();
-                        toggleClearButton(searchValue);
-                    }
+                    clearTimeout(searchTimeout);
+                    
+                    // Auto-submit form after 500ms delay
+                    searchTimeout = setTimeout(function() {
+                        $('#searchForm').submit();
+                    }, 500);
+                    
+                    toggleClearButton(searchValue);
                 });
 
                 // Clear search button - using event delegation
                 $(document).on('click', '#clearSearch', function() {
-                    $('#searchInput').val('').focus();
-                    if (window.userTable) {
-                        window.userTable.search('').draw();
-                        updateSearchResults();
-                        toggleClearButton('');
-                    }
+                    $('#searchInput').val('');
+                    $('#searchForm').submit();
                 });
 
                 // Function to toggle clear button visibility
@@ -579,8 +682,8 @@
                 // Function to update search results count
                 function updateSearchResults() {
                     var searchValue = $('#searchInput').val();
-                    var totalRecords = window.userTable.page.info().recordsTotal;
-                    var filteredRecords = window.userTable.page.info().recordsDisplay;
+                    var totalRecords = window.userTable ? window.userTable.page.info().recordsTotal : 0;
+                    var filteredRecords = window.userTable ? window.userTable.page.info().recordsDisplay : 0;
 
                     if (searchValue) {
                         $('#searchResults').html(
@@ -618,6 +721,9 @@
                     select.addEventListener('change', function() {
                         let packageClass = '';
                         switch (this.value) {
+                            case 'free':
+                                packageClass = 'free';
+                                break;
                             case 'kecermatan':
                                 packageClass = 'kecermatan';
                                 break;

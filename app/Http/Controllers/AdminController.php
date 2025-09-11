@@ -32,14 +32,23 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('totalUsers', 'activeSubscriptions', 'totalRevenue'));
     }
 
-    public function userList()
+    public function userList(Request $request)
     {
-        $users = User::where('role', 'user')
+        $query = User::where('role', 'user')
             ->with(['subscriptions' => function ($query) {
                 $query->latest();
-            }])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            }]);
+
+        // Add search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('email', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        $users = $query->orderBy('created_at', 'desc')->paginate(25);
 
         return view('admin.users.index', compact('users'));
     }
@@ -118,7 +127,7 @@ class AdminController extends Controller
         $user = User::findOrFail($userId);
 
         $request->validate([
-            'package' => 'nullable|in:,kecermatan,psikologi,lengkap'
+            'package' => 'nullable|in:,free,kecermatan,psikologi,lengkap'
         ]);
 
         $package = $request->input('package');
