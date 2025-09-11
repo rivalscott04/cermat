@@ -39,16 +39,33 @@
                                     <div class="mb-3">
                                         <strong>Struktur Soal:</strong>
                                         <div class="mt-2">
-                                            @foreach($tryout->struktur as $kategoriId => $jumlah)
+                                            @if($tryout->blueprints && $tryout->blueprints->count() > 0)
                                                 @php
-                                                    $kategori = \App\Models\KategoriSoal::find($kategoriId);
+                                                    $groupedBlueprints = $tryout->blueprints->groupBy('kategori_id');
                                                 @endphp
-                                                @if($kategori && $jumlah > 0)
-                                                    <span class="badge badge-info mr-1">
-                                                        {{ $kategori->kode }}: {{ $jumlah }}
-                                                    </span>
-                                                @endif
-                                            @endforeach
+                                                @foreach($groupedBlueprints as $kategoriId => $blueprints)
+                                                    @php
+                                                        $kategori = \App\Models\KategoriSoal::find($kategoriId);
+                                                        $totalKategori = $blueprints->sum('jumlah');
+                                                    @endphp
+                                                    @if($kategori && $totalKategori > 0)
+                                                        <span class="badge badge-info mr-1">
+                                                            {{ $kategori->kode }}: {{ $totalKategori }}
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                @foreach($tryout->struktur as $kategoriId => $jumlah)
+                                                    @php
+                                                        $kategori = \App\Models\KategoriSoal::find($kategoriId);
+                                                    @endphp
+                                                    @if($kategori && $jumlah > 0)
+                                                        <span class="badge badge-info mr-1">
+                                                            {{ $kategori->kode }}: {{ $jumlah }}
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            @endif
                                         </div>
                                     </div>
 

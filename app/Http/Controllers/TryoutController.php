@@ -18,7 +18,7 @@ class TryoutController extends Controller
 {
     public function index()
     {
-        $tryouts = Tryout::active()->paginate(20);
+        $tryouts = Tryout::active()->with('blueprints')->paginate(20);
         return view('admin.tryout.index', compact('tryouts'));
     }
 
@@ -264,6 +264,7 @@ class TryoutController extends Controller
 
         // Get tryouts based on user package
         $tryouts = Tryout::active()
+            ->with('blueprints')
             ->forUserPackage($user->paket_akses)
             ->limit($user->getMaxTryouts())
             ->get();
@@ -898,14 +899,23 @@ class TryoutController extends Controller
     private function validateBlueprint($blueprint)
     {
         $errors = [];
+        $totalSoal = 0;
+        $kategoriDenganSoal = 0;
 
         foreach ($blueprint as $kategoriId => $levels) {
             $kategori = KategoriSoal::find($kategoriId);
             if (!$kategori) continue;
 
+            $totalSoalKategori = 0;
+            $kategoriMemilikiSoal = false;
+
             foreach ($levels as $level => $jumlah) {
                 $jumlah = (int) $jumlah;
                 if ($jumlah <= 0) continue;
+
+                $kategoriMemilikiSoal = true;
+                $totalSoalKategori += $jumlah;
+                $totalSoal += $jumlah;
 
                 $available = $kategori->soals()->where('level', $level)->count();
                 
@@ -914,6 +924,21 @@ class TryoutController extends Controller
                     $errors[] = "Kategori {$kategori->nama} ({$kategori->kode}): Jumlah soal {$levelText} yang diminta ({$jumlah}) melebihi soal yang tersedia ({$available})";
                 }
             }
+
+            // Validasi: setiap kategori yang dipilih harus memiliki minimal 1 soal
+            if ($totalSoalKategori > 0) {
+                $kategoriDenganSoal++;
+            }
+        }
+
+        // Validasi: minimal 1 soal total di seluruh tryout
+        if ($totalSoal == 0) {
+            $errors[] = "Tryout harus memiliki minimal 1 soal dari kategori manapun.";
+        }
+
+        // Validasi: minimal 1 kategori harus dipilih
+        if ($kategoriDenganSoal == 0) {
+            $errors[] = "Minimal 1 kategori harus dipilih dengan minimal 1 soal.";
         }
 
         if (!empty($errors)) {

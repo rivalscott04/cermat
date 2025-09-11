@@ -76,6 +76,12 @@ class Tryout extends Model
 
     public function getTotalSoalAttribute()
     {
-        return array_sum($this->struktur);
+        // Jika ada blueprints, hitung dari blueprints
+        if ($this->relationLoaded('blueprints') || $this->blueprints()->exists()) {
+            return $this->blueprints()->sum('jumlah');
+        }
+        
+        // Fallback ke struktur lama untuk backward compatibility
+        return array_sum($this->struktur ?? []);
     }
 } 
