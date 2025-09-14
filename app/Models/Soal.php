@@ -18,11 +18,13 @@ class Soal extends Model
         'pembahasan_image',
         'jawaban_benar',
         'gambar',
-        'is_active'
+        'is_active',
+        'is_used',
     ];
 
     protected $casts = [
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'is_used' => 'boolean',
     ];
 
     public function kategori()

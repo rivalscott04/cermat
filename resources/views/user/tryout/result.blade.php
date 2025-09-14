@@ -78,7 +78,8 @@
                                         $statusText = 'Salah';
                                     }
                                 @endphp
-                                <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => $i]) }}" class="question-number {{ $statusClass }}" title="{{ $statusText }}">
+                                <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => $i]) }}"
+                                    class="question-number {{ $statusClass }}" title="{{ $statusText }}">
                                     {{ $i }}
                                 </a>
                             @endfor
@@ -158,7 +159,8 @@
                                         <div class="col-6">
                                             <div class="stat-item">
                                                 <div class="stat-number">
-                                                    {{ number_format(($correctAnswers / $totalQuestions) * 100, 1) }}%</div>
+                                                    {{ number_format(($correctAnswers / $totalQuestions) * 100, 1) }}%
+                                                </div>
                                                 <div class="stat-label">Akurasi</div>
                                             </div>
                                         </div>
@@ -188,7 +190,8 @@
                                     <div class="text-right">
                                         <div class="score-badge">{{ number_format($category['score'], 1) }}</div>
                                         <div class="percentage">
-                                            {{ number_format(($category['correct'] / $category['total']) * 100, 1) }}%</div>
+                                            {{ number_format(($category['correct'] / $category['total']) * 100, 1) }}%
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="progress mt-2" style="height: 8px;">
@@ -207,10 +210,14 @@
                             <small class="text-muted">Soal {{ $currentReviewNumber }} dari {{ $totalQuestions }}</small>
                         </div>
                         <div>
-                            <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => max(1, $currentReviewNumber - 1)]) }}" class="btn btn-sm btn-secondary {{ $currentReviewNumber <= 1 ? 'disabled' : '' }}" {{ $currentReviewNumber <= 1 ? 'aria-disabled=true' : '' }}>
+                            <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => max(1, $currentReviewNumber - 1)]) }}"
+                                class="btn btn-sm btn-secondary {{ $currentReviewNumber <= 1 ? 'disabled' : '' }}"
+                                {{ $currentReviewNumber <= 1 ? 'aria-disabled=true' : '' }}>
                                 <i class="fa fa-arrow-left"></i> Sebelumnya
                             </a>
-                            <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => min($totalQuestions, $currentReviewNumber + 1)]) }}" class="btn btn-sm btn-primary {{ $currentReviewNumber >= $totalQuestions ? 'disabled' : '' }}" {{ $currentReviewNumber >= $totalQuestions ? 'aria-disabled=true' : '' }}>
+                            <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => min($totalQuestions, $currentReviewNumber + 1)]) }}"
+                                class="btn btn-sm btn-primary {{ $currentReviewNumber >= $totalQuestions ? 'disabled' : '' }}"
+                                {{ $currentReviewNumber >= $totalQuestions ? 'aria-disabled=true' : '' }}>
                                 Selanjutnya <i class="fa fa-arrow-right"></i>
                             </a>
                         </div>
@@ -226,7 +233,8 @@
                             $letters = ['A', 'B', 'C', 'D', 'E'];
                         @endphp
 
-                        <div id="review-soal-{{ $userAnswer->urutan }}" class="answer-review mb-4 {{ $userAnswer->skor > 0 ? 'correct' : 'incorrect' }}">
+                        <div id="review-soal-{{ $userAnswer->urutan }}"
+                            class="answer-review mb-4 {{ $userAnswer->skor > 0 ? 'correct' : 'incorrect' }}">
                             <div class="question-header">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h6 class="mb-1">Soal {{ $userAnswer->urutan }}</h6>
@@ -242,13 +250,31 @@
                                         @endif
                                     </div>
                                 </div>
-                                <small class="text-muted">{{ $userAnswer->soal->kategori->nama }} - {{ ucfirst(str_replace('_', ' ', $userAnswer->soal->tipe)) }}</small>
+                                <small class="text-muted">{{ $userAnswer->soal->kategori->nama }} -
+                                    {{ ucfirst(str_replace('_', ' ', $userAnswer->soal->tipe)) }}</small>
                             </div>
 
                             <div class="question-content mt-3">
                                 <div class="question-text">
                                     {!! nl2br(e($userAnswer->soal->pertanyaan)) !!}
                                 </div>
+
+                                @if ($userAnswer->soal->tipe === 'gambar' && $userAnswer->soal->gambar)
+                                    <div class="question-image-container mt-3 mb-4">
+                                        <div class="text-center">
+                                            <img src="{{ asset('storage/' . $userAnswer->soal->gambar) }}"
+                                                alt="Gambar Soal" class="img-fluid question-image rounded shadow-sm"
+                                                style="max-height: 500px; max-width: 100%; object-fit: contain; cursor: pointer;"
+                                                onclick="showImageModal('{{ asset('storage/' . $userAnswer->soal->gambar) }}')"
+                                                title="Klik untuk memperbesar gambar">
+                                            <div class="mt-2">
+                                                <small class="text-muted">
+                                                    <i class="fa fa-search-plus"></i> Klik gambar untuk memperbesar
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
 
                                 <div class="options-review mt-3">
                                     @if ($userAnswer->soal->tipe == 'benar_salah')
@@ -262,7 +288,8 @@
                                             $userSelectedFalse = in_array('salah', $userAnswerShuffled);
                                         @endphp
 
-                                        <div class="option-item {{ $trueCorrect && $userSelectedTrue ? 'correct-answer' : ($trueCorrect && !$userSelectedTrue ? 'correct-not-selected' : (!$trueCorrect && $userSelectedTrue ? 'incorrect-answer' : '')) }}">
+                                        <div
+                                            class="option-item {{ $trueCorrect && $userSelectedTrue ? 'correct-answer' : ($trueCorrect && !$userSelectedTrue ? 'correct-not-selected' : (!$trueCorrect && $userSelectedTrue ? 'incorrect-answer' : '')) }}">
                                             <div class="option-content">
                                                 <span class="option-label">BENAR</span>
                                             </div>
@@ -272,15 +299,18 @@
                                                 @endif
                                                 @if ($userSelectedTrue)
                                                     @if ($trueCorrect)
-                                                        <i class="fa fa-user-check text-success" title="Pilihan Anda - Benar"></i>
+                                                        <i class="fa fa-user-check text-success"
+                                                            title="Pilihan Anda - Benar"></i>
                                                     @else
-                                                        <i class="fa fa-user-times text-danger" title="Pilihan Anda - Salah"></i>
+                                                        <i class="fa fa-user-times text-danger"
+                                                            title="Pilihan Anda - Salah"></i>
                                                     @endif
                                                 @endif
                                             </div>
                                         </div>
 
-                                        <div class="option-item {{ $falseCorrect && $userSelectedFalse ? 'correct-answer' : ($falseCorrect && !$userSelectedFalse ? 'correct-not-selected' : (!$falseCorrect && $userSelectedFalse ? 'incorrect-answer' : '')) }}">
+                                        <div
+                                            class="option-item {{ $falseCorrect && $userSelectedFalse ? 'correct-answer' : ($falseCorrect && !$userSelectedFalse ? 'correct-not-selected' : (!$falseCorrect && $userSelectedFalse ? 'incorrect-answer' : '')) }}">
                                             <div class="option-content">
                                                 <span class="option-label">SALAH</span>
                                             </div>
@@ -290,9 +320,11 @@
                                                 @endif
                                                 @if ($userSelectedFalse)
                                                     @if ($falseCorrect)
-                                                        <i class="fa fa-user-check text-success" title="Pilihan Anda - Benar"></i>
+                                                        <i class="fa fa-user-check text-success"
+                                                            title="Pilihan Anda - Benar"></i>
                                                     @else
-                                                        <i class="fa fa-user-times text-danger" title="Pilihan Anda - Salah"></i>
+                                                        <i class="fa fa-user-times text-danger"
+                                                            title="Pilihan Anda - Salah"></i>
                                                     @endif
                                                 @endif
                                             </div>
@@ -300,8 +332,12 @@
                                         @if ($userAnswer->skor <= 0)
                                             @php
                                                 $correctTexts = [];
-                                                if ($trueCorrect) { $correctTexts[] = 'BENAR'; }
-                                                if ($falseCorrect) { $correctTexts[] = 'SALAH'; }
+                                                if ($trueCorrect) {
+                                                    $correctTexts[] = 'BENAR';
+                                                }
+                                                if ($falseCorrect) {
+                                                    $correctTexts[] = 'SALAH';
+                                                }
                                             @endphp
                                             @if (count($correctTexts))
                                                 <div class="alert alert-success py-2 px-3" role="alert">
@@ -318,7 +354,9 @@
                                                 $optionClass = '';
 
                                                 if (in_array($userAnswer->soal->tipe, ['pg_pilih_2', 'pg_bobot'])) {
-                                                    $opsiBobot = is_array($opsi) ? $opsi['bobot'] ?? 0 : $opsi->bobot ?? 0;
+                                                    $opsiBobot = is_array($opsi)
+                                                        ? $opsi['bobot'] ?? 0
+                                                        : $opsi->bobot ?? 0;
                                                     $isCorrectOption = $opsiBobot > 0;
                                                     if ($isUserAnswer && $isCorrectOption) {
                                                         $optionClass = 'correct-answer';
@@ -341,12 +379,20 @@
                                             <div class="option-item {{ $optionClass }}">
                                                 <div class="option-content">
                                                     <span class="option-label">{{ $shuffledLetter }}.</span>
-                                                    <span class="option-text">{{ is_array($opsi) ? $opsi['teks'] : $opsi->teks }}</span>
+                                                    <span
+                                                        class="option-text">{{ is_array($opsi) ? $opsi['teks'] : $opsi->teks }}</span>
                                                 </div>
                                                 <div class="option-indicators">
                                                     @php
-                                                        if (in_array($userAnswer->soal->tipe, ['pg_pilih_2', 'pg_bobot'])) {
-                                                            $opsiBobot = is_array($opsi) ? $opsi['bobot'] ?? 0 : $opsi->bobot ?? 0;
+                                                        if (
+                                                            in_array($userAnswer->soal->tipe, [
+                                                                'pg_pilih_2',
+                                                                'pg_bobot',
+                                                            ])
+                                                        ) {
+                                                            $opsiBobot = is_array($opsi)
+                                                                ? $opsi['bobot'] ?? 0
+                                                                : $opsi->bobot ?? 0;
                                                             $showCorrectIcon = $opsiBobot > 0;
                                                         } else {
                                                             $showCorrectIcon = $isCorrect;
@@ -358,9 +404,11 @@
                                                     @endif
                                                     @if ($isUserAnswer)
                                                         @if ($showCorrectIcon)
-                                                            <i class="fa fa-user-check text-success" title="Pilihan Anda - Benar"></i>
+                                                            <i class="fa fa-user-check text-success"
+                                                                title="Pilihan Anda - Benar"></i>
                                                         @else
-                                                            <i class="fa fa-user-times text-danger" title="Pilihan Anda - Salah"></i>
+                                                            <i class="fa fa-user-times text-danger"
+                                                                title="Pilihan Anda - Salah"></i>
                                                         @endif
                                                     @endif
                                                 </div>
@@ -370,7 +418,9 @@
                                             $correctTexts = [];
                                             if (in_array($userAnswer->soal->tipe, ['pg_pilih_2', 'pg_bobot'])) {
                                                 foreach ($shuffledOptions as $opsi) {
-                                                    $opsiBobot = is_array($opsi) ? ($opsi['bobot'] ?? 0) : ($opsi->bobot ?? 0);
+                                                    $opsiBobot = is_array($opsi)
+                                                        ? $opsi['bobot'] ?? 0
+                                                        : $opsi->bobot ?? 0;
                                                     if ($opsiBobot > 0) {
                                                         $correctTexts[] = is_array($opsi) ? $opsi['teks'] : $opsi->teks;
                                                     }
@@ -403,12 +453,17 @@
                                         <div class="card">
                                             <div class="card-header p-2" id="heading-{{ $userAnswer->id }}">
                                                 <h6 class="mb-0">
-                                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-{{ $userAnswer->id }}" aria-expanded="false" aria-controls="collapse-{{ $userAnswer->id }}">
-                                                        <i class="fa fa-lightbulb-o"></i> Pembahasan Soal {{ $userAnswer->urutan }}
+                                                    <button class="btn btn-link" type="button" data-toggle="collapse"
+                                                        data-target="#collapse-{{ $userAnswer->id }}"
+                                                        aria-expanded="false"
+                                                        aria-controls="collapse-{{ $userAnswer->id }}">
+                                                        <i class="fa fa-lightbulb-o"></i> Pembahasan Soal
+                                                        {{ $userAnswer->urutan }}
                                                     </button>
                                                 </h6>
                                             </div>
-                                            <div id="collapse-{{ $userAnswer->id }}" class="collapse" aria-labelledby="heading-{{ $userAnswer->id }}">
+                                            <div id="collapse-{{ $userAnswer->id }}" class="collapse"
+                                                aria-labelledby="heading-{{ $userAnswer->id }}">
                                                 <div class="card-body">
                                                     @if ($pType === 'text' || $pType === 'both')
                                                         <div class="explanation mb-3">
@@ -427,9 +482,15 @@
                                                                 <i class="fa fa-image"></i> Gambar Pembahasan
                                                             </div>
                                                             <div class="text-center mt-2">
-                                                                <img src="{{ $userAnswer->soal->pembahasan_image_url }}" alt="Gambar Pembahasan" class="img-fluid rounded shadow-sm" style="max-height: 400px; object-fit: contain; cursor: pointer;" onclick="showPembahasanImageModal('{{ $userAnswer->soal->pembahasan_image_url }}')">
+                                                                <img src="{{ $userAnswer->soal->pembahasan_image_url }}"
+                                                                    alt="Gambar Pembahasan"
+                                                                    class="img-fluid rounded shadow-sm"
+                                                                    style="max-height: 400px; object-fit: contain; cursor: pointer;"
+                                                                    onclick="showPembahasanImageModal('{{ $userAnswer->soal->pembahasan_image_url }}')">
                                                                 <div class="mt-2">
-                                                                    <small class="text-muted"><i class="fa fa-search-plus"></i> Klik untuk memperbesar</small>
+                                                                    <small class="text-muted"><i
+                                                                            class="fa fa-search-plus"></i> Klik untuk
+                                                                        memperbesar</small>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -517,6 +578,7 @@
             border-radius: 8px;
             padding: 1.5rem;
         }
+
         .question-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
@@ -538,9 +600,18 @@
             margin-bottom: 8px;
         }
 
-        .question-number.answered { background-color: #28a745; }
-        .question-number.unanswered { background-color: #dc3545; }
-        .question-number:hover { transform: scale(1.1); text-decoration: none; }
+        .question-number.answered {
+            background-color: #28a745;
+        }
+
+        .question-number.unanswered {
+            background-color: #dc3545;
+        }
+
+        .question-number:hover {
+            transform: scale(1.1);
+            text-decoration: none;
+        }
 
         .question-legend {
             width: 20px;
@@ -548,8 +619,14 @@
             border-radius: 50%;
             margin-right: 0.5rem;
         }
-        .question-legend.answered { background-color: #28a745; }
-        .question-legend.unanswered { background-color: #dc3545; }
+
+        .question-legend.answered {
+            background-color: #28a745;
+        }
+
+        .question-legend.unanswered {
+            background-color: #dc3545;
+        }
 
         .answer-review .question-text {
             font-size: 14px;
@@ -652,15 +729,36 @@
 
         /* Responsive design untuk tampilan hasil */
         @media (max-width: 768px) {
-            .answer-review .question-text { font-size: 14px; line-height: 22px; }
-            .answer-review .option-content { font-size: 13px; line-height: 20px; }
-            .option-item { padding: 10px; margin-bottom: 8px; }
+            .answer-review .question-text {
+                font-size: 14px;
+                line-height: 22px;
+            }
+
+            .answer-review .option-content {
+                font-size: 13px;
+                line-height: 20px;
+            }
+
+            .option-item {
+                padding: 10px;
+                margin-bottom: 8px;
+            }
         }
 
         @media (max-width: 576px) {
-            .answer-review .question-text { font-size: 13px; line-height: 20px; }
-            .answer-review .option-content { font-size: 12px; line-height: 18px; }
-            .option-item { padding: 8px; }
+            .answer-review .question-text {
+                font-size: 13px;
+                line-height: 20px;
+            }
+
+            .answer-review .option-content {
+                font-size: 12px;
+                line-height: 18px;
+            }
+
+            .option-item {
+                padding: 8px;
+            }
         }
 
         @media print {
@@ -765,13 +863,14 @@
                 $('#pembahasanImageModal').modal('show');
             }
         }
-        
+
         // Ensure modal can always be closed via buttons/X or ESC
         $(document).ready(function() {
             // Close handlers for Tutup button and X icon
-            $(document).on('click', '#pembahasanImageModal .close, #pembahasanImageModal [data-dismiss="modal"]', function() {
-                $('#pembahasanImageModal').modal('hide');
-            });
+            $(document).on('click', '#pembahasanImageModal .close, #pembahasanImageModal [data-dismiss="modal"]',
+                function() {
+                    $('#pembahasanImageModal').modal('hide');
+                });
 
             // ESC key to close when modal open
             $(document).on('keydown', function(e) {
@@ -799,10 +898,12 @@
                     </button>
                 </div>
                 <div class="modal-body text-center p-2" style="background-color: #f8f9fa;">
-                    <img id="modalPembahasanImage" src="" alt="Gambar Pembahasan" class="img-fluid rounded" style="max-height: 80vh; max-width: 100%;">
+                    <img id="modalPembahasanImage" src="" alt="Gambar Pembahasan" class="img-fluid rounded"
+                        style="max-height: 80vh; max-width: 100%;">
                 </div>
                 <div class="modal-footer justify-content-center">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i> Tutup</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fa fa-times"></i>
+                        Tutup</button>
                 </div>
             </div>
         </div>

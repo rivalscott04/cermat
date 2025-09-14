@@ -1,301 +1,515 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Buat Tryout Baru</h4>
-                </div>
-                <div class="card-body">
-                    <form action="{{ route('admin.tryout.store') }}" method="POST">
-                        @csrf
-                        
-                        <div class="form-group">
-                            <label for="judul">Judul Tryout <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control @error('judul') is-invalid @enderror" 
-                                   id="judul" name="judul" value="{{ old('judul') }}" required>
-                            @error('judul')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Buat Tryout Baru</h4>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ route('admin.tryout.store') }}" method="POST">
+                            @csrf
 
-                        <div class="form-group">
-                            <label for="deskripsi">Deskripsi</label>
-                            <textarea class="form-control @error('deskripsi') is-invalid @enderror" 
-                                      id="deskripsi" name="deskripsi" rows="3">{{ old('deskripsi') }}</textarea>
-                            @error('deskripsi')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="durasi_menit">Durasi (Menit) <span class="text-danger">*</span></label>
-                                    <input type="number" class="form-control @error('durasi_menit') is-invalid @enderror" 
-                                           id="durasi_menit" name="durasi_menit" value="{{ old('durasi_menit') }}" 
-                                           min="1" required>
-                                    @error('durasi_menit')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                            <div class="form-group">
+                                <label for="judul">Judul Tryout <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control @error('judul') is-invalid @enderror"
+                                    id="judul" name="judul" value="{{ old('judul') }}" required>
+                                @error('judul')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="jenis_paket">Jenis Paket <span class="text-danger">*</span></label>
-                                    <select class="form-control @error('jenis_paket') is-invalid @enderror" 
+
+                            <div class="form-group">
+                                <label for="deskripsi">Deskripsi</label>
+                                <textarea class="form-control @error('deskripsi') is-invalid @enderror" id="deskripsi" name="deskripsi" rows="3">{{ old('deskripsi') }}</textarea>
+                                @error('deskripsi')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="durasi_menit">Durasi (Menit) <span class="text-danger">*</span></label>
+                                        <input type="number"
+                                            class="form-control @error('durasi_menit') is-invalid @enderror"
+                                            id="durasi_menit" name="durasi_menit" value="{{ old('durasi_menit') }}"
+                                            min="1" required>
+                                        @error('durasi_menit')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="jenis_paket">Jenis Paket <span class="text-danger">*</span></label>
+                                        <select class="form-control @error('jenis_paket') is-invalid @enderror"
                                             id="jenis_paket" name="jenis_paket" required>
-                                        <option value="">Pilih Jenis Paket</option>
-                                        <option value="free" {{ old('jenis_paket') == 'free' ? 'selected' : '' }}>Free - 1 tryout untuk semua user</option>
-                                        <option value="kecerdasan" {{ old('jenis_paket') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan - TIU, TWK, TKD</option>
-                                        <option value="kepribadian" {{ old('jenis_paket') == 'kepribadian' ? 'selected' : '' }}>Kepribadian - TKP, PSIKOTES</option>
-                                        <option value="lengkap" {{ old('jenis_paket') == 'lengkap' ? 'selected' : '' }}>Lengkap - Semua kategori</option>
-                                    </select>
-                                    @error('jenis_paket')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                    <small class="text-muted">
-                                        <strong>Free:</strong> User free bisa akses 1 tryout<br>
-                                        <strong>Kecerdasan:</strong> User paket kecerdasan bisa akses<br>
-                                        <strong>Kepribadian:</strong> User paket kepribadian bisa akses<br>
-                                        <strong>Lengkap:</strong> User paket lengkap bisa akses
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="form-group">
-                                    <label>Preview Kategori yang Akan Muncul:</label>
-                                    <div id="kategori-preview" class="alert alert-info">
-                                        <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
+                                            <option value="">Pilih Jenis Paket</option>
+                                            <option value="free" {{ old('jenis_paket') == 'free' ? 'selected' : '' }}>Free
+                                                - 1 tryout untuk semua user</option>
+                                            <option value="kecerdasan"
+                                                {{ old('jenis_paket') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan - TIU,
+                                                TWK, TKD</option>
+                                            <option value="kepribadian"
+                                                {{ old('jenis_paket') == 'kepribadian' ? 'selected' : '' }}>Kepribadian -
+                                                TKP, PSIKOTES</option>
+                                            <option value="lengkap"
+                                                {{ old('jenis_paket') == 'lengkap' ? 'selected' : '' }}>Lengkap - Semua
+                                                kategori</option>
+                                        </select>
+                                        @error('jenis_paket')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <small class="text-muted">
+                                            <strong>Free:</strong> User free bisa akses 1 tryout<br>
+                                            <strong>Kecerdasan:</strong> User paket kecerdasan bisa akses<br>
+                                            <strong>Kepribadian:</strong> User paket kepribadian bisa akses<br>
+                                            <strong>Lengkap:</strong> User paket lengkap bisa akses
+                                        </small>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                        <div class="form-group">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input" id="shuffle_questions" name="shuffle_questions" value="1" {{ old('shuffle_questions') ? 'checked' : '' }}>
-                                <label class="custom-control-label" for="shuffle_questions">Acak Urutan Nomor Soal</label>
-                            </div>
-                            <small class="text-muted">Jika aktif, urutan nomor soal diacak per user secara deterministik. Opsi jawaban tetap diacak seperti biasa.</small>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Blueprint Per Kategori & Level <span class="text-danger">*</span></label>
-                            <div class="alert alert-info">
-                                <i class="fa fa-info-circle"></i>
-                                Tentukan jumlah soal untuk setiap kombinasi kategori dan level.
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Preview Kategori yang Akan Muncul:</label>
+                                        <div id="kategori-preview" class="alert alert-info">
+                                            <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang
+                                            akan muncul
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
-                            <div class="table-responsive">
-                                <table class="table table-bordered">
-                                    <thead class="thead-light">
-                                        <tr>
-                                            <th>Kategori</th>
-                                            <th class="text-center">Mudah</th>
-                                            <th class="text-center">Sedang</th>
-                                            <th class="text-center">Sulit</th>
-                                            <th>Tersedia</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="kategori-table-body">
-                                        @foreach($kategoris as $kategori)
-                                            <tr class="kategori-row" data-kode="{{ $kategori->kode }}">
-                                                <td>
-                                                    {{ $kategori->nama }} ({{ $kategori->kode }})
-                                                </td>
-                                                <td width="140">
-                                                    <input type="number" class="form-control blueprint-input" min="0" max="100"
-                                                           name="blueprint[{{ $kategori->id }}][mudah]"
-                                                           value="{{ old("blueprint.{$kategori->id}.mudah", 0) }}">
-                                                </td>
-                                                <td width="140">
-                                                    <input type="number" class="form-control blueprint-input" min="0" max="100"
-                                                           name="blueprint[{{ $kategori->id }}][sedang]"
-                                                           value="{{ old("blueprint.{$kategori->id}.sedang", 0) }}">
-                                                </td>
-                                                <td width="140">
-                                                    <input type="number" class="form-control blueprint-input" min="0" max="100"
-                                                           name="blueprint[{{ $kategori->id }}][sulit]"
-                                                           value="{{ old("blueprint.{$kategori->id}.sulit", 0) }}">
-                                                </td>
-                                                <td>
-                                                    <small class="text-muted">
-                                                        Mudah: {{ $kategori->soals()->where('level','mudah')->count() }} |
-                                                        Sedang: {{ $kategori->soals()->where('level','sedang')->count() }} |
-                                                        Sulit: {{ $kategori->soals()->where('level','sulit')->count() }}
-                                                    </small>
-                                                </td>
+                            <!-- Summary Box untuk menampilkan soal yang sudah ditambahkan -->
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="form-group">
+                                        <label>Ringkasan Soal yang Ditambahkan:</label>
+                                        <div id="soal-summary" class="alert alert-secondary">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <i class="fa fa-list"></i>
+                                                    <span id="summary-text">Belum ada soal yang ditambahkan</span>
+                                                </div>
+                                                <div>
+                                                    <strong>Total: <span id="total-soal"
+                                                            class="badge badge-primary">0</span></strong>
+                                                </div>
+                                            </div>
+                                            <div id="detail-summary" class="mt-2" style="display: none;">
+                                                <small class="text-muted">Detail per kategori:</small>
+                                                <div id="kategori-details" class="mt-1"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" class="custom-control-input" id="shuffle_questions"
+                                        name="shuffle_questions" value="1"
+                                        {{ old('shuffle_questions') ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="shuffle_questions">Acak Urutan Nomor
+                                        Soal</label>
+                                </div>
+                                <small class="text-muted">Jika aktif, urutan nomor soal diacak per user secara
+                                    deterministik. Opsi jawaban tetap diacak seperti biasa.</small>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Blueprint Per Kategori & Level <span class="text-danger">*</span></label>
+                                <div class="alert alert-info">
+                                    <i class="fa fa-info-circle"></i>
+                                    Tentukan jumlah soal untuk setiap kombinasi kategori dan level.
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead class="thead-light">
+                                            <tr>
+                                                <th>Kategori</th>
+                                                <th class="text-center">Mudah</th>
+                                                <th class="text-center">Sedang</th>
+                                                <th class="text-center">Sulit</th>
+                                                <th>Tersedia</th>
                                             </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody id="kategori-table-body">
+                                            @foreach ($kategoris as $kategori)
+                                                <tr class="kategori-row" data-kode="{{ $kategori->kode }}"
+                                                    data-nama="{{ $kategori->nama }}">
+                                                    <td>
+                                                        {{ $kategori->nama }} ({{ $kategori->kode }})
+                                                    </td>
+                                                    <td width="140">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][mudah]"
+                                                            value="{{ old("blueprint.{$kategori->id}.mudah", 0) }}"
+                                                            data-kategori="{{ $kategori->nama }}" data-level="mudah">
+                                                    </td>
+                                                    <td width="140">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][sedang]"
+                                                            value="{{ old("blueprint.{$kategori->id}.sedang", 0) }}"
+                                                            data-kategori="{{ $kategori->nama }}" data-level="sedang">
+                                                    </td>
+                                                    <td width="140">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][sulit]"
+                                                            value="{{ old("blueprint.{$kategori->id}.sulit", 0) }}"
+                                                            data-kategori="{{ $kategori->nama }}" data-level="sulit">
+                                                    </td>
+                                                    <td>
+                                                        <small class="text-muted">
+                                                            Mudah:
+                                                            {{ $kategori->soals()->where('level', 'mudah')->where('is_used', false)->count() }}
+                                                            |
+                                                            Sedang:
+                                                            {{ $kategori->soals()->where('level', 'sedang')->where('is_used', false)->count() }}
+                                                            |
+                                                            Sulit:
+                                                            {{ $kategori->soals()->where('level', 'sulit')->where('is_used', false)->count() }}
+                                                        </small>
+                                                    </td>
+
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                @error('blueprint')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
                             </div>
 
-                            @error('blueprint')
-                                <div class="text-danger">{{ $message }}</div>
-                            @enderror
-                        </div>
-
-                        <div class="form-group">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fa fa-save"></i> Buat Tryout
-                            </button>
-                            <a href="{{ route('admin.tryout.index') }}" class="btn btn-secondary">
-                                <i class="fa fa-arrow-left"></i> Kembali
-                            </a>
-                        </div>
-                    </form>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fa fa-save"></i> Buat Tryout
+                                </button>
+                                <a href="{{ route('admin.tryout.index') }}" class="btn btn-secondary">
+                                    <i class="fa fa-arrow-left"></i> Kembali
+                                </a>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @push('scripts')
-<script>
-$(document).ready(function() {
-    // Package mapping - akan diambil dari server
-    let packageMapping = {
-        'free': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
-        'kecerdasan': [],
-        'kepribadian': [],
-        'lengkap': []
-    };
+    <script>
+        $(document).ready(function() {
+            // Package mapping - default fallback
+            const packageMapping = {
+                'free': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
+                'kecerdasan': ['TIU', 'TWK', 'TKD'],
+                'kepribadian': ['TKP', 'PSIKOTES'],
+                'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
+            };
 
-    // Load dynamic package mapping from server
-    function loadPackageMapping() {
-        fetch('/admin/package-mapping/api')
-            .then(response => response.json())
-            .then(data => {
-                packageMapping = data;
-            })
-            .catch(error => {
-                console.error('Error loading package mapping:', error);
-                // Fallback to default mapping
-                packageMapping = {
-                    'free': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
-                    'kecerdasan': ['TIU', 'TWK', 'TKD'],
-                    'kepribadian': ['TKP', 'PSIKOTES'],
-                    'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
-                };
-            });
-    }
+            // Flag to track if mapping is loaded
+            let mappingLoaded = false;
 
-    // Load mapping on page load
-    loadPackageMapping();
+            // Function to update soal summary
+            function updateSoalSummary() {
+                let totalSoal = 0;
+                let kategorisWithSoal = [];
+                let detailSummary = {};
 
-    // Update kategori preview and filter table when jenis paket changes
-    $('#jenis_paket').on('change', function() {
-        const selectedPackage = $(this).val();
-        const allowedCategories = packageMapping[selectedPackage] || [];
-        
-        // Update preview
-        if (allowedCategories.length > 0) {
-            $('#kategori-preview').html(`
-                <i class="fa fa-check text-success"></i> 
+                $('.blueprint-input:enabled').each(function() {
+                    const value = parseInt($(this).val()) || 0;
+                    if (value > 0) {
+                        const kategori = $(this).data('kategori');
+                        const level = $(this).data('level');
+
+                        totalSoal += value;
+
+                        if (!detailSummary[kategori]) {
+                            detailSummary[kategori] = {
+                                mudah: 0,
+                                sedang: 0,
+                                sulit: 0,
+                                total: 0
+                            };
+                        }
+
+                        detailSummary[kategori][level] = value;
+                        detailSummary[kategori].total += value;
+                    }
+                });
+
+                // Update total badge
+                $('#total-soal').text(totalSoal);
+
+                if (totalSoal === 0) {
+                    $('#summary-text').text('Belum ada soal yang ditambahkan');
+                    $('#detail-summary').hide();
+                    $('#soal-summary').removeClass('alert-success alert-warning').addClass('alert-secondary');
+                } else {
+                    // Create summary text
+                    const summaryItems = [];
+                    Object.keys(detailSummary).forEach(kategori => {
+                        summaryItems.push(`${kategori}: ${detailSummary[kategori].total}`);
+                    });
+
+                    $('#summary-text').html(`<strong>Soal ditambahkan:</strong> ${summaryItems.join(', ')}`);
+
+                    // Create detailed breakdown
+                    let detailHtml = '';
+                    Object.keys(detailSummary).forEach(kategori => {
+                        const detail = detailSummary[kategori];
+                        const levelDetails = [];
+
+                        if (detail.mudah > 0) levelDetails.push(`Mudah: ${detail.mudah}`);
+                        if (detail.sedang > 0) levelDetails.push(`Sedang: ${detail.sedang}`);
+                        if (detail.sulit > 0) levelDetails.push(`Sulit: ${detail.sulit}`);
+
+                        if (levelDetails.length > 0) {
+                            detailHtml += `
+                                <div class="d-inline-block mr-3 mb-1">
+                                    <span class="badge badge-outline-primary">${kategori}</span>
+                                    <small class="ml-1">(${levelDetails.join(', ')})</small>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    $('#kategori-details').html(detailHtml);
+                    $('#detail-summary').show();
+
+                    if (totalSoal >= 50) {
+                        $('#soal-summary').removeClass('alert-secondary alert-warning').addClass('alert-success');
+                    } else {
+                        $('#soal-summary').removeClass('alert-secondary alert-success').addClass('alert-warning');
+                    }
+                }
+            }
+
+            // Function to update kategori display
+            function updateKategoriDisplay(selectedPackage) {
+                console.log('Updating kategori display for package:', selectedPackage);
+                const allowedCategories = packageMapping[selectedPackage] || [];
+                console.log('Allowed categories:', allowedCategories);
+
+                // Update preview
+                if (selectedPackage && allowedCategories.length > 0) {
+                    $('#kategori-preview').html(`
+                <i class="fa fa-check text-success"></i>
                 <strong>Kategori yang akan muncul:</strong><br>
                 ${allowedCategories.map(cat => `<span class="badge badge-primary mr-1">${cat}</span>`).join('')}
-            `).removeClass('alert-info').addClass('alert-success');
-        } else {
-            $('#kategori-preview').html(`
+            `).removeClass('alert-info alert-warning').addClass('alert-success');
+                } else if (selectedPackage === '') {
+                    $('#kategori-preview').html(`
                 <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
-            `).removeClass('alert-success').addClass('alert-info');
-        }
+            `).removeClass('alert-success alert-warning').addClass('alert-info');
+                } else {
+                    $('#kategori-preview').html(`
+                <i class="fa fa-exclamation-triangle text-warning"></i> Tidak ada kategori yang tersedia untuk paket ini
+            `).removeClass('alert-success alert-info').addClass('alert-warning');
+                }
 
-        // Filter kategori table
-        $('.kategori-row').each(function() {
-            const kode = $(this).data('kode');
-            if (allowedCategories.includes(kode)) {
-                $(this).show();
-                $(this).find('input').prop('disabled', false);
-            } else {
-                $(this).hide();
-                $(this).find('input').prop('disabled', true).val(0);
+                // Filter kategori table
+                $('.kategori-row').each(function() {
+                    const kode = $(this).data('kode');
+                    console.log('Processing kategori:', kode, 'Allowed:', allowedCategories.includes(kode));
+
+                    if (selectedPackage === '' || allowedCategories.includes(kode)) {
+                        // Show row and enable inputs
+                        $(this).show();
+                        $(this).find('input.blueprint-input').prop('disabled', false);
+                        console.log('Showing kategori:', kode);
+                    } else {
+                        // Hide row, disable inputs, and reset values
+                        $(this).hide();
+                        $(this).find('input.blueprint-input').prop('disabled', true).val(0);
+                        console.log('Hiding kategori:', kode);
+                    }
+                });
+
+                // Update summary after kategori changes
+                updateSoalSummary();
+
+                // Re-validate after changes
+                setTimeout(function() {
+                    checkAllValidations();
+                }, 100);
             }
-        });
-    });
 
-    // Calculate total questions
-    function calculateTotal() {
-        let total = 0;
-        $('input[name^="blueprint["]').each(function() {
-            total += parseInt($(this).val()) || 0;
-        });
-        return total;
-    }
+            // Load dynamic package mapping from server
+            function loadPackageMapping() {
+                fetch('/admin/package-mapping/api')
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log('Package mapping loaded:', data);
+                        packageMapping = data;
+                        mappingLoaded = true;
 
-    // Validate input against available questions
-    function validateInput(input) {
-        const value = parseInt(input.val()) || 0;
-        const row = input.closest('tr');
-        const tersediaText = row.find('td:last-child small').text();
-        
-        // Extract available count from text like "Mudah: 10 | Sedang: 10 | Sulit: 10"
-        const level = input.attr('name').includes('mudah') ? 'Mudah' : 
-                     input.attr('name').includes('sedang') ? 'Sedang' : 'Sulit';
-        const match = tersediaText.match(new RegExp(level + ': (\\d+)'));
-        const available = match ? parseInt(match[1]) : 0;
-        
-        // Remove previous validation classes and messages
-        input.removeClass('is-valid is-invalid');
-        row.find('.validation-message').remove();
-        
-        if (value > available) {
-            input.addClass('is-invalid');
-            row.append(`
+                        // Trigger update if package is already selected
+                        const selectedPackage = $('#jenis_paket').val();
+                        if (selectedPackage) {
+                            updateKategoriDisplay(selectedPackage);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error loading package mapping:', error);
+                        console.log('Using fallback mapping');
+
+                        // Set mapping loaded flag even with fallback
+                        mappingLoaded = true;
+
+                        // Trigger update if package is already selected
+                        const selectedPackage = $('#jenis_paket').val();
+                        if (selectedPackage) {
+                            updateKategoriDisplay(selectedPackage);
+                        }
+                    });
+            }
+
+            // Dan langsung panggil:
+            $('#jenis_paket').on('change', function() {
+                const selectedPackage = $(this).val();
+                updateKategoriDisplay(selectedPackage);
+            });
+
+            // Initialize on page load - trigger change event if there's already a selected value
+            const initialPackage = $('#jenis_paket').val();
+            if (initialPackage) {
+                // Wait for mapping to load before updating display
+                const checkAndUpdate = () => {
+                    if (mappingLoaded) {
+                        updateKategoriDisplay(initialPackage);
+                    } else {
+                        setTimeout(checkAndUpdate, 50);
+                    }
+                };
+                checkAndUpdate();
+            }
+
+            // Load mapping on page load
+            loadPackageMapping();
+
+            // Calculate total questions
+            function calculateTotal() {
+                let total = 0;
+                $('.blueprint-input:enabled').each(function() {
+                    total += parseInt($(this).val()) || 0;
+                });
+                return total;
+            }
+
+            // Validate input against available questions
+            function validateInput(input) {
+                const value = parseInt(input.val()) || 0;
+                const row = input.closest('tr');
+                const tersediaText = row.find('td:last-child small').text();
+
+                // Extract available count from text like "Mudah: 10 | Sedang: 10 | Sulit: 10"
+                const inputName = input.attr('name');
+                const level = inputName.includes('mudah') ? 'Mudah' :
+                    inputName.includes('sedang') ? 'Sedang' : 'Sulit';
+                const match = tersediaText.match(new RegExp(level + ':\\s*(\\d+)'));
+                const available = match ? parseInt(match[1]) : 0;
+
+                // Remove previous validation classes and messages for this row
+                input.removeClass('is-valid is-invalid');
+                row.nextAll('.validation-message').first().remove();
+
+                if (value > available && value > 0) {
+                    input.addClass('is-invalid');
+                    const validationRow = $(`
                 <tr class="validation-message">
                     <td colspan="5" class="text-danger small">
-                        <i class="fa fa-exclamation-triangle"></i> 
+                        <i class="fa fa-exclamation-triangle"></i>
                         Jumlah soal ${level.toLowerCase()} yang diminta (${value}) melebihi soal yang tersedia (${available})
                     </td>
                 </tr>
             `);
-            return false;
-        } else if (value > 0) {
-            input.addClass('is-valid');
-        }
-        
-        return true;
-    }
+                    row.after(validationRow);
+                    return false;
+                } else if (value > 0) {
+                    input.addClass('is-valid');
+                }
 
-    // Check if all inputs are valid
-    function checkAllValidations() {
-        let allValid = true;
-        $('input[name^="blueprint["]').each(function() {
-            if (!validateInput($(this))) {
-                allValid = false;
+                return true;
             }
-        });
-        
-        // Update submit button state
-        const submitBtn = $('button[type="submit"]');
-        if (allValid) {
-            submitBtn.prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
-        } else {
-            submitBtn.prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
-        }
-        
-        return allValid;
-    }
-    
-    // Update total and validate when structure changes
-    $('input[name^="blueprint["]').on('input', function() {
-        validateInput($(this));
-        checkAllValidations();
-        
-        const total = calculateTotal();
-        console.log('Total soal:', total);
-    });
 
-    // Initial validation on page load
-    checkAllValidations();
-});
-</script>
-@endpush 
+            // Check if all inputs are valid
+            function checkAllValidations() {
+                let allValid = true;
+                let hasQuestions = false;
+
+                $('.blueprint-input:enabled').each(function() {
+                    const isValid = validateInput($(this));
+                    if (!isValid) {
+                        allValid = false;
+                    }
+                    if (parseInt($(this).val()) > 0) {
+                        hasQuestions = true;
+                    }
+                });
+
+                // Update submit button state
+                const submitBtn = $('button[type="submit"]');
+                if (allValid && hasQuestions) {
+                    submitBtn.prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
+                } else {
+                    submitBtn.prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
+                }
+
+                return allValid && hasQuestions;
+            }
+
+            // Update total and validate when blueprint input changes
+            $(document).on('input', '.blueprint-input', function() {
+                if (!$(this).prop('disabled')) {
+                    validateInput($(this));
+                    updateSoalSummary(); // Update summary saat input berubah
+                    checkAllValidations();
+                    const total = calculateTotal();
+                }
+            });
+
+            // Initial validation and summary on page load
+            setTimeout(function() {
+                updateSoalSummary();
+                checkAllValidations();
+            }, 200);
+        });
+    </script>
+
+    <style>
+        .badge-outline-primary {
+            color: #007bff;
+            border: 1px solid #007bff;
+            background-color: transparent;
+        }
+
+        #kategori-details {
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        .alert-secondary {
+            background-color: #f8f9fa;
+            border-color: #dee2e6;
+            color: #6c757d;
+        }
+    </style>
+@endpush

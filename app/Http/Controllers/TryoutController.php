@@ -21,44 +21,58 @@ class TryoutController extends Controller
         $tryouts = Tryout::active()->with('blueprints')->paginate(20);
         return view('admin.tryout.index', compact('tryouts'));
     }
-
     public function create()
     {
         $kategoris = KategoriSoal::active()->get();
+
+        // Hanya ambil soal yang belum dipakai
+        foreach ($kategoris as $kategori) {
+            $kategori->available_soals = $kategori->soals()->where('is_used', false)->get();
+        }
+
         $packageMappings = PackageCategoryMapping::getAllMappings();
         return view('admin.tryout.create', compact('kategoris', 'packageMappings'));
     }
+
 
     public function store(Request $request)
     {
         $request->validate([
             'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
             'durasi_menit' => 'required|integer|min:1',
             'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
             'blueprint' => 'required|array'
         ]);
 
-        // Validasi jumlah soal tidak melebihi yang tersedia
         $this->validateBlueprint($request->blueprint);
 
         $tryout = Tryout::create([
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'struktur' => [],
-            'shuffle_questions' => (bool)$request->get('shuffle_questions', false),
+            'shuffle_questions' => (bool) $request->get('shuffle_questions', false),
             'durasi_menit' => $request->durasi_menit,
-            'akses_paket' => 'free', // Default untuk backward compatibility
-            'jenis_paket' => $request->jenis_paket
+            'akses_paket' => 'free',
+            'jenis_paket' => $request->jenis_paket,
         ]);
 
-        // Persist blueprints
-        $blueprint = $request->blueprint;
         $rows = [];
-        foreach ($blueprint as $kategoriId => $levels) {
-            foreach (['mudah','sedang','sulit'] as $level) {
+        foreach ($request->blueprint as $kategoriId => $levels) {
+            foreach (['mudah', 'sedang', 'sulit'] as $level) {
                 $jumlah = intval($levels[$level] ?? 0);
                 if ($jumlah > 0) {
+                    $soals = Soal::where('kategori_id', $kategoriId)
+                        ->where('level', $level)
+                        ->where('is_used', false)
+                        ->limit($jumlah)
+                        ->get();
+
+                    // Tandai soal sudah dipakai
+                    foreach ($soals as $soal) {
+                        $soal->update(['is_used' => true]);
+                    }
+
+                    // Insert hanya sekali per kategori-level
                     $rows[] = [
                         'tryout_id' => $tryout->id,
                         'kategori_id' => $kategoriId,
@@ -75,8 +89,10 @@ class TryoutController extends Controller
             TryoutBlueprint::insert($rows);
         }
 
-        return redirect()->route('admin.tryout.index')->with('success', 'Tryout berhasil dibuat');
+        return redirect()->route('admin.tryout.index')
+            ->with('success', 'Tryout berhasil dibuat');
     }
+
 
     public function show(Tryout $tryout)
     {
@@ -208,6 +224,20 @@ class TryoutController extends Controller
         // Validasi jumlah soal tidak melebihi yang tersedia
         $this->validateBlueprint($request->blueprint);
 
+        // Kembalikan soal lama ke status is_used = false
+        $oldBlueprints = $tryout->blueprints;
+        foreach ($oldBlueprints as $blueprint) {
+            $soals = Soal::where('kategori_id', $blueprint->kategori_id)
+                ->where('level', $blueprint->level)
+                ->where('is_used', true)
+                ->limit($blueprint->jumlah)
+                ->get();
+
+            foreach ($soals as $soal) {
+                $soal->update(['is_used' => false]);
+            }
+        }
+
         $tryout->update([
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
@@ -219,11 +249,24 @@ class TryoutController extends Controller
 
         // Replace blueprints
         $tryout->blueprints()->delete();
+
         $rows = [];
         foreach ($request->blueprint as $kategoriId => $levels) {
-            foreach (['mudah','sedang','sulit'] as $level) {
+            foreach (['mudah', 'sedang', 'sulit'] as $level) {
                 $jumlah = intval($levels[$level] ?? 0);
                 if ($jumlah > 0) {
+                    // Ambil soal yang belum dipakai dan tandai sebagai dipakai
+                    $soals = Soal::where('kategori_id', $kategoriId)
+                        ->where('level', $level)
+                        ->where('is_used', false)
+                        ->limit($jumlah)
+                        ->get();
+
+                    // Tandai soal sudah dipakai
+                    foreach ($soals as $soal) {
+                        $soal->update(['is_used' => true]);
+                    }
+
                     $rows[] = [
                         'tryout_id' => $tryout->id,
                         'kategori_id' => $kategoriId,
@@ -235,16 +278,32 @@ class TryoutController extends Controller
                 }
             }
         }
+
         if (!empty($rows)) {
             TryoutBlueprint::insert($rows);
         }
 
         return redirect()->route('admin.tryout.index')->with('success', 'Tryout berhasil diperbarui');
     }
-
     public function destroy(Tryout $tryout)
     {
+        // Kembalikan soal ke status is_used = false sebelum menghapus tryout
+        $blueprints = $tryout->blueprints;
+        foreach ($blueprints as $blueprint) {
+            $soals = Soal::where('kategori_id', $blueprint->kategori_id)
+                ->where('level', $blueprint->level)
+                ->where('is_used', true)
+                ->limit($blueprint->jumlah)
+                ->get();
+
+            foreach ($soals as $soal) {
+                $soal->update(['is_used' => false]);
+            }
+        }
+
+        // Hapus tryout (akan otomatis menghapus blueprints jika ada cascade)
         $tryout->delete();
+
         return redirect()->route('admin.tryout.index')->with('success', 'Tryout berhasil dihapus');
     }
 
@@ -925,7 +984,7 @@ class TryoutController extends Controller
                 $totalSoal += $jumlah;
 
                 $available = $kategori->soals()->where('level', $level)->count();
-                
+
                 if ($jumlah > $available) {
                     $levelText = ucfirst($level);
                     $errors[] = "Kategori {$kategori->nama} ({$kategori->kode}): Jumlah soal {$levelText} yang diminta ({$jumlah}) melebihi soal yang tersedia ({$available})";
@@ -947,6 +1006,11 @@ class TryoutController extends Controller
         if ($kategoriDenganSoal == 0) {
             $errors[] = "Minimal 1 kategori harus dipilih dengan minimal 1 soal.";
         }
+
+        $available = $kategori->soals()
+            ->where('level', $level)
+            ->where('is_used', false)
+            ->count();
 
         if (!empty($errors)) {
             throw new \Illuminate\Validation\ValidationException(

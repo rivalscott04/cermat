@@ -10,24 +10,28 @@
                 <div class="card">
                     <div class="card-header">
                         <h5 class="mb-0">Navigasi Soal</h5>
-                        @if(isset($categoryCounts) && $categoryCounts->count())
+                        @if (isset($categoryCounts) && $categoryCounts->count())
                             <div class="mt-2 d-flex align-items-center justify-content-between">
                                 <div>
-                                    <form method="GET" action="{{ route('user.tryout.work', $tryout->id) }}" id="kategoriFilterForm" class="form-inline">
-                                        <input type="hidden" name="question" value="{{ request('question', $currentQuestion->urutan) }}">
-                                        <select name="kategori_id" class="form-control form-control-sm" onchange="document.getElementById('kategoriFilterForm').submit()">
+                                    <form method="GET" action="{{ route('user.tryout.work', $tryout->id) }}"
+                                        id="kategoriFilterForm" class="form-inline">
+                                        <input type="hidden" name="question"
+                                            value="{{ request('question', $currentQuestion->urutan) }}">
+                                        <select name="kategori_id" class="form-control form-control-sm"
+                                            onchange="document.getElementById('kategoriFilterForm').submit()">
                                             <option value="">Semua Kategori</option>
-                                            @foreach($categoryCounts as $catId => $cnt)
+                                            @foreach ($categoryCounts as $catId => $cnt)
                                                 @php $cat = $userSoals->firstWhere('soal.kategori_id', (int)$catId)->soal->kategori ?? null; @endphp
-                                                <option value="{{ $catId }}" {{ ($kategoriFilterId == $catId) ? 'selected' : '' }}>
-                                                    {{ $cat ? $cat->nama : 'Kategori '.$catId }}
+                                                <option value="{{ $catId }}"
+                                                    {{ $kategoriFilterId == $catId ? 'selected' : '' }}>
+                                                    {{ $cat ? $cat->nama : 'Kategori ' . $catId }}
                                                 </option>
                                             @endforeach
                                         </select>
                                     </form>
                                 </div>
                                 <div class="text-muted small ml-2">
-                                    @foreach($categoryCounts as $catId => $cnt)
+                                    @foreach ($categoryCounts as $catId => $cnt)
                                         <span class="ml-2">{{ $cnt }}</span>
                                     @endforeach
                                 </div>
@@ -59,8 +63,8 @@
                                 @endphp
 
                                 <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $i, 'kategori_id' => request('kategori_id')]) }}"
-                                    class="question-number {{ $statusClass }} {{ ($questionStatus && $questionStatus->is_marked) ? 'marked' : '' }}" title="{{ $statusText }}"
-                                    onclick="allowTryoutNavigation()">
+                                    class="question-number {{ $statusClass }} {{ $questionStatus && $questionStatus->is_marked ? 'marked' : '' }}"
+                                    title="{{ $statusText }}" onclick="allowTryoutNavigation()">
                                     {{ $i }}
                                 </a>
                             @endfor
@@ -130,28 +134,38 @@
                         <div class="row align-items-center">
                             <div class="col">
                                 <h4 class="mb-0">{{ $tryout->judul }}</h4>
-                                <small class="text-muted">Soal {{ $currentQuestion->urutan }} dari
-                                    {{ $totalQuestions }}</small>
+                                <div class="d-flex align-items-center">
+                                    <small class="text-muted">Soal {{ $currentQuestion->urutan }} dari
+                                        {{ $totalQuestions }}</small>
+                                    @if ($currentQuestion->soal->tipe == 'pg_pilih_2')
+                                        <span class="badge badge-info ml-2">
+                                            <i class="fa fa-hand-o-right"></i> Pilih 2 Opsi
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                             <div class="col-auto">
                                 <div class="d-flex align-items-center">
                                     <!-- Fullscreen Toggle Button -->
-                                    <button class="btn btn-outline-primary btn-sm mr-2" id="tryoutFullscreenToggle" title="Mode Fokus (F11)">
+                                    <button class="btn btn-outline-primary btn-sm mr-2" id="tryoutFullscreenToggle"
+                                        title="Mode Fokus (F11)">
                                         <i class="fa fa-expand"></i> Mode Fokus
                                     </button>
-                                    
+
                                     <!-- Keyboard Shortcuts Info -->
-                                    <button class="btn btn-outline-info btn-sm mr-2" id="showShortcuts" title="Keyboard Shortcuts">
+                                    <button class="btn btn-outline-info btn-sm mr-2" id="showShortcuts"
+                                        title="Keyboard Shortcuts">
                                         <i class="fa fa-keyboard-o"></i> Shortcuts
                                     </button>
-                                    
+
                                     <div class="timer-container">
                                         <div class="timer-display">
                                             <i class="fa fa-clock-o"></i>
                                             <span id="timer">--:--</span>
                                         </div>
                                         <div class="progress" style="height: 4px;">
-                                            <div id="timer-progress" class="progress-bar bg-warning" style="width: 100%"></div>
+                                            <div id="timer-progress" class="progress-bar bg-warning" style="width: 100%">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -186,7 +200,7 @@
 
                             @if ($currentQuestion->soal->tipe == 'benar_salah')
                                 <!-- True/False Options -->
-                                <div class="options-container mt-3" @if ($currentQuestion->soal->tipe == 'pg_pilih_2') data-max-select="2" @endif>
+                                <div class="options-container mt-3">
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="jawaban" id="benar"
                                             value="benar"
@@ -206,7 +220,8 @@
                                 </div>
                             @else
                                 <!-- Multiple Choice Options - UPDATED: Gunakan shuffled_opsi berdasarkan session -->
-                                <div class="options-container mt-3">
+                                <div class="options-container mt-3"
+                                    @if ($currentQuestion->soal->tipe == 'pg_pilih_2') data-max-select="2" @endif>
                                     @php
                                         // Gunakan shuffled options jika ada, atau opsi original
                                         $optionsToShow =
@@ -222,8 +237,9 @@
                                         @endphp
                                         <div class="form-check">
                                             @if ($currentQuestion->soal->tipe == 'pg_pilih_2')
-                                                <input class="form-check-input" type="checkbox" name="jawaban[]"
-                                                    id="opsi_{{ $index }}" value="{{ $opsiValue }}"
+                                                <input class="form-check-input pg-pilih-2-option" type="checkbox"
+                                                    name="jawaban[]" id="opsi_{{ $index }}"
+                                                    value="{{ $opsiValue }}"
                                                     {{ in_array($opsiValue, $currentQuestion->jawaban_user ?? []) ? 'checked' : '' }}>
                                             @else
                                                 <input class="form-check-input" type="radio" name="jawaban"
@@ -236,18 +252,50 @@
                                         </div>
                                     @endforeach
                                 </div>
+
+                                <!-- PG Pilih 2 Notification -->
+                                @if ($currentQuestion->soal->tipe == 'pg_pilih_2')
+                                    <div id="pgPilih2Notification" class="pg-pilih-2-notification"
+                                        style="display: none;">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fa fa-hand-o-right notification-icon text-white"></i>
+                                            <div class="flex-grow-1">
+                                                <strong class="text-white">Pilih 2 opsi jawaban!</strong>
+                                                <div class="text-white small" style="font-weight: 600">
+                                                    Anda baru memilih <span id="selectedCount">0</span> dari 2 opsi yang
+                                                    diperlukan
+                                                </div>
+                                                <div class="progress-indicator">
+                                                    <div class="progress-bar-custom" id="selectionProgress"
+                                                        style="width: 0%"></div>
+                                                </div>
+                                            </div>
+                                            <div class="text-white ml-2">
+                                                <span id="progressText">0/2</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             @endif
 
                             <!-- Action Buttons -->
-                            <div class="d-flex align-items-center mt-3">
-                                <button type="button" class="btn btn-outline-warning btn-sm mr-2" id="resetAnswerBtn"
-                                    onclick="resetAnswer()" title="Hapus pilihan jawaban">
-                                    <i class="fa fa-eraser"></i> Reset Jawaban
-                                </button>
-                                <button type="button" class="btn btn-outline-secondary btn-sm" id="toggleMarkBtn"
-                                    onclick="toggleMark()" title="Tandai soal ini">
-                                    <i class="fa fa-flag"></i> Tandai
-                                </button>
+                            <div class="d-flex align-items-center justify-content-between mt-3">
+                                <div>
+                                    <button type="button" class="btn btn-outline-warning btn-sm mr-2"
+                                        id="resetAnswerBtn" onclick="resetAnswer()" title="Hapus pilihan jawaban">
+                                        <i class="fa fa-eraser"></i> Reset Jawaban
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" id="toggleMarkBtn"
+                                        onclick="toggleMark()" title="Tandai soal ini">
+                                        <i class="fa fa-flag"></i> Tandai
+                                    </button>
+                                </div>
+
+                                @if ($currentQuestion->soal->tipe == 'pg_pilih_2')
+                                    <div id="answerStatus" class="text-muted small">
+                                        <i class="fa fa-info-circle"></i> Belum ada jawaban dipilih
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
@@ -269,7 +317,8 @@
                                             Selanjutnya <i class="fa fa-arrow-right"></i>
                                         </a>
                                     @else
-                                        <a href="{{ route('user.tryout.finish', $tryout->id) }}" class="btn btn-success" onclick="allowTryoutNavigation()">
+                                        <a href="{{ route('user.tryout.finish', $tryout->id) }}" class="btn btn-success"
+                                            onclick="allowTryoutNavigation()">
                                             <i class="fa fa-check"></i> Selesai
                                         </a>
                                     @endif
@@ -450,11 +499,86 @@
         </div>
     </div>
 
-@endsection
-
-@push('styles')
-    <!-- Styles tetap sama -->
     <style>
+        /* Enhanced styles for PG Pilih 2 */
+        .form-check {
+            transition: all 0.3s ease;
+        }
+
+        .form-check:hover {
+            border-color: #007bff;
+            background-color: #f8f9fa;
+        }
+
+        .form-check-input:checked+.form-check-label {
+            color: #007bff;
+            font-weight: 600;
+        }
+
+        .pg-pilih-2-notification {
+            background: linear-gradient(135deg, #ffc107, #ffad05);
+            border: 2px solid #ffad05;
+            border-radius: 8px;
+            padding: 12px 15px;
+            margin-top: 15px;
+            animation: pulse 2s infinite;
+            box-shadow: 0 4px 12px rgba(255, 173, 5, 0.3);
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.02);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .notification-icon {
+            font-size: 18px;
+            margin-right: 8px;
+            animation: bounce 1.5s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-5px);
+            }
+
+            60% {
+                transform: translateY(-3px);
+            }
+        }
+
+        .progress-indicator {
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            margin-top: 8px;
+            overflow: hidden;
+        }
+
+        .progress-bar-custom {
+            height: 100%;
+            background: white;
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
         .timer-container {
             text-align: center;
         }
@@ -759,7 +883,8 @@
             }
         }
     </style>
-@endpush
+
+@endsection
 
 @push('scripts')
     <script src="{{ asset('js/tryout-timer.js') }}"></script>
@@ -787,6 +912,21 @@
                 });
             });
 
+            // Handler khusus untuk PG Pilih 2
+            @if ($currentQuestion->soal->tipe == 'pg_pilih_2')
+                const pgPilih2Options = document.querySelectorAll('.pg-pilih-2-option');
+                pgPilih2Options.forEach(input => {
+                    input.addEventListener('change', function() {
+                        handlePgPilih2Selection();
+                        // Auto save after handling
+                        setTimeout(saveAnswer, 100);
+                    });
+                });
+
+                // Initial state
+                handlePgPilih2Selection();
+            @endif
+
             // Warning when time is running low
             if (remainingSeconds <= 300) { // 5 minutes
                 document.getElementById('timer').parentElement.classList.add('warning');
@@ -799,8 +939,77 @@
             updateResetButtonVisibility();
 
             // Initialize mark button state
-            updateMarkButtonState({{ (int)($currentQuestion->is_marked ?? 0) }} === 1);
+            updateMarkButtonState({{ (int) ($currentQuestion->is_marked ?? 0) }} === 1);
         });
+
+        // Enhanced PG Pilih 2 handling function
+        function handlePgPilih2Selection() {
+            const checkedBoxes = document.querySelectorAll('.pg-pilih-2-option:checked');
+            const selectedCount = checkedBoxes.length;
+            const maxSelect = 2;
+
+            // Update elements if they exist
+            const selectedCountEl = document.getElementById('selectedCount');
+            const progressTextEl = document.getElementById('progressText');
+            const selectionProgressEl = document.getElementById('selectionProgress');
+            const answerStatusEl = document.getElementById('answerStatus');
+            const pgPilih2NotificationEl = document.getElementById('pgPilih2Notification');
+
+            if (selectedCountEl) selectedCountEl.textContent = selectedCount;
+            if (progressTextEl) progressTextEl.textContent = selectedCount + '/' + maxSelect;
+
+            // Update progress bar
+            if (selectionProgressEl) {
+                const progressPercentage = (selectedCount / maxSelect) * 100;
+                selectionProgressEl.style.width = progressPercentage + '%';
+            }
+
+            // Update status jawaban
+            if (answerStatusEl) {
+                let statusText = '';
+                let statusClass = '';
+
+                if (selectedCount === 0) {
+                    statusText = '<i class="fa fa-info-circle"></i> Belum ada jawaban dipilih';
+                    statusClass = 'text-muted';
+                } else if (selectedCount === 1) {
+                    statusText = '<i class="fa fa-exclamation-triangle text-warning"></i> Pilih 1 opsi lagi';
+                    statusClass = 'text-warning';
+                } else if (selectedCount === 2) {
+                    statusText = '<i class="fa fa-check-circle text-success"></i> Jawaban lengkap (2 opsi terpilih)';
+                    statusClass = 'text-success';
+                } else {
+                    statusText = '<i class="fa fa-times-circle text-danger"></i> Terlalu banyak pilihan, maksimal 2 opsi';
+                    statusClass = 'text-danger';
+                }
+
+                answerStatusEl.innerHTML = statusText;
+                answerStatusEl.className = 'small ' + statusClass;
+            }
+
+            // Tampilkan/sembunyikan notifikasi
+            if (pgPilih2NotificationEl) {
+                if (selectedCount === 1) {
+                    pgPilih2NotificationEl.style.display = 'block';
+                } else {
+                    pgPilih2NotificationEl.style.display = 'none';
+                }
+            }
+
+            // Disable/enable checkbox lainnya jika sudah mencapai maksimal
+            const allPgPilih2Options = document.querySelectorAll('.pg-pilih-2-option');
+            if (selectedCount >= maxSelect) {
+                allPgPilih2Options.forEach(option => {
+                    if (!option.checked) {
+                        option.disabled = true;
+                    }
+                });
+            } else {
+                allPgPilih2Options.forEach(option => {
+                    option.disabled = false;
+                });
+            }
+        }
 
         function saveAnswer() {
             const form = document.querySelector('.options-container');
@@ -884,7 +1093,13 @@
                         const allInputs = document.querySelectorAll('.options-container input');
                         allInputs.forEach(input => {
                             input.checked = false;
+                            input.disabled = false; // Re-enable all inputs for PG Pilih 2
                         });
+
+                        // Update PG Pilih 2 state if applicable
+                        @if ($currentQuestion->soal->tipe == 'pg_pilih_2')
+                            handlePgPilih2Selection();
+                        @endif
 
                         showNotification('Jawaban berhasil direset!', 'warning');
                         // Update question status in sidebar
@@ -1144,20 +1359,23 @@
             }
         });
 
-        // Enforce max selections for checkbox-based questions (e.g., pg_pilih_2)
+        // Enhanced enforcement for PG Pilih 2 with better validation
         document.addEventListener('change', function(e) {
-            if (e.target.matches('.options-container input[type="checkbox"]')) {
+            if (e.target.matches('.pg-pilih-2-option')) {
                 const container = e.target.closest('.options-container');
                 if (!container) return;
-                const max = parseInt(container.getAttribute('data-max-select') || '0', 10);
-                if (!max || isNaN(max)) return;
 
-                const checkedCount = container.querySelectorAll('input[type="checkbox"]:checked').length;
-                if (checkedCount > max) {
+                const maxSelect = parseInt(container.getAttribute('data-max-select') || '2', 10);
+                const checkedCount = container.querySelectorAll('.pg-pilih-2-option:checked').length;
+
+                if (checkedCount > maxSelect) {
                     // Revert the newly checked input and inform the user
                     e.target.checked = false;
-                    showNotification(`Maksimal ${max} jawaban boleh dipilih untuk soal ini.`, 'warning');
+                    showNotification(`Maksimal ${maxSelect} jawaban boleh dipilih untuk soal ini.`, 'warning');
                 }
+
+                // Always call the handler to update UI state
+                handlePgPilih2Selection();
             }
         });
 
@@ -1210,7 +1428,7 @@
             $('#modalImage').on('click', function(e) {
                 e.stopPropagation();
             });
-            
+
             // Tryout Fullscreen Toggle Integration
             const tryoutFullscreenToggle = document.getElementById('tryoutFullscreenToggle');
             if (tryoutFullscreenToggle) {
@@ -1222,7 +1440,7 @@
                     }
                 });
             }
-            
+
             // Update button text based on fullscreen state
             function updateFullscreenButtonText() {
                 const body = document.body;
@@ -1237,7 +1455,7 @@
                     }
                 }
             }
-            
+
             // Listen for fullscreen state changes
             const observer = new MutationObserver(function(mutations) {
                 mutations.forEach(function(mutation) {
@@ -1246,15 +1464,15 @@
                     }
                 });
             });
-            
+
             observer.observe(document.body, {
                 attributes: true,
                 attributeFilter: ['class']
             });
-            
+
             // Initial button text update
             updateFullscreenButtonText();
-            
+
             // Simplified Keyboard Shortcuts Modal
             const showShortcutsBtn = document.getElementById('showShortcuts');
             if (showShortcutsBtn) {

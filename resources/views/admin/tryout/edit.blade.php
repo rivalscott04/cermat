@@ -47,13 +47,21 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="jenis_paket">Jenis Paket <span class="text-danger">*</span></label>
-                                        <select class="form-control @error('jenis_paket') is-invalid @enderror" 
-                                                id="jenis_paket" name="jenis_paket" required>
+                                        <select class="form-control @error('jenis_paket') is-invalid @enderror"
+                                            id="jenis_paket" name="jenis_paket" required>
                                             <option value="">Pilih Jenis Paket</option>
-                                            <option value="free" {{ old('jenis_paket', $tryout->jenis_paket) == 'free' ? 'selected' : '' }}>Free - 1 tryout untuk semua user</option>
-                                            <option value="kecerdasan" {{ old('jenis_paket', $tryout->jenis_paket) == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan - TIU, TWK, TKD</option>
-                                            <option value="kepribadian" {{ old('jenis_paket', $tryout->jenis_paket) == 'kepribadian' ? 'selected' : '' }}>Kepribadian - TKP, PSIKOTES</option>
-                                            <option value="lengkap" {{ old('jenis_paket', $tryout->jenis_paket) == 'lengkap' ? 'selected' : '' }}>Lengkap - Semua kategori</option>
+                                            <option value="free"
+                                                {{ old('jenis_paket', $tryout->jenis_paket) == 'free' ? 'selected' : '' }}>
+                                                Free - 1 tryout untuk semua user</option>
+                                            <option value="kecerdasan"
+                                                {{ old('jenis_paket', $tryout->jenis_paket) == 'kecerdasan' ? 'selected' : '' }}>
+                                                Kecerdasan - TIU, TWK, TKD</option>
+                                            <option value="kepribadian"
+                                                {{ old('jenis_paket', $tryout->jenis_paket) == 'kepribadian' ? 'selected' : '' }}>
+                                                Kepribadian - TKP, PSIKOTES</option>
+                                            <option value="lengkap"
+                                                {{ old('jenis_paket', $tryout->jenis_paket) == 'lengkap' ? 'selected' : '' }}>
+                                                Lengkap - Semua kategori</option>
                                         </select>
                                         @error('jenis_paket')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -73,7 +81,8 @@
                                     <div class="form-group">
                                         <label>Preview Kategori yang Akan Muncul:</label>
                                         <div id="kategori-preview" class="alert alert-info">
-                                            <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
+                                            <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang
+                                            akan muncul
                                         </div>
                                     </div>
                                 </div>
@@ -81,10 +90,14 @@
 
                             <div class="form-group">
                                 <div class="custom-control custom-switch">
-                                    <input type="checkbox" class="custom-control-input" id="shuffle_questions" name="shuffle_questions" value="1" {{ old('shuffle_questions', $tryout->shuffle_questions) ? 'checked' : '' }}>
-                                    <label class="custom-control-label" for="shuffle_questions">Acak Urutan Nomor Soal</label>
+                                    <input type="checkbox" class="custom-control-input" id="shuffle_questions"
+                                        name="shuffle_questions" value="1"
+                                        {{ old('shuffle_questions', $tryout->shuffle_questions) ? 'checked' : '' }}>
+                                    <label class="custom-control-label" for="shuffle_questions">Acak Urutan Nomor
+                                        Soal</label>
                                 </div>
-                                <small class="text-muted">Jika aktif, urutan nomor soal diacak per user secara deterministik. Opsi jawaban tetap diacak seperti biasa.</small>
+                                <small class="text-muted">Jika aktif, urutan nomor soal diacak per user secara
+                                    deterministik. Opsi jawaban tetap diacak seperti biasa.</small>
                             </div>
 
                             <div class="form-group">
@@ -112,40 +125,64 @@
                                         </thead>
                                         <tbody>
                                             @php
-                                                $bp = $tryout->blueprints->groupBy('kategori_id')->map(function($rows){
-                                                    return [
-                                                        'mudah' => optional($rows->firstWhere('level','mudah'))->jumlah ?? 0,
-                                                        'sedang' => optional($rows->firstWhere('level','sedang'))->jumlah ?? 0,
-                                                        'sulit' => optional($rows->firstWhere('level','sulit'))->jumlah ?? 0,
-                                                    ];
-                                                });
+                                                $bp = $tryout->blueprints
+                                                    ->groupBy('kategori_id')
+                                                    ->map(function ($rows) {
+                                                        return [
+                                                            'mudah' =>
+                                                                optional($rows->firstWhere('level', 'mudah'))->jumlah ??
+                                                                0,
+                                                            'sedang' =>
+                                                                optional($rows->firstWhere('level', 'sedang'))
+                                                                    ->jumlah ?? 0,
+                                                            'sulit' =>
+                                                                optional($rows->firstWhere('level', 'sulit'))->jumlah ??
+                                                                0,
+                                                        ];
+                                                    });
                                             @endphp
                                             @foreach ($kategoris as $kategori)
                                                 @php
-                                                    $row = $bp[$kategori->id] ?? ['mudah'=>0,'sedang'=>0,'sulit'=>0];
+                                                    $row = $bp[$kategori->id] ?? [
+                                                        'mudah' => 0,
+                                                        'sedang' => 0,
+                                                        'sulit' => 0,
+                                                    ];
                                                 @endphp
                                                 <tr class="kategori-row" data-kode="{{ $kategori->kode }}">
                                                     <td>{{ $kategori->nama }} ({{ $kategori->kode }})</td>
                                                     <td width="140">
-                                                        <input type="number" class="form-control blueprint-input" min="0" max="100"
-                                                               name="blueprint[{{ $kategori->id }}][mudah]"
-                                                               value="{{ old("blueprint.{$kategori->id}.mudah", $row['mudah']) }}">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][mudah]"
+                                                            value="{{ old("blueprint.{$kategori->id}.mudah", $row['mudah']) }}"
+                                                            data-original="{{ $row['mudah'] }}">
+
                                                     </td>
                                                     <td width="140">
-                                                        <input type="number" class="form-control blueprint-input" min="0" max="100"
-                                                               name="blueprint[{{ $kategori->id }}][sedang]"
-                                                               value="{{ old("blueprint.{$kategori->id}.sedang", $row['sedang']) }}">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][sedang]"
+                                                            value="{{ old("blueprint.{$kategori->id}.sedang", $row['sedang']) }}"
+                                                            data-original="{{ $row['sedang'] }}">
                                                     </td>
                                                     <td width="140">
-                                                        <input type="number" class="form-control blueprint-input" min="0" max="100"
-                                                               name="blueprint[{{ $kategori->id }}][sulit]"
-                                                               value="{{ old("blueprint.{$kategori->id}.sulit", $row['sulit']) }}">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][sulit]"
+                                                            value="{{ old("blueprint.{$kategori->id}.sulit", $row['sulit']) }}"
+                                                            data-original="{{ $row['sulit'] }}">
                                                     </td>
                                                     <td>
                                                         <small class="text-muted">
-                                                            Mudah: {{ $kategori->soals()->where('level','mudah')->count() }} |
-                                                            Sedang: {{ $kategori->soals()->where('level','sedang')->count() }} |
-                                                            Sulit: {{ $kategori->soals()->where('level','sulit')->count() }}
+                                                            Mudah:
+                                                            {{ $kategori->soals()->where('level', 'mudah')->where('is_used', false)->count() }}
+                                                            |
+                                                            Sedang:
+                                                            {{ $kategori->soals()->where('level', 'sedang')->where('is_used', false)->count() }}
+                                                            |
+                                                            Sulit:
+                                                            {{ $kategori->soals()->where('level', 'sulit')->where('is_used', false)->count() }}
                                                         </small>
                                                     </td>
                                                 </tr>
@@ -253,11 +290,11 @@
             $('#jenis_paket').on('change', function() {
                 const selectedPackage = $(this).val();
                 const allowedCategories = packageMapping[selectedPackage] || [];
-                
+
                 // Update preview
                 if (allowedCategories.length > 0) {
                     $('#kategori-preview').html(`
-                        <i class="fa fa-check text-success"></i> 
+                        <i class="fa fa-check text-success"></i>
                         <strong>Kategori yang akan muncul:</strong><br>
                         ${allowedCategories.map(cat => `<span class="badge badge-primary mr-1">${cat}</span>`).join('')}
                     `).removeClass('alert-info').addClass('alert-success');
@@ -303,101 +340,107 @@
                 const value = parseInt(input.val()) || 0;
                 const row = input.closest('tr');
                 const tersediaText = row.find('td:last-child small').text();
-                
-                // Extract available count from text like "Mudah: 10 | Sedang: 10 | Sulit: 10"
-                const level = input.attr('name').includes('mudah') ? 'Mudah' : 
-                             input.attr('name').includes('sedang') ? 'Sedang' : 'Sulit';
+
+                // ambil level
+                const level = input.attr('name').includes('mudah') ? 'Mudah' :
+                    input.attr('name').includes('sedang') ? 'Sedang' : 'Sulit';
+
                 const match = tersediaText.match(new RegExp(level + ': (\\d+)'));
                 const available = match ? parseInt(match[1]) : 0;
-                
-                // Remove previous validation classes and messages
+
+                // Nilai blueprint lama (dari attribute data)
+                const original = parseInt(input.data('original')) || 0;
+
                 input.removeClass('is-valid is-invalid');
                 row.find('.validation-message').remove();
-                
-                if (value > available) {
+
+                if (value > original + available) {
                     input.addClass('is-invalid');
-                    row.append(`
-                        <tr class="validation-message">
-                            <td colspan="5" class="text-danger small">
-                                <i class="fa fa-exclamation-triangle"></i> 
-                                Jumlah soal ${level.toLowerCase()} yang diminta (${value}) melebihi soal yang tersedia (${available})
-                            </td>
-                        </tr>
-                    `);
+                    row.after(`
+        <tr class="validation-message">
+            <td colspan="5" class="text-danger small">
+                <i class="fa fa-exclamation-triangle"></i>
+                Jumlah soal ${level.toLowerCase()} (${value}) melebihi soal tersedia (${available})
+            </td>
+        </tr>
+    `);
                     return false;
-                } else if (value > 0) {
-                    input.addClass('is-valid');
                 }
-                
-                return true;
+
+            } else if (value > 0) {
+                input.addClass('is-valid');
             }
 
-            // Check if all inputs are valid
-            function checkAllValidations() {
-                let allValid = true;
-                $('.blueprint-input').each(function() {
-                    if (!validateInput($(this))) {
-                        allValid = false;
-                    }
-                });
-                
-                // Update submit button state
-                const submitBtn = $('button[type="submit"]');
-                if (allValid) {
-                    submitBtn.prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
-                } else {
-                    submitBtn.prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
-                }
-                
-                return allValid;
-            }
+            return true;
+        }
 
-            // Update total when structure changes
-            $('.blueprint-input').on('input', function() {
-                validateInput($(this));
-                checkAllValidations();
-                calculateTotal();
-                checkBlueprintChange();
+
+        // Check if all inputs are valid
+        function checkAllValidations() {
+            let allValid = true;
+            $('.blueprint-input').each(function() {
+                if (!validateInput($(this))) {
+                    allValid = false;
+                }
             });
 
-            // Initial validation on page load
+            // Update submit button state
+            const submitBtn = $('button[type="submit"]');
+            if (allValid) {
+                submitBtn.prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
+            } else {
+                submitBtn.prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
+            }
+
+            return allValid;
+        }
+
+        // Update total when structure changes
+        $('.blueprint-input').on('input', function() {
+            validateInput($(this));
             checkAllValidations();
-
-            // Form submission with confirmation if structure changed
-            $('form').on('submit', function(e) {
-                if (blueprintChanged) {
-                    e.preventDefault();
-                    $('#confirmModal').modal('show');
-                }
-            });
-
-            // Confirm submission
-            $('#confirmSubmit').on('click', function() {
-                $('#confirmModal').modal('hide');
-                $('form').off('submit').submit();
-            });
-
-            // Initialize total calculation
             calculateTotal();
+            checkBlueprintChange();
+        });
 
-            // Validate available questions
-            $('.struktur-input').on('blur', function() {
-                let input = $(this);
-                let value = parseInt(input.val()) || 0;
-                let availableText = input.siblings('small').text();
-                let available = parseInt(availableText.match(/Tersedia: (\d+)/)[1]);
+        // Initial validation on page load
+        checkAllValidations();
 
-                if (value > available) {
-                    input.addClass('is-invalid');
-                    if (!input.siblings('.invalid-feedback').length) {
-                        input.after('<div class="invalid-feedback">Jumlah soal melebihi yang tersedia (' +
-                            available + ' soal)</div>');
-                    }
-                } else {
-                    input.removeClass('is-invalid');
-                    input.siblings('.invalid-feedback').remove();
+        // Form submission with confirmation if structure changed
+        $('form').on('submit', function(e) {
+            if (blueprintChanged) {
+                e.preventDefault();
+                $('#confirmModal').modal('show');
+            }
+        });
+
+        // Confirm submission
+        $('#confirmSubmit').on('click', function() {
+            $('#confirmModal').modal('hide');
+            $('form').off('submit').submit();
+        });
+
+        // Initialize total calculation
+        calculateTotal();
+
+        // Validate available questions
+        $('.struktur-input').on('blur', function() {
+            let input = $(this);
+            let value = parseInt(input.val()) || 0;
+            let availableText = input.siblings('small').text();
+            let available = parseInt(availableText.match(/Tersedia: (\d+)/)[1]);
+
+            if (value > available) {
+                input.addClass('is-invalid');
+                if (!input.siblings('.invalid-feedback').length) {
+                    input.after('<div class="invalid-feedback">Jumlah soal melebihi yang tersedia (' +
+                        available + ' soal)</div>');
                 }
-            });
+            } else {
+                input.removeClass('is-invalid');
+                input.siblings('.invalid-feedback').remove();
+            }
+        });
         });
     </script>
 @endpush
