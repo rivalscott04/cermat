@@ -13,6 +13,7 @@ use App\Http\Controllers\SoalController;
 use App\Http\Controllers\TryoutController;
 use App\Http\Controllers\KategoriSoalController;
 use App\Http\Controllers\PackageMappingController;
+use App\Http\Controllers\HistoryController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -99,7 +100,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/tes-kecermatan/detail/{id}', [KecermatanController::class, 'detailTes'])->name('kecermatan.detail');
     
     // History routes
-    Route::get('/riwayat-tes', [App\Http\Controllers\HistoryController::class, 'index'])->name('user.history.index');
+    Route::get('/riwayat-tes', [HistoryController::class, 'index'])->name('user.history.index');
 });
 
 // Admin Routes
