@@ -18,7 +18,7 @@
 
                 <div class="row justify-content-center">
                     {{-- Card Tes Kecermatan --}}
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-3 mb-4">
                         <div class="test-card h-100 {{ !Auth::user()->canAccessKecermatan() ? 'disabled-card' : '' }}">
                             @if (!Auth::user()->canAccessKecermatan())
                                 <div class="lock-overlay">
@@ -60,8 +60,53 @@
                         </div>
                     </div>
 
+                    {{-- Card Tes Kecerdasan (Tryout CBT filtered) --}}
+                    <div class="col-md-3 mb-4">
+                        @php
+                            $canAccessKecerdasan = in_array(Auth::user()->paket_akses, ['kecerdasan', 'lengkap']);
+                        @endphp
+                        <div class="test-card h-100 {{ !$canAccessKecerdasan ? 'disabled-card' : '' }}">
+                            @if (!$canAccessKecerdasan)
+                                <div class="lock-overlay">
+                                    <i class="fa fa-lock"></i>
+                                </div>
+                            @endif
+                            <div class="test-icon-container">
+                                <i class="fa fa-brain test-icon"></i>
+                            </div>
+                            <div class="test-content">
+                                <h3 class="test-title">Tes Kecerdasan</h3>
+                                <p class="test-description">
+                                    Tryout CBT fokus kecerdasan umum. Materi logika, numerik, dan verbal.
+                                </p>
+                                <div class="test-features">
+                                    <div class="feature-badge">
+                                        <i class="fa fa-calculator"></i> Numerik
+                                    </div>
+                                    <div class="feature-badge">
+                                        <i class="fa fa-comments-o"></i> Verbal
+                                    </div>
+                                    <div class="feature-badge">
+                                        <i class="fa fa-cube"></i> Logika
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="test-button-container">
+                                @if ($canAccessKecerdasan)
+                                    <a href="{{ route('user.tryout.index', ['type' => 'kecerdasan']) }}" class="btn btn-test-success">
+                                        <i class="fa fa-play"></i> Mulai Tes Kecerdasan
+                                    </a>
+                                @else
+                                    <button class="btn btn-disabled" disabled>
+                                        <i class="fa fa-lock"></i> Butuh Paket Kecerdasan
+                                    </button>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
                     {{-- Card Tes Psikologi (Tryout CBT) --}}
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-3 mb-4">
                         <div class="test-card h-100 {{ !Auth::user()->canAccessTryout() ? 'disabled-card' : '' }}">
                             @if (!Auth::user()->canAccessTryout())
                                 <div class="lock-overlay">
@@ -104,7 +149,7 @@
                     </div>
 
                     {{-- Card Tes Lengkap --}}
-                    <div class="col-md-4 mb-4">
+                    <div class="col-md-3 mb-4">
                         <div
                             class="test-card h-100 {{ !Auth::user()->canAccessKecermatan() || !Auth::user()->canAccessTryout() ? 'disabled-card' : '' }}">
                             @if (!Auth::user()->canAccessKecermatan() || !Auth::user()->canAccessTryout())

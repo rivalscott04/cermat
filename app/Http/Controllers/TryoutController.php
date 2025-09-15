@@ -321,12 +321,21 @@ class TryoutController extends Controller
                 ->with('subscriptionError', 'Anda tidak memiliki akses ke Tryout CBT.');
         }
 
-        // Get tryouts based on user package
-        $tryouts = Tryout::active()
-            ->with('blueprints')
-            ->forUserPackage($user->paket_akses)
-            ->limit($user->getMaxTryouts())
-            ->get();
+        // Optional filter by tryout type (kecerdasan/kepribadian/lengkap/free)
+        $type = $request->get('type');
+
+        $query = Tryout::active()->with('blueprints')->forUserPackage($user->paket_akses);
+
+        if (!empty($type)) {
+            // Validate type is one of the known types
+            $allowedTypes = ['free', 'kecerdasan', 'kepribadian', 'lengkap'];
+            if (in_array($type, $allowedTypes, true)) {
+                $query->byJenisPaket($type);
+            }
+        }
+
+        // Get tryouts based on user package (and optional filter)
+        $tryouts = $query->limit($user->getMaxTryouts())->get();
 
         return view('user.tryout.index', [
             'user' => $user,
