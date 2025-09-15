@@ -289,7 +289,7 @@
                                         @endphp
 
                                         <div
-                                            class="option-item {{ $trueCorrect && $userSelectedTrue ? 'correct-answer' : ($trueCorrect && !$userSelectedTrue ? 'correct-not-selected' : (!$trueCorrect && $userSelectedTrue ? 'incorrect-answer' : '')) }}">
+                                            class="option-item {{ $trueCorrect && $userSelectedTrue ? 'correct-answer' : ($trueCorrect && !$userSelectedTrue && $userAnswer->skor <= 0 ? 'correct-not-selected' : (!$trueCorrect && $userSelectedTrue && $userAnswer->skor <= 0 ? 'incorrect-answer' : '')) }}">
                                             <div class="option-content">
                                                 <span class="option-label">BENAR</span>
                                             </div>
@@ -310,7 +310,7 @@
                                         </div>
 
                                         <div
-                                            class="option-item {{ $falseCorrect && $userSelectedFalse ? 'correct-answer' : ($falseCorrect && !$userSelectedFalse ? 'correct-not-selected' : (!$falseCorrect && $userSelectedFalse ? 'incorrect-answer' : '')) }}">
+                                            class="option-item {{ $falseCorrect && $userSelectedFalse ? 'correct-answer' : ($falseCorrect && !$userSelectedFalse && $userAnswer->skor <= 0 ? 'correct-not-selected' : (!$falseCorrect && $userSelectedFalse && $userAnswer->skor <= 0 ? 'incorrect-answer' : '')) }}">
                                             <div class="option-content">
                                                 <span class="option-label">SALAH</span>
                                             </div>
@@ -361,17 +361,32 @@
                                                     if ($isUserAnswer && $isCorrectOption) {
                                                         $optionClass = 'correct-answer';
                                                     } elseif (!$isUserAnswer && $isCorrectOption) {
-                                                        $optionClass = 'correct-not-selected';
+                                                        // Hanya tampilkan jika user salah
+                                                        if ($userAnswer->skor <= 0) {
+                                                            $optionClass = 'correct-not-selected';
+                                                        }
                                                     } elseif ($isUserAnswer && !$isCorrectOption) {
-                                                        $optionClass = 'incorrect-answer';
+                                                        // Hanya tampilkan jika user salah
+                                                        if ($userAnswer->skor <= 0) {
+                                                            $optionClass = 'incorrect-answer';
+                                                        }
                                                     }
                                                 } else {
+                                                    // Logika baru: jika jawaban benar, hanya highlight jawaban benar
+                                                    // Jika jawaban salah, highlight jawaban user (salah) + jawaban benar
                                                     if ($isCorrect && $isUserAnswer) {
+                                                        // User menjawab benar
                                                         $optionClass = 'correct-answer';
                                                     } elseif ($isCorrect && !$isUserAnswer) {
-                                                        $optionClass = 'correct-not-selected';
+                                                        // Jawaban benar tapi user tidak pilih (hanya tampil jika user salah)
+                                                        if ($userAnswer->skor <= 0) {
+                                                            $optionClass = 'correct-not-selected';
+                                                        }
                                                     } elseif (!$isCorrect && $isUserAnswer) {
-                                                        $optionClass = 'incorrect-answer';
+                                                        // User menjawab salah (hanya tampil jika user salah)
+                                                        if ($userAnswer->skor <= 0) {
+                                                            $optionClass = 'incorrect-answer';
+                                                        }
                                                     }
                                                 }
                                             @endphp

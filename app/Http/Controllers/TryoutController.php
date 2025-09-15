@@ -1179,6 +1179,9 @@ class TryoutController extends Controller
             case 'pg_satu':
                 return $jawaban[0] === $soal->jawaban_benar ? 1 : 0;
 
+            case 'gambar':
+                return $jawaban[0] === $soal->jawaban_benar ? 1 : 0;
+
             case 'pg_bobot':
                 $totalBobot = 0;
                 foreach ($jawaban as $opsi) {
