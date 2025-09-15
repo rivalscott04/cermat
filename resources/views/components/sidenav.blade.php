@@ -110,7 +110,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{ route('kecermatan.riwayat', ['userId' => Auth::user()->id]) }}">
+                            <a href="{{ route('user.history.index') }}">
                                 <i class="fa fa-history"></i>
                                 <span class="nav-label">Riwayat Tes</span>
                             </a>

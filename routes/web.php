@@ -97,6 +97,9 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/tes-kecermatan/riwayat/{userId}', [KecermatanController::class, 'riwayat'])->name('kecermatan.riwayat');
     Route::get('/tes-kecermatan/detail/{id}', [KecermatanController::class, 'detailTes'])->name('kecermatan.detail');
+    
+    // History routes
+    Route::get('/riwayat-tes', [App\Http\Controllers\HistoryController::class, 'index'])->name('user.history.index');
 });
 
 // Admin Routes

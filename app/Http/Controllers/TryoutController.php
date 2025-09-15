@@ -983,7 +983,7 @@ class TryoutController extends Controller
                 $totalSoalKategori += $jumlah;
                 $totalSoal += $jumlah;
 
-                $available = $kategori->soals()->where('level', $level)->count();
+                $available = $kategori->soals()->where('level', $level)->where('is_used', false)->count();
 
                 if ($jumlah > $available) {
                     $levelText = ucfirst($level);
@@ -1006,11 +1006,6 @@ class TryoutController extends Controller
         if ($kategoriDenganSoal == 0) {
             $errors[] = "Minimal 1 kategori harus dipilih dengan minimal 1 soal.";
         }
-
-        $available = $kategori->soals()
-            ->where('level', $level)
-            ->where('is_used', false)
-            ->count();
 
         if (!empty($errors)) {
             throw new \Illuminate\Validation\ValidationException(

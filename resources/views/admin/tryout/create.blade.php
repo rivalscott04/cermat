@@ -211,13 +211,8 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            // Package mapping - default fallback
-            const packageMapping = {
-                'free': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
-                'kecerdasan': ['TIU', 'TWK', 'TKD'],
-                'kepribadian': ['TKP', 'PSIKOTES'],
-                'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
-            };
+            // Package mapping - will be loaded dynamically from server
+            let packageMapping = {};
 
             // Flag to track if mapping is loaded
             let mappingLoaded = false;
@@ -309,15 +304,15 @@
                 <i class="fa fa-check text-success"></i>
                 <strong>Kategori yang akan muncul:</strong><br>
                 ${allowedCategories.map(cat => `<span class="badge badge-primary mr-1">${cat}</span>`).join('')}
-            `).removeClass('alert-info alert-warning').addClass('alert-success');
+            `).removeClass('alert-info alert-warning alert-danger').addClass('alert-success');
                 } else if (selectedPackage === '') {
                     $('#kategori-preview').html(`
                 <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
-            `).removeClass('alert-success alert-warning').addClass('alert-info');
+            `).removeClass('alert-success alert-warning alert-danger').addClass('alert-info');
                 } else {
                     $('#kategori-preview').html(`
                 <i class="fa fa-exclamation-triangle text-warning"></i> Tidak ada kategori yang tersedia untuk paket ini
-            `).removeClass('alert-success alert-info').addClass('alert-warning');
+            `).removeClass('alert-success alert-info alert-danger').addClass('alert-warning');
                 }
 
                 // Filter kategori table
@@ -369,16 +364,13 @@
                     })
                     .catch(error => {
                         console.error('Error loading package mapping:', error);
-                        console.log('Using fallback mapping');
-
-                        // Set mapping loaded flag even with fallback
-                        mappingLoaded = true;
-
-                        // Trigger update if package is already selected
-                        const selectedPackage = $('#jenis_paket').val();
-                        if (selectedPackage) {
-                            updateKategoriDisplay(selectedPackage);
-                        }
+                        console.log('Failed to load package mapping, form may not work correctly');
+                        
+                        // Show error message to user
+                        $('#kategori-preview').html(`
+                            <i class="fa fa-exclamation-triangle text-danger"></i>
+                            <strong>Error:</strong> Gagal memuat konfigurasi paket. Silakan refresh halaman atau hubungi administrator.
+                        `).removeClass('alert-success alert-info alert-warning').addClass('alert-danger');
                     });
             }
 
@@ -387,6 +379,9 @@
                 const selectedPackage = $(this).val();
                 updateKategoriDisplay(selectedPackage);
             });
+
+            // Load mapping on page load first
+            loadPackageMapping();
 
             // Initialize on page load - trigger change event if there's already a selected value
             const initialPackage = $('#jenis_paket').val();
@@ -401,9 +396,6 @@
                 };
                 checkAndUpdate();
             }
-
-            // Load mapping on page load
-            loadPackageMapping();
 
             // Calculate total questions
             function calculateTotal() {
