@@ -119,47 +119,7 @@
                         </div>
                     </div>
 
-                    <!-- Paket Akademik -->
-                    <div class="col-md-3 mb-4">
-                        <div class="package-card h-100">
-                            <div class="package-header text-center">
-                                <h3 class="mb-0">Paket Akademik</h3>
-                                <p class="mb-0">Fokus Tes Akademik</p>
-                            </div>
-
-                            <div class="package-features">
-                                <div class="text-center mb-4">
-                                    <div class="package-price">Rp 75.000</div>
-                                    <p class="text-muted">Berlaku 30 hari</p>
-                                </div>
-
-                                <div class="features-list">
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Bank soal akademik lengkap
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Matematika, Bahasa Indonesia, PKN
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Pembahasan soal detail
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Simulasi ujian akademik
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Analisis kemampuan per mata pelajaran
-                                    </div>
-                                </div>
-
-                                <div class="button-container">
-                                    <a href="{{ route('subscription.process.packages', ['package' => 'akademik']) }}"
-                                        class="btn btn-outline-warning btn-package">
-                                        Pilih Paket
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    
 
                     <!-- Paket Kepribadian -->
                     <div class="col-md-3 mb-4">
