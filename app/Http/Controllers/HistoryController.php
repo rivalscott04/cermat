@@ -52,7 +52,6 @@ class HistoryController extends Controller
 
         // Get kecermatan history
         $kecermatanHistory = HasilTes::where('user_id', $user->id)
-            ->where('jenis_tes', 'kecermatan')
             ->orderBy('tanggal_tes', 'desc')
             ->get()
             ->map(function ($hasil) {
@@ -69,7 +68,7 @@ class HistoryController extends Controller
                     'correct_answers' => $hasil->skor_benar,
                     'wrong_answers' => $hasil->skor_salah,
                     'percentage' => $percentage,
-                    'duration' => $hasil->waktu_pengerjaan ?? 0,
+                    'duration' => $hasil->waktu_total ?? 0,
                     'status' => $this->getKecermatanStatus($hasil->skor_benar, $totalQuestions)
                 ];
             });
