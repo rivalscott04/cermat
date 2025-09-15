@@ -24,14 +24,17 @@ class HistoryController extends Controller
                 // Calculate total score for this tryout
                 $totalScore = UserTryoutSoal::where('user_id', $session->user_id)
                     ->where('tryout_id', $session->tryout_id)
+                    ->where('user_tryout_session_id', $session->id)
                     ->sum('skor');
                 
                 $totalQuestions = UserTryoutSoal::where('user_id', $session->user_id)
                     ->where('tryout_id', $session->tryout_id)
+                    ->where('user_tryout_session_id', $session->id)
                     ->count();
                 
                 $correctAnswers = UserTryoutSoal::where('user_id', $session->user_id)
                     ->where('tryout_id', $session->tryout_id)
+                    ->where('user_tryout_session_id', $session->id)
                     ->where('skor', '>', 0)
                     ->count();
                 

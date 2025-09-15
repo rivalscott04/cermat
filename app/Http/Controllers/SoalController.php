@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Soal;
 use App\Models\KategoriSoal;
 use App\Models\OpsiSoal;
+use App\Models\PackageCategoryMapping;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -66,6 +67,17 @@ class SoalController extends Controller
             $rules['gambar'] = 'required|image|mimes:jpeg,png,jpg,gif|max:2048';
         }
 
+        // Dynamic validation for kepribadian categories (TKP/PSIKOTES via package mapping)
+        if ($request->filled('kategori_id')) {
+            $kategori = KategoriSoal::find($request->kategori_id);
+            if ($kategori) {
+                $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+                if (in_array($kategori->kode, $kepribadianKategoriCodes)) {
+                    $rules['opsi.*.bobot'] = 'required|integer|between:1,5';
+                }
+            }
+        }
+
         $request->validate($rules);
 
         DB::transaction(function () use ($request) {
@@ -122,6 +134,28 @@ class SoalController extends Controller
             $phpWord = IOFactory::load($file->getPathname());
 
             $soals = $this->parseWordDocument($phpWord, $request->kategori_id);
+
+            // Validate opsi bobot based on kategori package mapping dynamically
+            $kategori = KategoriSoal::find($request->kategori_id);
+            $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+            $isKepribadian = $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
+
+            foreach ($soals as $idx => $soalData) {
+                if (!isset($soalData['opsi']) || !is_array($soalData['opsi'])) {
+                    continue;
+                }
+                foreach ($soalData['opsi'] as $opsi) {
+                    if ($isKepribadian) {
+                        if (!isset($opsi['bobot']) || !is_numeric($opsi['bobot']) || intval($opsi['bobot']) < 1 || intval($opsi['bobot']) > 5) {
+                            return back()->with('error', 'Bobot opsi harus bilangan bulat 1–5 untuk kategori kepribadian.');
+                        }
+                    } else {
+                        if (!isset($opsi['bobot']) || !is_numeric($opsi['bobot']) || floatval($opsi['bobot']) < 0 || floatval($opsi['bobot']) > 1) {
+                            return back()->with('error', 'Bobot opsi harus di antara 0–1 untuk kategori non-kepribadian.');
+                        }
+                    }
+                }
+            }
 
             DB::transaction(function () use ($soals) {
                 foreach ($soals as $soalData) {
@@ -272,6 +306,17 @@ class SoalController extends Controller
         // Add image validation if tipe is gambar and new image is uploaded
         if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
             $rules['gambar'] = 'image|mimes:jpeg,png,jpg,gif|max:2048';
+        }
+
+        // Dynamic validation for kepribadian categories (TKP/PSIKOTES via package mapping)
+        if ($request->filled('kategori_id')) {
+            $kategori = KategoriSoal::find($request->kategori_id);
+            if ($kategori) {
+                $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+                if (in_array($kategori->kode, $kepribadianKategoriCodes)) {
+                    $rules['opsi.*.bobot'] = 'required|integer|between:1,5';
+                }
+            }
         }
 
         $request->validate($rules);

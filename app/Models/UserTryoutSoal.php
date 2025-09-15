@@ -11,6 +11,7 @@ class UserTryoutSoal extends Model
     protected $fillable = [
         'user_id',
         'tryout_id',
+        'user_tryout_session_id',
         'soal_id',
         'level',
         'urutan',
@@ -36,6 +37,11 @@ class UserTryoutSoal extends Model
     public function tryout()
     {
         return $this->belongsTo(Tryout::class);
+    }
+
+    public function session()
+    {
+        return $this->belongsTo(UserTryoutSession::class, 'user_tryout_session_id');
     }
 
     public function soal()

@@ -364,26 +364,22 @@ class TryoutController extends Controller
 
         // If restart is requested or no active session, create new session
         if ($restart || !$existingSession) {
-            // Delete existing questions and session
-            UserTryoutSoal::where('user_id', $user->id)
-                ->where('tryout_id', $tryout->id)
-                ->delete();
-
+            // Jangan hapus attempt sebelumnya. Cukup tandai session lama sebagai abandoned
             if ($existingSession) {
                 $existingSession->update(['status' => 'abandoned']);
             }
 
-            // PERUBAHAN: Create new session dengan shuffle_seed yang baru
+            // Create session baru
             $newSession = UserTryoutSession::create([
                 'user_id' => $user->id,
                 'tryout_id' => $tryout->id,
                 'started_at' => now(),
                 'status' => 'active',
-                'shuffle_seed' => rand(1, 999999) // Generate seed acak untuk session ini
+                'shuffle_seed' => rand(1, 999999)
             ]);
 
-            // Generate new questions dengan seed dari session
-            $this->generateQuestionsForUser($user, $tryout, $newSession->shuffle_seed);
+            // Generate questions untuk session baru
+            $this->generateQuestionsForUser($user, $tryout, $newSession->shuffle_seed, $newSession->id);
         }
 
         // Set session flag untuk auto fullscreen
@@ -449,6 +445,7 @@ class TryoutController extends Controller
         // Get user questions
         $baseQuery = UserTryoutSoal::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
+            ->where('user_tryout_session_id', $session->id)
             ->with(['soal.opsi', 'soal.kategori']);
 
         // Build per-category counts on full set (before filter)
@@ -467,10 +464,11 @@ class TryoutController extends Controller
 
         // If no questions found, generate them
         if ($userSoals->isEmpty()) {
-            $this->generateQuestionsForUser($user, $tryout, $session->shuffle_seed);
+            $this->generateQuestionsForUser($user, $tryout, $session->shuffle_seed, $session->id);
 
             $userSoals = UserTryoutSoal::where('user_id', $user->id)
                 ->where('tryout_id', $tryout->id)
+                ->where('user_tryout_session_id', $session->id)
                 ->with(['soal.opsi', 'soal.kategori'])
                 ->orderBy('urutan')
                 ->get();
@@ -584,6 +582,7 @@ class TryoutController extends Controller
 
         $userSoal = UserTryoutSoal::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
+            ->where('user_tryout_session_id', $session->id)
             ->where('soal_id', $request->soal_id)
             ->first();
 
@@ -871,6 +870,7 @@ class TryoutController extends Controller
 
         $userAnswers = UserTryoutSoal::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
+            ->where('user_tryout_session_id', $session->id)
             ->with(['soal.opsi', 'soal.kategori'])
             ->orderBy('urutan')
             ->get();
@@ -885,8 +885,17 @@ class TryoutController extends Controller
         // Update semua user answers dengan session seed yang konsisten
         UserTryoutSoal::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
+            ->where('user_tryout_session_id', $session->id)
             ->whereNull('session_seed')
             ->update(['session_seed' => $sessionSeed]);
+
+        // Backfill session_id untuk jawaban yang mungkin belum terset
+        if ($session) {
+            UserTryoutSoal::where('user_id', $user->id)
+                ->where('tryout_id', $tryout->id)
+                ->whereNull('user_tryout_session_id')
+                ->update(['user_tryout_session_id' => $session->id]);
+        }
 
         // Refresh data setelah update
         $userAnswers = $userAnswers->fresh();
@@ -1025,7 +1034,7 @@ class TryoutController extends Controller
     }
 
     // PERUBAHAN: Generate questions dengan session seed
-    private function generateQuestionsForUser($user, $tryout, $sessionSeed = null)
+    private function generateQuestionsForUser($user, $tryout, $sessionSeed = null, $sessionId = null)
     {
         $urutan = 1;
         $totalGenerated = 0;
@@ -1057,6 +1066,7 @@ class TryoutController extends Controller
                     UserTryoutSoal::create([
                         'user_id' => $user->id,
                         'tryout_id' => $tryout->id,
+                        'user_tryout_session_id' => $sessionId,
                         'soal_id' => $soal->id,
                         'level' => $soal->level, // snapshot level
                         'urutan' => $urutan++,
@@ -1094,6 +1104,7 @@ class TryoutController extends Controller
                             UserTryoutSoal::create([
                                 'user_id' => $user->id,
                                 'tryout_id' => $tryout->id,
+                                'user_tryout_session_id' => $sessionId,
                                 'soal_id' => $soal->id,
                                 'level' => $soal->level ?? null, // snapshot jika ada
                                 'urutan' => $urutan++,
