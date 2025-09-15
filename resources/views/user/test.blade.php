@@ -105,10 +105,13 @@
                         </div>
                     </div>
 
-                    {{-- Card Tes Psikologi (Tryout CBT) --}}
+                    {{-- Card Tes Kepribadian (Tryout CBT filtered) --}}
                     <div class="col-md-3 mb-4">
-                        <div class="test-card h-100 {{ !Auth::user()->canAccessTryout() ? 'disabled-card' : '' }}">
-                            @if (!Auth::user()->canAccessTryout())
+                        @php
+                            $canAccessKepribadian = in_array(Auth::user()->paket_akses, ['kepribadian', 'lengkap']);
+                        @endphp
+                        <div class="test-card h-100 {{ !$canAccessKepribadian ? 'disabled-card' : '' }}">
+                            @if (!$canAccessKepribadian)
                                 <div class="lock-overlay">
                                     <i class="fa fa-lock"></i>
                                 </div>
@@ -117,10 +120,10 @@
                                 <i class="fa fa-graduation-cap test-icon"></i>
                             </div>
                             <div class="test-content">
-                                <h3 class="test-title">Tes Psikologi</h3>
+                                <h3 class="test-title">Tes Kepribadian</h3>
                                 <p class="test-description">
                                     Tryout CBT dengan tes kepribadian dan karakter. Simulasi wawancara
-                                    psikologi dengan analisis profil lengkap.
+                                    dengan analisis profil lengkap.
                                 </p>
                                 <div class="test-features">
                                     <div class="feature-badge">
@@ -135,13 +138,13 @@
                                 </div>
                             </div>
                             <div class="test-button-container">
-                                @if (Auth::user()->canAccessTryout())
-                                    <a href="{{ route('user.tryout.index') }}" class="btn btn-test-success">
-                                        <i class="fa fa-play"></i> Mulai Tes Psikologi
+                                @if ($canAccessKepribadian)
+                                    <a href="{{ route('user.tryout.index', ['type' => 'kepribadian']) }}" class="btn btn-test-success">
+                                        <i class="fa fa-play"></i> Mulai Tes Kepribadian
                                     </a>
                                 @else
                                     <button class="btn btn-disabled" disabled>
-                                        <i class="fa fa-lock"></i> Butuh Paket Psikologi
+                                        <i class="fa fa-lock"></i> Butuh Paket Kepribadian
                                     </button>
                                 @endif
                             </div>
