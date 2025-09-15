@@ -51,11 +51,9 @@
                                             <option value="free" {{ old('jenis_paket') == 'free' ? 'selected' : '' }}>Free
                                                 - 1 tryout untuk semua user</option>
                                             <option value="kecerdasan"
-                                                {{ old('jenis_paket') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan - TIU,
-                                                TWK, TKD</option>
+                                                {{ old('jenis_paket') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan</option>
                                             <option value="kepribadian"
-                                                {{ old('jenis_paket') == 'kepribadian' ? 'selected' : '' }}>Kepribadian -
-                                                TKP, PSIKOTES</option>
+                                                {{ old('jenis_paket') == 'kepribadian' ? 'selected' : '' }}>Kepribadian</option>
                                             <option value="lengkap"
                                                 {{ old('jenis_paket') == 'lengkap' ? 'selected' : '' }}>Lengkap - Semua
                                                 kategori</option>
@@ -292,6 +290,30 @@
                 }
             }
 
+            // Function to update package option descriptions
+            function updatePackageDescriptions() {
+                // Update kecerdasan option
+                const kecerdasanCategories = packageMapping['kecerdasan'] || [];
+                const kecerdasanText = kecerdasanCategories.length > 0 
+                    ? `Kecerdasan (${kecerdasanCategories.length} kategori)`
+                    : 'Kecerdasan';
+                $('#jenis_paket option[value="kecerdasan"]').text(kecerdasanText);
+
+                // Update kepribadian option
+                const kepribadianCategories = packageMapping['kepribadian'] || [];
+                const kepribadianText = kepribadianCategories.length > 0 
+                    ? `Kepribadian (${kepribadianCategories.length} kategori)`
+                    : 'Kepribadian';
+                $('#jenis_paket option[value="kepribadian"]').text(kepribadianText);
+
+                // Update lengkap option
+                const lengkapCategories = packageMapping['lengkap'] || [];
+                const lengkapText = lengkapCategories.length > 0 
+                    ? `Lengkap (${lengkapCategories.length} kategori)`
+                    : 'Lengkap - Semua kategori';
+                $('#jenis_paket option[value="lengkap"]').text(lengkapText);
+            }
+
             // Function to update kategori display
             function updateKategoriDisplay(selectedPackage) {
                 console.log('Updating kategori display for package:', selectedPackage);
@@ -355,6 +377,9 @@
                         console.log('Package mapping loaded:', data);
                         packageMapping = data;
                         mappingLoaded = true;
+
+                        // Update package option descriptions
+                        updatePackageDescriptions();
 
                         // Trigger update if package is already selected
                         const selectedPackage = $('#jenis_paket').val();
