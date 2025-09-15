@@ -37,6 +37,7 @@ class HistoryController extends Controller
                 
                 return [
                     'id' => $session->id,
+                    'tryout_id' => $session->tryout_id,
                     'type' => 'tryout',
                     'title' => $session->tryout->judul ?? 'Tryout',
                     'date' => $session->finished_at,

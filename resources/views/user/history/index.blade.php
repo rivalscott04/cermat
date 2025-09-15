@@ -17,6 +17,7 @@
                             <div class="row">
                                 @foreach($allHistory as $history)
                                     <div class="col-lg-6 col-md-6 mb-4">
+                                        <a class="history-card-link" href="{{ $history['type'] === 'tryout' ? route('user.tryout.finish', ['tryout' => $history['tryout_id'] ?? null]) : route('kecermatan.detail', ['id' => $history['id']]) }}">
                                         <div class="history-card {{ $history['status'] }}">
                                             <div class="card-header">
                                                 <div class="card-title">
@@ -85,6 +86,7 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        </a>
                                     </div>
                                 @endforeach
                             </div>
