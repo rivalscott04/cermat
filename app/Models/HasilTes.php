@@ -15,6 +15,11 @@ class HasilTes extends Model
         'average_time',
         'detail_jawaban',
         'tanggal_tes',
+        'tkp_final_score',
+    ];
+
+    protected $casts = [
+        'tkp_final_score' => 'decimal:2'
     ];
 
     public function user()

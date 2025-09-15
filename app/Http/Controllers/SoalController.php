@@ -59,7 +59,7 @@ class SoalController extends Controller
             'jawaban_benar' => 'nullable|string',
             'opsi' => 'required|array',
             'opsi.*.teks' => 'required|string',
-            'opsi.*.bobot' => 'nullable|numeric|min:0|max:1'
+            'opsi.*.bobot' => 'nullable|numeric|min:0|max:5'
         ];
 
         // Add image validation if tipe is gambar

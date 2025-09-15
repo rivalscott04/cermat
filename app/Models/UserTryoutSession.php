@@ -16,12 +16,14 @@ class UserTryoutSession extends Model
         'started_at',
         'finished_at',
         'shuffle_seed',
-        'status'
+        'status',
+        'tkp_final_score'
     ];
 
     protected $casts = [
         'started_at' => 'datetime',
-        'finished_at' => 'datetime'
+        'finished_at' => 'datetime',
+        'tkp_final_score' => 'decimal:2'
     ];
 
     public function user()

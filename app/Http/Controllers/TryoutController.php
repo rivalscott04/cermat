@@ -908,6 +908,32 @@ class TryoutController extends Controller
 
         $totalScore = $userAnswers->sum('skor');
         $totalQuestions = $userAnswers->count();
+
+        // TKP scaling: treat empty as 0; for scaling clamp to min N
+        $tkpFinalScore = null;
+        try {
+            $kepribadianKategoriCodes = \App\Models\PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+            $tkpQuestions = $userAnswers->filter(function ($ans) use ($kepribadianKategoriCodes) {
+                $kategori = $ans->soal->kategori ?? null;
+                return $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
+            });
+
+            if ($tkpQuestions->count() > 0) {
+                $N = $tkpQuestions->count();
+                // Raw T sums selected option weights (already stored in skor per-question for kepribadian as 1..5)
+                $T = (int) round($tkpQuestions->sum('skor'));
+
+                $scorer = app(\App\Services\TkpScoringService::class);
+                $tkpFinalScore = $scorer->calculateFinalScore($N, $T);
+
+                // Persist to session for quick retrieval
+                if ($session) {
+                    $session->update(['tkp_final_score' => $tkpFinalScore]);
+                }
+            }
+        } catch (\Throwable $e) {
+            // Fail-safe: ignore TKP score calculation errors to avoid blocking result page
+        }
         $correctAnswers = $userAnswers->where('skor', '>', 0)->count();
         $wrongAnswers = $totalQuestions - $correctAnswers;
 
@@ -929,6 +955,34 @@ class TryoutController extends Controller
             ];
         }
 
+        // Persist TKP score to hasil_tes as a summarized record (no breakdown)
+        if (!is_null($tkpFinalScore)) {
+            try {
+                $durationMinutes = $tryout->durasi_menit;
+                $durationSeconds = $durationMinutes * 60;
+                $tkpCount = $tkpQuestions->count();
+                $averageTime = $tkpCount > 0 ? round($durationSeconds / $tkpCount, 2) : null;
+
+                \App\Models\HasilTes::create([
+                    'user_id' => $user->id,
+                    'jenis_tes' => 'kepribadian',
+                    'skor_benar' => 0,
+                    'skor_salah' => 0,
+                    'waktu_total' => $durationSeconds,
+                    'average_time' => $averageTime,
+                    'detail_jawaban' => json_encode([
+                        'N' => $tkpCount,
+                        'T' => (int) round($tkpQuestions->sum('skor')),
+                        'skor_tkp' => $tkpFinalScore,
+                    ]),
+                    'tkp_final_score' => $tkpFinalScore,
+                    'tanggal_tes' => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // ignore persistence errors
+            }
+        }
+
         // Server-side per-question review support
         $requestedReview = request()->get('review');
         $currentReviewNumber = is_numeric($requestedReview) ? max(1, min((int)$requestedReview, $totalQuestions)) : 1;
@@ -944,7 +998,8 @@ class TryoutController extends Controller
             'wrongAnswers',
             'categoryScores',
             'currentReviewNumber',
-            'currentReviewItem'
+            'currentReviewItem',
+            'tkpFinalScore'
         ));
     }
 
@@ -1047,75 +1102,80 @@ class TryoutController extends Controller
         DB::beginTransaction();
 
         try {
-            // Jika ada blueprint, gunakan blueprint per kategori-level.
-            if ($tryout->relationLoaded('blueprints') || $tryout->blueprints()->exists()) {
-                $tryout->load('blueprints');
-                $selector = new QuestionSelector();
-                $selector->validateBlueprintAvailability($tryout);
+            // 1) Cari baseline: session pertama user untuk tryout ini yang punya set soal
+            $baselineSession = UserTryoutSession::where('user_id', $user->id)
+                ->where('tryout_id', $tryout->id)
+                ->orderBy('id', 'asc')
+                ->first();
 
-                $soals = $selector->pickByBlueprint($tryout);
+            $baselineSet = collect();
+            if ($baselineSession) {
+                $baselineSet = UserTryoutSoal::where('user_id', $user->id)
+                    ->where('tryout_id', $tryout->id)
+                    ->where('user_tryout_session_id', $baselineSession->id)
+                    ->orderBy('urutan')
+                    ->get(['soal_id', 'level']);
+            }
 
-                // Optional: shuffle question order deterministically per session if enabled
-                if ($tryout->shuffle_questions) {
-                    $seed = crc32($sessionSeed . '_' . $tryout->id . '_' . $user->id);
-                    mt_srand($seed);
-                    $soals = $soals->shuffle();
-                }
-
-                foreach ($soals as $soal) {
-                    UserTryoutSoal::create([
-                        'user_id' => $user->id,
-                        'tryout_id' => $tryout->id,
-                        'user_tryout_session_id' => $sessionId,
-                        'soal_id' => $soal->id,
-                        'level' => $soal->level, // snapshot level
-                        'urutan' => $urutan++,
-                        'session_seed' => $sessionSeed,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                    $totalGenerated++;
-                }
-            } else {
-                // Backward compatibility: gunakan struktur lama per kategori saja
-                foreach ($tryout->struktur as $kategoriId => $jumlah) {
-                    if ($jumlah > 0) {
-                        $availableSoals = Soal::active()
-                            ->byKategori($kategoriId)
-                            ->count();
-
-                        if ($availableSoals < $jumlah) {
-                            throw new \Exception("Kategori ID {$kategoriId} tidak memiliki cukup soal aktif. Tersedia: {$availableSoals}, Dibutuhkan: {$jumlah}");
-                        }
-
-                        $soals = Soal::active()
-                            ->byKategori($kategoriId)
-                            ->inRandomOrder()
-                            ->limit($jumlah)
-                            ->get();
-
-                        if ($tryout->shuffle_questions) {
-                            $seed = crc32($sessionSeed . '_' . $tryout->id . '_' . $user->id . '_' . $kategoriId);
-                            mt_srand($seed);
-                            $soals = $soals->shuffle();
-                        }
-
-                        foreach ($soals as $soal) {
-                            UserTryoutSoal::create([
-                                'user_id' => $user->id,
-                                'tryout_id' => $tryout->id,
-                                'user_tryout_session_id' => $sessionId,
-                                'soal_id' => $soal->id,
-                                'level' => $soal->level ?? null, // snapshot jika ada
-                                'urutan' => $urutan++,
-                                'session_seed' => $sessionSeed,
-                                'created_at' => now(),
-                                'updated_at' => now()
-                            ]);
-                            $totalGenerated++;
+            // 2) Jika baseline kosong (belum pernah attempt), pilih set soal sesuai blueprint/struktur sebagai baseline
+            if ($baselineSet->isEmpty()) {
+                if ($tryout->relationLoaded('blueprints') || $tryout->blueprints()->exists()) {
+                    $tryout->load('blueprints');
+                    $selector = new QuestionSelector();
+                    $selector->validateBlueprintAvailability($tryout);
+                    $picked = $selector->pickByBlueprint($tryout);
+                    $baselineSet = $picked->map(function ($soal) {
+                        return (object)['soal_id' => $soal->id, 'level' => $soal->level];
+                    });
+                } else {
+                    // Fallback: gunakan struktur lama per kategori
+                    $temp = collect();
+                    foreach ($tryout->struktur as $kategoriId => $jumlah) {
+                        if ($jumlah > 0) {
+                            $availableSoals = Soal::active()->byKategori($kategoriId)->count();
+                            if ($availableSoals < $jumlah) {
+                                throw new \Exception("Kategori ID {$kategoriId} tidak memiliki cukup soal aktif. Tersedia: {$availableSoals}, Dibutuhkan: {$jumlah}");
+                            }
+                            $soals = Soal::active()->byKategori($kategoriId)->inRandomOrder()->limit($jumlah)->get();
+                            $soals->each(function ($s) use (&$temp) {
+                                $temp->push((object)['soal_id' => $s->id, 'level' => $s->level ?? null]);
+                            });
                         }
                     }
+                    $baselineSet = $temp;
                 }
+
+                // Jika ini adalah attempt pertama (sessionId == baselineSession? tidak ada baselineSession), simpan baseline sesuai urutan sekarang
+                // Insert langsung dengan urutan (mungkin di-shuffle tergantung setting)
+                $ordered = $baselineSet;
+            } else {
+                // 3) Untuk attempt selanjutnya: gunakan set soal baseline yang sama
+                $ordered = $baselineSet;
+            }
+
+            // 4) Acak urutan saja per attempt, deterministik dengan session seed
+            $ordered = $ordered->values();
+            $indices = range(0, $ordered->count() - 1);
+            if ($ordered->count() > 0) {
+                $seed = crc32($sessionSeed . '_' . $tryout->id . '_' . $user->id . '_order');
+                mt_srand($seed);
+                shuffle($indices);
+            }
+
+            foreach ($indices as $idx) {
+                $row = $ordered[$idx];
+                UserTryoutSoal::create([
+                    'user_id' => $user->id,
+                    'tryout_id' => $tryout->id,
+                    'user_tryout_session_id' => $sessionId,
+                    'soal_id' => $row->soal_id,
+                    'level' => $row->level,
+                    'urutan' => $urutan++,
+                    'session_seed' => $sessionSeed,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+                $totalGenerated++;
             }
 
             if ($totalGenerated == 0) {

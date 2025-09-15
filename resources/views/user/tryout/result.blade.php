@@ -54,6 +54,12 @@
                                 <span>Skor terendah:</span>
                                 <strong>{{ number_format($userAnswers->min('skor'), 2) }}</strong>
                             </div>
+                            @isset($tkpFinalScore)
+                            <div class="stat-row">
+                                <span>Skor TKP (1–100):</span>
+                                <strong>{{ number_format($tkpFinalScore, 2) }}</strong>
+                            </div>
+                            @endisset
                         </div>
                     </div>
                 </div>
