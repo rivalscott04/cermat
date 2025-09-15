@@ -8,6 +8,7 @@ class HasilTes extends Model
 {
     protected $fillable = [
         'user_id',
+        'jenis_tes',
         'skor_benar',
         'skor_salah',
         'waktu_total',

@@ -52,6 +52,7 @@ class HistoryController extends Controller
 
         // Get kecermatan history
         $kecermatanHistory = HasilTes::where('user_id', $user->id)
+            ->where('jenis_tes', 'kecermatan')
             ->orderBy('tanggal_tes', 'desc')
             ->get()
             ->map(function ($hasil) {
@@ -72,6 +73,9 @@ class HistoryController extends Controller
                     'status' => $this->getKecermatanStatus($hasil->skor_benar, $totalQuestions)
                 ];
             });
+
+        // TODO: If/when kecerdasan & kepribadian standalone results are stored in hasil_tes,
+        // add queries similar to $kecermatanHistory for 'kecerdasan' and 'kepribadian'
 
         // Combine and sort all history
         $allHistory = $tryoutHistory->concat($kecermatanHistory)

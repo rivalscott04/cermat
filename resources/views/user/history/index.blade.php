@@ -22,6 +22,9 @@
                                                 <div class="card-title">
                                                     <i class="fa {{ $history['type'] == 'tryout' ? 'fa-graduation-cap' : 'fa-eye' }}"></i>
                                                     {{ $history['title'] }}
+                                                    <span class="type-badge {{ $history['type'] == 'tryout' ? 'tryout' : ($history['type'] == 'kecermatan' ? 'kecermatan' : 'lain') }}">
+                                                        {{ ucfirst($history['type']) }}
+                                                    </span>
                                                 </div>
                                                 <div class="card-date">
                                                     {{ \Carbon\Carbon::parse($history['date'])->format('d M Y, H:i') }}
@@ -153,6 +156,20 @@
     margin-right: 8px;
     color: #666;
 }
+
+.type-badge {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.type-badge.tryout { background: #e3f2fd; color: #1565c0; }
+.type-badge.kecermatan { background: #e8f5e9; color: #2e7d32; }
+.type-badge.lain { background: #f3e5f5; color: #6a1b9a; }
 
 .card-date {
     font-size: 12px;

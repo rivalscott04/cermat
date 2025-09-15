@@ -125,6 +125,7 @@ class SoalKecermatanController extends Controller
             // Simpan hasil tes ke database
             $hasil = HasilTes::create([
                 'user_id' => $request->user_id,
+                'jenis_tes' => 'kecermatan',
                 'skor_benar' => $request->skor_benar,
                 'skor_salah' => $request->skor_salah,
                 'waktu_total' => $request->waktu_total,
