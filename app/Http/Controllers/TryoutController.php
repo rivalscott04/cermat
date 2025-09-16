@@ -875,7 +875,7 @@ class TryoutController extends Controller
                 'finished_at' => now()
             ]);
         }
-
+        
         $userAnswers = UserTryoutSoal::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
             ->where('user_tryout_session_id', $session->id)
