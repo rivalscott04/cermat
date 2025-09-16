@@ -171,15 +171,10 @@
                                                         class="btn btn-sm btn-warning">
                                                         <i class="fa fa-edit"></i>
                                                     </a>
-                                                    <form action="{{ route('admin.soal.destroy', $soal) }}" method="POST"
-                                                        class="d-inline"
-                                                        onsubmit="return confirm('Yakin ingin menghapus soal ini?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-sm btn-danger">
-                                                            <i class="fa fa-trash"></i>
-                                                        </button>
-                                                    </form>
+                                                    <button type="button" class="btn btn-sm btn-danger" 
+                                                        onclick="showDeleteModal({{ $soal->id }}, '{{ addslashes(Str::limit(strip_tags($soal->pertanyaan), 50)) }}')">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -192,9 +187,12 @@
                                 </table>
                             </div>
 
-                            <div class="d-flex justify-content-center">
-                                {{ $soals->appends(request()->query())->links('pagination::bootstrap-4') }}
-                            </div>
+                            <!-- Pagination -->
+                            @if($soals->hasPages())
+                                <div class="d-flex justify-content-center mt-4">
+                                    {{ $soals->appends(request()->query())->links('pagination::bootstrap-4') }}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -323,26 +321,74 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Hapus Soal -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="deleteModalLabel">
+                            <i class="fa fa-exclamation-triangle"></i> Konfirmasi Hapus Soal
+                        </h5>
+                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="text-center mb-3">
+                            <i class="fa fa-trash fa-3x text-danger"></i>
+                        </div>
+                        <p class="text-center">
+                            Apakah Anda yakin ingin menghapus soal berikut?
+                        </p>
+                        <div class="alert alert-warning">
+                            <strong>Pertanyaan:</strong>
+                            <div id="soalPreview" class="mt-2 p-2 bg-light rounded"></div>
+                        </div>
+                        <div class="alert alert-danger">
+                            <i class="fa fa-warning"></i>
+                            <strong>Peringatan:</strong> Tindakan ini tidak dapat dibatalkan. Semua data terkait soal ini akan dihapus permanen.
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="fa fa-times"></i> Batal
+                        </button>
+                        <form id="deleteForm" method="POST" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> Ya, Hapus Soal
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endsection
 
     @push('styles')
         <style>
             .pagination {
-                margin: 0;
+                margin: 20px 0;
+                justify-content: center;
             }
             
             .pagination .page-link {
-                padding: 0.375rem 0.75rem;
-                font-size: 0.875rem;
+                padding: 0.5rem 0.75rem;
+                font-size: 0.9rem;
                 border: 1px solid #dee2e6;
                 color: #007bff;
                 background-color: #fff;
+                margin: 0 2px;
+                border-radius: 4px;
             }
             
             .pagination .page-link:hover {
                 color: #0056b3;
                 background-color: #e9ecef;
                 border-color: #dee2e6;
+                text-decoration: none;
             }
             
             .pagination .page-item.active .page-link {
@@ -358,7 +404,7 @@
             }
             
             .pagination .page-link i {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
             }
             
             /* Ensure proper spacing from footer */
@@ -406,5 +452,12 @@
                     }
                 });
             });
+
+            // Function to show delete modal
+            function showDeleteModal(soalId, soalPertanyaan) {
+                $('#deleteForm').attr('action', `/admin/soal/${soalId}`);
+                $('#soalPreview').text(soalPertanyaan);
+                $('#deleteModal').modal('show');
+            }
         </script>
     @endpush
