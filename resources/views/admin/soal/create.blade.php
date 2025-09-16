@@ -258,10 +258,25 @@
                 $('#kategori_id').on('change', function() {
                     const tipe = $('#tipe').val();
                     if (tipe === 'pg_bobot') {
-                        // Regenerate opsi with correct bobot validation
-                        generateOpsi(tipe);
+                        // Update existing bobot inputs
+                        updateBobotInputs();
                     }
                 });
+
+                // Function to update bobot inputs based on current category
+                function updateBobotInputs() {
+                    const kategoriId = $('#kategori_id').val();
+                    const isKepribadian = checkIfKepribadianCategory(kategoriId);
+                    
+                    $('.bobot-input').each(function() {
+                        if ($(this).is('input[type="number"]')) {
+                            $(this).attr('step', isKepribadian ? '1' : '0.01');
+                            $(this).attr('min', isKepribadian ? '1' : '0');
+                            // Remove max attribute to avoid HTML5 validation
+                            $(this).removeAttr('max');
+                        }
+                    });
+                }
 
                 function togglePembahasanControls() {
                     const type = $('input[name="pembahasan_type"]:checked').val();
@@ -379,12 +394,14 @@
                             for (let i = 0; i < 4; i++) {
                                 addOpsiItem(String.fromCharCode(65 + i), '', true);
                             }
-                            $('#add-opsi').show();
-                            break;
-                    }
+                    $('#add-opsi').show();
+                    break;
+            }
 
-                    updateJawabanBenarOptions();
-                }
+            updateJawabanBenarOptions();
+            // Update bobot inputs after generating opsi
+            updateBobotInputs();
+        }
 
                 // Add opsi item
                 function addOpsiItem(letter, defaultText = '', showBobot = false) {
@@ -406,7 +423,6 @@
                                                                                     <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
                                                                                            step="${isKepribadian ? '1' : '0.01'}" 
                                                                                            min="${isKepribadian ? '1' : '0'}" 
-                                                                                           max="${isKepribadian ? '5' : '1'}" 
                                                                                            placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
                                                                                 </div>
                                                                                 ` : `

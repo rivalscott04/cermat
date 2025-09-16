@@ -330,17 +330,28 @@
                     
                     // Update bobot validation for pg_bobot
                     if (tipe === 'pg_bobot') {
-                        // Regenerate opsi with correct bobot validation
-                        generateOpsi(tipe);
-                        // Reload existing data
-                        setTimeout(function() {
-                            loadExistingData(tipe);
-                        }, 100);
+                        // Update existing bobot inputs
+                        updateBobotInputs();
                     }
                     
                     // Apply kecermatan styling
                     toggleKecermatanStyling();
                 });
+
+                // Function to update bobot inputs based on current category
+                function updateBobotInputs() {
+                    const kategoriId = $('#kategori_id').val();
+                    const isKepribadian = checkIfKepribadianCategory(kategoriId);
+                    
+                    $('.bobot-input').each(function() {
+                        if ($(this).is('input[type="number"]')) {
+                            $(this).attr('step', isKepribadian ? '1' : '0.01');
+                            $(this).attr('min', isKepribadian ? '1' : '0');
+                            // Remove max attribute to avoid HTML5 validation
+                            $(this).removeAttr('max');
+                        }
+                    });
+                }
 
                 // Toggle gambar upload visibility
                 function toggleGambarUpload(tipe) {
@@ -442,6 +453,8 @@
                     }
 
                     updateJawabanBenarOptions();
+                    // Update bobot inputs after generating opsi
+                    updateBobotInputs();
                     console.log('=== END GENERATE OPSI ===');
                     console.log('Final opsi count:', opsiCount);
                 }
@@ -499,7 +512,6 @@
                                         <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
                                                step="${isKepribadian ? '1' : '0.01'}" 
                                                min="${isKepribadian ? '1' : '0'}" 
-                                               max="${isKepribadian ? '5' : '1'}" 
                                                placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
                                     </div>
                                 ` : `
