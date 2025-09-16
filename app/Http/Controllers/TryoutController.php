@@ -1268,6 +1268,10 @@ class TryoutController extends Controller
 
     private function calculateScore($soal, $jawaban)
     {
+        // Check if this is a kepribadian category (TKP)
+        $kepribadianKategoriCodes = \App\Models\PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+        $isKepribadian = $soal->kategori && in_array($soal->kategori->kode, $kepribadianKategoriCodes);
+
         switch ($soal->tipe) {
             case 'benar_salah':
                 return $jawaban[0] === $soal->jawaban_benar ? 1 : 0;
@@ -1286,7 +1290,14 @@ class TryoutController extends Controller
                         $totalBobot += $opsiSoal->bobot;
                     }
                 }
-                return min($totalBobot, 1);
+                
+                // For kepribadian categories, return the full bobot (1-5)
+                // For non-kepribadian categories, cap at 1 (0-1 scale)
+                if ($isKepribadian) {
+                    return $totalBobot; // Can be 1-5
+                } else {
+                    return min($totalBobot, 1); // Cap at 1 for 0-1 scale
+                }
 
             case 'pg_pilih_2':
                 if (count($jawaban) !== 2) return 0;
@@ -1301,7 +1312,7 @@ class TryoutController extends Controller
                     }
                 }
                 
-                // Hanya berikan skor 1 jika KEDUA jawaban benar
+                // Hanya berikan skor 1 jika KEDUA jawaban benar (untuk semua kategori)
                 return $correctCount === 2 ? 1 : 0;
 
             default:
