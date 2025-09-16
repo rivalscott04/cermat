@@ -248,16 +248,17 @@
                     $.get('{{ route("admin.soal.kepribadian-categories") }}')
                         .done(function(data) {
                             kepribadianCodes = data;
-                            console.log('Loaded kepribadian codes:', kepribadianCodes);
+                            console.log('Loaded kepribadian codes from API:', kepribadianCodes);
                         })
                         .fail(function() {
-                            console.error('Failed to load kepribadian codes');
-                            // Fallback to hardcoded list
-                            kepribadianCodes = ['TKP', 'PSIKOTES'];
+                            console.error('Failed to load kepribadian codes from API');
+                            // Fallback to comprehensive list including all possible kepribadian codes
+                            kepribadianCodes = ['TKP', 'PSIKOTES', 'ID', 'OPY', 'KB', 'PGD', 'KBS', 'KDDJ', 'IDK', 'KDS', 'TJ', 'OPP'];
+                            console.log('Using fallback kepribadian codes:', kepribadianCodes);
                         });
                 }
 
-                // Function to check if category is kepribadian
+                // Function to check if category is in kepribadian package
                 function checkIfKepribadianCategory(kategoriId) {
                     if (!kategoriId) return false;
                     
@@ -265,8 +266,13 @@
                     const selectedOption = $(`#kategori_id option[value="${kategoriId}"]`);
                     const optionText = selectedOption.text();
                     
-                    // Check if it contains any kepribadian category codes
-                    return kepribadianCodes.some(code => optionText.includes(code));
+                    console.log('Checking category:', optionText, 'against kepribadian package codes:', kepribadianCodes);
+                    
+                    // Check if category code is in kepribadian package mapping
+                    const isKepribadian = kepribadianCodes.some(code => optionText.includes(code));
+                    console.log('Is in kepribadian package:', isKepribadian);
+                    
+                    return isKepribadian;
                 }
 
                 // Load kepribadian codes on page load
@@ -724,8 +730,10 @@
                         const kategoriId = $('#kategori_id').val();
                         const isKepribadian = checkIfKepribadianCategory(kategoriId);
                         
+                        console.log('Form validation - kategoriId:', kategoriId, 'isInKepribadianPackage:', isKepribadian);
+                        
                         if (isKepribadian) {
-                            // For kepribadian categories, validate each bobot is between 1-5
+                            // For categories in kepribadian package, validate each bobot is between 1-5
                             let hasInvalidBobot = false;
                             $('input[name*="[bobot]"]').each(function() {
                                 const bobot = parseInt($(this).val()) || 0;
@@ -736,11 +744,11 @@
                             });
                             
                             if (hasInvalidBobot) {
-                                alert('Bobot untuk kategori kepribadian harus berupa bilangan bulat antara 1-5');
+                                alert('Bobot untuk kategori dalam paket kepribadian harus berupa bilangan bulat antara 1-5');
                                 valid = false;
                             }
                         } else {
-                            // For non-kepribadian categories, validate total bobot = 1
+                            // For categories not in kepribadian package, validate total bobot = 1
                             let totalBobot = 0;
                             $('input[name*="[bobot]"]').each(function() {
                                 const bobot = parseFloat($(this).val()) || 0;
