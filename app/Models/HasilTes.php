@@ -16,6 +16,10 @@ class HasilTes extends Model
         'detail_jawaban',
         'tanggal_tes',
         'tkp_final_score',
+        'panker',
+        'tianker',
+        'janker',
+        'hanker'
     ];
 
     protected $casts = [

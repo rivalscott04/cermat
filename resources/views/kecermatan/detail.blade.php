@@ -117,7 +117,20 @@
                             <h4>Waktu Total: {{ $hasilTes->waktu_total }} detik</h4>
                             <h4>Rata-rata Waktu Per Soal: {{ number_format($hasilTes->average_time, 2) }} detik</h4>
                         </div>
+
+                        <div class="col-md-6">
+                            <h4><span class="badge badge-primary">PANKER:</span>
+                                {{ number_format($hasilTes->panker, 2) }}/100</h4>
+                            <h4><span class="badge badge-info">TIANKER:</span>
+                                {{ number_format($hasilTes->tianker, 2) }}/100</h4>
+                            <h4><span class="badge badge-warning">JANKER:</span>
+                                {{ number_format($hasilTes->janker, 2) }}/100</h4>
+                            <h4><span class="badge badge-success">HANKER:</span>
+                                {{ number_format($hasilTes->hanker, 2) }}/100</h4>
+                        </div>
                     </div>
+                    <hr>
+
                     <hr>
 
                     <!-- Tabel ringkasan -->

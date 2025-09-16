@@ -176,10 +176,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script>
-        const saveResultsUrl = "{{ route('kecermatan.simpanHasil') }}";
-        const userId = "{{ auth()->id() }}";
-    </script>
-
+    <!-- Load the class file -->
     <script src="{{ asset('js/kecermatanSoal.js') }}"></script>
+
+    <!-- Initialize the game -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const config = {
+                routes: {
+                    nextSoal: "{{ route('kecermatan.nextSoal') }}",
+                    simpanHasil: "{{ route('kecermatan.simpanHasil') }}"
+                },
+                userId: "{{ auth()->id() }}",
+                csrfToken: document.querySelector('meta[name="csrf-token"]').content
+            };
+
+            const game = new KecermatanSoal(config);
+            game.init();
+        });
+    </script>
 @endpush

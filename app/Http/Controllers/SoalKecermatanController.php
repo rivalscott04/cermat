@@ -6,6 +6,7 @@ use App\Models\HasilTes;
 use Illuminate\Http\Request;
 use App\Models\SoalKecermatan;
 use Illuminate\Support\Facades\DB;
+use App\Services\KecermatanService;
 use Illuminate\Support\Facades\Validator;
 
 class SoalKecermatanController extends Controller
@@ -105,8 +106,7 @@ class SoalKecermatanController extends Controller
     /**
      * Simpan hasil tes
      */
-
-    public function simpanHasil(Request $request)
+    public function simpanHasil(Request $request, KecermatanService $service)
     {
         $request->validate([
             'user_id' => 'required',
@@ -116,32 +116,15 @@ class SoalKecermatanController extends Controller
             'detail_jawaban' => 'required|array'
         ]);
 
-        DB::beginTransaction();
         try {
-            // Hitung rata-rata waktu
-            $totalQuestions = count($request->detail_jawaban);
-            $averageTime = $totalQuestions > 0 ? $request->waktu_total / $totalQuestions : 0;
+            $hasil = $service->simpanHasil($request->all());
 
-            // Simpan hasil tes ke database
-            $hasil = HasilTes::create([
-                'user_id' => $request->user_id,
-                'jenis_tes' => 'kecermatan',
-                'skor_benar' => $request->skor_benar,
-                'skor_salah' => $request->skor_salah,
-                'waktu_total' => $request->waktu_total,
-                'average_time' => $averageTime,
-                'detail_jawaban' => json_encode($request->detail_jawaban), // Now includes detailed question data
-                'tanggal_tes' => now()
-            ]);
-
-            DB::commit();
             return response()->json([
                 'success' => true,
                 'message' => 'Hasil tes berhasil disimpan',
                 'data' => $hasil
             ]);
         } catch (\Exception $e) {
-            DB::rollback();
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan hasil tes',

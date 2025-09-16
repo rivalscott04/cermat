@@ -1,22 +1,34 @@
-// Wait for DOM to be fully loaded
-document.addEventListener("DOMContentLoaded", function () {
-    let currentSet = 0;
-    let kolomMerah = [];
-    let kolomBiru = [];
-    let hurufHilang;
-    let waktuTersisa = 60;
-    let skorBenar = 0;
-    let skorSalah = 0;
-    let timerInterval;
-    let detailJawaban = [];
-    let totalSets = 10;
-    let allQuestions = [];
+class KecermatanSoal {
+    constructor(config) {
+        this.config = config;
+        this.currentSet = 0;
+        this.kolomMerah = [];
+        this.kolomBiru = [];
+        this.hurufHilang = null;
+        this.waktuTersisa = 60;
+        this.skorBenar = 0;
+        this.skorSalah = 0;
+        this.timerInterval = null;
+        this.detailJawaban = [];
+        this.totalSets = 10;
+        this.allQuestions = [];
+    }
+
+    init() {
+        this.getQuestionsFromURL();
+        this.initializeButtons();
+        this.getNextSoal().then(() => {
+            this.updateKolomMerah();
+            this.generateKolomBiru();
+            this.mulaiTimer();
+        });
+    }
 
     // Get questions from URL parameters
-    function getQuestionsFromURL() {
+    getQuestionsFromURL() {
         const urlParams = new URLSearchParams(window.location.search);
         const questions = urlParams.getAll("questions[]");
-        allQuestions = questions.map((chars, index) => {
+        this.allQuestions = questions.map((chars, index) => {
             return Array.from(chars).map((char, i) => ({
                 huruf: char,
                 opsi: String.fromCharCode(65 + i),
@@ -24,17 +36,17 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    async function getNextSoal() {
+    async getNextSoal() {
         try {
-            currentSet++;
-            if (currentSet > totalSets) {
+            this.currentSet++;
+            if (this.currentSet > this.totalSets) {
                 return true;
             }
 
-            kolomMerah = allQuestions[currentSet - 1] || [];
+            this.kolomMerah = this.allQuestions[this.currentSet - 1] || [];
             const currentSetElement = document.getElementById("current-set");
             if (currentSetElement) {
-                currentSetElement.textContent = currentSet;
+                currentSetElement.textContent = this.currentSet;
             }
 
             return false;
@@ -44,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    function acakArray(array) {
+    acakArray(array) {
         const arrayBaru = [...array];
         for (let i = arrayBaru.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -53,19 +65,19 @@ document.addEventListener("DOMContentLoaded", function () {
         return arrayBaru;
     }
 
-    function generateKolomBiru() {
-        const shuffled = acakArray(kolomMerah);
-        kolomBiru = shuffled.slice(0, 4);
-        hurufHilang = shuffled[4];
-        updateKolomBiru();
+    generateKolomBiru() {
+        const shuffled = this.acakArray(this.kolomMerah);
+        this.kolomBiru = shuffled.slice(0, 4);
+        this.hurufHilang = shuffled[4];
+        this.updateKolomBiru();
     }
 
-    function updateKolomMerah() {
+    updateKolomMerah() {
         const row = document.getElementById("kolom-merah");
         if (!row) return;
 
         row.innerHTML = "";
-        kolomMerah.forEach((item) => {
+        this.kolomMerah.forEach((item) => {
             const td = document.createElement("td");
             td.className = "karakter";
             td.textContent = item.huruf;
@@ -73,12 +85,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function updateKolomBiru() {
+    updateKolomBiru() {
         const container = document.getElementById("kolom-biru");
         if (!container) return;
 
         container.innerHTML = "";
-        kolomBiru.forEach((item) => {
+        this.kolomBiru.forEach((item) => {
             const div = document.createElement("div");
             div.className = "answer-box";
             div.textContent = item.huruf;
@@ -86,38 +98,38 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function mulaiTimer() {
-        clearInterval(timerInterval);
-        waktuTersisa = 60;
+    mulaiTimer() {
+        clearInterval(this.timerInterval);
+        this.waktuTersisa = 60;
         const timerElement = document.getElementById("timer");
         if (timerElement) {
-            timerElement.textContent = waktuTersisa;
+            timerElement.textContent = this.waktuTersisa;
         }
 
-        timerInterval = setInterval(async () => {
-            if (waktuTersisa > 0) {
-                waktuTersisa--;
+        this.timerInterval = setInterval(async () => {
+            if (this.waktuTersisa > 0) {
+                this.waktuTersisa--;
                 if (timerElement) {
-                    timerElement.textContent = waktuTersisa;
+                    timerElement.textContent = this.waktuTersisa;
                 }
             } else {
-                clearInterval(timerInterval);
-                if (currentSet < totalSets) {
-                    const isLastSet = await transisiKeSetBerikutnya();
+                clearInterval(this.timerInterval);
+                if (this.currentSet < this.totalSets) {
+                    const isLastSet = await this.transisiKeSetBerikutnya();
                     if (isLastSet) {
-                        selesaiTes();
+                        this.selesaiTes();
                     }
                 } else {
-                    selesaiTes();
+                    this.selesaiTes();
                 }
             }
         }, 1000);
     }
 
-    async function transisiKeSetBerikutnya() {
-        clearInterval(timerInterval);
+    async transisiKeSetBerikutnya() {
+        clearInterval(this.timerInterval);
 
-        if (currentSet >= totalSets) {
+        if (this.currentSet >= this.totalSets) {
             return true;
         }
 
@@ -141,39 +153,34 @@ document.addEventListener("DOMContentLoaded", function () {
                     clearInterval(countdownInterval);
                 },
             }).then(async () => {
-                const isLast = await getNextSoal();
+                const isLast = await this.getNextSoal();
                 if (!isLast) {
-                    updateKolomMerah();
-                    generateKolomBiru();
-                    mulaiTimer();
+                    this.updateKolomMerah();
+                    this.generateKolomBiru();
+                    this.mulaiTimer();
                 }
                 resolve(isLast);
             });
         });
     }
 
-    function selesaiTes() {
-        clearInterval(timerInterval);
+    selesaiTes() {
+        clearInterval(this.timerInterval);
 
-        const csrfToken = document.querySelector(
-            'meta[name="csrf-token"]'
-        )?.content;
         const baseUrl = window.location.origin;
 
-        fetch(saveResultsUrl, {
+        fetch(this.config.routes.simpanHasil, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "X-CSRF-TOKEN": document.querySelector(
-                    'meta[name="csrf-token"]'
-                ).content,
+                "X-CSRF-TOKEN": this.config.csrfToken,
             },
             body: JSON.stringify({
-                user_id: userId,
-                skor_benar: skorBenar,
-                skor_salah: skorSalah,
-                waktu_total: totalSets * 60 - waktuTersisa,
-                detail_jawaban: detailJawaban,
+                user_id: this.config.userId,
+                skor_benar: this.skorBenar,
+                skor_salah: this.skorSalah,
+                waktu_total: this.totalSets * 60 - this.waktuTersisa,
+                detail_jawaban: this.detailJawaban,
             }),
         })
             .then((response) => {
@@ -189,15 +196,19 @@ document.addEventListener("DOMContentLoaded", function () {
                         html: `
                             <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1rem;">
                                 <div>
-                                    <span class="score-badge benar">Benar: ${skorBenar}</span>
+                                    <span class="score-badge benar">Benar: ${
+                                        this.skorBenar
+                                    }</span>
                                 </div>
                                 <div>
-                                    <span class="score-badge salah">Salah: ${skorSalah}</span>
+                                    <span class="score-badge salah">Salah: ${
+                                        this.skorSalah
+                                    }</span>
                                 </div>
                             </div>
                             <div style="margin-top: 1rem;">
                                 <strong>Total Skor: ${
-                                    skorBenar - skorSalah
+                                    this.skorBenar - this.skorSalah
                                 }</strong>
                             </div>
                         `,
@@ -208,7 +219,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         allowOutsideClick: false,
                     }).then(() => {
                         // Redirect to riwayat page with userId
-                        window.location.href = `${baseUrl}/tes-kecermatan/riwayat/${userId}`;
+                        window.location.href = `${baseUrl}/tes-kecermatan/riwayat/${this.config.userId}`;
                     });
                 }
             })
@@ -224,50 +235,36 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Initialize button event listeners
-    function initializeButtons() {
+    initializeButtons() {
         ["A", "B", "C", "D", "E"].forEach((huruf) => {
             const button = document.getElementById(`btn-${huruf}`);
             if (button) {
                 button.addEventListener("click", () => {
-                    const isBenar = hurufHilang.opsi === huruf;
+                    const isBenar = this.hurufHilang.opsi === huruf;
                     if (isBenar) {
-                        skorBenar++;
+                        this.skorBenar++;
                     } else {
-                        skorSalah++;
+                        this.skorSalah++;
                     }
 
-                    detailJawaban.push({
-                        set: currentSet,
+                    this.detailJawaban.push({
+                        set: this.currentSet,
                         jawaban: huruf,
                         benar: isBenar,
-                        waktu: 60 - waktuTersisa,
-                        soal_asli: kolomMerah
+                        waktu: 60 - this.waktuTersisa,
+                        soal_asli: this.kolomMerah
                             .map((item) => item.huruf)
                             .join(""),
                         soal_acak:
-                            kolomBiru.map((item) => item.huruf).join("") +
-                            hurufHilang.huruf,
-                        huruf_hilang: hurufHilang.huruf,
-                        posisi_huruf_hilang: hurufHilang.opsi,
+                            this.kolomBiru.map((item) => item.huruf).join("") +
+                            this.hurufHilang.huruf,
+                        huruf_hilang: this.hurufHilang.huruf,
+                        posisi_huruf_hilang: this.hurufHilang.opsi,
                     });
 
-                    generateKolomBiru();
+                    this.generateKolomBiru();
                 });
             }
         });
     }
-
-    // Initialize the game
-    function initialize() {
-        getQuestionsFromURL();
-        getNextSoal().then(() => {
-            updateKolomMerah();
-            generateKolomBiru();
-            mulaiTimer();
-        });
-    }
-
-    // Set up event listeners and initialize
-    initializeButtons();
-    initialize();
-});
+}
