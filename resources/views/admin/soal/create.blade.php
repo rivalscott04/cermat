@@ -215,6 +215,18 @@
             $(document).ready(function() {
                 let opsiCount = 0;
 
+                // Function to check if category is kepribadian (TKP, PSIKOTES)
+                function checkIfKepribadianCategory(kategoriId) {
+                    if (!kategoriId) return false;
+                    
+                    // Get category code from selected option
+                    const selectedOption = $(`#kategori_id option[value="${kategoriId}"]`);
+                    const optionText = selectedOption.text();
+                    
+                    // Check if it contains TKP or PSIKOTES
+                    return optionText.includes('TKP') || optionText.includes('PSIKOTES');
+                }
+
                 // Handle tipe change
                 $('#tipe').on('change', function() {
                     const tipe = $(this).val();
@@ -222,6 +234,15 @@
                     toggleJawabanBenar(tipe);
                     toggleGambarUpload(tipe);
                     setupJawabanHandling(tipe);
+                });
+
+                // Handle kategori change to update bobot validation
+                $('#kategori_id').on('change', function() {
+                    const tipe = $('#tipe').val();
+                    if (tipe === 'pg_bobot') {
+                        // Regenerate opsi with correct bobot validation
+                        generateOpsi(tipe);
+                    }
                 });
 
                 function togglePembahasanControls() {
@@ -349,6 +370,10 @@
 
                 // Add opsi item
                 function addOpsiItem(letter, defaultText = '', showBobot = false) {
+                    // Check if current category is kepribadian (TKP, PSIKOTES)
+                    const kategoriId = $('#kategori_id').val();
+                    const isKepribadian = checkIfKepribadianCategory(kategoriId);
+                    
                     const opsiHtml = `
             <div class="row mb-2 opsi-item" data-letter="${letter}">
                 <div class="col-1">
@@ -360,8 +385,11 @@
                 </div>
                 ${showBobot ? `
                                                                                 <div class="col-2">
-                                                                                    <input type="number" class="form-control" name="opsi[${opsiCount}][bobot]"
-                                                                                           step="0.01" min="0" max="1" placeholder="Bobot" value="0">
+                                                                                    <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
+                                                                                           step="${isKepribadian ? '1' : '0.01'}" 
+                                                                                           min="${isKepribadian ? '1' : '0'}" 
+                                                                                           max="${isKepribadian ? '5' : '1'}" 
+                                                                                           placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
                                                                                 </div>
                                                                                 ` : `
                                                                                 <div class="col-2">
@@ -610,15 +638,36 @@
 
                     // Check bobot total for pg_bobot
                     if (tipe === 'pg_bobot') {
-                        let totalBobot = 0;
-                        $('input[name*="[bobot]"]').each(function() {
-                            const bobot = parseFloat($(this).val()) || 0;
-                            totalBobot += bobot;
-                        });
+                        const kategoriId = $('#kategori_id').val();
+                        const isKepribadian = checkIfKepribadianCategory(kategoriId);
+                        
+                        if (isKepribadian) {
+                            // For kepribadian categories, validate each bobot is between 1-5
+                            let hasInvalidBobot = false;
+                            $('input[name*="[bobot]"]').each(function() {
+                                const bobot = parseInt($(this).val()) || 0;
+                                if (bobot < 1 || bobot > 5) {
+                                    hasInvalidBobot = true;
+                                    return false; // break loop
+                                }
+                            });
+                            
+                            if (hasInvalidBobot) {
+                                alert('Bobot untuk kategori kepribadian harus berupa bilangan bulat antara 1-5');
+                                valid = false;
+                            }
+                        } else {
+                            // For non-kepribadian categories, validate total bobot = 1
+                            let totalBobot = 0;
+                            $('input[name*="[bobot]"]').each(function() {
+                                const bobot = parseFloat($(this).val()) || 0;
+                                totalBobot += bobot;
+                            });
 
-                        if (Math.abs(totalBobot - 1) > 0.01) {
-                            alert('Total bobot harus sama dengan 1.0 untuk tipe Pilihan Ganda (Berbobot)');
-                            valid = false;
+                            if (Math.abs(totalBobot - 1) > 0.01) {
+                                alert('Total bobot harus sama dengan 1.0 untuk tipe Pilihan Ganda (Berbobot)');
+                                valid = false;
+                            }
                         }
                     }
 
