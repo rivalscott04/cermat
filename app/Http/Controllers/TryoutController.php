@@ -875,6 +875,19 @@ class TryoutController extends Controller
                 'finished_at' => now()
             ]);
         }
+
+        // Jika session tidak ditemukan, cari session yang sudah completed
+        if (!$session) {
+            $session = UserTryoutSession::where('user_id', $user->id)
+                ->where('tryout_id', $tryout->id)
+                ->where('status', 'completed')
+                ->orderBy('finished_at', 'desc')
+                ->first();
+        }
+
+        if (!$session) {
+            return redirect()->route('user.tryout.index')->with('error', 'Session tryout tidak ditemukan');
+        }
         
         $userAnswers = UserTryoutSoal::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
