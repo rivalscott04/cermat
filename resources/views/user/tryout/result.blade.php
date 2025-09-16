@@ -76,12 +76,22 @@
                                     $questionStatus = $userAnswers->where('urutan', $i)->first();
                                     $statusClass = '';
                                     $statusText = '';
-                                    if ($questionStatus && $questionStatus->skor > 0) {
-                                        $statusClass = 'answered';
-                                        $statusText = 'Benar';
-                                    } elseif ($questionStatus) {
-                                        $statusClass = 'unanswered';
-                                        $statusText = 'Salah';
+                                    if (!empty($isTkp) && $isTkp) {
+                                        if ($questionStatus && $questionStatus->sudah_dijawab) {
+                                            $statusClass = 'answered';
+                                            $statusText = 'Terjawab';
+                                        } elseif ($questionStatus) {
+                                            $statusClass = 'unanswered';
+                                            $statusText = 'Tidak dijawab';
+                                        }
+                                    } else {
+                                        if ($questionStatus && $questionStatus->skor > 0) {
+                                            $statusClass = 'answered';
+                                            $statusText = 'Benar';
+                                        } elseif ($questionStatus) {
+                                            $statusClass = 'unanswered';
+                                            $statusText = 'Salah';
+                                        }
                                     }
                                 @endphp
                                 <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'review' => $i]) }}"
@@ -92,14 +102,25 @@
                         </div>
 
                         <div class="mt-2">
-                            <div class="d-flex align-items-center mb-2">
-                                <span class="question-legend answered"></span>
-                                <small>Benar</small>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <span class="question-legend unanswered"></span>
-                                <small>Salah</small>
-                            </div>
+                            @if(!empty($isTkp) && $isTkp)
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="question-legend answered"></span>
+                                    <small>Terjawab</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="question-legend unanswered"></span>
+                                    <small>Tidak dijawab</small>
+                                </div>
+                            @else
+                                <div class="d-flex align-items-center mb-2">
+                                    <span class="question-legend answered"></span>
+                                    <small>Benar</small>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="question-legend unanswered"></span>
+                                    <small>Salah</small>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -268,24 +289,43 @@
                         @endphp
 
                         <div id="review-soal-{{ $userAnswer->urutan }}"
-                            class="answer-review mb-4 {{ $userAnswer->skor > 0 ? 'correct' : 'incorrect' }}">
+                            class="answer-review mb-4 {{ (!empty($isTkp) && $isTkp) ? 'tkp' : ($userAnswer->skor > 0 ? 'correct' : 'incorrect') }}">
                             <div class="question-header">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h6 class="mb-1">Soal {{ $userAnswer->urutan }}</h6>
                                     <div class="score-indicator">
-                                        @if ($userAnswer->skor > 0)
-                                            <span class="badge badge-success">
-                                                <i class="fa fa-check"></i> Benar ({{ $userAnswer->skor }})
+                                        @if(!empty($isTkp) && $isTkp)
+                                            <span class="badge badge-info">
+                                                <i class="fa fa-star"></i> Poin ({{ number_format($userAnswer->skor, 2) }})
                                             </span>
                                         @else
-                                            <span class="badge badge-danger">
-                                                <i class="fa fa-times"></i> Salah (0)
-                                            </span>
+                                            @if ($userAnswer->skor > 0)
+                                                <span class="badge badge-success">
+                                                    <i class="fa fa-check"></i> Benar ({{ $userAnswer->skor }})
+                                                </span>
+                                            @else
+                                                <span class="badge badge-danger">
+                                                    <i class="fa fa-times"></i> Salah (0)
+                                                </span>
+                                            @endif
                                         @endif
                                     </div>
                                 </div>
                                 <small class="text-muted">{{ $userAnswer->soal->kategori->nama }} -
                                     {{ ucfirst(str_replace('_', ' ', $userAnswer->soal->tipe)) }}</small>
+                                @if(!empty($isTkp) && $isTkp)
+                                    @php
+                                        $opsiKoleksi = $userAnswer->soal->opsi ?? collect();
+                                        $bestOption = $opsiKoleksi->sortByDesc('bobot')->first();
+                                        $userLetters = $userAnswer->jawaban_original ?? $userAnswer->jawaban_user ?? [];
+                                        if (!is_array($userLetters)) { $userLetters = [$userLetters]; }
+                                        $userLetterStr = implode(',', $userLetters);
+                                    @endphp
+                                    <div class="text-muted small mt-1">
+                                        Pilihan terbaik: {{ $bestOption->opsi ?? '-' }} ({{ isset($bestOption) ? number_format($bestOption->bobot, 2) : '-' }}) •
+                                        Pilihan Anda: {{ $userLetterStr }} ({{ number_format($userAnswer->skor, 2) }})
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="question-content mt-3">
