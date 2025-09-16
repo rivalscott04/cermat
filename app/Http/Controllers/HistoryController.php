@@ -22,21 +22,34 @@ class HistoryController extends Controller
             ->get()
             ->map(function ($session) {
                 // Calculate total score for this tryout
-                $totalScore = UserTryoutSoal::where('user_id', $session->user_id)
+                $answersQuery = UserTryoutSoal::where('user_id', $session->user_id)
                     ->where('tryout_id', $session->tryout_id)
-                    ->where('user_tryout_session_id', $session->id)
-                    ->sum('skor');
+                    ->where('user_tryout_session_id', $session->id);
+                $totalScore = (clone $answersQuery)->sum('skor');
                 
-                $totalQuestions = UserTryoutSoal::where('user_id', $session->user_id)
-                    ->where('tryout_id', $session->tryout_id)
-                    ->where('user_tryout_session_id', $session->id)
-                    ->count();
+                $totalQuestions = (clone $answersQuery)->count();
                 
-                $correctAnswers = UserTryoutSoal::where('user_id', $session->user_id)
-                    ->where('tryout_id', $session->tryout_id)
-                    ->where('user_tryout_session_id', $session->id)
-                    ->where('skor', '>', 0)
-                    ->count();
+                $correctAnswers = (clone $answersQuery)->where('skor', '>', 0)->count();
+
+                // Determine if this tryout session is TKP by checking kategori codes
+                $kepribadianKategoriCodes = \App\Models\PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+                $tkpQuestions = (clone $answersQuery)->with('soal.kategori')->get()->filter(function ($ans) use ($kepribadianKategoriCodes) {
+                    $kategori = $ans->soal->kategori ?? null;
+                    return $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
+                });
+                $isTkp = $tkpQuestions->count() > 0;
+
+                $tkpN = null; $tkpT = null; $tkpFinal = null;
+                if ($isTkp) {
+                    $tkpN = $tkpQuestions->count();
+                    $tkpT = (int) round($tkpQuestions->sum('skor'));
+                    try {
+                        $svc = app(\App\Services\TkpScoringService::class);
+                        $tkpFinal = $svc->calculateFinalScore($tkpN, $tkpT);
+                    } catch (\Throwable $e) {
+                        $tkpFinal = null;
+                    }
+                }
                 
                 return [
                     'id' => $session->id,
@@ -50,7 +63,12 @@ class HistoryController extends Controller
                     'wrong_answers' => $totalQuestions - $correctAnswers,
                     'percentage' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 1) : 0,
                     'duration' => $session->elapsed_minutes,
-                    'status' => $this->getTryoutStatus($correctAnswers, $totalQuestions)
+                    'status' => $this->getTryoutStatus($correctAnswers, $totalQuestions),
+                    // TKP extras for view
+                    'is_tkp' => $isTkp,
+                    'tkp_n' => $tkpN,
+                    'tkp_t' => $tkpT,
+                    'tkp_final' => $tkpFinal,
                 ];
             });
 

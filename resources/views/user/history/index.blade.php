@@ -35,32 +35,50 @@
                                             <div class="card-body">
                                                 <div class="score-section">
                                                     <div class="score-circle">
-                                                        <div class="score-percentage">{{ $history['percentage'] }}%</div>
-                                                        <div class="score-label">Skor</div>
+                                                        @if(!empty($history['is_tkp']) && $history['is_tkp'])
+                                                            <div class="score-percentage">{{ number_format($history['tkp_final'] ?? 0, 0) }}</div>
+                                                            <div class="score-label">Skor TKP</div>
+                                                        @else
+                                                            <div class="score-percentage">{{ $history['percentage'] }}%</div>
+                                                            <div class="score-label">Skor</div>
+                                                        @endif
                                                     </div>
                                                     
                                                     <div class="score-details">
-                                                        <div class="score-item correct">
-                                                            <i class="fa fa-check-circle"></i>
-                                                            <span>{{ $history['correct_answers'] }} Benar</span>
-                                                        </div>
-                                                        <div class="score-item wrong">
-                                                            <i class="fa fa-times-circle"></i>
-                                                            <span>{{ $history['wrong_answers'] }} Salah</span>
-                                                        </div>
-                                                        <div class="score-item total">
-                                                            <i class="fa fa-list"></i>
-                                                            <span>{{ $history['total_questions'] }} Soal</span>
-                                                        </div>
+                                                        @if(!empty($history['is_tkp']) && $history['is_tkp'])
+                                                            <div class="score-item total">
+                                                                <i class="fa fa-list"></i>
+                                                                <span>{{ $history['tkp_n'] }} Soal</span>
+                                                            </div>
+                                                            <div class="score-item correct">
+                                                                <i class="fa fa-star"></i>
+                                                                <span>{{ $history['tkp_t'] }} Poin</span>
+                                                            </div>
+                                                        @else
+                                                            <div class="score-item correct">
+                                                                <i class="fa fa-check-circle"></i>
+                                                                <span>{{ $history['correct_answers'] }} Benar</span>
+                                                            </div>
+                                                            <div class="score-item wrong">
+                                                                <i class="fa fa-times-circle"></i>
+                                                                <span>{{ $history['wrong_answers'] }} Salah</span>
+                                                            </div>
+                                                            <div class="score-item total">
+                                                                <i class="fa fa-list"></i>
+                                                                <span>{{ $history['total_questions'] }} Soal</span>
+                                                            </div>
+                                                        @endif
                                                     </div>
                                                 </div>
                                                 
-                                                <div class="progress-section">
-                                                    <div class="progress">
-                                                        <div class="progress-bar {{ $history['status'] }}" 
-                                                             style="width: {{ $history['percentage'] }}%"></div>
+                                                @if(empty($history['is_tkp']) || !$history['is_tkp'])
+                                                    <div class="progress-section">
+                                                        <div class="progress">
+                                                            <div class="progress-bar {{ $history['status'] }}" 
+                                                                 style="width: {{ $history['percentage'] }}%"></div>
+                                                        </div>
                                                     </div>
-                                                </div>
+                                                @endif
                                                 
                                                 <div class="card-footer">
                                                     <div class="duration">
