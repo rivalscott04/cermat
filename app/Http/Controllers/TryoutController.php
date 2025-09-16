@@ -932,6 +932,8 @@ class TryoutController extends Controller
 
         // TKP scaling: treat empty as 0; for scaling clamp to min N
         $tkpFinalScore = null;
+        $tkpN = null; // jumlah soal TKP
+        $tkpT = null; // total poin TKP (raw sum 1..5)
         try {
             $kepribadianKategoriCodes = \App\Models\PackageCategoryMapping::getCategoriesForPackage('kepribadian');
             $tkpQuestions = $userAnswers->filter(function ($ans) use ($kepribadianKategoriCodes) {
@@ -946,6 +948,10 @@ class TryoutController extends Controller
 
                 $scorer = app(\App\Services\TkpScoringService::class);
                 $tkpFinalScore = $scorer->calculateFinalScore($N, $T);
+
+                // expose for view consumption
+                $tkpN = $N;
+                $tkpT = $T;
 
                 // Persist to session for quick retrieval
                 if ($session) {
@@ -1009,6 +1015,8 @@ class TryoutController extends Controller
         $currentReviewNumber = is_numeric($requestedReview) ? max(1, min((int)$requestedReview, $totalQuestions)) : 1;
         $currentReviewItem = $userAnswers->firstWhere('urutan', $currentReviewNumber) ?? $userAnswers->first();
 
+        $isTkp = !is_null($tkpFinalScore);
+
         return view('user.tryout.result', compact(
             'tryout',
             'userAnswers',
@@ -1020,7 +1028,10 @@ class TryoutController extends Controller
             'categoryScores',
             'currentReviewNumber',
             'currentReviewItem',
-            'tkpFinalScore'
+            'tkpFinalScore',
+            'tkpN',
+            'tkpT',
+            'isTkp'
         ));
     }
 

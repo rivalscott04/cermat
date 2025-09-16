@@ -134,43 +134,65 @@
                             <div class="col-md-6">
                                 <div class="score-card text-center p-4">
                                     <div class="score-circle">
-                                        <div class="score-number">{{ number_format($totalScore, 1) }}</div>
-                                        <div class="score-label">Total Skor</div>
+                                        @if(!empty($isTkp) && $isTkp)
+                                            <div class="score-number">{{ number_format($tkpFinalScore, 2) }}</div>
+                                            <div class="score-label">Skor TKP (1–100)</div>
+                                        @else
+                                            <div class="score-number">{{ number_format($totalScore, 1) }}</div>
+                                            <div class="score-label">Total Skor</div>
+                                        @endif
                                     </div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="score-details">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="stat-item">
-                                                <div class="stat-number">{{ $correctAnswers }}</div>
-                                                <div class="stat-label">Jawaban Benar</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="stat-item">
-                                                <div class="stat-number">{{ $wrongAnswers }}</div>
-                                                <div class="stat-label">Jawaban Salah</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-3">
-                                        <div class="col-6">
-                                            <div class="stat-item">
-                                                <div class="stat-number">{{ $totalQuestions }}</div>
-                                                <div class="stat-label">Total Soal</div>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="stat-item">
-                                                <div class="stat-number">
-                                                    {{ number_format(($correctAnswers / $totalQuestions) * 100, 1) }}%
+                                    @if(!empty($isTkp) && $isTkp)
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-number">{{ $tkpN }}</div>
+                                                    <div class="stat-label">Jumlah Soal</div>
                                                 </div>
-                                                <div class="stat-label">Akurasi</div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-number">{{ $tkpT }}</div>
+                                                    <div class="stat-label">Total Poin</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    @else
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-number">{{ $correctAnswers }}</div>
+                                                    <div class="stat-label">Jawaban Benar</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-number">{{ $wrongAnswers }}</div>
+                                                    <div class="stat-label">Jawaban Salah</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row mt-3">
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-number">{{ $totalQuestions }}</div>
+                                                    <div class="stat-label">Total Soal</div>
+                                                </div>
+                                            </div>
+                                            <div class="col-6">
+                                                <div class="stat-item">
+                                                    <div class="stat-number">
+                                                        {{ number_format(($correctAnswers / $totalQuestions) * 100, 1) }}%
+                                                    </div>
+                                                    <div class="stat-label">Akurasi</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -190,20 +212,26 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="mb-1">{{ $category['nama'] }}</h6>
-                                        <small class="text-muted">{{ $category['correct'] }}/{{ $category['total'] }} soal
-                                            benar</small>
+                                        @if(!empty($isTkp) && $isTkp)
+                                            <small class="text-muted">Poin: {{ number_format($category['score'], 1) }} dari {{ $category['total'] * 5 }}</small>
+                                        @else
+                                            <small class="text-muted">{{ $category['correct'] }}/{{ $category['total'] }} soal benar</small>
+                                        @endif
                                     </div>
                                     <div class="text-right">
                                         <div class="score-badge">{{ number_format($category['score'], 1) }}</div>
-                                        <div class="percentage">
-                                            {{ number_format(($category['correct'] / $category['total']) * 100, 1) }}%
-                                        </div>
+                                        @if(empty($isTkp) || !$isTkp)
+                                            <div class="percentage">
+                                                {{ number_format(($category['correct'] / $category['total']) * 100, 1) }}%
+                                            </div>
+                                        @endif
                                     </div>
                                 </div>
-                                <div class="progress mt-2" style="height: 8px;">
-                                    <div class="progress-bar"
-                                        style="width: {{ ($category['correct'] / $category['total']) * 100 }}%"></div>
-                                </div>
+                                @if(empty($isTkp) || !$isTkp)
+                                    <div class="progress mt-2" style="height: 8px;">
+                                        <div class="progress-bar" style="width: {{ ($category['correct'] / $category['total']) * 100 }}%"></div>
+                                    </div>
+                                @endif
                             </div>
                         @endforeach
                     </div>
