@@ -295,8 +295,18 @@
                                     <h6 class="mb-1">Soal {{ $userAnswer->urutan }}</h6>
                                     <div class="score-indicator">
                                         @if(!empty($isTkp) && $isTkp)
+                                            @php
+                                                // Hitung poin live berdasarkan bobot opsi dari database
+                                                $opsiMap = ($userAnswer->soal->opsi ?? collect())->keyBy('opsi');
+                                                $userLettersLive = $userAnswer->jawaban_original ?? $userAnswer->jawaban_user ?? [];
+                                                if (!is_array($userLettersLive)) { $userLettersLive = [$userLettersLive]; }
+                                                $userPoinLive = 0;
+                                                foreach ($userLettersLive as $ltr) {
+                                                    $userPoinLive += isset($opsiMap[$ltr]) ? ($opsiMap[$ltr]->bobot ?? 0) : 0;
+                                                }
+                                            @endphp
                                             <span class="badge badge-info">
-                                                <i class="fa fa-star"></i> Poin ({{ number_format($userAnswer->skor, 2) }})
+                                                <i class="fa fa-star"></i> Poin ({{ number_format($userPoinLive, 2) }})
                                             </span>
                                         @else
                                             @if ($userAnswer->skor > 0)
@@ -320,10 +330,12 @@
                                         $userLetters = $userAnswer->jawaban_original ?? $userAnswer->jawaban_user ?? [];
                                         if (!is_array($userLetters)) { $userLetters = [$userLetters]; }
                                         $userLetterStr = implode(',', $userLetters);
+                                        // gunakan poin live yang sudah dihitung di atas jika tersedia
+                                        $userPoinLive = isset($userPoinLive) ? $userPoinLive : 0;
                                     @endphp
                                     <div class="text-muted small mt-1">
                                         Pilihan terbaik: {{ $bestOption->opsi ?? '-' }} ({{ isset($bestOption) ? number_format($bestOption->bobot, 2) : '-' }}) •
-                                        Pilihan Anda: {{ $userLetterStr }} ({{ number_format($userAnswer->skor, 2) }})
+                                        Pilihan Anda: {{ $userLetterStr }} ({{ number_format($userPoinLive, 2) }})
                                     </div>
                                 @endif
                             </div>
