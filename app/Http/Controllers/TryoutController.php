@@ -602,11 +602,19 @@ class TryoutController extends Controller
 
         // Backend guard: enforce max selections for multi-correct (e.g., pg_pilih_2)
         $soalForValidation = $userSoal->soal;
-        if ($soalForValidation && $soalForValidation->tipe === 'pg_pilih_2' && count($jawabanArray) > 2) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Maksimal 2 jawaban boleh dipilih untuk soal ini.'
-            ], 422);
+        if ($soalForValidation && $soalForValidation->tipe === 'pg_pilih_2') {
+            if (count($jawabanArray) > 2) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Maksimal 2 jawaban boleh dipilih untuk soal ini.'
+                ], 422);
+            }
+            if (count($jawabanArray) < 2) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Harus memilih tepat 2 jawaban untuk soal ini.'
+                ], 422);
+            }
         }
 
         // PERUBAHAN: Convert shuffled answer back to original using session seed
@@ -1270,14 +1278,18 @@ class TryoutController extends Controller
             case 'pg_pilih_2':
                 if (count($jawaban) !== 2) return 0;
 
-                $skor = 0;
+                // Untuk pg_pilih_2, kedua jawaban HARUS benar untuk mendapat skor 1
+                // Jika hanya 1 benar atau 0 benar, skor = 0
+                $correctCount = 0;
                 foreach ($jawaban as $opsi) {
                     $opsiSoal = $soal->opsi()->where('opsi', $opsi)->first();
                     if ($opsiSoal && $opsiSoal->bobot > 0) {
-                        $skor += 0.5;
+                        $correctCount++;
                     }
                 }
-                return $skor;
+                
+                // Hanya berikan skor 1 jika KEDUA jawaban benar
+                return $correctCount === 2 ? 1 : 0;
 
             default:
                 return 0;

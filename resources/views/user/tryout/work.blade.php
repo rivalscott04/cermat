@@ -918,8 +918,12 @@
                 pgPilih2Options.forEach(input => {
                     input.addEventListener('change', function() {
                         handlePgPilih2Selection();
-                        // Auto save after handling
-                        setTimeout(saveAnswer, 100);
+                        
+                        // Auto save setelah handling, tapi hanya jika sudah ada 2 pilihan
+                        const checkedCount = document.querySelectorAll('.pg-pilih-2-option:checked').length;
+                        if (checkedCount === 2) {
+                            setTimeout(saveAnswer, 100);
+                        }
                     });
                 });
 
@@ -997,11 +1001,15 @@
             }
 
             // Disable/enable checkbox lainnya jika sudah mencapai maksimal
+            // TAPI tetap izinkan untuk mengganti jawaban yang sudah dipilih
             const allPgPilih2Options = document.querySelectorAll('.pg-pilih-2-option');
             if (selectedCount >= maxSelect) {
                 allPgPilih2Options.forEach(option => {
                     if (!option.checked) {
                         option.disabled = true;
+                    } else {
+                        // Jawaban yang sudah dipilih tetap bisa di-uncheck untuk diganti
+                        option.disabled = false;
                     }
                 });
             } else {
@@ -1023,6 +1031,17 @@
             checkedInputs.forEach(input => {
                 jawaban.push(input.value);
             });
+
+            // Untuk pg_pilih_2, pastikan hanya 2 jawaban yang dikirim
+            if ({{ $currentQuestion->soal->tipe == 'pg_pilih_2' ? 'true' : 'false' }}) {
+                if (jawaban.length !== 2) {
+                    // Jika belum 2 jawaban, jangan kirim
+                    return;
+                }
+                
+                // Urutkan jawaban berdasarkan urutan checkbox untuk konsistensi
+                jawaban.sort();
+            }
 
             // AJAX call to save answer
             fetch('{{ route('user.tryout.submit-answer', $tryout->id) }}', {
