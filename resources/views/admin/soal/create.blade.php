@@ -214,8 +214,23 @@
         <script>
             $(document).ready(function() {
                 let opsiCount = 0;
+                let kepribadianCodes = []; // Will be loaded dynamically
 
-                // Function to check if category is kepribadian (TKP, PSIKOTES)
+                // Load kepribadian categories from server
+                function loadKepribadianCodes() {
+                    $.get('{{ route("admin.soal.kepribadian-categories") }}')
+                        .done(function(data) {
+                            kepribadianCodes = data;
+                            console.log('Loaded kepribadian codes:', kepribadianCodes);
+                        })
+                        .fail(function() {
+                            console.error('Failed to load kepribadian codes');
+                            // Fallback to hardcoded list
+                            kepribadianCodes = ['TKP', 'PSIKOTES'];
+                        });
+                }
+
+                // Function to check if category is kepribadian
                 function checkIfKepribadianCategory(kategoriId) {
                     if (!kategoriId) return false;
                     
@@ -223,9 +238,12 @@
                     const selectedOption = $(`#kategori_id option[value="${kategoriId}"]`);
                     const optionText = selectedOption.text();
                     
-                    // Check if it contains TKP or PSIKOTES
-                    return optionText.includes('TKP') || optionText.includes('PSIKOTES');
+                    // Check if it contains any kepribadian category codes
+                    return kepribadianCodes.some(code => optionText.includes(code));
                 }
+
+                // Load kepribadian codes on page load
+                loadKepribadianCodes();
 
                 // Handle tipe change
                 $('#tipe').on('change', function() {

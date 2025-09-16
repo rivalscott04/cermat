@@ -46,6 +46,12 @@ class SoalController extends Controller
         return view('admin.soal.create', compact('kategoris', 'tipes'));
     }
 
+    public function getKepribadianCategories()
+    {
+        $kepribadianCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+        return response()->json($kepribadianCodes);
+    }
+
     public function store(Request $request)
     {
         $rules = [

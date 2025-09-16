@@ -599,6 +599,10 @@
     </div>
 @endsection
 
+@push('datatables-scripts')
+    <script src="{{ asset('js/plugins/dataTables/datatables.min.js') }}"></script>
+@endpush
+
 @push('scripts')
     <!-- SweetAlert2 CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">

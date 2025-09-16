@@ -49,6 +49,10 @@
     </div>
 @endsection
 
+@push('datatables-scripts')
+    <script src="{{ asset('js/plugins/dataTables/datatables.min.js') }}"></script>
+@endpush
+
 @push('scripts')
     <script>
         $.fn.dataTable.Buttons.defaults.dom.button.className = 'btn btn-white btn-sm';

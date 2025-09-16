@@ -125,6 +125,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('soal', SoalController::class);
     Route::post('soal/upload-word', [SoalController::class, 'uploadWord'])->name('soal.upload-word');
+    Route::get('soal/kepribadian-categories', [SoalController::class, 'getKepribadianCategories'])->name('soal.kepribadian-categories');
 
     Route::resource('tryout', TryoutController::class);
     

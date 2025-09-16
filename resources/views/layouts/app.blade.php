@@ -271,7 +271,7 @@
     <script src="{{ asset('js/bootstrap.js') }}"></script>
     <script src="{{ asset('js/generateSoal.js') }}"></script>
     {{-- <script src="{{ asset('js/kecermatanSoal.js') }}"></script> --}}
-    <script src="{{ asset('js/plugins/dataTables/datatables.min.js') }}"></script>
+    @stack('datatables-scripts')
     <script src="{{ asset('js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
     <script src="{{ asset('js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
     <script src="{{ asset('js/inspinia.js') }}"></script>
