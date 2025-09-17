@@ -294,14 +294,14 @@
                 // Update preview
                 if (allowedCategories.length > 0) {
                     $('#kategori-preview').html(`
-                        <i class="fa fa-check text-success"></i>
-                        <strong>Kategori yang akan muncul:</strong><br>
-                        ${allowedCategories.map(cat => `<span class="badge badge-primary mr-1">${cat}</span>`).join('')}
-                    `).removeClass('alert-info').addClass('alert-success');
+                <i class="fa fa-check text-success"></i>
+                <strong>Kategori yang akan muncul:</strong><br>
+                ${allowedCategories.map(cat => `<span class="badge badge-primary mr-1">${cat}</span>`).join('')}
+            `).removeClass('alert-info').addClass('alert-success');
                 } else {
                     $('#kategori-preview').html(`
-                        <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
-                    `).removeClass('alert-success').addClass('alert-info');
+                <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
+            `).removeClass('alert-success').addClass('alert-info');
                 }
 
                 // Filter kategori table
@@ -357,90 +357,87 @@
                 if (value > original + available) {
                     input.addClass('is-invalid');
                     row.after(`
-        <tr class="validation-message">
-            <td colspan="5" class="text-danger small">
-                <i class="fa fa-exclamation-triangle"></i>
-                Jumlah soal ${level.toLowerCase()} (${value}) melebihi soal tersedia (${available})
-            </td>
-        </tr>
-    `);
+                <tr class="validation-message">
+                    <td colspan="5" class="text-danger small">
+                        <i class="fa fa-exclamation-triangle"></i>
+                        Jumlah soal ${level.toLowerCase()} (${value}) melebihi soal tersedia (${available})
+                    </td>
+                </tr>
+            `);
                     return false;
+                } else if (value > 0) {
+                    input.addClass('is-valid');
                 }
 
-            } else if (value > 0) {
-                input.addClass('is-valid');
+                return true;
             }
 
-            return true;
-        }
+            // Check if all inputs are valid
+            function checkAllValidations() {
+                let allValid = true;
+                $('.blueprint-input').each(function() {
+                    if (!validateInput($(this))) {
+                        allValid = false;
+                    }
+                });
 
+                // Update submit button state
+                const submitBtn = $('button[type="submit"]');
+                if (allValid) {
+                    submitBtn.prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
+                } else {
+                    submitBtn.prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
+                }
 
-        // Check if all inputs are valid
-        function checkAllValidations() {
-            let allValid = true;
-            $('.blueprint-input').each(function() {
-                if (!validateInput($(this))) {
-                    allValid = false;
+                return allValid;
+            }
+
+            // Update total when structure changes
+            $('.blueprint-input').on('input', function() {
+                validateInput($(this));
+                checkAllValidations();
+                calculateTotal();
+                checkBlueprintChange();
+            });
+
+            // Initial validation on page load
+            checkAllValidations();
+
+            // Form submission with confirmation if structure changed
+            $('form').on('submit', function(e) {
+                if (blueprintChanged) {
+                    e.preventDefault();
+                    $('#confirmModal').modal('show');
                 }
             });
 
-            // Update submit button state
-            const submitBtn = $('button[type="submit"]');
-            if (allValid) {
-                submitBtn.prop('disabled', false).removeClass('btn-secondary').addClass('btn-primary');
-            } else {
-                submitBtn.prop('disabled', true).removeClass('btn-primary').addClass('btn-secondary');
-            }
+            // Confirm submission
+            $('#confirmSubmit').on('click', function() {
+                $('#confirmModal').modal('hide');
+                $('form').off('submit').submit();
+            });
 
-            return allValid;
-        }
-
-        // Update total when structure changes
-        $('.blueprint-input').on('input', function() {
-            validateInput($(this));
-            checkAllValidations();
+            // Initialize total calculation
             calculateTotal();
-            checkBlueprintChange();
-        });
 
-        // Initial validation on page load
-        checkAllValidations();
+            // Validate available questions
+            $('.struktur-input').on('blur', function() {
+                let input = $(this);
+                let value = parseInt(input.val()) || 0;
+                let availableText = input.siblings('small').text();
+                let available = parseInt(availableText.match(/Tersedia: (\d+)/)[1]);
 
-        // Form submission with confirmation if structure changed
-        $('form').on('submit', function(e) {
-            if (blueprintChanged) {
-                e.preventDefault();
-                $('#confirmModal').modal('show');
-            }
-        });
-
-        // Confirm submission
-        $('#confirmSubmit').on('click', function() {
-            $('#confirmModal').modal('hide');
-            $('form').off('submit').submit();
-        });
-
-        // Initialize total calculation
-        calculateTotal();
-
-        // Validate available questions
-        $('.struktur-input').on('blur', function() {
-            let input = $(this);
-            let value = parseInt(input.val()) || 0;
-            let availableText = input.siblings('small').text();
-            let available = parseInt(availableText.match(/Tersedia: (\d+)/)[1]);
-
-            if (value > available) {
-                input.addClass('is-invalid');
-                if (!input.siblings('.invalid-feedback').length) {
-                    input.after('<div class="invalid-feedback">Jumlah soal melebihi yang tersedia (' +
-                        available + ' soal)</div>');
+                if (value > available) {
+                    input.addClass('is-invalid');
+                    if (!input.siblings('.invalid-feedback').length) {
+                        input.after('<div class="invalid-feedback">Jumlah soal melebihi yang tersedia (' +
+                            available + ' soal)</div>');
+                    }
+                } else {
+                    input.removeClass('is-invalid');
+                    input.siblings('.invalid-feedback').remove();
                 }
-            } else {
-                input.removeClass('is-invalid');
-                input.siblings('.invalid-feedback').remove();
-            }
-        });
+            });
         });
     </script>
 @endpush

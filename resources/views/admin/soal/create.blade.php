@@ -77,11 +77,15 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="level">Level Kesulitan <span class="text-danger">*</span></label>
-                                        <select class="form-control @error('level') is-invalid @enderror" id="level" name="level" required>
+                                        <select class="form-control @error('level') is-invalid @enderror" id="level"
+                                            name="level" required>
                                             <option value="">Pilih Level</option>
-                                            <option value="mudah" {{ old('level') == 'mudah' ? 'selected' : '' }}>Mudah</option>
-                                            <option value="sedang" {{ old('level') == 'sedang' ? 'selected' : '' }}>Sedang</option>
-                                            <option value="sulit" {{ old('level') == 'sulit' ? 'selected' : '' }}>Sulit</option>
+                                            <option value="mudah" {{ old('level') == 'mudah' ? 'selected' : '' }}>Mudah
+                                            </option>
+                                            <option value="sedang" {{ old('level') == 'sedang' ? 'selected' : '' }}>Sedang
+                                            </option>
+                                            <option value="sulit" {{ old('level') == 'sulit' ? 'selected' : '' }}>Sulit
+                                            </option>
                                         </select>
                                         @error('level')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -151,15 +155,21 @@
                             <div class="form-group">
                                 <label class="d-block">Tipe Pembahasan</label>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_text" value="text" {{ old('pembahasan_type', 'text') == 'text' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="pembahasan_type"
+                                        id="pembahasan_type_text" value="text"
+                                        {{ old('pembahasan_type', 'text') == 'text' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="pembahasan_type_text">Text</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_image" value="image" {{ old('pembahasan_type') == 'image' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="pembahasan_type"
+                                        id="pembahasan_type_image" value="image"
+                                        {{ old('pembahasan_type') == 'image' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="pembahasan_type_image">Gambar</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_both" value="both" {{ old('pembahasan_type') == 'both' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="pembahasan_type"
+                                        id="pembahasan_type_both" value="both"
+                                        {{ old('pembahasan_type') == 'both' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="pembahasan_type_both">Keduanya</label>
                                 </div>
                                 @error('pembahasan_type')
@@ -180,7 +190,9 @@
                             <div class="form-group" id="pembahasan-image-group" style="display: none;">
                                 <label for="pembahasan_image">Upload Gambar Pembahasan</label>
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input @error('pembahasan_image') is-invalid @enderror" id="pembahasan_image" name="pembahasan_image" accept="image/*">
+                                    <input type="file"
+                                        class="custom-file-input @error('pembahasan_image') is-invalid @enderror"
+                                        id="pembahasan_image" name="pembahasan_image" accept="image/*">
                                     <label class="custom-file-label" for="pembahasan_image">Pilih gambar...</label>
                                 </div>
                                 <small class="form-text text-muted">Format: JPEG, PNG, JPG, GIF. Maks: 1MB</small>
@@ -188,8 +200,10 @@
                                     <div class="invalid-feedback d-block">{{ $message }}</div>
                                 @enderror
                                 <div id="pembahasan-image-preview" class="mt-3" style="display: none;">
-                                    <img id="pembahasan-preview-img" src="" alt="Preview Pembahasan" class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
-                                    <button type="button" class="btn btn-sm btn-danger ml-2" id="remove-pembahasan-image">
+                                    <img id="pembahasan-preview-img" src="" alt="Preview Pembahasan"
+                                        class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
+                                    <button type="button" class="btn btn-sm btn-danger ml-2"
+                                        id="remove-pembahasan-image">
                                         <i class="fa fa-times"></i> Hapus
                                     </button>
                                 </div>
@@ -218,7 +232,7 @@
 
                 // Load kepribadian categories from server
                 function loadKepribadianCodes() {
-                    $.get('{{ route("admin.soal.kepribadian-categories") }}')
+                    $.get('{{ route('admin.soal.kepribadian-categories') }}')
                         .done(function(data) {
                             kepribadianCodes = data;
                             console.log('Loaded kepribadian codes from API:', kepribadianCodes);
@@ -226,7 +240,9 @@
                         .fail(function() {
                             console.error('Failed to load kepribadian codes from API');
                             // Fallback to comprehensive list including all possible kepribadian codes
-                            kepribadianCodes = ['TKP', 'PSIKOTES', 'ID', 'OPY', 'KB', 'PGD', 'KBS', 'KDDJ', 'IDK', 'KDS', 'TJ', 'OPP'];
+                            kepribadianCodes = ['TKP', 'PSIKOTES', 'ID', 'OPY', 'KB', 'PGD', 'KBS', 'KDDJ', 'IDK',
+                                'KDS', 'TJ', 'OPP'
+                            ];
                             console.log('Using fallback kepribadian codes:', kepribadianCodes);
                         });
                 }
@@ -234,17 +250,18 @@
                 // Function to check if category is in kepribadian package
                 function checkIfKepribadianCategory(kategoriId) {
                     if (!kategoriId) return false;
-                    
+
                     // Get category code from selected option
                     const selectedOption = $(`#kategori_id option[value="${kategoriId}"]`);
                     const optionText = selectedOption.text();
-                    
-                    console.log('Checking category:', optionText, 'against kepribadian package codes:', kepribadianCodes);
-                    
+
+                    console.log('Checking category:', optionText, 'against kepribadian package codes:',
+                        kepribadianCodes);
+
                     // Check if category code is in kepribadian package mapping
                     const isKepribadian = kepribadianCodes.some(code => optionText.includes(code));
                     console.log('Is in kepribadian package:', isKepribadian);
-                    
+
                     return isKepribadian;
                 }
 
@@ -273,7 +290,7 @@
                 function updateBobotInputs() {
                     const kategoriId = $('#kategori_id').val();
                     const isKepribadian = checkIfKepribadianCategory(kategoriId);
-                    
+
                     $('.bobot-input').each(function() {
                         if ($(this).is('input[type="number"]')) {
                             $(this).attr('step', isKepribadian ? '1' : '0.01');
@@ -310,13 +327,14 @@
                         // Check file size (1MB = 1024 * 1024 bytes)
                         const maxSize = 1024 * 1024; // 1MB in bytes
                         if (file.size > maxSize) {
-                            alert('Ukuran file gambar pembahasan maksimal 1MB. File yang dipilih: ' + (file.size / (1024 * 1024)).toFixed(2) + 'MB');
+                            alert('Ukuran file gambar pembahasan maksimal 1MB. File yang dipilih: ' + (file
+                                .size / (1024 * 1024)).toFixed(2) + 'MB');
                             $(this).val('');
                             $('.custom-file-label[for="pembahasan_image"]').text('Pilih gambar...');
                             $('#pembahasan-image-preview').hide();
                             return;
                         }
-                        
+
                         $('.custom-file-label[for="pembahasan_image"]').text(file.name);
                         const reader = new FileReader();
                         reader.onload = function(e) {
@@ -400,21 +418,21 @@
                             for (let i = 0; i < 4; i++) {
                                 addOpsiItem(String.fromCharCode(65 + i), '', true);
                             }
-                    $('#add-opsi').show();
-                    break;
-            }
+                            $('#add-opsi').show();
+                            break;
+                    }
 
-            updateJawabanBenarOptions();
-            // Update bobot inputs after generating opsi
-            updateBobotInputs();
-        }
+                    updateJawabanBenarOptions();
+                    // Update bobot inputs after generating opsi
+                    updateBobotInputs();
+                }
 
                 // Add opsi item
                 function addOpsiItem(letter, defaultText = '', showBobot = false) {
                     // Check if current category is kepribadian (TKP, PSIKOTES)
                     const kategoriId = $('#kategori_id').val();
                     const isKepribadian = checkIfKepribadianCategory(kategoriId);
-                    
+
                     const opsiHtml = `
             <div class="row mb-2 opsi-item" data-letter="${letter}">
                 <div class="col-1">
@@ -425,24 +443,24 @@
                            value="${defaultText}" placeholder="Teks opsi ${letter}" required>
                 </div>
                 ${showBobot ? `
-                                                                                <div class="col-2">
-                                                                                    <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
-                                                                                           step="${isKepribadian ? '1' : '0.01'}" 
-                                                                                           min="${isKepribadian ? '1' : '0'}" 
-                                                                                           placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
-                                                                                </div>
-                                                                                ` : `
-                                                                                <div class="col-2">
-                                                                                    <input type="hidden" class="bobot-input" name="opsi[${opsiCount}][bobot]" value="0">
-                                                                                    <div class="form-check">
-                                                                                        <input type="checkbox" class="form-check-input jawaban-checkbox"
-                                                                                               id="jawaban_${letter}" data-letter="${letter}">
-                                                                                        <label class="form-check-label" for="jawaban_${letter}">
-                                                                                            <small>Benar</small>
-                                                                                        </label>
-                                                                                    </div>
-                                                                                </div>
-                                                                                `}
+                                                                                                <div class="col-2">
+                                                                                                    <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
+                                                                                                           step="${isKepribadian ? '1' : '0.01'}"
+                                                                                                           min="${isKepribadian ? '1' : '0'}"
+                                                                                                           placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
+                                                                                                </div>
+                                                                                                ` : `
+                                                                                                <div class="col-2">
+                                                                                                    <input type="hidden" class="bobot-input" name="opsi[${opsiCount}][bobot]" value="0">
+                                                                                                    <div class="form-check">
+                                                                                                        <input type="checkbox" class="form-check-input jawaban-checkbox"
+                                                                                                               id="jawaban_${letter}" data-letter="${letter}">
+                                                                                                        <label class="form-check-label" for="jawaban_${letter}">
+                                                                                                            <small>Benar</small>
+                                                                                                        </label>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                                `}
                 <div class="col-1">
                     ${opsiCount > 1 ? `<button type="button" class="btn btn-sm btn-danger remove-opsi"><i class="fa fa-trash"></i></button>` : ''}
                 </div>
@@ -680,9 +698,10 @@
                     if (tipe === 'pg_bobot') {
                         const kategoriId = $('#kategori_id').val();
                         const isKepribadian = checkIfKepribadianCategory(kategoriId);
-                        
-                        console.log('Form validation - kategoriId:', kategoriId, 'isInKepribadianPackage:', isKepribadian);
-                        
+
+                        console.log('Form validation - kategoriId:', kategoriId, 'isInKepribadianPackage:',
+                            isKepribadian);
+
                         if (isKepribadian) {
                             // For categories in kepribadian package, validate each bobot is between 1-5
                             let hasInvalidBobot = false;
@@ -693,21 +712,26 @@
                                     return false; // break loop
                                 }
                             });
-                            
+
                             if (hasInvalidBobot) {
-                                alert('Bobot untuk kategori dalam paket kepribadian harus berupa bilangan bulat antara 1-5');
+                                alert(
+                                    'Bobot untuk kategori dalam paket kepribadian harus berupa bilangan bulat antara 1-5'
+                                    );
                                 valid = false;
                             }
                         } else {
-                            // For categories not in kepribadian package, validate total bobot = 1
-                            let totalBobot = 0;
+                            // For categories not in kepribadian package, just validate that bobot values are valid numbers
+                            let hasInvalidBobot = false;
                             $('input[name*="[bobot]"]').each(function() {
-                                const bobot = parseFloat($(this).val()) || 0;
-                                totalBobot += bobot;
+                                const bobot = parseFloat($(this).val());
+                                if (isNaN(bobot) || bobot <= 0) {
+                                    hasInvalidBobot = true;
+                                    return false; // break loop
+                                }
                             });
 
-                            if (Math.abs(totalBobot - 1) > 0.01) {
-                                alert('Total bobot harus sama dengan 1.0 untuk tipe Pilihan Ganda (Berbobot)');
+                            if (hasInvalidBobot) {
+                                alert('Semua bobot harus berupa angka positif yang valid');
                                 valid = false;
                             }
                         }

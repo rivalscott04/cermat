@@ -55,10 +55,10 @@
                                 <strong>{{ number_format($userAnswers->min('skor'), 2) }}</strong>
                             </div>
                             @isset($tkpFinalScore)
-                            <div class="stat-row">
-                                <span>Skor TKP (1–100):</span>
-                                <strong>{{ number_format($tkpFinalScore, 2) }}</strong>
-                            </div>
+                                <div class="stat-row">
+                                    <span>Skor TKP (1–100):</span>
+                                    <strong>{{ number_format($tkpFinalScore, 2) }}</strong>
+                                </div>
                             @endisset
                         </div>
                     </div>
@@ -102,7 +102,7 @@
                         </div>
 
                         <div class="mt-2">
-                            @if(!empty($isTkp) && $isTkp)
+                            @if (!empty($isTkp) && $isTkp)
                                 <div class="d-flex align-items-center mb-2">
                                     <span class="question-legend answered"></span>
                                     <small>Terjawab</small>
@@ -155,7 +155,7 @@
                             <div class="col-md-6">
                                 <div class="score-card text-center p-4">
                                     <div class="score-circle">
-                                        @if(!empty($isTkp) && $isTkp)
+                                        @if (!empty($isTkp) && $isTkp)
                                             <div class="score-number">{{ number_format($tkpFinalScore, 2) }}</div>
                                             <div class="score-label">Skor TKP (1–100)</div>
                                         @else
@@ -167,7 +167,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="score-details">
-                                    @if(!empty($isTkp) && $isTkp)
+                                    @if (!empty($isTkp) && $isTkp)
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="stat-item">
@@ -233,24 +233,27 @@
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
                                         <h6 class="mb-1">{{ $category['nama'] }}</h6>
-                                        @if(!empty($isTkp) && $isTkp)
-                                            <small class="text-muted">Poin: {{ number_format($category['score'], 1) }} dari {{ $category['total'] * 5 }}</small>
+                                        @if (!empty($isTkp) && $isTkp)
+                                            <small class="text-muted">Poin: {{ number_format($category['score'], 1) }}
+                                                dari {{ $category['total'] * 5 }}</small>
                                         @else
-                                            <small class="text-muted">{{ $category['correct'] }}/{{ $category['total'] }} soal benar</small>
+                                            <small class="text-muted">{{ $category['correct'] }}/{{ $category['total'] }}
+                                                soal benar</small>
                                         @endif
                                     </div>
                                     <div class="text-right">
                                         <div class="score-badge">{{ number_format($category['score'], 1) }}</div>
-                                        @if(empty($isTkp) || !$isTkp)
+                                        @if (empty($isTkp) || !$isTkp)
                                             <div class="percentage">
                                                 {{ number_format(($category['correct'] / $category['total']) * 100, 1) }}%
                                             </div>
                                         @endif
                                     </div>
                                 </div>
-                                @if(empty($isTkp) || !$isTkp)
+                                @if (empty($isTkp) || !$isTkp)
                                     <div class="progress mt-2" style="height: 8px;">
-                                        <div class="progress-bar" style="width: {{ ($category['correct'] / $category['total']) * 100 }}%"></div>
+                                        <div class="progress-bar"
+                                            style="width: {{ ($category['correct'] / $category['total']) * 100 }}%"></div>
                                     </div>
                                 @endif
                             </div>
@@ -289,20 +292,49 @@
                         @endphp
 
                         <div id="review-soal-{{ $userAnswer->urutan }}"
-                            class="answer-review mb-4 {{ (!empty($isTkp) && $isTkp) ? 'tkp' : ($userAnswer->skor > 0 ? 'correct' : 'incorrect') }}">
+                            class="answer-review mb-4 {{ !empty($isTkp) && $isTkp ? 'tkp' : ($userAnswer->skor > 0 ? 'correct' : 'incorrect') }}">
                             <div class="question-header">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h6 class="mb-1">Soal {{ $userAnswer->urutan }}</h6>
                                     <div class="score-indicator">
-                                        @if(!empty($isTkp) && $isTkp)
+                                        @if (!empty($isTkp) && $isTkp)
                                             @php
-                                                // Hitung poin live berdasarkan bobot opsi dari database
-                                                $opsiMap = ($userAnswer->soal->opsi ?? collect())->keyBy('opsi');
-                                                $userLettersLive = $userAnswer->jawaban_original ?? $userAnswer->jawaban_user ?? [];
-                                                if (!is_array($userLettersLive)) { $userLettersLive = [$userLettersLive]; }
+                                                // Dapatkan data review untuk soal ini (sudah teracak)
+                                                $reviewData = $reviewData[$userAnswer->id] ?? null;
                                                 $userPoinLive = 0;
-                                                foreach ($userLettersLive as $ltr) {
-                                                    $userPoinLive += isset($opsiMap[$ltr]) ? ($opsiMap[$ltr]->bobot ?? 0) : 0;
+
+                                                if ($reviewData && isset($reviewData['shuffledOptions'])) {
+                                                    // Gunakan opsi yang sudah diacak
+                                                    $shuffledOptions = $reviewData['shuffledOptions'];
+                                                    $userLetters = $userAnswer->jawaban_user ?? [];
+                                                    if (!is_array($userLetters)) {
+                                                        $userLetters = [$userLetters];
+                                                    }
+
+                                                    // Hitung poin user berdasarkan opsi yang sudah diacak
+                                                    foreach ($userLetters as $userLetter) {
+                                                        foreach ($shuffledOptions as $index => $option) {
+                                                            $optionLetter = chr(65 + $index);
+                                                            if ($optionLetter == $userLetter) {
+                                                                $userPoinLive += $option['bobot'];
+                                                                break;
+                                                            }
+                                                        }
+                                                    }
+                                                } else {
+                                                    // Fallback: gunakan opsi original
+                                                    $opsiMap = ($userAnswer->soal->opsi ?? collect())->keyBy('opsi');
+                                                    $userLettersLive =
+                                                        $userAnswer->jawaban_original ??
+                                                        ($userAnswer->jawaban_user ?? []);
+                                                    if (!is_array($userLettersLive)) {
+                                                        $userLettersLive = [$userLettersLive];
+                                                    }
+                                                    foreach ($userLettersLive as $ltr) {
+                                                        $userPoinLive += isset($opsiMap[$ltr])
+                                                            ? $opsiMap[$ltr]->bobot ?? 0
+                                                            : 0;
+                                                    }
                                                 }
                                             @endphp
                                             <span class="badge badge-info">
@@ -323,19 +355,41 @@
                                 </div>
                                 <small class="text-muted">{{ $userAnswer->soal->kategori->nama }} -
                                     {{ ucfirst(str_replace('_', ' ', $userAnswer->soal->tipe)) }}</small>
-                                @if(!empty($isTkp) && $isTkp)
+                                @if (!empty($isTkp) && $isTkp)
                                     @php
-                                        $opsiKoleksi = $userAnswer->soal->opsi ?? collect();
-                                        $bestOption = $opsiKoleksi->sortByDesc('bobot')->first();
-                                        $userLetters = $userAnswer->jawaban_original ?? $userAnswer->jawaban_user ?? [];
-                                        if (!is_array($userLetters)) { $userLetters = [$userLetters]; }
-                                        $userLetterStr = implode(',', $userLetters);
-                                        // gunakan poin live yang sudah dihitung di atas jika tersedia
-                                        $userPoinLive = isset($userPoinLive) ? $userPoinLive : 0;
+                                        // Handle variable dengan deteksi format yang fleksibel
+                                        if (is_array($reviewData) && isset($reviewData[$userAnswer->id])) {
+                                            // Format yang benar: $reviewData[ID] = data
+                                            $reviewDataDetail = $reviewData[$userAnswer->id];
+                                        } elseif (is_array($reviewData) && isset($reviewData['bestOption'])) {
+                                            // Format alternatif: $reviewData langsung berisi data
+                                            $reviewDataDetail = $reviewData;
+                                        } else {
+                                            $reviewDataDetail = null;
+                                        }
+
+                                        if ($reviewDataDetail && isset($reviewDataDetail['bestOption'])) {
+                                            $bestOptionLetter = $reviewDataDetail['bestOption']['letter'];
+                                            $bestOptionBobot = $reviewDataDetail['bestOption']['bobot'];
+
+                                            $userLetters = $userAnswer->jawaban_user ?? [];
+                                            if (!is_array($userLetters)) {
+                                                $userLetters = [$userLetters];
+                                            }
+                                            $userLetterStr = implode(',', $userLetters);
+                                        } else {
+                                            $bestOptionLetter = 'N/A';
+                                            $bestOptionBobot = 0;
+                                            $userLetterStr = 'N/A';
+                                        }
                                     @endphp
+
                                     <div class="text-muted small mt-1">
-                                        Pilihan terbaik: {{ $bestOption->opsi ?? '-' }} ({{ isset($bestOption) ? number_format($bestOption->bobot, 2) : '-' }}) •
-                                        Pilihan Anda: {{ $userLetterStr }} ({{ number_format($userPoinLive, 2) }})
+                                        Pilihan terbaik: {{ $bestOptionLetter }}
+                                        ({{ number_format($bestOptionBobot, 2) }})
+
+                                        Pilihan Anda: {{ $userLetterStr }}
+                                        ({{ number_format($userPoinLive, 2) }})
                                     </div>
                                 @endif
                             </div>

@@ -851,11 +851,48 @@ class TryoutController extends Controller
             $userAnswerShuffled = [$userAnswerShuffled];
         }
 
+        // Cari opsi terbaik dari shuffled (bobot tertinggi)
+        $shuffledOptionsCollection = collect($shuffleData['options']);
+        $bestShuffledOption = $shuffledOptionsCollection->sortByDesc(function ($opt) {
+            return is_array($opt) ? $opt['bobot'] : $opt->bobot;
+        })->first();
+
+        // Cari letter untuk opsi terbaik sesuai shuffle
+        $letters = ['A', 'B', 'C', 'D', 'E'];
+        $bestIndex = null;
+
+        // Loop manual untuk mencari index yang tepat
+        foreach ($shuffledOptionsCollection->values() as $index => $option) {
+            $shuffledText = is_array($option) ? $option['teks'] : $option->teks;
+            $shuffledBobot = is_array($option) ? $option['bobot'] : $option->bobot;
+
+            $bestText = is_array($bestShuffledOption) ? $bestShuffledOption['teks'] : $bestShuffledOption->teks;
+            $bestBobot = is_array($bestShuffledOption) ? $bestShuffledOption['bobot'] : $bestShuffledOption->bobot;
+
+            // Cocokkan berdasarkan teks DAN bobot untuk memastikan tepat
+            if ($shuffledText === $bestText && $shuffledBobot == $bestBobot) {
+                $bestIndex = $index;
+                break;
+            }
+        }
+
+        // Fallback jika tidak ditemukan
+        if ($bestIndex === null) {
+            $bestIndex = 0; // Default ke A jika ada masalah
+        }
+
+        $bestOptionLetter = $letters[$bestIndex] ?? 'A';
+        $bestOptionBobot = is_array($bestShuffledOption) ? $bestShuffledOption['bobot'] : $bestShuffledOption->bobot;
+
         return [
             'shuffledOptions' => $shuffleData['options'],
             'correctAnswerShuffled' => $correctAnswerShuffled,
             'userAnswerShuffled' => $userAnswerShuffled,
-            'mapping' => $shuffleData
+            'mapping' => $shuffleData,
+            'bestOption' => [
+                'letter' => $bestOptionLetter,
+                'bobot'  => $bestOptionBobot,
+            ]
         ];
     }
 
@@ -888,7 +925,7 @@ class TryoutController extends Controller
         if (!$session) {
             return redirect()->route('user.tryout.index')->with('error', 'Session tryout tidak ditemukan');
         }
-        
+
         $userAnswers = UserTryoutSoal::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
             ->where('user_tryout_session_id', $session->id)
@@ -961,6 +998,7 @@ class TryoutController extends Controller
         } catch (\Throwable $e) {
             // Fail-safe: ignore TKP score calculation errors to avoid blocking result page
         }
+
         $correctAnswers = $userAnswers->where('skor', '>', 0)->count();
         $wrongAnswers = $totalQuestions - $correctAnswers;
 
@@ -1020,7 +1058,7 @@ class TryoutController extends Controller
         return view('user.tryout.result', compact(
             'tryout',
             'userAnswers',
-            'reviewData', // TAMBAHAN: Pass review data ke view
+            'reviewData',
             'totalScore',
             'totalQuestions',
             'correctAnswers',
@@ -1301,7 +1339,7 @@ class TryoutController extends Controller
                         $totalBobot += $opsiSoal->bobot;
                     }
                 }
-                
+
                 // For kepribadian categories, return the full bobot (1-5)
                 // For non-kepribadian categories, cap at 1 (0-1 scale)
                 if ($isKepribadian) {
@@ -1322,7 +1360,7 @@ class TryoutController extends Controller
                         $correctCount++;
                     }
                 }
-                
+
                 // Hanya berikan skor 1 jika KEDUA jawaban benar (untuk semua kategori)
                 return $correctCount === 2 ? 1 : 0;
 

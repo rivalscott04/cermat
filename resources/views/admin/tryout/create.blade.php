@@ -51,9 +51,11 @@
                                             <option value="free" {{ old('jenis_paket') == 'free' ? 'selected' : '' }}>Free
                                                 - 1 tryout untuk semua user</option>
                                             <option value="kecerdasan"
-                                                {{ old('jenis_paket') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan</option>
+                                                {{ old('jenis_paket') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan
+                                            </option>
                                             <option value="kepribadian"
-                                                {{ old('jenis_paket') == 'kepribadian' ? 'selected' : '' }}>Kepribadian</option>
+                                                {{ old('jenis_paket') == 'kepribadian' ? 'selected' : '' }}>Kepribadian
+                                            </option>
                                             <option value="lengkap"
                                                 {{ old('jenis_paket') == 'lengkap' ? 'selected' : '' }}>Lengkap - Semua
                                                 kategori</option>
@@ -209,16 +211,16 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            // Package mapping - will be loaded dynamically from server
-            let packageMapping = {};
-
-            // Flag to track if mapping is loaded
-            let mappingLoaded = false;
+            // Simplified static package mapping (no need for dynamic loading)
+            const packageMapping = {
+                'kecerdasan': ['TIU', 'TWK', 'TKD'],
+                'kepribadian': ['TKP', 'PSIKOTES'],
+                'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
+            };
 
             // Function to update soal summary
             function updateSoalSummary() {
                 let totalSoal = 0;
-                let kategorisWithSoal = [];
                 let detailSummary = {};
 
                 $('.blueprint-input:enabled').each(function() {
@@ -290,68 +292,39 @@
                 }
             }
 
-            // Function to update package option descriptions
-            function updatePackageDescriptions() {
-                // Update kecerdasan option
-                const kecerdasanCategories = packageMapping['kecerdasan'] || [];
-                const kecerdasanText = kecerdasanCategories.length > 0 
-                    ? `Kecerdasan (${kecerdasanCategories.length} kategori)`
-                    : 'Kecerdasan';
-                $('#jenis_paket option[value="kecerdasan"]').text(kecerdasanText);
-
-                // Update kepribadian option
-                const kepribadianCategories = packageMapping['kepribadian'] || [];
-                const kepribadianText = kepribadianCategories.length > 0 
-                    ? `Kepribadian (${kepribadianCategories.length} kategori)`
-                    : 'Kepribadian';
-                $('#jenis_paket option[value="kepribadian"]').text(kepribadianText);
-
-                // Update lengkap option
-                const lengkapCategories = packageMapping['lengkap'] || [];
-                const lengkapText = lengkapCategories.length > 0 
-                    ? `Lengkap (${lengkapCategories.length} kategori)`
-                    : 'Lengkap - Semua kategori';
-                $('#jenis_paket option[value="lengkap"]').text(lengkapText);
-            }
-
-            // Function to update kategori display
+            // Function to update kategori display (simplified version)
             function updateKategoriDisplay(selectedPackage) {
-                console.log('Updating kategori display for package:', selectedPackage);
                 const allowedCategories = packageMapping[selectedPackage] || [];
-                console.log('Allowed categories:', allowedCategories);
 
                 // Update preview
                 if (selectedPackage && allowedCategories.length > 0) {
                     $('#kategori-preview').html(`
-                <i class="fa fa-check text-success"></i>
-                <strong>Kategori yang akan muncul:</strong><br>
-                ${allowedCategories.map(cat => `<span class="badge badge-primary mr-1">${cat}</span>`).join('')}
-            `).removeClass('alert-info alert-warning alert-danger').addClass('alert-success');
+                        <i class="fa fa-check text-success"></i>
+                        <strong>Kategori yang akan muncul:</strong><br>
+                        ${allowedCategories.map(cat => `<span class="badge badge-primary mr-1">${cat}</span>`).join('')}
+                    `).removeClass('alert-info alert-warning alert-danger').addClass('alert-success');
                 } else if (selectedPackage === '') {
                     $('#kategori-preview').html(`
-                <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
-            `).removeClass('alert-success alert-warning alert-danger').addClass('alert-info');
+                        <i class="fa fa-info-circle"></i> Pilih jenis paket untuk melihat kategori yang akan muncul
+                    `).removeClass('alert-success alert-warning alert-danger').addClass('alert-info');
                 } else {
                     $('#kategori-preview').html(`
-                <i class="fa fa-exclamation-triangle text-warning"></i> Tidak ada kategori yang tersedia untuk paket ini
-            `).removeClass('alert-success alert-info alert-danger').addClass('alert-warning');
+                        <i class="fa fa-exclamation-triangle text-warning"></i> Tidak ada kategori yang tersedia untuk paket ini
+                    `).removeClass('alert-success alert-info alert-danger').addClass('alert-warning');
                 }
 
                 // Filter kategori table
                 $('.kategori-row').each(function() {
                     const kode = $(this).data('kode');
-                    console.log('Processing kategori:', kode, 'Allowed:', allowedCategories.includes(kode));
 
                     if (selectedPackage === '' || allowedCategories.includes(kode)) {
                         // Show row and enable inputs
                         $(this).show();
                         $(this).find('input.blueprint-input').prop('disabled', false);
-                        console.log('Showing kategori:', kode);
                     } else {
                         // Hide row, disable inputs, and reset values
                         $(this).hide();
                         $(this).find('input.blueprint-input').prop('disabled', true).val(0);
-                        console.log('Hiding kategori:', kode);
                     }
                 });
 
@@ -364,63 +337,14 @@
                 }, 100);
             }
 
-            // Load dynamic package mapping from server
-            function loadPackageMapping() {
-                fetch('/admin/package-mapping/api')
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log('Package mapping loaded:', data);
-                        packageMapping = data;
-                        mappingLoaded = true;
-
-                        // Update package option descriptions
-                        updatePackageDescriptions();
-
-                        // Trigger update if package is already selected
-                        const selectedPackage = $('#jenis_paket').val();
-                        if (selectedPackage) {
-                            updateKategoriDisplay(selectedPackage);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading package mapping:', error);
-                        console.log('Failed to load package mapping, form may not work correctly');
-                        
-                        // Show error message to user
-                        $('#kategori-preview').html(`
-                            <i class="fa fa-exclamation-triangle text-danger"></i>
-                            <strong>Error:</strong> Gagal memuat konfigurasi paket. Silakan refresh halaman atau hubungi administrator.
-                        `).removeClass('alert-success alert-info alert-warning').addClass('alert-danger');
-                    });
-            }
-
-            // Dan langsung panggil:
+            // Package change event handler
             $('#jenis_paket').on('change', function() {
                 const selectedPackage = $(this).val();
                 updateKategoriDisplay(selectedPackage);
             });
 
-            // Load mapping on page load first
-            loadPackageMapping();
-
-            // Initialize on page load - trigger change event if there's already a selected value
-            const initialPackage = $('#jenis_paket').val();
-            if (initialPackage) {
-                // Wait for mapping to load before updating display
-                const checkAndUpdate = () => {
-                    if (mappingLoaded) {
-                        updateKategoriDisplay(initialPackage);
-                    } else {
-                        setTimeout(checkAndUpdate, 50);
-                    }
-                };
-                checkAndUpdate();
-            }
+            // Initialize on page load
+            $('#jenis_paket').trigger('change');
 
             // Calculate total questions
             function calculateTotal() {
@@ -451,13 +375,13 @@
                 if (value > available && value > 0) {
                     input.addClass('is-invalid');
                     const validationRow = $(`
-                <tr class="validation-message">
-                    <td colspan="5" class="text-danger small">
-                        <i class="fa fa-exclamation-triangle"></i>
-                        Jumlah soal ${level.toLowerCase()} yang diminta (${value}) melebihi soal yang tersedia (${available})
-                    </td>
-                </tr>
-            `);
+                        <tr class="validation-message">
+                            <td colspan="5" class="text-danger small">
+                                <i class="fa fa-exclamation-triangle"></i>
+                                Jumlah soal ${level.toLowerCase()} yang diminta (${value}) melebihi soal yang tersedia (${available})
+                            </td>
+                        </tr>
+                    `);
                     row.after(validationRow);
                     return false;
                 } else if (value > 0) {
@@ -497,9 +421,8 @@
             $(document).on('input', '.blueprint-input', function() {
                 if (!$(this).prop('disabled')) {
                     validateInput($(this));
-                    updateSoalSummary(); // Update summary saat input berubah
+                    updateSoalSummary();
                     checkAllValidations();
-                    const total = calculateTotal();
                 }
             });
 
