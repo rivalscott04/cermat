@@ -72,6 +72,7 @@
             margin-bottom: 2rem;
             width: 40%;
             border: solid black 2px;
+            margin-left: -130px;
         }
 
         .answer-box {
@@ -91,19 +92,23 @@
         .options {
             display: flex;
             justify-content: center;
-            gap: 12px;
+            gap: 5px;
+            width: 1000px;
+            margin-left: -130px;
         }
 
         .option-btn {
-            width: 120px;
-            /* Reduced from 140px */
-            height: 60px;
-            /* Reduced from 70px */
+            width: 200px;
+            height: 40px;
             background-color: white;
             border: 1.5px solid #adabab !important;
-            font-size: 1.8rem;
-            /* Reduced from 2.2rem */
+            font-size: 1.5rem;
             transition: all 0.2s;
+
+            /* Tambahkan ini untuk center vertikal dan horizontal */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .option-btn:hover {
