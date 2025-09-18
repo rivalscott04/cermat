@@ -27,8 +27,8 @@
             /* Fixed width to match options container */
             margin-bottom: 2rem;
             border-collapse: collapse;
-            margin-left: -130px;
-            /* Match the margin of options */
+            margin: 0 auto 2rem auto;
+            /* Center the table with equal X and Y distances */
         }
 
         .soal-table th,
