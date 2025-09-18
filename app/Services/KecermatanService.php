@@ -22,18 +22,13 @@ class KecermatanService
             // Jika diberikan, gunakan total_questions. Kalau tidak, coba infer.
             $totalQuestions = $data['total_questions'] ?? null;
             if ($totalQuestions === null) {
-                // infer totalQuestions: jumlah set * maksimum jawaban per set (konservatif)
+                // infer totalQuestions: untuk tes kecermatan biasanya 10 kolom × 50 soal = 500
                 $sets = array_unique(array_map(fn($j) => (int)($j['set'] ?? 0), $detailJawaban));
                 $sets = array_filter($sets, fn($s) => $s > 0);
                 sort($sets);
                 if (count($sets) > 0) {
-                    $countsPerSet = array_fill_keys($sets, 0);
-                    foreach ($detailJawaban as $j) {
-                        $s = (int)($j['set'] ?? 0);
-                        if ($s > 0) $countsPerSet[$s] = ($countsPerSet[$s] ?? 0) + 1;
-                    }
-                    $maxPerSet = max($countsPerSet);
-                    $totalQuestions = count($sets) * $maxPerSet;
+                    // Untuk tes kecermatan, asumsikan setiap kolom memiliki 50 soal
+                    $totalQuestions = count($sets) * 50;
                 } else {
                     // fallback: total jawaban yang ada
                     $totalQuestions = count($detailJawaban);
@@ -118,6 +113,7 @@ class KecermatanService
         $totalBenar = array_sum($Ci);
 
         // 1) PANKER: proporsi dari total soal (gunakan totalQuestions yang valid)
+        // Rumus: (Σ A_i) / N × 100
         $PANKER = $totalQuestions > 0 ? ($totalTerjawab / $totalQuestions) * 100 : 0;
 
         // 2) TIANKER: proporsi benar dari yang dikerjakan

@@ -120,13 +120,18 @@
 
                         <div class="col-md-6">
                             <h4><span class="badge badge-primary">PANKER:</span>
-                                {{ number_format($hasilTes->panker, 2) }}/100</h4>
+                                {{ number_format($hasilTes->panker, 2) }}</h4>
                             <h4><span class="badge badge-info">TIANKER:</span>
-                                {{ number_format($hasilTes->tianker, 2) }}/100</h4>
+                                {{ number_format($hasilTes->tianker, 2) }}</h4>
                             <h4><span class="badge badge-warning">JANKER:</span>
-                                {{ number_format($hasilTes->janker, 2) }}/100</h4>
+                                {{ number_format($hasilTes->janker, 2) }}</h4>
                             <h4><span class="badge badge-success">HANKER:</span>
-                                {{ number_format($hasilTes->hanker, 2) }}/100</h4>
+                                {{ number_format($hasilTes->hanker, 2) }}</h4>
+                            @if($hasilTes->skor_akhir !== null)
+                                <hr>
+                                <h3><strong>Skor Akhir: {{ number_format($hasilTes->skor_akhir, 2) }}</strong></h3>
+                                <h3><strong>Kategori: {{ $hasilTes->kategori_skor }}</strong></h3>
+                            @endif
                         </div>
                     </div>
                     <hr>

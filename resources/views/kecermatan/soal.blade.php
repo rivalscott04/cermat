@@ -17,15 +17,18 @@
         }
 
         .question-container {
-            max-width: 700px;
-            /* Reduced from 800px */
+            max-width: 1000px;
+            /* Adjusted to match options width */
             margin: 0 auto;
         }
 
         .soal-table {
-            width: 100%;
+            width: 1000px;
+            /* Fixed width to match options container */
             margin-bottom: 2rem;
             border-collapse: collapse;
+            margin-left: -130px;
+            /* Match the margin of options */
         }
 
         .soal-table th,
@@ -70,7 +73,8 @@
             justify-content: left;
             /* gap: 12px; */
             margin-bottom: 2rem;
-            width: 40%;
+            width: 400px;
+            /* Fixed width to match proportion of table */
             border: solid black 2px;
             margin-left: -130px;
         }
