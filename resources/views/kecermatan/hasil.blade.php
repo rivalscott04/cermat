@@ -85,7 +85,20 @@ Modified ibox-title with Back Button
               <h4>Waktu Total: {{ $hasilTes->waktu_total }} detik</h4>
               <h4>Rata-rata Waktu Per Soal: {{ number_format($hasilTes->average_time, 2) }} detik</h4>
             </div>
-            <div class="col-md-6 d-flex justify-content-end align-items-end">
+            <div class="col-md-6">
+              @if($hasilTes->panker !== null)
+                <h4><strong>PANKER (Kecepatan):</strong> {{ number_format($hasilTes->panker, 2) }}</h4>
+                <h4><strong>TIANKER (Ketelitian):</strong> {{ number_format($hasilTes->tianker, 2) }}</h4>
+                <h4><strong>JANKER (Keajegan):</strong> {{ number_format($hasilTes->janker, 2) }}</h4>
+                <h4><strong>HANKER (Ketahanan):</strong> {{ number_format($hasilTes->hanker, 2) }}</h4>
+                <hr>
+                <h3><strong>Skor Akhir: {{ number_format($hasilTes->skor_akhir, 2) }}</strong></h3>
+                <h3><strong>Kategori: {{ $hasilTes->kategori_skor }}</strong></h3>
+              @endif
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-12 d-flex justify-content-end align-items-end">
               <div class="form-group w-50 mb-2">
                 <select class="form-control" id="setFilter">
                   <option value="all">Semua Set</option>

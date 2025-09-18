@@ -19,11 +19,14 @@ class HasilTes extends Model
         'panker',
         'tianker',
         'janker',
-        'hanker'
+        'hanker',
+        'skor_akhir',
+        'kategori_skor'
     ];
 
     protected $casts = [
-        'tkp_final_score' => 'decimal:2'
+        'tkp_final_score' => 'decimal:2',
+        'skor_akhir' => 'decimal:2'
     ];
 
     public function user()

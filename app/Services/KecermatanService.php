@@ -59,6 +59,8 @@ class KecermatanService
                 'tianker' => $indikator['TIANKER'],
                 'janker' => $indikator['JANKER'],
                 'hanker' => $indikator['HANKER'],
+                'skor_akhir' => $indikator['SKOR_AKHIR'],
+                'kategori_skor' => $indikator['KATEGORI_SKOR'],
             ]);
 
             DB::commit();
@@ -141,11 +143,37 @@ class KecermatanService
         $HANKER = $meanFirst3 > 0 ? ($meanLast3 / $meanFirst3) * 100 : 0;
         $HANKER = min($HANKER, 100);
 
+        // 5) SKOR AKHIR: rata-rata dari 4 indikator
+        $skorAkhir = ($PANKER + $TIANKER + $JANKER + $HANKER) / 4;
+        
+        // 6) KATEGORI SKOR AKHIR
+        $kategoriSkor = $this->tentukanKategoriSkor($skorAkhir);
+
         return [
             'PANKER' => round($PANKER, 2),
             'TIANKER' => round($TIANKER, 2),
             'JANKER' => round($JANKER, 2),
             'HANKER' => round($HANKER, 2),
+            'SKOR_AKHIR' => round($skorAkhir, 2),
+            'KATEGORI_SKOR' => $kategoriSkor,
         ];
+    }
+
+    /**
+     * Tentukan kategori skor berdasarkan rentang skor
+     */
+    private function tentukanKategoriSkor(float $skor): string
+    {
+        if ($skor >= 91) {
+            return 'Sangat Tinggi';
+        } elseif ($skor >= 76) {
+            return 'Tinggi';
+        } elseif ($skor >= 61) {
+            return 'Cukup Tinggi';
+        } elseif ($skor >= 41) {
+            return 'Sedang';
+        } else {
+            return 'Rendah';
+        }
     }
 }
