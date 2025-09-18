@@ -14,10 +14,15 @@
             text-align: center;
             margin-bottom: 1.2rem;
             color: #333;
+            padding-top: 1.2rem;
         }
 
         .question-container {
-            max-width: 700px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            max-width: 65%;
             /* Reduced from 800px */
             margin: 0 auto;
         }
@@ -67,12 +72,12 @@
 
         .answer-container {
             display: flex;
-            justify-content: left;
+            justify-content: center;
             /* gap: 12px; */
             margin-bottom: 2rem;
             width: 40%;
             border: solid black 2px;
-            margin-left: -130px;
+            margin-left: -100%;
         }
 
         .answer-box {
@@ -94,7 +99,6 @@
             justify-content: center;
             gap: 5px;
             width: 1000px;
-            margin-left: -130px;
         }
 
         .option-btn {
