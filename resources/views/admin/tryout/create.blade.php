@@ -211,12 +211,8 @@
 @push('scripts')
     <script>
         $(document).ready(function() {
-            // Simplified static package mapping (no need for dynamic loading)
-            const packageMapping = {
-                'kecerdasan': ['TIU', 'TWK', 'TKD'],
-                'kepribadian': ['TKP', 'PSIKOTES'],
-                'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
-            };
+            // Dynamic package mapping from backend (uses kategori.kode values)
+            const packageMapping = @json($packageMappings ?? []);
 
             // Function to update soal summary
             function updateSoalSummary() {
