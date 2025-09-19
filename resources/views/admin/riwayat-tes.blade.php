@@ -544,103 +544,43 @@
     }
 }
 
-/* Override Bootstrap Pagination with Inspinia Style */
+/* Pagination Style - Same as User Index and Soal Index */
 .pagination {
-    display: block !important;
-    margin: 0 !important;
-    padding-left: 0 !important;
-    list-style: none !important;
-    border-radius: 0 !important;
+    margin: 20px 0;
+    justify-content: center;
 }
 
-.pagination > li {
-    display: inline-block !important;
+.pagination .page-link {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    border: 1px solid #dee2e6;
+    color: #007bff;
+    background-color: #fff;
+    margin: 0 2px;
+    border-radius: 4px;
 }
 
-.pagination > li > a,
-.pagination > li > span {
-    background-color: #FFFFFF !important;
-    border: 1px solid #DDDDDD !important;
-    color: inherit !important;
-    float: left !important;
-    line-height: 1.42857 !important;
-    margin-left: -1px !important;
-    padding: 4px 10px !important;
-    position: relative !important;
-    text-decoration: none !important;
-    display: block !important;
-    border-radius: 0 !important;
+.pagination .page-link:hover {
+    color: #0056b3;
+    background-color: #e9ecef;
+    border-color: #dee2e6;
+    text-decoration: none;
 }
 
-.pagination > li > a:hover,
-.pagination > li > span:hover {
-    background-color: #f4f4f4 !important;
-    border-color: #DDDDDD !important;
-    color: inherit !important;
-    text-decoration: none !important;
+.pagination .page-item.active .page-link {
+    color: #fff;
+    background-color: #007bff;
+    border-color: #007bff;
 }
 
-.pagination > .active > a,
-.pagination > .active > span,
-.pagination > .active > a:hover,
-.pagination > .active > span:hover,
-.pagination > .active > a:focus,
-.pagination > .active > span:focus {
-    background-color: #1ab394 !important;
-    border-color: #1ab394 !important;
-    color: white !important;
-    cursor: default !important;
-    z-index: 2 !important;
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    background-color: #fff;
+    border-color: #dee2e6;
 }
 
-.pagination > .disabled > a,
-.pagination > .disabled > span,
-.pagination > .disabled > a:hover,
-.pagination > .disabled > span:hover,
-.pagination > .disabled > a:focus,
-.pagination > .disabled > span:focus {
-    background-color: #fff !important;
-    border-color: #ddd !important;
-    color: #777 !important;
-    cursor: not-allowed !important;
-}
-
-/* Override Bootstrap page-link class */
-.page-link {
-    background-color: #FFFFFF !important;
-    border: 1px solid #DDDDDD !important;
-    color: inherit !important;
-    padding: 4px 10px !important;
-    line-height: 1.42857 !important;
-    text-decoration: none !important;
-    display: block !important;
-    border-radius: 0 !important;
-}
-
-.page-link:hover {
-    background-color: #f4f4f4 !important;
-    border-color: #DDDDDD !important;
-    color: inherit !important;
-    text-decoration: none !important;
-}
-
-.page-item.active .page-link {
-    background-color: #1ab394 !important;
-    border-color: #1ab394 !important;
-    color: white !important;
-}
-
-/* Fix large icons in pagination */
-.pagination i,
-.pagination .icon,
-.pagination .fa,
-.page-link i,
-.page-link .icon,
-.page-link .fa {
-    font-size: 12px !important;
-    line-height: 1 !important;
-    width: auto !important;
-    height: auto !important;
+.pagination .page-link i {
+    font-size: 0.8rem;
 }
 </style>
 @endpush
