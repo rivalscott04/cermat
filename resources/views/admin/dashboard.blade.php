@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
 @push('styles')
+<!-- Dashboard Accordion Custom Styles -->
+<link href="{{ asset('css/dashboard-accordion.css') }}" rel="stylesheet">
+
 <style>
 .kategori-performance-list {
     max-height: 400px;
@@ -265,107 +268,6 @@
     }
 }
 
-/* Accordion Dashboard Styles */
-.panel-group {
-    margin-bottom: 20px;
-}
-
-.panel {
-    border: 1px solid #e7eaec;
-    border-radius: 3px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    margin-bottom: 10px;
-}
-
-.panel-heading {
-    background: linear-gradient(to right, #f8f9fa, #ffffff);
-    border-bottom: 1px solid #e7eaec;
-    padding: 0;
-}
-
-.panel-title {
-    margin: 0;
-}
-
-.panel-title a {
-    display: block;
-    padding: 15px 20px;
-    text-decoration: none;
-    color: #333;
-    font-size: 16px;
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-.panel-title a:hover {
-    background: linear-gradient(to right, #1ab394, #18a085);
-    color: #fff;
-    text-decoration: none;
-}
-
-.panel-title a:hover .accordion-icon {
-    color: #fff !important;
-}
-
-.panel-title a:hover i:first-child {
-    color: #fff !important;
-}
-
-.accordion-icon {
-    transition: transform 0.3s ease, color 0.3s ease;
-    color: #999;
-    font-size: 14px;
-}
-
-.panel-title a[aria-expanded="true"] .accordion-icon {
-    transform: rotate(180deg);
-    color: #fff !important;
-}
-
-.panel-title a[aria-expanded="true"] {
-    background: linear-gradient(to right, #1ab394, #18a085);
-    color: #fff;
-}
-
-.panel-title a[aria-expanded="true"] i:first-child {
-    color: #fff !important;
-}
-
-/* Statistik Utama - Always Open (Disabled Click) */
-.panel-title a[href="#collapseStats"] {
-    cursor: default;
-    pointer-events: none;
-}
-
-.panel-title a[href="#collapseStats"]:hover {
-    background: linear-gradient(to right, #f8f9fa, #ffffff);
-    color: #333;
-}
-
-.panel-title a[href="#collapseStats"]:hover .accordion-icon {
-    color: #999 !important;
-}
-
-.panel-title a[href="#collapseStats"]:hover i:first-child {
-    color: #333 !important;
-}
-
-.panel-body {
-    padding: 20px;
-    background: #fff;
-}
-
-/* Responsive accordion adjustments */
-@media (max-width: 768px) {
-    .panel-title a {
-        padding: 12px 15px;
-        font-size: 14px;
-    }
-    
-    .panel-body {
-        padding: 15px;
-    }
-}
 </style>
 @endpush
 
@@ -392,9 +294,9 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingStats">
                     <h4 class="panel-title">
-                        <a role="button" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
+                        <a role="button" data-toggle="collapse" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
                             <i class="fa fa-dashboard text-primary"></i> <strong>Statistik Utama</strong>
-                            <i class="fa fa-lock pull-right accordion-icon" style="color: #1ab394;"></i>
+                            <i class="fa fa-chevron-up pull-right accordion-icon"></i>
                         </a>
                     </h4>
                 </div>
@@ -982,6 +884,9 @@
 @endsection
 
 @push('scripts')
+    <!-- Dashboard Accordion Custom Script -->
+    <script src="{{ asset('js/dashboard-accordion.js') }}"></script>
+    
     <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
     <script src="{{ asset('js/popper.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.js') }}"></script>
@@ -1245,77 +1150,6 @@
                 $.plot($("#tren-pelanggan-baru-chart"), trenPelangganDataset, trenPelangganOptions);
             });
 
-            // === ACCORDION FUNCTIONALITY ===
-            // Handle accordion toggle animations
-            $('#dashboardAccordion').on('show.bs.collapse', function (e) {
-                $(e.target).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-up').removeClass('fa-chevron-down');
-                $(e.target).prev('.panel-heading').find('a').attr('aria-expanded', 'true');
-            });
-
-            $('#dashboardAccordion').on('hide.bs.collapse', function (e) {
-                $(e.target).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-down').removeClass('fa-chevron-up');
-                $(e.target).prev('.panel-heading').find('a').attr('aria-expanded', 'false');
-            });
-
-            // Fix accordion toggle behavior - Independent sections
-            $('#dashboardAccordion .panel-title a').on('click', function(e) {
-                e.preventDefault();
-                var target = $(this).attr('href');
-                var $target = $(target);
-                var isExpanded = $(this).attr('aria-expanded') === 'true';
-                
-                // Skip if it's the main stats section (always open)
-                if (target === '#collapseStats') {
-                    return;
-                }
-                
-                if (isExpanded) {
-                    // Close the panel
-                    $target.collapse('hide');
-                } else {
-                    // Open the panel (independent, no closing others)
-                    $target.collapse('show');
-                }
-            });
-
-            // Lazy load charts when accordion sections are opened
-            $('#collapseCharts').on('shown.bs.collapse', function () {
-                // Redraw charts when charts section is opened
-                setTimeout(function() {
-                    $.plot($("#tren-partisipasi-chart"), trenDataset, trenOptions);
-                    $.plot($("#distribusi-skor-chart"), barDataset, barOptions);
-                }, 100);
-            });
-
-            $('#collapseTrenPelanggan').on('shown.bs.collapse', function () {
-                // Redraw tren pelanggan chart when opened
-                setTimeout(function() {
-                    $.plot($("#tren-pelanggan-baru-chart"), trenPelangganDataset, trenPelangganOptions);
-                }, 100);
-            });
-
-            // Remember accordion state (optional)
-            // Uncomment the lines below if you want to remember which sections were open
-            /*
-            // Save accordion state to localStorage
-            $('#dashboardAccordion').on('hidden.bs.collapse shown.bs.collapse', function () {
-                var activePanels = [];
-                $('#dashboardAccordion .panel-collapse.in').each(function() {
-                    activePanels.push($(this).attr('id'));
-                });
-                localStorage.setItem('dashboardAccordionState', JSON.stringify(activePanels));
-            });
-
-            // Restore accordion state on page load
-            var savedState = localStorage.getItem('dashboardAccordionState');
-            if (savedState) {
-                var activePanels = JSON.parse(savedState);
-                activePanels.forEach(function(panelId) {
-                    $('#' + panelId).addClass('in');
-                    $('#' + panelId).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-up').removeClass('fa-chevron-down');
-                });
-            }
-            */
         });
     </script>
 @endpush
