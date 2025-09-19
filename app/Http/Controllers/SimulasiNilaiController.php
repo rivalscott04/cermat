@@ -11,7 +11,8 @@ class SimulasiNilaiController extends Controller
 	public function index()
 	{
 		$setting = ScoringSetting::current();
-		$result = session('result');
+		// pull: get once then remove, so refresh resets to default 0
+		$result = session()->pull('result');
 		return view('simulasi.nilai', compact('setting', 'result'));
 	}
 

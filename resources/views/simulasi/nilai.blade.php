@@ -54,9 +54,9 @@
 				<div class="ibox-content">
                 <p>Bobot saat ini: Kecermatan {{ $setting->weight_kecermatan }}%, Kecerdasan {{ $setting->weight_kecerdasan }}%, Kepribadian {{ $setting->weight_kepribadian }}%.</p>
                 <p>Nilai minimal kelulusan: <strong>{{ $setting->passing_grade }}</strong></p>
-                @php $r = isset($result) ? $result : ['score' => 0, 'passed' => false]; @endphp
-                <h3 class="m-t-none">Nilai Akhir: <strong>{{ $r['score'] }}</strong>
-                    {!! $r['passed'] ? '<span class="label label-primary m-l-sm">LULUS</span>' : '<span class="label label-default m-l-sm">Belum dihitung</span>' !!}
+                @php $hasResult = isset($result); $score = $hasResult ? $result['score'] : 0; @endphp
+                <h3 class="m-t-none">Nilai Akhir: <strong>{{ $score }}</strong>
+                    {!! $hasResult ? ($result['passed'] ? '<span class="label label-primary m-l-sm">LULUS</span>' : '<span class="label label-danger m-l-sm">TIDAK LULUS</span>') : '<span class="label label-default m-l-sm">Belum dihitung</span>' !!}
                 </h3>
                 <p class="text-muted">Rumus: ({{ $setting->weight_kecermatan }}% × Kecermatan) + ({{ $setting->weight_kecerdasan }}% × Kecerdasan) + ({{ $setting->weight_kepribadian }}% × Kepribadian)</p>
 				</div>
