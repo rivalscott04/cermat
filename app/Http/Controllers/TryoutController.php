@@ -1374,20 +1374,56 @@ class TryoutController extends Controller
      */
     public function toggleStatus(Request $request, Tryout $tryout)
     {
-        $request->validate([
-            'is_active' => 'required|boolean'
-        ]);
+        try {
+            // Debug logging
+            \Log::info('Toggle Status Request', [
+                'tryout_id' => $tryout->id,
+                'tryout_title' => $tryout->judul,
+                'request_data' => $request->all(),
+                'current_status' => $tryout->is_active
+            ]);
 
-        $tryout->update([
-            'is_active' => $request->boolean('is_active')
-        ]);
+            $request->validate([
+                'is_active' => 'required'
+            ]);
 
-        $status = $tryout->is_active ? 'aktif' : 'nonaktif';
-        
-        return response()->json([
-            'success' => true,
-            'message' => "Tryout berhasil di{$status}kan",
-            'is_active' => $tryout->is_active
-        ]);
+            $isActive = filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            
+            if ($isActive === null) {
+                \Log::error('Invalid is_active value', ['value' => $request->is_active]);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Nilai is_active tidak valid'
+                ], 422);
+            }
+
+            $tryout->update([
+                'is_active' => $isActive
+            ]);
+
+            $status = $tryout->is_active ? 'aktif' : 'nonaktif';
+            
+            \Log::info('Toggle Status Success', [
+                'tryout_id' => $tryout->id,
+                'new_status' => $tryout->is_active
+            ]);
+            
+            return response()->json([
+                'success' => true,
+                'message' => "Tryout berhasil di{$status}kan",
+                'is_active' => $tryout->is_active
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Toggle Status Error', [
+                'tryout_id' => $tryout->id ?? 'unknown',
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

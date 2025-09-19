@@ -257,7 +257,21 @@ function toggleStatus(tryoutId, newStatus) {
             },
             error: function(xhr) {
                 $button.prop('disabled', false).text('Konfirmasi');
-                alert('Terjadi kesalahan. Silakan coba lagi.');
+                
+                let errorMessage = 'Terjadi kesalahan. Silakan coba lagi.';
+                
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMessage = xhr.responseJSON.message;
+                } else if (xhr.status === 422) {
+                    errorMessage = 'Data tidak valid. Pastikan semua field diisi dengan benar.';
+                } else if (xhr.status === 404) {
+                    errorMessage = 'Tryout tidak ditemukan.';
+                } else if (xhr.status === 500) {
+                    errorMessage = 'Terjadi kesalahan server. Silakan hubungi administrator.';
+                }
+                
+                console.error('Toggle Status Error:', xhr);
+                alert(errorMessage);
             }
         });
     });
