@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="container">
-        <div class="wrapper wrapper-content animated fadeInRight">
+<div class="container">
+    <div class="wrapper wrapper-content animated fadeInRight">
         <!-- Statistics Overview Cards -->
         <div class="row mb-4">
             <div class="col-lg-3 col-md-6">
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-            <div class="ibox">
+                <div class="ibox">
                     <div class="ibox-content">
                         <div class="stat-card">
                             <div class="stat-icon">
@@ -52,7 +52,7 @@
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="ibox">
-                <div class="ibox-content">
+                    <div class="ibox-content">
                         <div class="stat-card">
                             <div class="stat-icon">
                                 <i class="fa fa-calendar-week text-warning"></i>
@@ -72,121 +72,75 @@
             <div class="ibox-title">
                 <h5><i class="fa fa-users"></i> Daftar User - Riwayat Tes</h5>
                 <div class="ibox-tools">
-                    <span class="badge badge-primary">{{ $users->total() }} User</span>
+                    <span class="badge badge-primary" id="total-users">{{ $totalUsers }} User</span>
                 </div>
             </div>
             <div class="ibox-content">
-                <!-- Filter Section -->
-                <div class="filter-section mb-4">
-                    <form method="GET" action="{{ route('admin.riwayat-tes') }}" class="row g-3">
-                        <div class="col-md-4">
-                            <label class="form-label">Package</label>
-                            <select name="package" class="form-control">
-                                <option value="">Semua Package</option>
-                                <option value="free" {{ request('package') == 'free' ? 'selected' : '' }}>Free</option>
-                                <option value="kecermatan" {{ request('package') == 'kecermatan' ? 'selected' : '' }}>Kecermatan</option>
-                                <option value="kecerdasan" {{ request('package') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan</option>
-                                <option value="kepribadian" {{ request('package') == 'kepribadian' ? 'selected' : '' }}>Kepribadian</option>
-                                <option value="lengkap" {{ request('package') == 'lengkap' ? 'selected' : '' }}>Lengkap</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label">Cari User</label>
-                            <input type="text" name="search" class="form-control" placeholder="Nama atau email..." value="{{ request('search') }}">
-                        </div>
-                        <div class="col-md-2">
-                            <label class="form-label">&nbsp;</label>
-                            <div class="d-flex gap-2">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa fa-search"></i> Filter
-                                </button>
-                                <a href="{{ route('admin.riwayat-tes') }}" class="btn btn-secondary">
-                                    <i class="fa fa-refresh"></i> Reset
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
-                <!-- Results Section -->
-                @if($users->count() > 0)
-                    <div class="row">
-                        @foreach($users as $user)
-                            <div class="col-lg-6 col-md-6 mb-4">
-                                <div class="user-card">
-                                    <div class="card-header">
-                                        <div class="user-info">
-                                            <div class="user-avatar">
+                <!-- DataTable -->
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered table-hover" id="users-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama User</th>
+                                <th>Email</th>
+                                <th>Package</th>
+                                <th>Total Tes</th>
+                                <th>Terakhir Tes</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($users as $index => $user)
+                                <tr>
+                                    <td>{{ $users->firstItem() + $index }}</td>
+                                    <td>
+                                        <div class="user-info-cell">
+                                            <div class="user-avatar-small">
                                                 {{ strtoupper(substr($user->name, 0, 2)) }}
                                             </div>
-                                            <div class="user-details">
-                                                <h6 class="user-name">{{ $user->name }}</h6>
-                                                <p class="user-email">{{ $user->email }}</p>
-                                                <span class="user-package badge badge-{{ $user->package == 'lengkap' ? 'success' : ($user->package == 'kecermatan' ? 'info' : ($user->package == 'kecerdasan' ? 'primary' : ($user->package == 'kepribadian' ? 'warning' : 'secondary'))) }}">
-                                                    {{ ucfirst($user->package ?? 'Free') }}
-                                                </span>
+                                            <div class="user-details-cell">
+                                                <strong>{{ $user->name }}</strong>
                                             </div>
                                         </div>
-                                    </div>
-                                    
-                                    <div class="card-body">
-                                        <div class="stats-row">
-                                            <div class="stat-item">
-                                                <div class="stat-number">{{ $user->total_tests }}</div>
-                                                <div class="stat-label">Total Tes</div>
-                                            </div>
-                                            <div class="stat-item">
-                                                <div class="stat-number">{{ $user->today_tests }}</div>
-                                                <div class="stat-label">Hari Ini</div>
-                                            </div>
-                                            <div class="stat-item">
-                                                <div class="stat-number">{{ $user->this_week_tests }}</div>
-                                                <div class="stat-label">Minggu Ini</div>
-                                            </div>
-                                            <div class="stat-item">
-                                                <div class="stat-number">{{ $user->this_month_tests }}</div>
-                                                <div class="stat-label">Bulan Ini</div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div class="card-footer">
-                                            <a href="{{ route('admin.riwayat-tes-user', $user->id) }}" class="btn btn-primary btn-sm">
-                                                <i class="fa fa-history"></i> Lihat Riwayat Tes
-                                            </a>
-                                            <span class="last-test">
-                                                @if($user->total_tests > 0)
-                                                    Terakhir: {{ \Carbon\Carbon::parse($user->hasilTes->first()->tanggal_tes ?? now())->diffForHumans() }}
-                                                @else
-                                                    Belum ada tes
-                                                @endif
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
+                                    </td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ $user->package == 'lengkap' ? 'success' : ($user->package == 'kecermatan' ? 'info' : ($user->package == 'kecerdasan' ? 'primary' : ($user->package == 'kepribadian' ? 'warning' : 'secondary'))) }}">
+                                            {{ ucfirst($user->package ?? 'Free') }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-info">{{ $user->total_tests }}</span>
+                                    </td>
+                                    <td>
+                                        @if($user->total_tests > 0)
+                                            <small class="text-muted">
+                                                {{ \Carbon\Carbon::parse($user->hasilTes->first()->tanggal_tes ?? now())->diffForHumans() }}
+                                            </small>
+                                        @else
+                                            <small class="text-muted">Belum ada tes</small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('admin.riwayat-tes-user', $user->id) }}" class="btn btn-primary btn-sm">
+                                            <i class="fa fa-history"></i> Riwayat Tes
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-                    <!-- Pagination -->
-                    <div class="d-flex justify-content-center">
-                        {{ $users->appends(request()->query())->links() }}
-                    </div>
-                @else
-                    <div class="empty-state">
-                        <div class="empty-icon">
-                            <i class="fa fa-users fa-3x"></i>
-                        </div>
-                        <h4>Tidak Ada User</h4>
-                        <p>Tidak ada user yang sesuai dengan filter yang dipilih.</p>
-                        <a href="{{ route('admin.riwayat-tes') }}" class="btn btn-primary">
-                            <i class="fa fa-refresh"></i> Lihat Semua
-                        </a>
-                    </div>
-                @endif
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center">
+                    {{ $users->appends(request()->query())->links() }}
                 </div>
             </div>
         </div>
     </div>
+</div>
 @endsection
 
 @push('styles')
@@ -230,143 +184,89 @@
     font-size: 14px;
 }
 
-/* Filter Section */
-.filter-section {
-    background: #f8f9fa;
-    padding: 20px;
-    border-radius: 8px;
-    border: 1px solid #e9ecef;
+/* DataTable Styling */
+#users-table {
+    font-size: 14px;
 }
 
-.filter-section .form-label {
+#users-table th {
+    background-color: #f8f9fa;
     font-weight: 600;
     color: #333;
-    margin-bottom: 5px;
+    border-bottom: 2px solid #dee2e6;
+    padding: 12px 8px;
 }
 
-/* User Cards */
-.user-card {
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
-    overflow: hidden;
-    border-left: 4px solid #ddd;
-    height: 100%;
+#users-table td {
+    padding: 12px 8px;
+    vertical-align: middle;
+    border-bottom: 1px solid #f0f0f0;
 }
 
-.user-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+#users-table tbody tr:hover {
+    background-color: #f8f9fa;
 }
 
-.card-header {
-    padding: 20px 20px 10px;
-    border-bottom: 1px solid #eee;
-}
-
-.user-info {
+/* User Info Cell */
+.user-info-cell {
     display: flex;
     align-items: center;
 }
 
-.user-avatar {
-    width: 50px;
-    height: 50px;
+.user-avatar-small {
+    width: 35px;
+    height: 35px;
     border-radius: 50%;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 15px;
+    margin-right: 10px;
     color: white;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 12px;
 }
 
-.user-details {
+.user-details-cell {
     flex: 1;
 }
 
-.user-name {
-    margin: 0 0 5px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #333;
-}
-
-.user-email {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    color: #666;
-}
-
-.user-package {
+/* Badge Styling */
+.badge {
     font-size: 11px;
     padding: 4px 8px;
+    border-radius: 12px;
 }
 
-.card-body {
-    padding: 20px;
+.badge-success {
+    background-color: #28a745;
+    color: white;
 }
 
-.stats-row {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+.badge-info {
+    background-color: #17a2b8;
+    color: white;
 }
 
-.stat-item {
-    text-align: center;
-    flex: 1;
+.badge-primary {
+    background-color: #007bff;
+    color: white;
 }
 
-.stat-item .stat-number {
-    font-size: 20px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 5px;
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
 }
 
-.stat-item .stat-label {
-    font-size: 11px;
-    color: #666;
-    text-transform: uppercase;
+.badge-secondary {
+    background-color: #6c757d;
+    color: white;
 }
 
-.card-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
-}
-
-.last-test {
-    font-size: 11px;
-    color: #999;
-}
-
-/* Empty State */
-.empty-state {
-    text-align: center;
-    padding: 60px 20px;
-    color: #6c757d;
-}
-
-.empty-icon {
-    margin-bottom: 20px;
-    opacity: 0.5;
-}
-
-.empty-state h4 {
-    margin-bottom: 10px;
-    color: #495057;
-}
-
-.empty-state p {
-    margin-bottom: 30px;
-    font-size: 16px;
+/* Button Styling */
+.btn-sm {
+    padding: 4px 8px;
+    font-size: 12px;
 }
 
 /* Pagination Style - Same as User Index and Soal Index */
@@ -410,38 +310,30 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .user-info {
-        flex-direction: column;
-        text-align: center;
+    .table-responsive {
+        font-size: 12px;
     }
 
-    .user-avatar {
-        margin-right: 0;
-        margin-bottom: 10px;
+    #users-table th,
+    #users-table td {
+        padding: 8px 4px;
     }
 
-    .stats-row {
-        flex-wrap: wrap;
-        gap: 10px;
+    .user-avatar-small {
+        width: 30px;
+        height: 30px;
+        font-size: 10px;
+        margin-right: 8px;
     }
 
-    .stat-item {
-        flex: 1 1 45%;
+    .btn-sm {
+        padding: 2px 6px;
+        font-size: 10px;
     }
 
-    .card-footer {
-        flex-direction: column;
-        gap: 10px;
-    }
-
-    .filter-section .row {
-        margin: 0;
-    }
-
-    .filter-section .col-md-4,
-    .filter-section .col-md-6,
-    .filter-section .col-md-2 {
-        margin-bottom: 15px;
+    .badge {
+        font-size: 9px;
+        padding: 2px 6px;
     }
 }
 
@@ -456,8 +348,23 @@
         margin-bottom: 10px;
     }
 
-    .user-card {
-        margin-bottom: 15px;
+    .table-responsive {
+        font-size: 11px;
+    }
+
+    #users-table th,
+    #users-table td {
+        padding: 6px 2px;
+    }
+
+    .user-info-cell {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .user-avatar-small {
+        margin-right: 0;
+        margin-bottom: 5px;
     }
 }
 </style>
