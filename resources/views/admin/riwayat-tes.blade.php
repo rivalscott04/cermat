@@ -544,84 +544,62 @@
     }
 }
 
-/* Fix Pagination Conflict with DataTables */
+/* Use Inspinia Pagination Style */
 .pagination {
-    font-size: 14px !important;
+    margin: 0;
 }
 
-.pagination .page-link {
-    padding: 0.375rem 0.75rem !important;
-    font-size: 14px !important;
-    line-height: 1.5 !important;
-    border-radius: 0.25rem !important;
+.pagination > li > a,
+.pagination > li > span {
+    background-color: #FFFFFF;
+    border: 1px solid #DDDDDD;
+    color: inherit;
+    float: left;
+    line-height: 1.42857;
+    margin-left: -1px;
+    padding: 4px 10px;
+    position: relative;
+    text-decoration: none;
 }
 
-.pagination .page-item.active .page-link {
-    background-color: #007bff !important;
-    border-color: #007bff !important;
+.pagination > li > a:hover,
+.pagination > li > span:hover {
+    background-color: #f4f4f4;
+    border-color: #DDDDDD;
+    color: inherit;
 }
 
-.pagination .page-link:hover {
-    background-color: #e9ecef !important;
-    border-color: #dee2e6 !important;
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+    background-color: #1ab394;
+    border-color: #1ab394;
+    color: white;
+    cursor: default;
+    z-index: 2;
 }
 
-/* Override any DataTables pagination styles */
-.dataTables_wrapper .dataTables_paginate .paginate_button {
-    padding: 0.375rem 0.75rem !important;
-    font-size: 14px !important;
-    line-height: 1.5 !important;
-    border-radius: 0.25rem !important;
-    margin: 0 2px !important;
+.pagination > .disabled > a,
+.pagination > .disabled > span,
+.pagination > .disabled > a:hover,
+.pagination > .disabled > span:hover,
+.pagination > .disabled > a:focus,
+.pagination > .disabled > span:focus {
+    background-color: #fff;
+    border-color: #ddd;
+    color: #777;
+    cursor: not-allowed;
 }
 
-.dataTables_wrapper .dataTables_paginate .paginate_button.current {
-    background: #007bff !important;
-    border-color: #007bff !important;
-    color: white !important;
-}
-
-.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
-    background: #e9ecef !important;
-    border-color: #dee2e6 !important;
-    color: #333 !important;
-}
-
-/* Fix Large Chevron Icons */
-.chevron.icon,
-.left.chevron.icon,
-.right.chevron.icon,
-i.chevron.icon,
-i.left.chevron.icon,
-i.right.chevron.icon {
-    font-size: 14px !important;
-    width: auto !important;
-    height: auto !important;
-    line-height: 1 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
-
-/* Fix any large icons in pagination */
+/* Fix large icons in pagination */
 .pagination i,
 .pagination .icon,
 .pagination .fa {
-    font-size: 14px !important;
-    width: auto !important;
-    height: auto !important;
-    line-height: 1 !important;
-}
-
-/* Override any global icon styles that might be affecting pagination */
-nav .icon,
-nav i,
-.pagination .icon,
-.pagination i {
-    font-size: 14px !important;
-    width: auto !important;
-    height: auto !important;
-    line-height: 1 !important;
-    display: inline !important;
+    font-size: 12px;
+    line-height: 1;
 }
 </style>
 @endpush
