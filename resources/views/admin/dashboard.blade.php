@@ -373,7 +373,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingStats">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
+                        <a role="button" data-toggle="collapse" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
                             <i class="fa fa-dashboard text-primary"></i> <strong>Statistik Utama</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -441,10 +441,10 @@
                             </div>
 
                             {{-- Selesai Hari Ini Card --}}
-                            <div class="col-lg-3">
-                                <div class="ibox">
-                                    <div class="ibox-title">
-                                        <div class="ibox-tools">
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
                                             <span class="label label-primary float-right">Hari Ini</span>
                                         </div>
                                         <h5><i class="fa fa-check-circle"></i> Selesai Hari Ini</h5>
@@ -489,10 +489,10 @@
                                             <span class="label label-info float-right">Minggu</span>
                                         </div>
                                         <h5><i class="fa fa-calendar"></i> Minggu Ini</h5>
-                                    </div>
-                                    <div class="ibox-content">
+                    </div>
+                    <div class="ibox-content">
                                         <h1 class="no-margins">{{ $pelangganBaruMingguIni }}</h1>
-                                        <div class="stat-percent text-info font-bold">
+                        <div class="stat-percent text-info font-bold">
                                             <i class="fa fa-calendar-week"></i>
                                         </div>
                                         <small>Registrasi minggu ini</small>
@@ -513,17 +513,17 @@
                                         <h1 class="no-margins">{{ $pelangganBaruBulanIni }}</h1>
                                         <div class="stat-percent text-primary font-bold">
                                             <i class="fa fa-calendar-month"></i>
-                                        </div>
+                        </div>
                                         <small>Registrasi bulan ini</small>
-                                    </div>
-                                </div>
-                            </div>
+                    </div>
+                </div>
+            </div>
 
                             {{-- Total Revenue --}}
-                            <div class="col-lg-3">
-                                <div class="ibox">
-                                    <div class="ibox-title">
-                                        <div class="ibox-tools">
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
                                             <span class="label label-warning float-right">Revenue</span>
                                         </div>
                                         <h5><i class="fa fa-money"></i> Revenue 7 Hari</h5>
@@ -546,7 +546,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingActions">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseActions" aria-expanded="false" aria-controls="collapseActions" class="accordion-toggle collapsed">
+                        <a role="button" data-toggle="collapse" href="#collapseActions" aria-expanded="false" aria-controls="collapseActions" class="accordion-toggle collapsed">
                             <i class="fa fa-bolt text-warning"></i> <strong>Quick Actions</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -584,7 +584,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingCharts">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseCharts" aria-expanded="false" aria-controls="collapseCharts" class="accordion-toggle collapsed">
+                        <a role="button" data-toggle="collapse" href="#collapseCharts" aria-expanded="false" aria-controls="collapseCharts" class="accordion-toggle collapsed">
                             <i class="fa fa-line-chart text-info"></i> <strong>Grafik & Visualisasi</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -609,8 +609,8 @@
 
                             {{-- Performa Kategori --}}
                             <div class="col-lg-4">
-                                <div class="ibox">
-                                    <div class="ibox-title">
+                <div class="ibox">
+                    <div class="ibox-title">
                                         <h5><i class="fa fa-bar-chart"></i> Performa Kategori</h5>
                                     </div>
                                     <div class="ibox-content">
@@ -668,8 +668,8 @@
                                 <div class="ibox">
                                     <div class="ibox-title">
                                         <h5><i class="fa fa-trophy"></i> Top Performers</h5>
-                                    </div>
-                                    <div class="ibox-content">
+                    </div>
+                    <div class="ibox-content">
                                         @if($topPerformers->count() > 0)
                                             <div class="table-responsive">
                                                 <table class="table table-striped">
@@ -725,16 +725,16 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingSubscription">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseSubscription" aria-expanded="false" aria-controls="collapseSubscription" class="accordion-toggle collapsed">
+                        <a role="button" data-toggle="collapse" href="#collapseSubscription" aria-expanded="false" aria-controls="collapseSubscription" class="accordion-toggle collapsed">
                             <i class="fa fa-shopping-cart text-success"></i> <strong>Analisis Langganan</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
                     </h4>
-                </div>
+        </div>
                 <div id="collapseSubscription" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSubscription">
                     <div class="panel-body">
                         @if($subscriptionAnalysis->count() > 0)
-                            <div class="row">
+        <div class="row">
                                 @foreach($subscriptionAnalysis as $packageType => $data)
                                     <div class="col-lg-3 col-md-6 mb-3">
                                         <div class="subscription-card">
@@ -799,7 +799,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTrenPelanggan">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseTrenPelanggan" aria-expanded="false" aria-controls="collapseTrenPelanggan" class="accordion-toggle collapsed">
+                        <a role="button" data-toggle="collapse" href="#collapseTrenPelanggan" aria-expanded="false" aria-controls="collapseTrenPelanggan" class="accordion-toggle collapsed">
                             <i class="fa fa-line-chart text-info"></i> <strong>Tren Pelanggan Baru</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -807,8 +807,8 @@
                 </div>
                 <div id="collapseTrenPelanggan" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTrenPelanggan">
                     <div class="panel-body">
-                        <div class="ibox">
-                            <div class="ibox-title">
+                <div class="ibox">
+                    <div class="ibox-title">
                                 <h5><i class="fa fa-line-chart"></i> Tren Pelanggan Baru (7 Hari Terakhir)</h5>
                             </div>
                             <div class="ibox-content">
@@ -825,7 +825,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingRecent">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseRecent" aria-expanded="false" aria-controls="collapseRecent" class="accordion-toggle collapsed">
+                        <a role="button" data-toggle="collapse" href="#collapseRecent" aria-expanded="false" aria-controls="collapseRecent" class="accordion-toggle collapsed">
                             <i class="fa fa-clock-o text-warning"></i> <strong>Recent Activity</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -941,18 +941,18 @@
                                                             <small class="text-muted">
                                                                 <i class="fa fa-clock-o"></i> {{ $peserta->finished_at->diffForHumans() }}
                                                             </small>
-                                                        </div>
-                                                    </div>
+                                        </div>
+                                        </div>
                                                 @endforeach
-                                            </div>
+                                        </div>
                                         @else
                                             <div class="text-center text-muted">
                                                 <i class="fa fa-info-circle"></i>
                                                 <p>Belum ada yang selesai hari ini</p>
                                         </div>
                                         @endif
-                                    </div>
-                                </div>
+                                        </div>
+                                        </div>
                             </div>
                         </div>
                     </div>
@@ -1230,24 +1230,30 @@
             // Handle accordion toggle animations
             $('#dashboardAccordion').on('show.bs.collapse', function (e) {
                 $(e.target).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-up').removeClass('fa-chevron-down');
+                $(e.target).prev('.panel-heading').find('a').attr('aria-expanded', 'true');
             });
 
             $('#dashboardAccordion').on('hide.bs.collapse', function (e) {
                 $(e.target).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-down').removeClass('fa-chevron-up');
+                $(e.target).prev('.panel-heading').find('a').attr('aria-expanded', 'false');
             });
 
             // Fix accordion toggle behavior
             $('#dashboardAccordion .panel-title a').on('click', function(e) {
                 e.preventDefault();
                 var target = $(this).attr('href');
+                var $target = $(target);
                 var isExpanded = $(this).attr('aria-expanded') === 'true';
                 
                 if (isExpanded) {
                     // Close the panel
-                    $(target).collapse('hide');
+                    $target.collapse('hide');
                 } else {
+                    // Close all other panels first (accordion behavior)
+                    $('#dashboardAccordion .panel-collapse.in').collapse('hide');
+                    
                     // Open the panel
-                    $(target).collapse('show');
+                    $target.collapse('show');
                 }
             });
 
