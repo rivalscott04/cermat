@@ -2,135 +2,324 @@
 
 @section('content')
     <div class="wrapper wrapper-content">
-        <div class="row">
-            {{-- Total Income Card --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-success float-right">Total</span>
-                        </div>
-                        <h5>Pendapatan</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">Rp {{ number_format($totalIncome, 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-success font-bold">
-                            {{ $incomeGrowth }}% <i class="fa {{ $incomeGrowth >= 0 ? 'fa-bolt' : 'fa-level-down' }}"></i>
-                        </div>
-                        <small>Total pendapatan</small>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Pending Transactions Card --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-warning float-right">Pending</span>
-                        </div>
-                        <h5>Transaksi Pending</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">Rp {{ number_format($pendingTransactions, 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-info font-bold">
-                            20% <i class="fa fa-level-up"></i>
-                        </div>
-                        <small>Transaksi Pending</small>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Total Users Card --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-primary float-right">Total</span>
-                        </div>
-                        <h5>Jumlah User</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ number_format($totalUsers, 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-navy font-bold">
-                            {{ $userGrowth }}% <i class="fa {{ $userGrowth >= 0 ? 'fa-level-up' : 'fa-level-down' }}"></i>
-                        </div>
-                        <small>Total user</small>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Active Subscribers Card --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-danger float-right">Aktif</span>
-                        </div>
-                        <h5>User Berlangganan</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ number_format($activeSubscribers, 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-danger font-bold">
-                            {{ round(($activeSubscribers / max($totalUsers, 1)) * 100) }}% <i class="fa fa-level-up"></i>
-                        </div>
-                        <small>User berlangganan</small>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{-- Page Header --}}
         <div class="row">
             <div class="col-lg-12">
                 <div class="ibox">
                     <div class="ibox-title">
-                        <h5>Orders</h5>
+                        <h3><i class="fa fa-graduation-cap"></i> Dashboard Pendidikan & Ujian</h3>
+                        <div class="ibox-tools">
+                            <span class="label label-primary">Sistem CBT POLRI</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Statistik Utama --}}
+        <div class="row">
+            {{-- Total Soal Card --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
+                            <span class="label label-success float-right">Aktif</span>
+                        </div>
+                        <h5><i class="fa fa-book"></i> Total Soal</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{ number_format($totalSoal, 0, ',', '.') }}</h1>
+                        <div class="stat-percent text-success font-bold">
+                            {{ $soalGrowth }}% <i class="fa {{ $soalGrowth >= 0 ? 'fa-level-up' : 'fa-level-down' }}"></i>
+                        </div>
+                        <small>Soal dalam bank soal</small>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Tryout Aktif Card --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
+                            <span class="label label-info float-right">Berjalan</span>
+                        </div>
+                        <h5><i class="fa fa-tasks"></i> Tryout Aktif</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{ number_format($tryoutAktif, 0, ',', '.') }}</h1>
+                        <div class="stat-percent text-info font-bold">
+                            <i class="fa fa-play-circle"></i>
+                        </div>
+                        <small>Tryout yang sedang berjalan</small>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Peserta Aktif Card --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
+                            <span class="label label-warning float-right">Online</span>
+                        </div>
+                        <h5><i class="fa fa-users"></i> Peserta Aktif</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{ number_format($pesertaAktif, 0, ',', '.') }}</h1>
+                        <div class="stat-percent text-warning font-bold">
+                            <i class="fa fa-user-circle"></i>
+                        </div>
+                        <small>Sedang mengerjakan tryout</small>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Selesai Hari Ini Card --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
+                            <span class="label label-primary float-right">Hari Ini</span>
+                        </div>
+                        <h5><i class="fa fa-check-circle"></i> Selesai Hari Ini</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{ number_format($selesaiHariIni, 0, ',', '.') }}</h1>
+                        <div class="stat-percent text-primary font-bold">
+                            {{ $pesertaGrowth }}% <i class="fa {{ $pesertaGrowth >= 0 ? 'fa-level-up' : 'fa-level-down' }}"></i>
+                        </div>
+                        <small>Tryout selesai hari ini</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Quick Actions --}}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-bolt"></i> Quick Actions</h5>
                     </div>
                     <div class="ibox-content">
                         <div class="row">
-                            <div class="col-lg-9">
-                                <div class="flot-chart">
-                                    <div class="flot-chart-content" id="flot-dashboard-chart"></div>
-                                </div>
+                            <div class="col-lg-3 col-md-6">
+                                <a href="{{ route('admin.tryout.create') }}" class="btn btn-primary btn-block">
+                                    <i class="fa fa-plus"></i> Buat Tryout Baru
+                                </a>
                             </div>
-                            <div class="col-lg-3">
-                                <ul class="stat-list">
-                                    <li>
-                                        <h2 class="no-margins">{{ number_format($totalOrders) }}</h2>
-                                        <small>Total transaksi selesai</small>
-                                        <div class="stat-percent">{{ $totalOrdersPercent }}%
-                                            <i
-                                                class="fa fa-level-{{ $totalOrdersPercent >= 50 ? 'up' : 'down' }} text-navy"></i>
-                                        </div>
-                                        <div class="progress progress-mini">
-                                            <div style="width: {{ $totalOrdersPercent }}%;" class="progress-bar"></div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <h2 class="no-margins">{{ number_format($pendingOrders) }}</h2>
-                                        <small>Transaksi pending</small>
-                                        <div class="stat-percent">{{ $pendingOrdersPercent }}%
-                                            <i
-                                                class="fa fa-level-{{ $pendingOrdersPercent < 50 ? 'up' : 'down' }} text-navy"></i>
-                                        </div>
-                                        <div class="progress progress-mini">
-                                            <div style="width: {{ $pendingOrdersPercent }}%;" class="progress-bar"></div>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <h2 class="no-margins">Rp {{ number_format($currentMonthIncome) }}</h2>
-                                        <small>Pendapatan bulanan</small>
-                                        <div class="stat-percent">{{ $monthlyIncomeGrowth }}%
-                                            <i
-                                                class="fa fa-{{ $monthlyIncomeGrowth > 0 ? 'bolt' : 'level-down' }} text-navy"></i>
-                                        </div>
-                                        <div class="progress progress-mini">
-                                            <div style="width: {{ min(abs($monthlyIncomeGrowth), 100) }}%;"
-                                                class="progress-bar"></div>
-                                        </div>
-                                    </li>
-                                </ul>
+                            <div class="col-lg-3 col-md-6">
+                                <a href="{{ route('admin.soal.index') }}" class="btn btn-success btn-block">
+                                    <i class="fa fa-upload"></i> Import Soal
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <a href="{{ route('admin.kategori.index') }}" class="btn btn-info btn-block">
+                                    <i class="fa fa-tags"></i> Manajemen Kategori
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-md-6">
+                                <a href="{{ route('admin.users.index') }}" class="btn btn-warning btn-block">
+                                    <i class="fa fa-eye"></i> Lihat Hasil Terbaru
+                                </a>
                             </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Grafik dan Visualisasi --}}
+        <div class="row">
+            {{-- Tren Partisipasi --}}
+            <div class="col-lg-8">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-line-chart"></i> Tren Partisipasi Tryout (30 Hari Terakhir)</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="flot-chart">
+                            <div class="flot-chart-content" id="tren-partisipasi-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Performa Kategori --}}
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-pie-chart"></i> Performa Kategori</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="flot-chart">
+                            <div class="flot-chart-content" id="performa-kategori-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Distribusi Skor dan Top Performers --}}
+        <div class="row">
+            {{-- Distribusi Skor --}}
+            <div class="col-lg-6">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-bar-chart"></i> Distribusi Skor Peserta</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="flot-chart">
+                            <div class="flot-chart-content" id="distribusi-skor-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Top Performers --}}
+            <div class="col-lg-6">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-trophy"></i> Top Performers</h5>
+                    </div>
+                    <div class="ibox-content">
+                        @if($topPerformers->count() > 0)
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Nama</th>
+                                            <th>Skor</th>
+                                            <th>Tanggal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($topPerformers as $index => $performer)
+                                            <tr>
+                                                <td>
+                                                    @if($index == 0)
+                                                        <i class="fa fa-trophy text-warning"></i> 1
+                                                    @elseif($index == 1)
+                                                        <i class="fa fa-medal text-muted"></i> 2
+                                                    @elseif($index == 2)
+                                                        <i class="fa fa-award text-warning"></i> 3
+                                                    @else
+                                                        {{ $index + 1 }}
+                                                    @endif
+                                                </td>
+                                                <td>{{ $performer['nama'] }}</td>
+                                                <td>
+                                                    <span class="badge badge-{{ $performer['skor'] >= 80 ? 'success' : ($performer['skor'] >= 60 ? 'warning' : 'danger') }}">
+                                                        {{ $performer['skor'] }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ $performer['tanggal'] ? \Carbon\Carbon::parse($performer['tanggal'])->format('d/m/Y') : '-' }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="fa fa-info-circle fa-2x"></i>
+                                <p>Belum ada data performa peserta</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Recent Activity --}}
+        <div class="row">
+            {{-- Tryout Terbaru --}}
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-clock-o"></i> Tryout Terbaru</h5>
+                    </div>
+                    <div class="ibox-content">
+                        @if($tryoutTerbaru->count() > 0)
+                            <div class="feed-activity-list">
+                                @foreach($tryoutTerbaru as $tryout)
+                                    <div class="feed-element">
+                                        <div class="media-body">
+                                            <strong>{{ $tryout->judul }}</strong><br>
+                                            <small class="text-muted">
+                                                <i class="fa fa-clock-o"></i> {{ $tryout->created_at->diffForHumans() }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="fa fa-info-circle"></i>
+                                <p>Tidak ada tryout baru</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            {{-- Soal Terbaru --}}
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-question-circle"></i> Soal Terbaru</h5>
+                    </div>
+                    <div class="ibox-content">
+                        @if($soalTerbaru->count() > 0)
+                            <div class="feed-activity-list">
+                                @foreach($soalTerbaru as $soal)
+                                    <div class="feed-element">
+                                        <div class="media-body">
+                                            <strong>{{ $soal->kategori->nama ?? 'Kategori Tidak Ditemukan' }}</strong><br>
+                                            <small class="text-muted">
+                                                <i class="fa fa-clock-o"></i> {{ $soal->created_at->diffForHumans() }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="fa fa-info-circle"></i>
+                                <p>Tidak ada soal baru</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            {{-- Peserta Selesai Hari Ini --}}
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-check-circle"></i> Selesai Hari Ini</h5>
+                    </div>
+                    <div class="ibox-content">
+                        @if($pesertaSelesaiHariIni->count() > 0)
+                            <div class="feed-activity-list">
+                                @foreach($pesertaSelesaiHariIni as $peserta)
+                                    <div class="feed-element">
+                                        <div class="media-body">
+                                            <strong>{{ $peserta->user->name }}</strong><br>
+                                            <small class="text-muted">
+                                                <i class="fa fa-clock-o"></i> {{ $peserta->finished_at->diffForHumans() }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="fa fa-info-circle"></i>
+                                <p>Belum ada yang selesai hari ini</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -180,104 +369,185 @@
 
     <script>
         $(document).ready(function() {
-            $(".chart").easyPieChart({
-                barColor: "#f8ac59",
-                //                scaleColor: false,
-                scaleLength: 5,
-                lineWidth: 4,
-                size: 80,
-            });
-
-            $(".chart2").easyPieChart({
-                barColor: "#1c84c6",
-                //                scaleColor: false,
-                scaleLength: 5,
-                lineWidth: 4,
-                size: 80,
-            });
-
-            var chartData = @json($chartData);
-
-            var dataset = [{
-                    label: "Number of orders",
-                    data: chartData.orders,
-                    color: "#1ab394",
-                    bars: {
-                        show: true,
-                        align: "center",
-                        barWidth: 24 * 60 * 60 * 600,
-                        lineWidth: 0
+            // === TREN PARTISIPASI CHART ===
+            var trenData = @json($trenPartisipasi);
+            
+            var trenDataset = [{
+                label: "Tryout Selesai",
+                data: trenData,
+                color: "#1ab394",
+                lines: {
+                    lineWidth: 2,
+                    show: true,
+                    fill: true,
+                    fillColor: {
+                        colors: [{
+                            opacity: 0.1
+                        }, {
+                            opacity: 0.3
+                        }]
                     }
                 },
-                {
-                    label: "Payments",
-                    data: chartData.payments,
-                    yaxis: 2,
-                    color: "#1C84C6",
-                    lines: {
-                        lineWidth: 1,
-                        show: true,
-                        fill: true,
-                        fillColor: {
-                            colors: [{
-                                    opacity: 0.2
-                                },
-                                {
-                                    opacity: 0.4
-                                }
-                            ]
-                        }
-                    },
-                    splines: {
-                        show: false,
-                        tension: 0.6,
-                        lineWidth: 1,
-                        fill: 0.1
-                    }
+                points: {
+                    show: true,
+                    radius: 3,
+                    fillColor: "#1ab394"
                 }
-            ];
+            }];
 
-            var options = {
+            var trenOptions = {
                 xaxis: {
                     mode: "time",
                     tickSize: [3, "day"],
                     tickLength: 0,
-                    axisLabel: "Date",
+                    axisLabel: "Tanggal",
                     axisLabelUseCanvas: true,
                     axisLabelFontSizePixels: 12,
                     axisLabelFontFamily: "Arial",
                     axisLabelPadding: 10,
                     color: "#d5d5d5"
                 },
-                yaxes: [{
-                        position: "left",
-                        color: "#d5d5d5",
-                        axisLabelUseCanvas: true,
-                        axisLabelFontSizePixels: 12,
-                        axisLabelFontFamily: "Arial",
-                        axisLabelPadding: 3
-                    },
-                    {
-                        position: "right",
-                        clolor: "#d5d5d5",
-                        axisLabelUseCanvas: true,
-                        axisLabelFontSizePixels: 12,
-                        axisLabelFontFamily: " Arial",
-                        axisLabelPadding: 67
-                    }
-                ],
+                yaxis: {
+                    position: "left",
+                    color: "#d5d5d5",
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: "Arial",
+                    axisLabelPadding: 3,
+                    axisLabel: "Jumlah Peserta"
+                },
                 legend: {
                     noColumns: 1,
                     labelBoxBorderColor: "#000000",
                     position: "nw"
                 },
                 grid: {
-                    hoverable: false,
-                    borderWidth: 0
+                    hoverable: true,
+                    borderWidth: 0,
+                    backgroundColor: "#ffffff"
+                },
+                tooltip: {
+                    show: true,
+                    content: "Tanggal: %x<br/>Peserta: %y"
                 }
             };
 
-            $.plot($("#flot-dashboard-chart"), dataset, options);
+            $.plot($("#tren-partisipasi-chart"), trenDataset, trenOptions);
+
+            // === PERFORMANSI KATEGORI CHART ===
+            var kategoriData = @json($kategoriPerformansi);
+            
+            var pieData = kategoriData.map(function(item) {
+                return {
+                    label: item.nama + " (" + item.total_peserta + " peserta)",
+                    data: item.total_peserta,
+                    color: item.warna
+                };
+            });
+
+            var pieOptions = {
+                series: {
+                    pie: {
+                        show: true,
+                        radius: 0.8,
+                        label: {
+                            show: true,
+                            radius: 0.6,
+                            formatter: function(label, point) {
+                                return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + 
+                                       Math.round(point.percent) + '%</div>';
+                            },
+                            background: {
+                                opacity: 0.8
+                            }
+                        }
+                    }
+                },
+                legend: {
+                    show: true,
+                    position: "bottom",
+                    labelFormatter: function(label, series) {
+                        return '<div style="font-size:10px;">' + label + '</div>';
+                    }
+                },
+                grid: {
+                    hoverable: true,
+                    clickable: true
+                },
+                tooltip: {
+                    show: true,
+                    content: "%s: %p.0% (%n peserta)"
+                }
+            };
+
+            $.plot($("#performa-kategori-chart"), pieData, pieOptions);
+
+            // === DISTRIBUSI SKOR CHART ===
+            var distribusiData = @json($distribusiSkor);
+            
+            var barData = [
+                ["0-39", distribusiData["0-39"] || 0],
+                ["40-59", distribusiData["40-59"] || 0],
+                ["60-79", distribusiData["60-79"] || 0],
+                ["80-100", distribusiData["80-100"] || 0]
+            ];
+
+            var barDataset = [{
+                label: "Jumlah Peserta",
+                data: barData,
+                color: "#1c84c6",
+                bars: {
+                    show: true,
+                    align: "center",
+                    barWidth: 0.6,
+                    lineWidth: 0
+                }
+            }];
+
+            var barOptions = {
+                xaxis: {
+                    mode: "categories",
+                    tickLength: 0,
+                    axisLabel: "Rentang Skor",
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: "Arial",
+                    axisLabelPadding: 10,
+                    color: "#d5d5d5"
+                },
+                yaxis: {
+                    position: "left",
+                    color: "#d5d5d5",
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: "Arial",
+                    axisLabelPadding: 3,
+                    axisLabel: "Jumlah Peserta"
+                },
+                legend: {
+                    noColumns: 1,
+                    labelBoxBorderColor: "#000000",
+                    position: "nw"
+                },
+                grid: {
+                    hoverable: true,
+                    borderWidth: 0,
+                    backgroundColor: "#ffffff"
+                },
+                tooltip: {
+                    show: true,
+                    content: "Skor: %x<br/>Peserta: %y"
+                }
+            };
+
+            $.plot($("#distribusi-skor-chart"), barDataset, barOptions);
+
+            // === RESPONSIVE CHARTS ===
+            $(window).resize(function() {
+                $.plot($("#tren-partisipasi-chart"), trenDataset, trenOptions);
+                $.plot($("#performa-kategori-chart"), pieData, pieOptions);
+                $.plot($("#distribusi-skor-chart"), barDataset, barOptions);
+            });
         });
     </script>
 @endpush

@@ -4,6 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Subscription;
+use App\Models\Soal;
+use App\Models\KategoriSoal;
+use App\Models\Tryout;
+use App\Models\UserTryoutSession;
+use App\Models\UserTryoutSoal;
+use App\Models\HasilTes;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -12,131 +18,189 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $totalIncome = Subscription::where('payment_status', 'paid')
-            ->sum('amount_paid');
-
-        $pendingTransactions = Subscription::where('payment_status', 'pending')
-            ->sum('amount_paid');
-
-        $totalUsers = User::where('role', 'user')->count();
-
-        $activeSubscribers = User::where(function ($query) {
-            $query->where('is_active', true)
-                ->orWhereHas('subscriptions', function ($subQuery) {
-                    $subQuery->where('payment_status', 'paid')
-                        ->where('end_date', '>', Carbon::now());
-                });
-        })->count();
-
-        $previousMonthIncome = Subscription::where('payment_status', 'paid')
-            ->whereMonth('created_at', '=', Carbon::now()->subMonth()->month)
-            ->sum('amount_paid');
-
-        $incomeGrowth = $previousMonthIncome != 0
-            ? round((($totalIncome - $previousMonthIncome) / $previousMonthIncome) * 100)
-            : 0;
-
-        $previousMonthUsers = User::whereMonth('created_at', '=', Carbon::now()->subMonth()->month)
+        // === STATISTIK UTAMA (FOKUS PENDIDIKAN) ===
+        
+        // Total soal dalam bank soal
+        $totalSoal = Soal::where('is_active', true)->count();
+        
+        // Tryout aktif (sedang berjalan)
+        $tryoutAktif = Tryout::where('is_active', true)->count();
+        
+        // Peserta aktif (sedang mengerjakan tryout)
+        $pesertaAktif = UserTryoutSession::where('status', 'active')->count();
+        
+        // Tryout selesai hari ini
+        $selesaiHariIni = UserTryoutSession::where('status', 'completed')
+            ->whereDate('finished_at', Carbon::today())
             ->count();
 
-        $userGrowth = $previousMonthUsers != 0
-            ? round((($totalUsers - $previousMonthUsers) / $previousMonthUsers) * 100)
-            : 0;
+        // === STATISTIK PERTUMBUHAN ===
+        
+        // Pertumbuhan soal (bulan ini vs bulan lalu)
+        $soalBulanIni = Soal::whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
+        $soalBulanLalu = Soal::whereMonth('created_at', Carbon::now()->subMonth()->month)
+            ->whereYear('created_at', Carbon::now()->subMonth()->year)
+            ->count();
+        $soalGrowth = $soalBulanLalu > 0 ? round((($soalBulanIni - $soalBulanLalu) / $soalBulanLalu) * 100) : 0;
 
-        // Add new statistics
-        $totalOrders = Subscription::where('payment_status', 'paid')->count();
-
-        $pendingOrders = Subscription::where('payment_status', 'pending')->count();
-
-        // Get current month's income
-        $currentMonthIncome = Subscription::where('payment_status', 'paid')
+        // Pertumbuhan peserta (bulan ini vs bulan lalu)
+        $pesertaBulanIni = User::where('role', 'user')
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
-            ->sum('amount_paid');
-
-        // Calculate percentages
-        $totalOrdersPercent = $totalOrders > 0 ?
-            round(($totalOrders / ($totalOrders + $pendingOrders)) * 100) : 0;
-
-        $pendingOrdersPercent = ($totalOrders + $pendingOrders) > 0 ?
-            round(($pendingOrders / ($totalOrders + $pendingOrders)) * 100) : 0;
-
-        // Calculate month-over-month growth for income
-        $lastMonthIncome = Subscription::where('payment_status', 'paid')
+            ->count();
+        $pesertaBulanLalu = User::where('role', 'user')
             ->whereMonth('created_at', Carbon::now()->subMonth()->month)
             ->whereYear('created_at', Carbon::now()->subMonth()->year)
-            ->sum('amount_paid');
+            ->count();
+        $pesertaGrowth = $pesertaBulanLalu > 0 ? round((($pesertaBulanIni - $pesertaBulanLalu) / $pesertaBulanLalu) * 100) : 0;
 
-        $monthlyIncomeGrowth = $lastMonthIncome > 0 ?
-            round((($currentMonthIncome - $lastMonthIncome) / $lastMonthIncome) * 100) : 0;
+        // === PERFORMANSI KATEGORI DINAMIS ===
+        
+        // Ambil semua kategori aktif dari database
+        $kategoriPerformansi = KategoriSoal::where('is_active', true)
+            ->withCount(['soals as total_soal' => function($query) {
+                $query->where('is_active', true);
+            }])
+            ->get()
+            ->map(function($kategori) {
+                // Hitung rata-rata skor per kategori
+                $rataSkor = UserTryoutSoal::whereHas('soal', function($query) use ($kategori) {
+                    $query->where('kategori_id', $kategori->id);
+                })
+                ->whereNotNull('skor')
+                ->avg('skor');
+                
+                // Hitung jumlah peserta yang mengerjakan kategori ini
+                $totalPeserta = UserTryoutSoal::whereHas('soal', function($query) use ($kategori) {
+                    $query->where('kategori_id', $kategori->id);
+                })
+                ->distinct('user_id')
+                ->count('user_id');
+                
+                return [
+                    'nama' => $kategori->nama,
+                    'kode' => $kategori->kode,
+                    'total_soal' => $kategori->total_soal,
+                    'rata_skor' => round($rataSkor ?? 0, 2),
+                    'total_peserta' => $totalPeserta,
+                    'warna' => $this->getKategoriColor($kategori->kode)
+                ];
+            })
+            ->sortByDesc('total_peserta');
 
-        // Get data for the last 31 days
+        // === GRAFIK TREN PARTISIPASI ===
+        
+        // Data 30 hari terakhir untuk grafik partisipasi
         $startDate = Carbon::now()->subDays(30)->startOfDay();
         $endDate = Carbon::now()->endOfDay();
-
-        // Get daily order counts (number of subscriptions)
-        $dailyOrders = Subscription::where('payment_status', 'paid')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->groupBy('date')
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-            ->get()
-            ->mapWithKeys(function ($item) {
-                return [Carbon::parse($item->date)->timestamp * 1000 => $item->count];
-            })
-            ->toArray();
-
-        // Get daily payment amounts
-        $dailyPayments = Subscription::where('payment_status', 'paid')
-            ->whereBetween('created_at', [$startDate, $endDate])
-            ->groupBy('date')
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(amount_paid) as total'))
-            ->get()
-            ->mapWithKeys(function ($item) {
-                return [Carbon::parse($item->date)->timestamp * 1000 => $item->total];
-            })
-            ->toArray();
-
-        // Fill in missing dates with zero values
-        $chartData = [];
+        
+        $trenPartisipasi = [];
         for ($date = clone $startDate; $date <= $endDate; $date->addDay()) {
             $timestamp = $date->timestamp * 1000;
-            $chartData['orders'][] = [$timestamp, $dailyOrders[$timestamp] ?? 0];
-            $chartData['payments'][] = [$timestamp, $dailyPayments[$timestamp] ?? 0];
+            $selesaiHari = UserTryoutSession::where('status', 'completed')
+                ->whereDate('finished_at', $date->toDateString())
+                ->count();
+            $trenPartisipasi[] = [$timestamp, $selesaiHari];
         }
 
-        // Get recent impersonation logs (last 10)
-        $recentImpersonations = collect();
-        $logFile = storage_path('logs/laravel.log');
+        // === DISTRIBUSI SKOR ===
         
-        if (file_exists($logFile)) {
-            $logContent = file_get_contents($logFile);
-            preg_match_all('/\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\] .* Admin impersonation (started|ended).*admin_id.*?(\d+).*?target_user_id.*?(\d+)/s', $logContent, $matches, PREG_SET_ORDER);
-            
-            foreach (array_slice($matches, -10) as $match) {
-                $recentImpersonations->push([
-                    'timestamp' => $match[1],
-                    'action' => $match[2],
-                    'admin_id' => $match[3],
-                    'target_user_id' => $match[4]
-                ]);
-            }
-        }
+        // Ambil distribusi skor dari hasil tes
+        $distribusiSkor = HasilTes::select('skor_akhir')
+            ->whereNotNull('skor_akhir')
+            ->get()
+            ->groupBy(function($item) {
+                $skor = $item->skor_akhir;
+                if ($skor >= 80) return '80-100';
+                if ($skor >= 60) return '60-79';
+                if ($skor >= 40) return '40-59';
+                return '0-39';
+            })
+            ->map->count();
+
+        // === TOP PERFORMERS ===
+        
+        $topPerformers = User::where('role', 'user')
+            ->whereHas('hasilTes')
+            ->with(['hasilTes' => function($query) {
+                $query->latest()->limit(1);
+            }])
+            ->get()
+            ->map(function($user) {
+                $hasilTerbaru = $user->hasilTes->first();
+                return [
+                    'nama' => $user->name,
+                    'skor' => $hasilTerbaru ? $hasilTerbaru->skor_akhir : 0,
+                    'tanggal' => $hasilTerbaru ? $hasilTerbaru->tanggal_tes : null
+                ];
+            })
+            ->sortByDesc('skor')
+            ->take(5);
+
+        // === RECENT ACTIVITY ===
+        
+        // Tryout yang baru dibuat (7 hari terakhir)
+        $tryoutTerbaru = Tryout::where('created_at', '>=', Carbon::now()->subDays(7))
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Soal yang baru diupload (7 hari terakhir)
+        $soalTerbaru = Soal::where('created_at', '>=', Carbon::now()->subDays(7))
+            ->with('kategori')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Peserta yang baru menyelesaikan tryout (hari ini)
+        $pesertaSelesaiHariIni = UserTryoutSession::where('status', 'completed')
+            ->whereDate('finished_at', Carbon::today())
+            ->with(['user', 'tryout'])
+            ->orderBy('finished_at', 'desc')
+            ->limit(5)
+            ->get();
 
         return view('admin.dashboard', compact(
-            'totalIncome',
-            'pendingTransactions',
-            'totalUsers',
-            'activeSubscribers',
-            'incomeGrowth',
-            'userGrowth',
-            'chartData',
-            'totalOrders',
-            'pendingOrders',
-            'currentMonthIncome',
-            'totalOrdersPercent',
-            'pendingOrdersPercent',
-            'monthlyIncomeGrowth',
-            'recentImpersonations'
+            // Statistik utama
+            'totalSoal',
+            'tryoutAktif', 
+            'pesertaAktif',
+            'selesaiHariIni',
+            
+            // Pertumbuhan
+            'soalGrowth',
+            'pesertaGrowth',
+            
+            // Performansi kategori dinamis
+            'kategoriPerformansi',
+            
+            // Grafik dan visualisasi
+            'trenPartisipasi',
+            'distribusiSkor',
+            'topPerformers',
+            
+            // Recent activity
+            'tryoutTerbaru',
+            'soalTerbaru',
+            'pesertaSelesaiHariIni'
         ));
+    }
+
+    /**
+     * Get color for kategori based on kode
+     */
+    private function getKategoriColor($kode)
+    {
+        $colors = [
+            'TWK' => '#1ab394',    // Green
+            'TIU' => '#1c84c6',    // Blue  
+            'TKP' => '#f8ac59',    // Orange
+            'PSIKOTES' => '#ed5565', // Red
+            'TKD' => '#23c6c8',    // Teal
+        ];
+        
+        return $colors[$kode] ?? '#d1dade'; // Default gray
     }
 }

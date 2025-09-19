@@ -78,10 +78,14 @@
                                     <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-lg">
                                         <i class="fa fa-rocket mr-2"></i>Berlangganan
                                     </a>
-                                @else
+                                @elseif ($user->package !== 'lengkap')
                                     <a href="{{ route('subscription.packages') }}" class="btn btn-outline-primary">
                                         <i class="fa fa-arrow-up mr-2"></i>Upgrade Paket
                                     </a>
+                                @else
+                                    <span class="badge badge-success badge-lg">
+                                        <i class="fa fa-crown mr-2"></i>Paket Tertinggi
+                                    </span>
                                 @endif
                             </div>
                         </div>
@@ -149,9 +153,22 @@
                         <hr>
 
                         <div>
-                            <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-sm btn-block mb-2">
-                                <i class="fa fa-shopping-cart mr-2"></i>Lihat Paket
-                            </a>
+                            @if (!$user->hasActiveSubscription())
+                                <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-sm btn-block mb-2">
+                                    <i class="fa fa-shopping-cart mr-2"></i>Berlangganan
+                                </a>
+                            @elseif ($user->package !== 'lengkap')
+                                <a href="{{ route('subscription.packages') }}" class="btn btn-outline-primary btn-sm btn-block mb-2">
+                                    <i class="fa fa-arrow-up mr-2"></i>Upgrade Paket
+                                </a>
+                            @else
+                                <div class="text-center mb-2">
+                                    <span class="badge badge-success badge-lg">
+                                        <i class="fa fa-crown mr-2"></i>Paket Tertinggi
+                                    </span>
+                                </div>
+                            @endif
+                            
                             @if ($user->hasilTes()->count() > 0)
                                 <a href="#" class="btn btn-outline-info btn-sm btn-block" onclick="showTestHistory()">
                                     <i class="fa fa-history mr-2"></i>Riwayat Tes
