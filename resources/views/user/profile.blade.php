@@ -495,7 +495,7 @@
                                         <i class="fa fa-clipboard-list text-muted" style="font-size: 4rem;"></i>
                                         <h4 class="mt-3 text-muted">Belum Ada Riwayat Tes</h4>
                                         <p class="text-muted">Mulai mengerjakan tes untuk melihat riwayat di sini</p>
-                                        <a href="{{ route('user.dashboard') }}" class="btn btn-primary">
+                                        <a href="{{ route('dashboard') }}" class="btn btn-primary">
                                             <i class="fa fa-play mr-2"></i>Mulai Tes
                                         </a>
                                     </div>
