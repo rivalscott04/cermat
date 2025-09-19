@@ -18,7 +18,8 @@ class UserController extends Controller
         try {
             // Get cached provinces
             $provinces = Cache::remember('provinces', 60 * 24, function () {
-                $response = Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json");
+                $response = Http::timeout(5)->retry(1, 200)
+                    ->get("https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json");
                 if (!$response->successful()) {
                     Log::error('Failed to fetch provinces');
                     return [];
@@ -35,7 +36,8 @@ class UserController extends Controller
 
                 if ($provinceData) {
                     $regencies = Cache::remember("regencies.{$provinceData['id']}", 60 * 24, function () use ($provinceData) {
-                        $response = Http::get("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/{$provinceData['id']}.json");
+                        $response = Http::timeout(5)->retry(1, 200)
+                            ->get("https://www.emsifa.com/api-wilayah-indonesia/api/regencies/{$provinceData['id']}.json");
                         if (!$response->successful()) {
                             Log::error('Failed to fetch regencies');
                             return [];
