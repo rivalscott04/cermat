@@ -116,6 +116,12 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{ route('simulasi.nilai') }}">
+                                <i class="fa fa-balance-scale"></i>
+                                <span class="nav-label">Simulasi Nilai</span>
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{ route('user.history.index') }}">
                                 <i class="fa fa-history"></i>
                                 <span class="nav-label">Riwayat Tes</span>
