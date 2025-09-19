@@ -49,13 +49,29 @@ $(document).ready(function() {
         var $target = $(target);
         var isExpanded = $link.attr('aria-expanded') === 'true';
         
-        // Force toggle regardless of current state
+        // Special handling for Statistik Utama
+        if (target === '#collapseStats') {
+            if ($target.hasClass('in')) {
+                // Force close
+                $target.removeClass('in').css('height', '').hide();
+                $link.attr('aria-expanded', 'false');
+                $link.find('.accordion-icon').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+            } else {
+                // Force open
+                $target.addClass('in').css('height', 'auto').show();
+                $link.attr('aria-expanded', 'true');
+                $link.find('.accordion-icon').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            }
+            return;
+        }
+        
+        // Normal handling for other sections
         if (isExpanded) {
             // Close the panel
-            $target.removeClass('in').collapse('hide');
+            $target.collapse('hide');
         } else {
             // Open the panel (independent behavior)
-            $target.addClass('in').collapse('show');
+            $target.collapse('show');
         }
     }
     
