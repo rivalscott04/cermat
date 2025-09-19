@@ -304,7 +304,7 @@
 }
 
 .panel-title a:hover .accordion-icon {
-    color: #fff;
+    color: #fff !important;
 }
 
 .panel-title a:hover i:first-child {
@@ -312,13 +312,14 @@
 }
 
 .accordion-icon {
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, color 0.3s ease;
     color: #999;
+    font-size: 14px;
 }
 
 .panel-title a[aria-expanded="true"] .accordion-icon {
     transform: rotate(180deg);
-    color: #1ab394;
+    color: #fff !important;
 }
 
 .panel-title a[aria-expanded="true"] {
@@ -1233,6 +1234,21 @@
 
             $('#dashboardAccordion').on('hide.bs.collapse', function (e) {
                 $(e.target).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-down').removeClass('fa-chevron-up');
+            });
+
+            // Fix accordion toggle behavior
+            $('#dashboardAccordion .panel-title a').on('click', function(e) {
+                e.preventDefault();
+                var target = $(this).attr('href');
+                var isExpanded = $(this).attr('aria-expanded') === 'true';
+                
+                if (isExpanded) {
+                    // Close the panel
+                    $(target).collapse('hide');
+                } else {
+                    // Open the panel
+                    $(target).collapse('show');
+                }
             });
 
             // Lazy load charts when accordion sections are opened
