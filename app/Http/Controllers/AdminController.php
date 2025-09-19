@@ -148,22 +148,72 @@ class AdminController extends Controller
 
     public function riwayatTes(Request $request)
     {
+        // Get list of users with test statistics
+        $query = User::where('role', 'user')
+            ->withCount(['hasilTes as total_tests'])
+            ->withCount(['hasilTes as today_tests' => function ($q) {
+                $q->whereDate('tanggal_tes', today());
+            }])
+            ->withCount(['hasilTes as this_week_tests' => function ($q) {
+                $q->whereBetween('tanggal_tes', [now()->startOfWeek(), now()->endOfWeek()]);
+            }])
+            ->withCount(['hasilTes as this_month_tests' => function ($q) {
+                $q->whereMonth('tanggal_tes', now()->month)->whereYear('tanggal_tes', now()->year);
+            }]);
+
+        // Search functionality
+        if ($request->has('search') && !empty($request->search)) {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('name', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('email', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Filter by package
+        if ($request->has('package') && !empty($request->package)) {
+            $query->where('package', $request->package);
+        }
+
+        $users = $query->orderBy('total_tests', 'desc')
+                      ->orderBy('name', 'asc')
+                      ->paginate(20);
+
+        // Get statistics for overview cards
+        $totalUsers = User::where('role', 'user')->count();
+        $totalTests = DB::table('hasil_tes')->count();
+        $todayTests = DB::table('hasil_tes')->whereDate('tanggal_tes', today())->count();
+        $thisWeekTests = DB::table('hasil_tes')->whereBetween('tanggal_tes', [now()->startOfWeek(), now()->endOfWeek()])->count();
+        $thisMonthTests = DB::table('hasil_tes')->whereMonth('tanggal_tes', now()->month)->whereYear('tanggal_tes', now()->year)->count();
+
+        // Get package distribution
+        $packageStats = User::where('role', 'user')
+            ->select('package', DB::raw('count(*) as total'))
+            ->groupBy('package')
+            ->get();
+
+        return view('admin.riwayat-tes', compact(
+            'users', 
+            'totalUsers',
+            'totalTests', 
+            'todayTests', 
+            'thisWeekTests', 
+            'thisMonthTests',
+            'packageStats'
+        ));
+    }
+
+    public function riwayatTesUser($userId, Request $request)
+    {
+        $user = User::findOrFail($userId);
+        
         $query = DB::table('hasil_tes')
-            ->join('users', 'hasil_tes.user_id', '=', 'users.id')
-            ->select('hasil_tes.*', 'users.name as user_name', 'users.email as user_email', 'users.package as user_package');
+            ->where('user_id', $userId)
+            ->select('hasil_tes.*');
 
         // Filter by jenis tes
         if ($request->has('jenis_tes') && !empty($request->jenis_tes)) {
             $query->where('hasil_tes.jenis_tes', $request->jenis_tes);
-        }
-
-        // Filter by user (search by name or email)
-        if ($request->has('user_search') && !empty($request->user_search)) {
-            $searchTerm = $request->user_search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('users.name', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('users.email', 'like', '%' . $searchTerm . '%');
-            });
         }
 
         // Filter by date range
@@ -176,34 +226,27 @@ class AdminController extends Controller
 
         $hasilTes = $query->orderBy('hasil_tes.tanggal_tes', 'desc')->paginate(20);
 
-        // Get statistics for overview cards
-        $totalTests = DB::table('hasil_tes')->count();
-        $todayTests = DB::table('hasil_tes')->whereDate('tanggal_tes', today())->count();
-        $thisWeekTests = DB::table('hasil_tes')->whereBetween('tanggal_tes', [now()->startOfWeek(), now()->endOfWeek()])->count();
-        $thisMonthTests = DB::table('hasil_tes')->whereMonth('tanggal_tes', now()->month)->whereYear('tanggal_tes', now()->year)->count();
+        // Get user statistics
+        $userStats = [
+            'total_tests' => DB::table('hasil_tes')->where('user_id', $userId)->count(),
+            'today_tests' => DB::table('hasil_tes')->where('user_id', $userId)->whereDate('tanggal_tes', today())->count(),
+            'this_week_tests' => DB::table('hasil_tes')->where('user_id', $userId)->whereBetween('tanggal_tes', [now()->startOfWeek(), now()->endOfWeek()])->count(),
+            'this_month_tests' => DB::table('hasil_tes')->where('user_id', $userId)->whereMonth('tanggal_tes', now()->month)->whereYear('tanggal_tes', now()->year)->count(),
+        ];
 
-        // Get test type distribution
+        // Get test type distribution for this user
         $testTypeStats = DB::table('hasil_tes')
+            ->where('user_id', $userId)
             ->select('jenis_tes', DB::raw('count(*) as total'))
             ->whereNotNull('jenis_tes')
             ->groupBy('jenis_tes')
             ->get();
 
-        // Get unique users for filter dropdown
-        $users = DB::table('users')
-            ->where('role', 'user')
-            ->select('id', 'name', 'email')
-            ->orderBy('name')
-            ->get();
-
-        return view('admin.riwayat-tes', compact(
+        return view('admin.riwayat-tes-user', compact(
+            'user',
             'hasilTes', 
-            'totalTests', 
-            'todayTests', 
-            'thisWeekTests', 
-            'thisMonthTests',
-            'testTypeStats',
-            'users'
+            'userStats',
+            'testTypeStats'
         ));
     }
 
