@@ -132,7 +132,7 @@
 
             @if (Auth::user()->role == 'admin')
                 <li>
-                    <a href="{{ route('admin.riwayat.tes') }}">
+                    <a href="{{ route('admin.riwayat-tes') }}">
                         <i class="fa fa-history"></i>
                         <span class="nav-label">Riwayat Tes</span>
                     </a>
