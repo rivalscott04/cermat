@@ -128,6 +128,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('soal/kepribadian-categories', [SoalController::class, 'getKepribadianCategories'])->name('soal.kepribadian-categories');
 
     Route::resource('tryout', TryoutController::class);
+    Route::post('tryout/{tryout}/toggle-status', [TryoutController::class, 'toggleStatus'])->name('tryout.toggle-status');
     
     // Package Mapping Routes
     Route::get('package-mapping', [PackageMappingController::class, 'index'])->name('package-mapping.index');

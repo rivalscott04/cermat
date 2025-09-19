@@ -1368,4 +1368,26 @@ class TryoutController extends Controller
                 return 0;
         }
     }
+
+    /**
+     * Toggle status aktif/nonaktif tryout
+     */
+    public function toggleStatus(Request $request, Tryout $tryout)
+    {
+        $request->validate([
+            'is_active' => 'required|boolean'
+        ]);
+
+        $tryout->update([
+            'is_active' => $request->boolean('is_active')
+        ]);
+
+        $status = $tryout->is_active ? 'aktif' : 'nonaktif';
+        
+        return response()->json([
+            'success' => true,
+            'message' => "Tryout berhasil di{$status}kan",
+            'is_active' => $tryout->is_active
+        ]);
+    }
 }
