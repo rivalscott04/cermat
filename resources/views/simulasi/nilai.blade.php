@@ -37,6 +37,10 @@
                             <button class="btn btn-primary" type="submit" id="btnHitung">
                                 <i class="fa fa-calculator"></i> Hitung
                             </button>
+                            <button class="btn btn-default" type="submit" formaction="{{ route('simulasi.nilai.reset') }}" formmethod="POST">
+                                @csrf
+                                <i class="fa fa-undo"></i> Reset
+                            </button>
                         </div>
                     </div>
 					</form>

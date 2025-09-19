@@ -115,6 +115,7 @@ Route::middleware(['auth'])->group(function () {
     // Simulasi Nilai (accessible to authenticated users)
     Route::get('/simulasi/nilai', [SimulasiNilaiController::class, 'index'])->name('simulasi.nilai');
     Route::post('/simulasi/nilai', [SimulasiNilaiController::class, 'calculate'])->name('simulasi.nilai.calculate');
+    Route::post('/simulasi/nilai/reset', [SimulasiNilaiController::class, 'reset'])->name('simulasi.nilai.reset');
 });
 
 // Admin Routes

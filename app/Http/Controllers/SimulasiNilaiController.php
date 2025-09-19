@@ -31,6 +31,12 @@ class SimulasiNilaiController extends Controller
 
 		return redirect()->route('simulasi.nilai')->with('result', $result);
 	}
+
+	public function reset()
+	{
+		session()->forget('result');
+		return redirect()->route('simulasi.nilai');
+	}
 }
 
 
