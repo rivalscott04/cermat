@@ -294,7 +294,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingStats">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
+                        <a role="button" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
                             <i class="fa fa-dashboard text-primary"></i> <strong>Statistik Utama</strong>
                             <i class="fa fa-chevron-up pull-right accordion-icon"></i>
                         </a>
@@ -467,7 +467,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingActions">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" href="#collapseActions" aria-expanded="false" aria-controls="collapseActions" class="accordion-toggle collapsed">
+                        <a role="button" href="#collapseActions" aria-expanded="false" aria-controls="collapseActions" class="accordion-toggle collapsed">
                             <i class="fa fa-bolt text-warning"></i> <strong>Quick Actions</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -505,7 +505,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingCharts">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" href="#collapseCharts" aria-expanded="false" aria-controls="collapseCharts" class="accordion-toggle collapsed">
+                        <a role="button" href="#collapseCharts" aria-expanded="false" aria-controls="collapseCharts" class="accordion-toggle collapsed">
                             <i class="fa fa-line-chart text-info"></i> <strong>Grafik & Visualisasi</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -646,7 +646,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingSubscription">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" href="#collapseSubscription" aria-expanded="false" aria-controls="collapseSubscription" class="accordion-toggle collapsed">
+                        <a role="button" href="#collapseSubscription" aria-expanded="false" aria-controls="collapseSubscription" class="accordion-toggle collapsed">
                             <i class="fa fa-shopping-cart text-success"></i> <strong>Analisis Langganan</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -720,7 +720,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingTrenPelanggan">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" href="#collapseTrenPelanggan" aria-expanded="false" aria-controls="collapseTrenPelanggan" class="accordion-toggle collapsed">
+                        <a role="button" href="#collapseTrenPelanggan" aria-expanded="false" aria-controls="collapseTrenPelanggan" class="accordion-toggle collapsed">
                             <i class="fa fa-line-chart text-info"></i> <strong>Tren Pelanggan Baru</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -746,7 +746,7 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingRecent">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" href="#collapseRecent" aria-expanded="false" aria-controls="collapseRecent" class="accordion-toggle collapsed">
+                        <a role="button" href="#collapseRecent" aria-expanded="false" aria-controls="collapseRecent" class="accordion-toggle collapsed">
                             <i class="fa fa-clock-o text-warning"></i> <strong>Recent Activity</strong>
                             <i class="fa fa-chevron-down pull-right accordion-icon"></i>
                         </a>
@@ -884,9 +884,6 @@
 @endsection
 
 @push('scripts')
-    <!-- Dashboard Accordion Custom Script -->
-    <script src="{{ asset('js/dashboard-accordion.js') }}"></script>
-    
     <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
     <script src="{{ asset('js/popper.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.js') }}"></script>
@@ -1152,4 +1149,7 @@
 
         });
     </script>
+    
+    <!-- Dashboard Accordion Custom Script - Load after jQuery and Bootstrap -->
+    <script src="{{ asset('js/dashboard-accordion.js') }}"></script>
 @endpush

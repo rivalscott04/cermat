@@ -26,8 +26,8 @@
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $tes->user_name }}</td>
                                         <td>{{ \Carbon\Carbon::parse($tes->tanggal_tes)->isoFormat('dddd, D MMMM Y') }}</td>
-                                        <td>{{ $tes->jumlah_benar }}</td>
-                                        <td>{{ 9 - $tes->jumlah_benar }}</td>
+                                        <td>{{ $tes->skor_benar }}</td>
+                                        <td>{{ $tes->skor_salah }}</td>
                                         <td>
                                             <a href="{{ route('kecermatan.detail', $tes->id) }}"
                                                 class="btn btn-primary btn-sm">

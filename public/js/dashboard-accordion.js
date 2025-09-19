@@ -24,6 +24,7 @@ $(document).ready(function() {
         // Handle accordion toggle clicks
         $accordion.find('.panel-title a').on('click', function(e) {
             e.preventDefault();
+            e.stopPropagation();
             handleAccordionToggle($(this));
         });
         
