@@ -63,6 +63,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
+    Route::get('/profile/{userId}/paket-lengkap-summary', [UserController::class, 'paketLengkapSummary'])->name('user.profile.paket-lengkap-summary');
 
     // API routes for location data
     Route::get('/api/provinces', [UserController::class, 'getProvinces']);

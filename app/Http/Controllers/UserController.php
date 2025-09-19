@@ -75,6 +75,43 @@ class UserController extends Controller
             ])->with('error', 'Terjadi kesalahan saat memuat data');
         }
     }
+
+    public function paketLengkapSummary($userId)
+    {
+        try {
+            $authUser = auth()->user();
+            if (!$authUser) {
+                return response()->json(['message' => 'Unauthorized'], 401);
+            }
+
+            if ((int) $authUser->id !== (int) $userId && !($authUser->role === 'admin' || app('impersonate')->isImpersonating())) {
+                return response()->json(['message' => 'Forbidden'], 403);
+            }
+
+            $cacheKey = "paket_lengkap_summary_{$userId}";
+            $summary = Cache::remember($cacheKey, 300, function () use ($userId) {
+                $user = User::findOrFail($userId);
+                if (method_exists($user, 'getPaketLengkapSummary')) {
+                    return $user->getPaketLengkapSummary();
+                }
+                return null;
+            });
+
+            return response()->json([
+                'success' => true,
+                'data' => $summary,
+            ]);
+        } catch (\Throwable $e) {
+            \Log::error('Failed to load Paket Lengkap summary', [
+                'error' => $e->getMessage(),
+                'user_id' => $userId,
+            ]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memuat ringkasan paket lengkap'
+            ], 500);
+        }
+    }
     public function update(Request $request)
     {
         try {
