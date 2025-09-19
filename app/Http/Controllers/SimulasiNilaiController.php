@@ -11,7 +11,8 @@ class SimulasiNilaiController extends Controller
 	public function index()
 	{
 		$setting = ScoringSetting::current();
-		return view('simulasi.nilai', compact('setting'));
+		$result = session('result');
+		return view('simulasi.nilai', compact('setting', 'result'));
 	}
 
 	public function calculate(Request $request, ScoringService $service)
@@ -28,8 +29,7 @@ class SimulasiNilaiController extends Controller
 			(float) $request->kepribadian
 		);
 
-		$setting = ScoringSetting::current();
-		return view('simulasi.nilai', compact('setting', 'result'));
+		return redirect()->route('simulasi.nilai')->with('result', $result);
 	}
 }
 
