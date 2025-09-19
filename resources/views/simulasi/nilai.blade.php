@@ -20,17 +20,17 @@
 					<form method="POST" action="{{ route('simulasi.nilai.calculate') }}" class="form-horizontal">
 						@csrf
 
-						<div class="form-group"><label class="col-sm-5 control-label">Kecermatan</label>
-							<div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kecermatan" value="{{ old('kecermatan', 75) }}" required></div>
-						</div>
+                        <div class="form-group"><label class="col-sm-5 control-label">Kecermatan</label>
+                            <div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kecermatan" value="{{ old('kecermatan') }}" placeholder="Masukkan skor kecermatan (0-100)" required></div>
+                        </div>
 
-						<div class="form-group"><label class="col-sm-5 control-label">Kecerdasan</label>
-							<div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kecerdasan" value="{{ old('kecerdasan', 80) }}" required></div>
-						</div>
+                        <div class="form-group"><label class="col-sm-5 control-label">Kecerdasan</label>
+                            <div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kecerdasan" value="{{ old('kecerdasan') }}" placeholder="Masukkan skor kecerdasan (0-100)" required></div>
+                        </div>
 
-						<div class="form-group"><label class="col-sm-5 control-label">Kepribadian</label>
-							<div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kepribadian" value="{{ old('kepribadian', 70) }}" required></div>
-						</div>
+                        <div class="form-group"><label class="col-sm-5 control-label">Kepribadian</label>
+                            <div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kepribadian" value="{{ old('kepribadian') }}" placeholder="Masukkan skor kepribadian (0-100)" required></div>
+                        </div>
 
                     <div class="form-group">
                         <div class="col-sm-7 col-sm-offset-5">
