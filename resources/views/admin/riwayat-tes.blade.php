@@ -544,29 +544,40 @@
     }
 }
 
-/* Use Inspinia Pagination Style */
+/* Override Bootstrap Pagination with Inspinia Style */
 .pagination {
-    margin: 0;
+    display: block !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+    list-style: none !important;
+    border-radius: 0 !important;
+}
+
+.pagination > li {
+    display: inline-block !important;
 }
 
 .pagination > li > a,
 .pagination > li > span {
-    background-color: #FFFFFF;
-    border: 1px solid #DDDDDD;
-    color: inherit;
-    float: left;
-    line-height: 1.42857;
-    margin-left: -1px;
-    padding: 4px 10px;
-    position: relative;
-    text-decoration: none;
+    background-color: #FFFFFF !important;
+    border: 1px solid #DDDDDD !important;
+    color: inherit !important;
+    float: left !important;
+    line-height: 1.42857 !important;
+    margin-left: -1px !important;
+    padding: 4px 10px !important;
+    position: relative !important;
+    text-decoration: none !important;
+    display: block !important;
+    border-radius: 0 !important;
 }
 
 .pagination > li > a:hover,
 .pagination > li > span:hover {
-    background-color: #f4f4f4;
-    border-color: #DDDDDD;
-    color: inherit;
+    background-color: #f4f4f4 !important;
+    border-color: #DDDDDD !important;
+    color: inherit !important;
+    text-decoration: none !important;
 }
 
 .pagination > .active > a,
@@ -575,11 +586,11 @@
 .pagination > .active > span:hover,
 .pagination > .active > a:focus,
 .pagination > .active > span:focus {
-    background-color: #1ab394;
-    border-color: #1ab394;
-    color: white;
-    cursor: default;
-    z-index: 2;
+    background-color: #1ab394 !important;
+    border-color: #1ab394 !important;
+    color: white !important;
+    cursor: default !important;
+    z-index: 2 !important;
 }
 
 .pagination > .disabled > a,
@@ -588,18 +599,48 @@
 .pagination > .disabled > span:hover,
 .pagination > .disabled > a:focus,
 .pagination > .disabled > span:focus {
-    background-color: #fff;
-    border-color: #ddd;
-    color: #777;
-    cursor: not-allowed;
+    background-color: #fff !important;
+    border-color: #ddd !important;
+    color: #777 !important;
+    cursor: not-allowed !important;
+}
+
+/* Override Bootstrap page-link class */
+.page-link {
+    background-color: #FFFFFF !important;
+    border: 1px solid #DDDDDD !important;
+    color: inherit !important;
+    padding: 4px 10px !important;
+    line-height: 1.42857 !important;
+    text-decoration: none !important;
+    display: block !important;
+    border-radius: 0 !important;
+}
+
+.page-link:hover {
+    background-color: #f4f4f4 !important;
+    border-color: #DDDDDD !important;
+    color: inherit !important;
+    text-decoration: none !important;
+}
+
+.page-item.active .page-link {
+    background-color: #1ab394 !important;
+    border-color: #1ab394 !important;
+    color: white !important;
 }
 
 /* Fix large icons in pagination */
 .pagination i,
 .pagination .icon,
-.pagination .fa {
-    font-size: 12px;
-    line-height: 1;
+.pagination .fa,
+.page-link i,
+.page-link .icon,
+.page-link .fa {
+    font-size: 12px !important;
+    line-height: 1 !important;
+    width: auto !important;
+    height: auto !important;
 }
 </style>
 @endpush
