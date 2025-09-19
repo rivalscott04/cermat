@@ -182,18 +182,19 @@
     font-weight: bold;
 }
 
-/* Subscription Analysis Styles */
+/* Subscription Analysis Styles - Inspinia Theme */
 .subscription-card {
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
+    border: 1px solid #e7eaec;
+    border-radius: 3px;
     padding: 15px;
-    background: #f8f9fa;
+    background: #ffffff;
     transition: all 0.3s ease;
+    margin-bottom: 15px;
 }
 
 .subscription-card:hover {
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    transform: translateY(-2px);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+    border-color: #1ab394;
 }
 
 .subscription-header {
@@ -208,16 +209,19 @@
     font-size: 14px;
     font-weight: 600;
     color: #333;
+    line-height: 1.4;
 }
 
 .package-stats {
     display: flex;
     gap: 5px;
+    flex-wrap: wrap;
 }
 
 .package-stats .badge {
     font-size: 10px;
     padding: 3px 8px;
+    border-radius: 2px;
 }
 
 .subscription-users {
@@ -358,6 +362,85 @@
             </div>
         </div>
 
+        {{-- Statistik Pelanggan Baru --}}
+        <div class="row">
+            {{-- Pelanggan Baru Hari Ini --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
+                            <span class="label label-success float-right">Hari Ini</span>
+                        </div>
+                        <h5><i class="fa fa-user-plus"></i> Pelanggan Baru</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{ $pelangganBaruHariIni->count() }}</h1>
+                        <div class="stat-percent text-success font-bold">
+                            <i class="fa fa-plus-circle"></i>
+                        </div>
+                        <small>Registrasi hari ini</small>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Pelanggan Baru Minggu Ini --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
+                            <span class="label label-info float-right">Minggu</span>
+                        </div>
+                        <h5><i class="fa fa-calendar"></i> Minggu Ini</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{ $pelangganBaruMingguIni }}</h1>
+                        <div class="stat-percent text-info font-bold">
+                            <i class="fa fa-calendar-week"></i>
+                        </div>
+                        <small>Registrasi minggu ini</small>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Pelanggan Baru Bulan Ini --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
+                            <span class="label label-primary float-right">Bulan</span>
+                        </div>
+                        <h5><i class="fa fa-calendar-alt"></i> Bulan Ini</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">{{ $pelangganBaruBulanIni }}</h1>
+                        <div class="stat-percent text-primary font-bold">
+                            <i class="fa fa-calendar-month"></i>
+                        </div>
+                        <small>Registrasi bulan ini</small>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Total Revenue --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <div class="ibox-tools">
+                            <span class="label label-warning float-right">Revenue</span>
+                        </div>
+                        <h5><i class="fa fa-money"></i> Revenue 7 Hari</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <h1 class="no-margins">Rp {{ number_format($subscriptionAnalysis->sum('total_revenue'), 0, ',', '.') }}</h1>
+                        <div class="stat-percent text-warning font-bold">
+                            <i class="fa fa-chart-line"></i>
+                        </div>
+                        <small>Pendapatan 7 hari terakhir</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         {{-- Quick Actions --}}
         <div class="row">
             <div class="col-lg-12">
@@ -381,7 +464,7 @@
                                 <a href="{{ route('admin.kategori.index') }}" class="btn btn-info btn-block">
                                     <i class="fa fa-tags"></i> Manajemen Kategori
                                 </a>
-                            </div>
+                                </div>
                             <div class="col-lg-3 col-md-6">
                                 <a href="{{ route('admin.users.index') }}" class="btn btn-warning btn-block">
                                     <i class="fa fa-eye"></i> Lihat Hasil Terbaru
@@ -520,64 +603,9 @@
             </div>
         </div>
 
-        {{-- Pelanggan Baru dan Subscription Analysis --}}
+        {{-- Analisis Subscription --}}
         <div class="row">
-            {{-- Statistik Pelanggan Baru --}}
-            <div class="col-lg-4">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-user-plus"></i> Pelanggan Baru</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="row text-center">
-                            <div class="col-4">
-                                <div class="stat-item">
-                                    <h3 class="text-primary">{{ $pelangganBaruHariIni->count() }}</h3>
-                                    <small>Hari Ini</small>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="stat-item">
-                                    <h3 class="text-info">{{ $pelangganBaruMingguIni }}</h3>
-                                    <small>Minggu Ini</small>
-                                </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="stat-item">
-                                    <h3 class="text-success">{{ $pelangganBaruBulanIni }}</h3>
-                                    <small>Bulan Ini</small>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        @if($pelangganBaruHariIni->count() > 0)
-                            <hr>
-                            <h6><i class="fa fa-users"></i> Pelanggan Baru Hari Ini:</h6>
-                            <div class="feed-activity-list">
-                                @foreach($pelangganBaruHariIni->take(5) as $user)
-                                    <div class="feed-element">
-                                        <div class="media-body">
-                                            <strong>{{ $user->name }}</strong><br>
-                                            <small class="text-muted">
-                                                <i class="fa fa-envelope"></i> {{ $user->email }}<br>
-                                                <i class="fa fa-clock-o"></i> {{ $user->created_at->diffForHumans() }}
-                                            </small>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center text-muted">
-                                <i class="fa fa-info-circle"></i>
-                                <p>Belum ada pelanggan baru hari ini</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            {{-- Analisis Subscription --}}
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="ibox">
                     <div class="ibox-title">
                         <h5><i class="fa fa-shopping-cart"></i> Analisis Langganan (7 Hari Terakhir)</h5>
@@ -586,7 +614,7 @@
                         @if($subscriptionAnalysis->count() > 0)
                             <div class="row">
                                 @foreach($subscriptionAnalysis as $packageType => $data)
-                                    <div class="col-lg-6 col-md-6 mb-3">
+                                    <div class="col-lg-3 col-md-6 mb-3">
                                         <div class="subscription-card">
                                             <div class="subscription-header">
                                                 <h6 class="package-name">
@@ -664,8 +692,39 @@
 
         {{-- Recent Activity --}}
         <div class="row">
+            {{-- Pelanggan Baru Hari Ini --}}
+            <div class="col-lg-3">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-user-plus"></i> Pelanggan Baru Hari Ini</h5>
+                    </div>
+                    <div class="ibox-content">
+                        @if($pelangganBaruHariIni->count() > 0)
+                            <div class="feed-activity-list">
+                                @foreach($pelangganBaruHariIni->take(5) as $user)
+                                    <div class="feed-element">
+                                        <div class="media-body">
+                                            <strong>{{ $user->name }}</strong><br>
+                                            <small class="text-muted">
+                                                <i class="fa fa-envelope"></i> {{ $user->email }}<br>
+                                                <i class="fa fa-clock-o"></i> {{ $user->created_at->diffForHumans() }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="fa fa-info-circle"></i>
+                                <p>Belum ada pelanggan baru hari ini</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             {{-- Tryout Terbaru --}}
-            <div class="col-lg-4">
+            <div class="col-lg-3">
                 <div class="ibox">
                     <div class="ibox-title">
                         <h5><i class="fa fa-clock-o"></i> Tryout Terbaru</h5>
@@ -695,7 +754,7 @@
             </div>
 
             {{-- Soal Terbaru --}}
-            <div class="col-lg-4">
+            <div class="col-lg-3">
                 <div class="ibox">
                     <div class="ibox-title">
                         <h5><i class="fa fa-question-circle"></i> Soal Terbaru</h5>
@@ -725,7 +784,7 @@
             </div>
 
             {{-- Peserta Selesai Hari Ini --}}
-            <div class="col-lg-4">
+            <div class="col-lg-3">
                 <div class="ibox">
                     <div class="ibox-title">
                         <h5><i class="fa fa-check-circle"></i> Selesai Hari Ini</h5>
@@ -748,7 +807,7 @@
                             <div class="text-center text-muted">
                                 <i class="fa fa-info-circle"></i>
                                 <p>Belum ada yang selesai hari ini</p>
-                            </div>
+                        </div>
                         @endif
                     </div>
                 </div>
@@ -805,13 +864,13 @@
             var trenDataset = [{
                 label: "Tryout Selesai",
                 data: trenData,
-                color: "#1ab394",
-                lines: {
+                    color: "#1ab394",
+                    lines: {
                     lineWidth: 2,
-                    show: true,
-                    fill: true,
-                    fillColor: {
-                        colors: [{
+                        show: true,
+                        fill: true,
+                        fillColor: {
+                            colors: [{
                             opacity: 0.1
                         }, {
                             opacity: 0.3
@@ -838,11 +897,11 @@
                     color: "#d5d5d5"
                 },
                 yaxis: {
-                    position: "left",
-                    color: "#d5d5d5",
-                    axisLabelUseCanvas: true,
-                    axisLabelFontSizePixels: 12,
-                    axisLabelFontFamily: "Arial",
+                        position: "left",
+                        color: "#d5d5d5",
+                        axisLabelUseCanvas: true,
+                        axisLabelFontSizePixels: 12,
+                        axisLabelFontFamily: "Arial",
                     axisLabelPadding: 3,
                     axisLabel: "Jumlah Peserta"
                 },
@@ -921,8 +980,8 @@
                 yaxis: {
                     position: "left",
                     color: "#d5d5d5",
-                    axisLabelUseCanvas: true,
-                    axisLabelFontSizePixels: 12,
+                        axisLabelUseCanvas: true,
+                        axisLabelFontSizePixels: 12,
                     axisLabelFontFamily: "Arial",
                     axisLabelPadding: 3,
                     axisLabel: "Jumlah Peserta"
