@@ -264,6 +264,88 @@
         font-size: 1.5rem;
     }
 }
+
+/* Accordion Dashboard Styles */
+.panel-group {
+    margin-bottom: 20px;
+}
+
+.panel {
+    border: 1px solid #e7eaec;
+    border-radius: 3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+}
+
+.panel-heading {
+    background: linear-gradient(to right, #f8f9fa, #ffffff);
+    border-bottom: 1px solid #e7eaec;
+    padding: 0;
+}
+
+.panel-title {
+    margin: 0;
+}
+
+.panel-title a {
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.panel-title a:hover {
+    background: linear-gradient(to right, #1ab394, #18a085);
+    color: #fff;
+    text-decoration: none;
+}
+
+.panel-title a:hover .accordion-icon {
+    color: #fff;
+}
+
+.panel-title a:hover i:first-child {
+    color: #fff !important;
+}
+
+.accordion-icon {
+    transition: transform 0.3s ease;
+    color: #999;
+}
+
+.panel-title a[aria-expanded="true"] .accordion-icon {
+    transform: rotate(180deg);
+    color: #1ab394;
+}
+
+.panel-title a[aria-expanded="true"] {
+    background: linear-gradient(to right, #1ab394, #18a085);
+    color: #fff;
+}
+
+.panel-title a[aria-expanded="true"] i:first-child {
+    color: #fff !important;
+}
+
+.panel-body {
+    padding: 20px;
+    background: #fff;
+}
+
+/* Responsive accordion adjustments */
+@media (max-width: 768px) {
+    .panel-title a {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .panel-body {
+        padding: 15px;
+    }
+}
 </style>
 @endpush
 
@@ -283,172 +365,194 @@
             </div>
         </div>
 
-        {{-- Statistik Utama --}}
-        <div class="row">
-            {{-- Total Soal Card --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-success float-right">Aktif</span>
+        {{-- Accordion Dashboard --}}
+        <div class="panel-group" id="dashboardAccordion" role="tablist" aria-multiselectable="true">
+            
+            {{-- Statistik Utama (Default Open) --}}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingStats">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
+                            <i class="fa fa-dashboard text-primary"></i> <strong>Statistik Utama</strong>
+                            <i class="fa fa-chevron-down pull-right accordion-icon"></i>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseStats" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingStats">
+                    <div class="panel-body">
+                        {{-- Statistik Utama --}}
+                        <div class="row">
+                            {{-- Total Soal Card --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <div class="ibox-tools">
+                                            <span class="label label-success float-right">Aktif</span>
+                                        </div>
+                                        <h5><i class="fa fa-book"></i> Total Soal</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <h1 class="no-margins">{{ number_format($totalSoal, 0, ',', '.') }}</h1>
+                                        <div class="stat-percent text-success font-bold">
+                                            {{ $soalGrowth }}% <i class="fa {{ $soalGrowth >= 0 ? 'fa-level-up' : 'fa-level-down' }}"></i>
+                                        </div>
+                                        <small>Soal dalam bank soal</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Tryout Aktif Card --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <div class="ibox-tools">
+                                            <span class="label label-info float-right">Berjalan</span>
+                                        </div>
+                                        <h5><i class="fa fa-tasks"></i> Tryout Aktif</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <h1 class="no-margins">{{ number_format($tryoutAktif, 0, ',', '.') }}</h1>
+                                        <div class="stat-percent text-info font-bold">
+                                            <i class="fa fa-play-circle"></i>
+                                        </div>
+                                        <small>Tryout yang sedang berjalan</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Peserta Aktif Card --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <div class="ibox-tools">
+                                            <span class="label label-warning float-right">Online</span>
+                                        </div>
+                                        <h5><i class="fa fa-users"></i> Peserta Aktif</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <h1 class="no-margins">{{ number_format($pesertaAktif, 0, ',', '.') }}</h1>
+                                        <div class="stat-percent text-warning font-bold">
+                                            <i class="fa fa-user-circle"></i>
+                                        </div>
+                                        <small>Sedang mengerjakan tryout</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Selesai Hari Ini Card --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <div class="ibox-tools">
+                                            <span class="label label-primary float-right">Hari Ini</span>
+                                        </div>
+                                        <h5><i class="fa fa-check-circle"></i> Selesai Hari Ini</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <h1 class="no-margins">{{ number_format($selesaiHariIni, 0, ',', '.') }}</h1>
+                                        <div class="stat-percent text-primary font-bold">
+                                            {{ $pesertaGrowth }}% <i class="fa {{ $pesertaGrowth >= 0 ? 'fa-level-up' : 'fa-level-down' }}"></i>
+                                        </div>
+                                        <small>Tryout selesai hari ini</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <h5><i class="fa fa-book"></i> Total Soal</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ number_format($totalSoal, 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-success font-bold">
-                            {{ $soalGrowth }}% <i class="fa {{ $soalGrowth >= 0 ? 'fa-level-up' : 'fa-level-down' }}"></i>
+
+                        {{-- Statistik Pelanggan Baru --}}
+                        <div class="row">
+                            {{-- Pelanggan Baru Hari Ini --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <div class="ibox-tools">
+                                            <span class="label label-success float-right">Hari Ini</span>
+                                        </div>
+                                        <h5><i class="fa fa-user-plus"></i> Pelanggan Baru</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <h1 class="no-margins">{{ $pelangganBaruHariIni->count() }}</h1>
+                                        <div class="stat-percent text-success font-bold">
+                                            <i class="fa fa-plus-circle"></i>
+                                        </div>
+                                        <small>Registrasi hari ini</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Pelanggan Baru Minggu Ini --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <div class="ibox-tools">
+                                            <span class="label label-info float-right">Minggu</span>
+                                        </div>
+                                        <h5><i class="fa fa-calendar"></i> Minggu Ini</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <h1 class="no-margins">{{ $pelangganBaruMingguIni }}</h1>
+                                        <div class="stat-percent text-info font-bold">
+                                            <i class="fa fa-calendar-week"></i>
+                                        </div>
+                                        <small>Registrasi minggu ini</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Pelanggan Baru Bulan Ini --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <div class="ibox-tools">
+                                            <span class="label label-primary float-right">Bulan</span>
+                                        </div>
+                                        <h5><i class="fa fa-calendar-alt"></i> Bulan Ini</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <h1 class="no-margins">{{ $pelangganBaruBulanIni }}</h1>
+                                        <div class="stat-percent text-primary font-bold">
+                                            <i class="fa fa-calendar-month"></i>
+                                        </div>
+                                        <small>Registrasi bulan ini</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Total Revenue --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <div class="ibox-tools">
+                                            <span class="label label-warning float-right">Revenue</span>
+                                        </div>
+                                        <h5><i class="fa fa-money"></i> Revenue 7 Hari</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <h1 class="no-margins">Rp {{ number_format($subscriptionAnalysis->sum('total_revenue'), 0, ',', '.') }}</h1>
+                                        <div class="stat-percent text-warning font-bold">
+                                            <i class="fa fa-chart-line"></i>
+                                        </div>
+                                        <small>Pendapatan 7 hari terakhir</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <small>Soal dalam bank soal</small>
                     </div>
                 </div>
             </div>
 
-            {{-- Tryout Aktif Card --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-info float-right">Berjalan</span>
-                        </div>
-                        <h5><i class="fa fa-tasks"></i> Tryout Aktif</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ number_format($tryoutAktif, 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-info font-bold">
-                            <i class="fa fa-play-circle"></i>
-                        </div>
-                        <small>Tryout yang sedang berjalan</small>
-                    </div>
+            {{-- Quick Actions --}}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingActions">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseActions" aria-expanded="false" aria-controls="collapseActions" class="accordion-toggle collapsed">
+                            <i class="fa fa-bolt text-warning"></i> <strong>Quick Actions</strong>
+                            <i class="fa fa-chevron-down pull-right accordion-icon"></i>
+                        </a>
+                    </h4>
                 </div>
-            </div>
-
-            {{-- Peserta Aktif Card --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-warning float-right">Online</span>
-                        </div>
-                        <h5><i class="fa fa-users"></i> Peserta Aktif</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ number_format($pesertaAktif, 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-warning font-bold">
-                            <i class="fa fa-user-circle"></i>
-                        </div>
-                        <small>Sedang mengerjakan tryout</small>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Selesai Hari Ini Card --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-primary float-right">Hari Ini</span>
-                        </div>
-                        <h5><i class="fa fa-check-circle"></i> Selesai Hari Ini</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ number_format($selesaiHariIni, 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-primary font-bold">
-                            {{ $pesertaGrowth }}% <i class="fa {{ $pesertaGrowth >= 0 ? 'fa-level-up' : 'fa-level-down' }}"></i>
-                        </div>
-                        <small>Tryout selesai hari ini</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Statistik Pelanggan Baru --}}
-        <div class="row">
-            {{-- Pelanggan Baru Hari Ini --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-success float-right">Hari Ini</span>
-                        </div>
-                        <h5><i class="fa fa-user-plus"></i> Pelanggan Baru</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ $pelangganBaruHariIni->count() }}</h1>
-                        <div class="stat-percent text-success font-bold">
-                            <i class="fa fa-plus-circle"></i>
-                        </div>
-                        <small>Registrasi hari ini</small>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Pelanggan Baru Minggu Ini --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-info float-right">Minggu</span>
-                        </div>
-                        <h5><i class="fa fa-calendar"></i> Minggu Ini</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ $pelangganBaruMingguIni }}</h1>
-                        <div class="stat-percent text-info font-bold">
-                            <i class="fa fa-calendar-week"></i>
-                        </div>
-                        <small>Registrasi minggu ini</small>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Pelanggan Baru Bulan Ini --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-primary float-right">Bulan</span>
-                        </div>
-                        <h5><i class="fa fa-calendar-alt"></i> Bulan Ini</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">{{ $pelangganBaruBulanIni }}</h1>
-                        <div class="stat-percent text-primary font-bold">
-                            <i class="fa fa-calendar-month"></i>
-                        </div>
-                        <small>Registrasi bulan ini</small>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Total Revenue --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <div class="ibox-tools">
-                            <span class="label label-warning float-right">Revenue</span>
-                        </div>
-                        <h5><i class="fa fa-money"></i> Revenue 7 Hari</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <h1 class="no-margins">Rp {{ number_format($subscriptionAnalysis->sum('total_revenue'), 0, ',', '.') }}</h1>
-                        <div class="stat-percent text-warning font-bold">
-                            <i class="fa fa-chart-line"></i>
-                        </div>
-                        <small>Pendapatan 7 hari terakhir</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Quick Actions --}}
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-bolt"></i> Quick Actions</h5>
-                    </div>
-                    <div class="ibox-content">
+                <div id="collapseActions" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingActions">
+                    <div class="panel-body">
                         <div class="row">
                             <div class="col-lg-3 col-md-6">
                                 <a href="{{ route('admin.tryout.create') }}" class="btn btn-primary btn-block">
@@ -464,7 +568,7 @@
                                 <a href="{{ route('admin.kategori.index') }}" class="btn btn-info btn-block">
                                     <i class="fa fa-tags"></i> Manajemen Kategori
                                 </a>
-                                </div>
+                            </div>
                             <div class="col-lg-3 col-md-6">
                                 <a href="{{ route('admin.users.index') }}" class="btn btn-warning btn-block">
                                     <i class="fa fa-eye"></i> Lihat Hasil Terbaru
@@ -474,143 +578,160 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        {{-- Grafik dan Visualisasi --}}
-        <div class="row">
-            {{-- Tren Partisipasi --}}
-            <div class="col-lg-8">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-line-chart"></i> Tren Partisipasi Tryout (30 Hari Terakhir)</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="flot-chart">
-                            <div class="flot-chart-content" id="tren-partisipasi-chart"></div>
-                        </div>
-                    </div>
+            {{-- Grafik dan Visualisasi --}}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingCharts">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseCharts" aria-expanded="false" aria-controls="collapseCharts" class="accordion-toggle collapsed">
+                            <i class="fa fa-line-chart text-info"></i> <strong>Grafik & Visualisasi</strong>
+                            <i class="fa fa-chevron-down pull-right accordion-icon"></i>
+                        </a>
+                    </h4>
                 </div>
-            </div>
-
-            {{-- Performa Kategori --}}
-            <div class="col-lg-4">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-bar-chart"></i> Performa Kategori</h5>
-                    </div>
-                    <div class="ibox-content">
-                        @if($kategoriPerformansi->count() > 0)
-                            <div class="kategori-performance-list">
-                                @foreach($kategoriPerformansi as $kategori)
-                                    <div class="kategori-item">
-                                        <div class="kategori-info">
-                                            <div class="kategori-color" style="background-color: {{ $kategori['warna'] }}"></div>
-                                            <div class="kategori-details">
-                                                <strong>{{ $kategori['nama'] }}</strong>
-                                                <div class="kategori-stats">
-                                                    <span class="badge badge-primary">{{ $kategori['total_soal'] }} soal</span>
-                                                    <span class="badge badge-info">{{ $kategori['total_peserta'] }} peserta</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="kategori-score">
-                                            <div class="score-circle" data-score="{{ $kategori['rata_skor'] }}">
-                                                <span class="score-text">{{ $kategori['rata_skor'] }}</span>
-                                            </div>
+                <div id="collapseCharts" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingCharts">
+                    <div class="panel-body">
+                        {{-- Tren Partisipasi --}}
+                        <div class="row">
+                            <div class="col-lg-8">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5><i class="fa fa-line-chart"></i> Tren Partisipasi Tryout (30 Hari Terakhir)</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="flot-chart">
+                                            <div class="flot-chart-content" id="tren-partisipasi-chart"></div>
                                         </div>
                                     </div>
-                                @endforeach
+                                </div>
                             </div>
-                        @else
-                            <div class="text-center text-muted">
-                                <i class="fa fa-info-circle fa-2x"></i>
-                                <p>Belum ada data kategori</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        {{-- Distribusi Skor dan Top Performers --}}
-        <div class="row">
-            {{-- Distribusi Skor --}}
-            <div class="col-lg-6">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-bar-chart"></i> Distribusi Skor Peserta</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="flot-chart">
-                            <div class="flot-chart-content" id="distribusi-skor-chart"></div>
+                            {{-- Performa Kategori --}}
+                            <div class="col-lg-4">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5><i class="fa fa-bar-chart"></i> Performa Kategori</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        @if($kategoriPerformansi->count() > 0)
+                                            <div class="kategori-performance-list">
+                                                @foreach($kategoriPerformansi as $kategori)
+                                                    <div class="kategori-item">
+                                                        <div class="kategori-info">
+                                                            <div class="kategori-color" style="background-color: {{ $kategori['warna'] }}"></div>
+                                                            <div class="kategori-details">
+                                                                <strong>{{ $kategori['nama'] }}</strong>
+                                                                <div class="kategori-stats">
+                                                                    <span class="badge badge-primary">{{ $kategori['total_soal'] }} soal</span>
+                                                                    <span class="badge badge-info">{{ $kategori['total_peserta'] }} peserta</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="kategori-score">
+                                                            <div class="score-circle" data-score="{{ $kategori['rata_skor'] }}">
+                                                                <span class="score-text">{{ $kategori['rata_skor'] }}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-center text-muted">
+                                                <i class="fa fa-info-circle fa-2x"></i>
+                                                <p>Belum ada data kategori</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Distribusi Skor dan Top Performers --}}
+                        <div class="row">
+                            {{-- Distribusi Skor --}}
+                            <div class="col-lg-6">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5><i class="fa fa-bar-chart"></i> Distribusi Skor Peserta</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        <div class="flot-chart">
+                                            <div class="flot-chart-content" id="distribusi-skor-chart"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Top Performers --}}
+                            <div class="col-lg-6">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5><i class="fa fa-trophy"></i> Top Performers</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        @if($topPerformers->count() > 0)
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Rank</th>
+                                                            <th>Nama</th>
+                                                            <th>Skor</th>
+                                                            <th>Tanggal</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach($topPerformers as $index => $performer)
+                                                            <tr>
+                                                                <td>
+                                                                    @if($index == 0)
+                                                                        <i class="fa fa-trophy text-warning"></i> 1
+                                                                    @elseif($index == 1)
+                                                                        <i class="fa fa-medal text-muted"></i> 2
+                                                                    @elseif($index == 2)
+                                                                        <i class="fa fa-award text-warning"></i> 3
+                                                                    @else
+                                                                        {{ $index + 1 }}
+                                                                    @endif
+                                                                </td>
+                                                                <td>{{ $performer['nama'] }}</td>
+                                                                <td>
+                                                                    <span class="badge badge-{{ $performer['skor'] >= 80 ? 'success' : ($performer['skor'] >= 60 ? 'warning' : 'danger') }}">
+                                                                        {{ $performer['skor'] }}
+                                                                    </span>
+                                                                </td>
+                                                                <td>{{ $performer['tanggal'] ? \Carbon\Carbon::parse($performer['tanggal'])->format('d/m/Y') : '-' }}</td>
+                                                            </tr>
+                                                        @endforeach
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        @else
+                                            <div class="text-center text-muted">
+                                                <i class="fa fa-info-circle fa-2x"></i>
+                                                <p>Belum ada data performa peserta</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {{-- Top Performers --}}
-            <div class="col-lg-6">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-trophy"></i> Top Performers</h5>
-                    </div>
-                    <div class="ibox-content">
-                        @if($topPerformers->count() > 0)
-                            <div class="table-responsive">
-                                <table class="table table-striped">
-                                    <thead>
-                                        <tr>
-                                            <th>Rank</th>
-                                            <th>Nama</th>
-                                            <th>Skor</th>
-                                            <th>Tanggal</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($topPerformers as $index => $performer)
-                                            <tr>
-                                                <td>
-                                                    @if($index == 0)
-                                                        <i class="fa fa-trophy text-warning"></i> 1
-                                                    @elseif($index == 1)
-                                                        <i class="fa fa-medal text-muted"></i> 2
-                                                    @elseif($index == 2)
-                                                        <i class="fa fa-award text-warning"></i> 3
-                                                    @else
-                                                        {{ $index + 1 }}
-                                                    @endif
-                                                </td>
-                                                <td>{{ $performer['nama'] }}</td>
-                                                <td>
-                                                    <span class="badge badge-{{ $performer['skor'] >= 80 ? 'success' : ($performer['skor'] >= 60 ? 'warning' : 'danger') }}">
-                                                        {{ $performer['skor'] }}
-                                                    </span>
-                                                </td>
-                                                <td>{{ $performer['tanggal'] ? \Carbon\Carbon::parse($performer['tanggal'])->format('d/m/Y') : '-' }}</td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        @else
-                            <div class="text-center text-muted">
-                                <i class="fa fa-info-circle fa-2x"></i>
-                                <p>Belum ada data performa peserta</p>
-                            </div>
-                        @endif
-                    </div>
+            {{-- Analisis Subscription --}}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingSubscription">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseSubscription" aria-expanded="false" aria-controls="collapseSubscription" class="accordion-toggle collapsed">
+                            <i class="fa fa-shopping-cart text-success"></i> <strong>Analisis Langganan</strong>
+                            <i class="fa fa-chevron-down pull-right accordion-icon"></i>
+                        </a>
+                    </h4>
                 </div>
-            </div>
-        </div>
-
-        {{-- Analisis Subscription --}}
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-shopping-cart"></i> Analisis Langganan (7 Hari Terakhir)</h5>
-                    </div>
-                    <div class="ibox-content">
+                <div id="collapseSubscription" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSubscription">
+                    <div class="panel-body">
                         @if($subscriptionAnalysis->count() > 0)
                             <div class="row">
                                 @foreach($subscriptionAnalysis as $packageType => $data)
@@ -672,143 +793,167 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        {{-- Tren Pelanggan Baru --}}
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-line-chart"></i> Tren Pelanggan Baru (7 Hari Terakhir)</h5>
-                    </div>
-                    <div class="ibox-content">
-                        <div class="flot-chart">
-                            <div class="flot-chart-content" id="tren-pelanggan-baru-chart"></div>
+            {{-- Tren Pelanggan Baru --}}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTrenPelanggan">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseTrenPelanggan" aria-expanded="false" aria-controls="collapseTrenPelanggan" class="accordion-toggle collapsed">
+                            <i class="fa fa-line-chart text-info"></i> <strong>Tren Pelanggan Baru</strong>
+                            <i class="fa fa-chevron-down pull-right accordion-icon"></i>
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTrenPelanggan" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTrenPelanggan">
+                    <div class="panel-body">
+                        <div class="ibox">
+                            <div class="ibox-title">
+                                <h5><i class="fa fa-line-chart"></i> Tren Pelanggan Baru (7 Hari Terakhir)</h5>
+                            </div>
+                            <div class="ibox-content">
+                                <div class="flot-chart">
+                                    <div class="flot-chart-content" id="tren-pelanggan-baru-chart"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        {{-- Recent Activity --}}
-        <div class="row">
-            {{-- Pelanggan Baru Hari Ini --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-user-plus"></i> Pelanggan Baru Hari Ini</h5>
-                    </div>
-                    <div class="ibox-content">
-                        @if($pelangganBaruHariIni->count() > 0)
-                            <div class="feed-activity-list">
-                                @foreach($pelangganBaruHariIni->take(5) as $user)
-                                    <div class="feed-element">
-                                        <div class="media-body">
-                                            <strong>{{ $user->name }}</strong><br>
-                                            <small class="text-muted">
-                                                <i class="fa fa-envelope"></i> {{ $user->email }}<br>
-                                                <i class="fa fa-clock-o"></i> {{ $user->created_at->diffForHumans() }}
-                                            </small>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center text-muted">
-                                <i class="fa fa-info-circle"></i>
-                                <p>Belum ada pelanggan baru hari ini</p>
-                            </div>
-                        @endif
-                    </div>
+            {{-- Recent Activity --}}
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingRecent">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#dashboardAccordion" href="#collapseRecent" aria-expanded="false" aria-controls="collapseRecent" class="accordion-toggle collapsed">
+                            <i class="fa fa-clock-o text-warning"></i> <strong>Recent Activity</strong>
+                            <i class="fa fa-chevron-down pull-right accordion-icon"></i>
+                        </a>
+                    </h4>
                 </div>
-            </div>
-
-            {{-- Tryout Terbaru --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-clock-o"></i> Tryout Terbaru</h5>
-                    </div>
-                    <div class="ibox-content">
-                        @if($tryoutTerbaru->count() > 0)
-                            <div class="feed-activity-list">
-                                @foreach($tryoutTerbaru as $tryout)
-                                    <div class="feed-element">
-                                        <div class="media-body">
-                                            <strong>{{ $tryout->judul }}</strong><br>
-                                            <small class="text-muted">
-                                                <i class="fa fa-clock-o"></i> {{ $tryout->created_at->diffForHumans() }}
-                                            </small>
-                                        </div>
+                <div id="collapseRecent" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingRecent">
+                    <div class="panel-body">
+                        <div class="row">
+                            {{-- Pelanggan Baru Hari Ini --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5><i class="fa fa-user-plus"></i> Pelanggan Baru Hari Ini</h5>
                                     </div>
-                                @endforeach
-                            </div>
-                        @else
-                            <div class="text-center text-muted">
-                                <i class="fa fa-info-circle"></i>
-                                <p>Tidak ada tryout baru</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            {{-- Soal Terbaru --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-question-circle"></i> Soal Terbaru</h5>
-                    </div>
-                    <div class="ibox-content">
-                        @if($soalTerbaru->count() > 0)
-                            <div class="feed-activity-list">
-                                @foreach($soalTerbaru as $soal)
-                                    <div class="feed-element">
-                                        <div class="media-body">
-                                            <strong>{{ $soal->kategori->nama ?? 'Kategori Tidak Ditemukan' }}</strong><br>
-                                            <small class="text-muted">
-                                                <i class="fa fa-clock-o"></i> {{ $soal->created_at->diffForHumans() }}
-                                            </small>
-                                        </div>
+                                    <div class="ibox-content">
+                                        @if($pelangganBaruHariIni->count() > 0)
+                                            <div class="feed-activity-list">
+                                                @foreach($pelangganBaruHariIni->take(5) as $user)
+                                                    <div class="feed-element">
+                                                        <div class="media-body">
+                                                            <strong>{{ $user->name }}</strong><br>
+                                                            <small class="text-muted">
+                                                                <i class="fa fa-envelope"></i> {{ $user->email }}<br>
+                                                                <i class="fa fa-clock-o"></i> {{ $user->created_at->diffForHumans() }}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-center text-muted">
+                                                <i class="fa fa-info-circle"></i>
+                                                <p>Belum ada pelanggan baru hari ini</p>
+                                            </div>
+                                        @endif
                                     </div>
-                                @endforeach
+                                </div>
                             </div>
-                        @else
-                            <div class="text-center text-muted">
-                                <i class="fa fa-info-circle"></i>
-                                <p>Tidak ada soal baru</p>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
 
-            {{-- Peserta Selesai Hari Ini --}}
-            <div class="col-lg-3">
-                <div class="ibox">
-                    <div class="ibox-title">
-                        <h5><i class="fa fa-check-circle"></i> Selesai Hari Ini</h5>
-                    </div>
-                    <div class="ibox-content">
-                        @if($pesertaSelesaiHariIni->count() > 0)
-                            <div class="feed-activity-list">
-                                @foreach($pesertaSelesaiHariIni as $peserta)
-                                    <div class="feed-element">
-                                        <div class="media-body">
-                                            <strong>{{ $peserta->user->name }}</strong><br>
-                                            <small class="text-muted">
-                                                <i class="fa fa-clock-o"></i> {{ $peserta->finished_at->diffForHumans() }}
-                                            </small>
-                                        </div>
+                            {{-- Tryout Terbaru --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5><i class="fa fa-clock-o"></i> Tryout Terbaru</h5>
                                     </div>
-                                @endforeach
+                                    <div class="ibox-content">
+                                        @if($tryoutTerbaru->count() > 0)
+                                            <div class="feed-activity-list">
+                                                @foreach($tryoutTerbaru as $tryout)
+                                                    <div class="feed-element">
+                                                        <div class="media-body">
+                                                            <strong>{{ $tryout->judul }}</strong><br>
+                                                            <small class="text-muted">
+                                                                <i class="fa fa-clock-o"></i> {{ $tryout->created_at->diffForHumans() }}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-center text-muted">
+                                                <i class="fa fa-info-circle"></i>
+                                                <p>Tidak ada tryout baru</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                        @else
-                            <div class="text-center text-muted">
-                                <i class="fa fa-info-circle"></i>
-                                <p>Belum ada yang selesai hari ini</p>
+
+                            {{-- Soal Terbaru --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5><i class="fa fa-question-circle"></i> Soal Terbaru</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        @if($soalTerbaru->count() > 0)
+                                            <div class="feed-activity-list">
+                                                @foreach($soalTerbaru as $soal)
+                                                    <div class="feed-element">
+                                                        <div class="media-body">
+                                                            <strong>{{ $soal->kategori->nama ?? 'Kategori Tidak Ditemukan' }}</strong><br>
+                                                            <small class="text-muted">
+                                                                <i class="fa fa-clock-o"></i> {{ $soal->created_at->diffForHumans() }}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-center text-muted">
+                                                <i class="fa fa-info-circle"></i>
+                                                <p>Tidak ada soal baru</p>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Peserta Selesai Hari Ini --}}
+                            <div class="col-lg-3">
+                                <div class="ibox">
+                                    <div class="ibox-title">
+                                        <h5><i class="fa fa-check-circle"></i> Selesai Hari Ini</h5>
+                                    </div>
+                                    <div class="ibox-content">
+                                        @if($pesertaSelesaiHariIni->count() > 0)
+                                            <div class="feed-activity-list">
+                                                @foreach($pesertaSelesaiHariIni as $peserta)
+                                                    <div class="feed-element">
+                                                        <div class="media-body">
+                                                            <strong>{{ $peserta->user->name }}</strong><br>
+                                                            <small class="text-muted">
+                                                                <i class="fa fa-clock-o"></i> {{ $peserta->finished_at->diffForHumans() }}
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        @else
+                                            <div class="text-center text-muted">
+                                                <i class="fa fa-info-circle"></i>
+                                                <p>Belum ada yang selesai hari ini</p>
+                                        </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        @endif
                     </div>
                 </div>
             </div>
@@ -1079,6 +1224,55 @@
                 $.plot($("#distribusi-skor-chart"), barDataset, barOptions);
                 $.plot($("#tren-pelanggan-baru-chart"), trenPelangganDataset, trenPelangganOptions);
             });
+
+            // === ACCORDION FUNCTIONALITY ===
+            // Handle accordion toggle animations
+            $('#dashboardAccordion').on('show.bs.collapse', function (e) {
+                $(e.target).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-up').removeClass('fa-chevron-down');
+            });
+
+            $('#dashboardAccordion').on('hide.bs.collapse', function (e) {
+                $(e.target).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-down').removeClass('fa-chevron-up');
+            });
+
+            // Lazy load charts when accordion sections are opened
+            $('#collapseCharts').on('shown.bs.collapse', function () {
+                // Redraw charts when charts section is opened
+                setTimeout(function() {
+                    $.plot($("#tren-partisipasi-chart"), trenDataset, trenOptions);
+                    $.plot($("#distribusi-skor-chart"), barDataset, barOptions);
+                }, 100);
+            });
+
+            $('#collapseTrenPelanggan').on('shown.bs.collapse', function () {
+                // Redraw tren pelanggan chart when opened
+                setTimeout(function() {
+                    $.plot($("#tren-pelanggan-baru-chart"), trenPelangganDataset, trenPelangganOptions);
+                }, 100);
+            });
+
+            // Remember accordion state (optional)
+            // Uncomment the lines below if you want to remember which sections were open
+            /*
+            // Save accordion state to localStorage
+            $('#dashboardAccordion').on('hidden.bs.collapse shown.bs.collapse', function () {
+                var activePanels = [];
+                $('#dashboardAccordion .panel-collapse.in').each(function() {
+                    activePanels.push($(this).attr('id'));
+                });
+                localStorage.setItem('dashboardAccordionState', JSON.stringify(activePanels));
+            });
+
+            // Restore accordion state on page load
+            var savedState = localStorage.getItem('dashboardAccordionState');
+            if (savedState) {
+                var activePanels = JSON.parse(savedState);
+                activePanels.forEach(function(panelId) {
+                    $('#' + panelId).addClass('in');
+                    $('#' + panelId).prev('.panel-heading').find('.accordion-icon').addClass('fa-chevron-up').removeClass('fa-chevron-down');
+                });
+            }
+            */
         });
     </script>
 @endpush
