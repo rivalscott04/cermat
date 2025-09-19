@@ -18,7 +18,7 @@ class TryoutController extends Controller
 {
     public function index()
     {
-        $tryouts = Tryout::active()->with('blueprints')->paginate(20);
+        $tryouts = Tryout::with('blueprints')->paginate(20);
         return view('admin.tryout.index', compact('tryouts'));
     }
     public function create()

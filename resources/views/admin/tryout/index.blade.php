@@ -101,15 +101,26 @@
                                     <td>
                                         <div class="btn-group" role="group">
                                             <a href="{{ route('admin.tryout.show', $tryout) }}" 
-                                               class="btn btn-sm btn-info">
+                                               class="btn btn-sm btn-info" title="Lihat Detail">
                                                 <i class="fa fa-eye"></i>
                                             </a>
                                             <a href="{{ route('admin.tryout.edit', $tryout) }}" 
-                                               class="btn btn-sm btn-warning">
+                                               class="btn btn-sm btn-warning" title="Edit">
                                                 <i class="fa fa-edit"></i>
                                             </a>
+                                            @if ($tryout->is_active)
+                                                <button type="button" class="btn btn-sm btn-secondary" 
+                                                        onclick="toggleStatus({{ $tryout->id }}, false)" title="Nonaktifkan">
+                                                    <i class="fa fa-pause"></i>
+                                                </button>
+                                            @else
+                                                <button type="button" class="btn btn-sm btn-success" 
+                                                        onclick="toggleStatus({{ $tryout->id }}, true)" title="Aktifkan">
+                                                    <i class="fa fa-play"></i>
+                                                </button>
+                                            @endif
                                             <button type="button" class="btn btn-sm btn-danger" 
-                                                    onclick="showDeleteModal({{ $tryout->id }}, '{{ $tryout->judul }}')">
+                                                    onclick="showDeleteModal({{ $tryout->id }}, '{{ $tryout->judul }}')" title="Hapus">
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         </div>
@@ -172,6 +183,38 @@
         </div>
     </div>
 </div>
+
+<!-- Modal Toggle Status -->
+<div class="modal fade" id="toggleStatusModal" tabindex="-1" role="dialog" aria-labelledby="toggleStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="toggleStatusModalLabel">
+                    <i class="fa fa-toggle-on"></i> Konfirmasi Ubah Status
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fa fa-question-circle fa-3x text-primary"></i>
+                </div>
+                <p class="text-center" id="toggleStatusMessage">
+                    <!-- Message will be inserted here -->
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Batal
+                </button>
+                <button type="button" class="btn btn-primary" id="confirmToggleStatus">
+                    <i class="fa fa-check"></i> Konfirmasi
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
@@ -180,6 +223,44 @@ function showDeleteModal(tryoutId, tryoutTitle) {
     $('#tryoutTitle').text(tryoutTitle);
     $('#deleteForm').attr('action', `/admin/tryout/${tryoutId}`);
     $('#deleteModal').modal('show');
+}
+
+function toggleStatus(tryoutId, newStatus) {
+    const message = newStatus ?
+        'Apakah Anda yakin ingin mengaktifkan tryout ini?' :
+        'Apakah Anda yakin ingin menonaktifkan tryout ini?';
+
+    $('#toggleStatusMessage').text(message);
+
+    // Hapus event listener sebelumnya untuk menghindari duplikasi
+    $('#confirmToggleStatus').off('click');
+
+    $('#toggleStatusModal').modal('show');
+
+    $('#confirmToggleStatus').on('click', function() {
+        const $button = $(this);
+        $button.prop('disabled', true).text('Memproses...');
+
+        $.ajax({
+            url: `/admin/tryout/${tryoutId}/toggle-status`,
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                is_active: newStatus
+            },
+            success: function(response) {
+                $('#toggleStatusModal').modal('hide');
+                // Tambahkan delay kecil sebelum reload
+                setTimeout(function() {
+                    location.reload();
+                }, 300);
+            },
+            error: function(xhr) {
+                $button.prop('disabled', false).text('Konfirmasi');
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            }
+        });
+    });
 }
 </script>
 @endpush 
