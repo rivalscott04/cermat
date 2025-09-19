@@ -21,8 +21,8 @@ $(document).ready(function() {
         // Add custom class for styling
         $accordion.addClass('dashboard-accordion');
         
-        // Handle accordion toggle clicks
-        $accordion.find('.panel-title a').on('click', function(e) {
+        // Handle accordion toggle clicks using event delegation
+        $accordion.on('click', '.panel-title a', function(e) {
             e.preventDefault();
             e.stopPropagation();
             handleAccordionToggle($(this));
@@ -49,12 +49,13 @@ $(document).ready(function() {
         var $target = $(target);
         var isExpanded = $link.attr('aria-expanded') === 'true';
         
+        // Force toggle regardless of current state
         if (isExpanded) {
             // Close the panel
-            $target.collapse('hide');
+            $target.removeClass('in').collapse('hide');
         } else {
             // Open the panel (independent behavior)
-            $target.collapse('show');
+            $target.addClass('in').collapse('show');
         }
     }
     

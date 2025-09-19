@@ -132,7 +132,7 @@ class KecermatanController extends Controller
             'jawaban' => 'required|array|size:9',
             'jawaban.*' => 'required|string|size:5',
             'waktu_pengerjaan' => 'required|integer',
-            'jumlah_benar' => 'required|integer|min:0|max:9',
+            'skor_benar' => 'required|integer|min:0|max:9',
         ]);
 
         if ($validator->fails()) {
@@ -147,9 +147,10 @@ class KecermatanController extends Controller
             $hasilTes = HasilTes::create([
                 'user_id' => $request->user_id,
                 'jenis_tes' => $request->jenis_tes,
-                'jawaban' => json_encode($request->jawaban),
-                'waktu_pengerjaan' => $request->waktu_pengerjaan,
-                'jumlah_benar' => $request->jumlah_benar,
+                'detail_jawaban' => json_encode($request->jawaban),
+                'waktu_total' => $request->waktu_pengerjaan,
+                'skor_benar' => $request->skor_benar,
+                'skor_salah' => 9 - $request->skor_benar,
                 'tanggal_tes' => now()
             ]);
 
@@ -188,9 +189,9 @@ class KecermatanController extends Controller
             ->selectRaw('
                 jenis_tes,
                 COUNT(*) as total_tes,
-                AVG(jumlah_benar) as rata_rata_benar,
-                AVG(waktu_pengerjaan) as rata_rata_waktu,
-                MAX(jumlah_benar) as nilai_tertinggi
+                AVG(skor_benar) as rata_rata_benar,
+                AVG(waktu_total) as rata_rata_waktu,
+                MAX(skor_benar) as nilai_tertinggi
             ')
             ->groupBy('jenis_tes')
             ->get();
