@@ -99,7 +99,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <div class="btn-group" role="group">
+                                        <div class="d-flex gap-1" role="group">
                                             <a href="{{ route('admin.tryout.show', $tryout) }}" 
                                                class="btn btn-sm btn-info" title="Lihat Detail">
                                                 <i class="fa fa-eye"></i>
@@ -270,7 +270,6 @@ function toggleStatus(tryoutId, newStatus) {
                     errorMessage = 'Terjadi kesalahan server. Silakan hubungi administrator.';
                 }
                 
-                console.error('Toggle Status Error:', xhr);
                 alert(errorMessage);
             }
         });

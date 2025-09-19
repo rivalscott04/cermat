@@ -348,9 +348,16 @@ class TryoutController extends Controller
     {
         $user = auth()->user();
 
+        // Check if tryout is active
+        if (!$tryout->is_active) {
+            return redirect()->route('user.tryout.index')
+                ->with('error', 'Tryout "'. $tryout->judul .'" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
+        }
+
         // Check if user can access this tryout
         if (!$this->canAccessTryout($user, $tryout)) {
-            return redirect()->route('user.tryout.index')->with('error', 'Anda tidak memiliki akses ke tryout ini');
+            return redirect()->route('user.tryout.index')
+                ->with('error', 'Anda tidak memiliki akses ke tryout ini');
         }
 
         // Check if this is a restart request
@@ -428,6 +435,13 @@ class TryoutController extends Controller
     public function work(Tryout $tryout, Request $request)
     {
         $user = auth()->user();
+        
+        // Check if tryout is active
+        if (!$tryout->is_active) {
+            return redirect()->route('user.tryout.index')
+                ->with('error', 'Tryout "'. $tryout->judul .'" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
+        }
+
         $questionNumber = $request->get('question', 1);
         $kategoriFilterId = $request->get('kategori_id');
 
@@ -439,7 +453,7 @@ class TryoutController extends Controller
 
         if (!$session) {
             return redirect()->route('user.tryout.start', $tryout)
-                ->with('error', 'Session tidak ditemukan. Silakan mulai tryout kembali.');
+                ->with('error', 'Sesi tryout tidak ditemukan. Silakan mulai tryout kembali.');
         }
 
         // Get user questions
@@ -557,6 +571,14 @@ class TryoutController extends Controller
 
         $user = auth()->user();
 
+        // Check if tryout is active
+        if (!$tryout->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tryout sedang tidak tersedia saat ini. Jawaban tidak dapat disimpan.'
+            ]);
+        }
+
         // Check if session is still active
         $session = UserTryoutSession::where('user_id', $user->id)
             ->where('tryout_id', $tryout->id)
@@ -566,7 +588,7 @@ class TryoutController extends Controller
         if (!$session) {
             return response()->json([
                 'success' => false,
-                'message' => 'Session tidak aktif'
+                'message' => 'Sesi tryout tidak aktif. Silakan refresh halaman dan coba lagi.'
             ]);
         }
 
@@ -899,6 +921,12 @@ class TryoutController extends Controller
     public function finish(Tryout $tryout)
     {
         $user = auth()->user();
+        
+        // Check if tryout is active
+        if (!$tryout->is_active) {
+            return redirect()->route('user.tryout.index')
+                ->with('error', 'Tryout "'. $tryout->judul .'" sedang tidak tersedia saat ini.');
+        }
 
         // Update session status
         $session = UserTryoutSession::where('user_id', $user->id)
@@ -1093,6 +1121,12 @@ class TryoutController extends Controller
 
     public function restart(Tryout $tryout)
     {
+        // Check if tryout is active first
+        if (!$tryout->is_active) {
+            return redirect()->route('user.tryout.index')
+                ->with('error', 'Tryout "'. $tryout->judul .'" sedang tidak tersedia saat ini. Tidak dapat memulai ulang.');
+        }
+        
         return $this->start($tryout, request()->merge(['restart' => true]));
     }
 
@@ -1375,14 +1409,6 @@ class TryoutController extends Controller
     public function toggleStatus(Request $request, Tryout $tryout)
     {
         try {
-            // Debug logging
-            \Log::info('Toggle Status Request', [
-                'tryout_id' => $tryout->id,
-                'tryout_title' => $tryout->judul,
-                'request_data' => $request->all(),
-                'current_status' => $tryout->is_active
-            ]);
-
             $request->validate([
                 'is_active' => 'required'
             ]);
@@ -1390,10 +1416,9 @@ class TryoutController extends Controller
             $isActive = filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
             
             if ($isActive === null) {
-                \Log::error('Invalid is_active value', ['value' => $request->is_active]);
                 return response()->json([
                     'success' => false,
-                    'message' => 'Nilai is_active tidak valid'
+                    'message' => 'Status yang dipilih tidak valid. Silakan coba lagi.'
                 ], 422);
             }
 
@@ -1401,28 +1426,24 @@ class TryoutController extends Controller
                 'is_active' => $isActive
             ]);
 
-            $status = $tryout->is_active ? 'aktif' : 'nonaktif';
-            
-            \Log::info('Toggle Status Success', [
-                'tryout_id' => $tryout->id,
-                'new_status' => $tryout->is_active
-            ]);
+            $statusText = $tryout->is_active ? 'diaktifkan' : 'dinonaktifkan';
             
             return response()->json([
                 'success' => true,
-                'message' => "Tryout berhasil di{$status}kan",
+                'message' => "Tryout \"{$tryout->judul}\" berhasil {$statusText}",
                 'is_active' => $tryout->is_active
             ]);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Data yang dikirim tidak valid. Silakan coba lagi.'
+            ], 422);
         } catch (\Exception $e) {
-            \Log::error('Toggle Status Error', [
-                'tryout_id' => $tryout->id ?? 'unknown',
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
-            ]);
+            \Log::error('Toggle Status Error: ' . $e->getMessage());
             
             return response()->json([
                 'success' => false,
-                'message' => 'Terjadi kesalahan: ' . $e->getMessage()
+                'message' => 'Terjadi kesalahan saat mengubah status tryout. Silakan coba lagi atau hubungi administrator jika masalah berlanjut.'
             ], 500);
         }
     }
