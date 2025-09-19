@@ -162,6 +162,69 @@ class DashboardController extends Controller
             ->limit(5)
             ->get();
 
+        // === PELANGGAN BARU DAN SUBSCRIPTION ANALYSIS ===
+        
+        // Pelanggan baru hari ini
+        $pelangganBaruHariIni = User::where('role', 'user')
+            ->whereDate('created_at', Carbon::today())
+            ->with(['subscriptions' => function($query) {
+                $query->latest();
+            }])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        // Pelanggan baru minggu ini
+        $pelangganBaruMingguIni = User::where('role', 'user')
+            ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->count();
+
+        // Pelanggan baru bulan ini
+        $pelangganBaruBulanIni = User::where('role', 'user')
+            ->whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
+
+        // Analisis subscription yang dibeli pelanggan baru (7 hari terakhir)
+        $subscriptionAnalysis = User::where('role', 'user')
+            ->where('created_at', '>=', Carbon::now()->subDays(7))
+            ->whereHas('subscriptions')
+            ->with(['subscriptions' => function($query) {
+                $query->latest();
+            }])
+            ->get()
+            ->map(function($user) {
+                $latestSubscription = $user->subscriptions->first();
+                return [
+                    'user_name' => $user->name,
+                    'user_email' => $user->email,
+                    'created_at' => $user->created_at,
+                    'package_type' => $latestSubscription ? $latestSubscription->package_type : 'free',
+                    'amount_paid' => $latestSubscription ? $latestSubscription->amount_paid : 0,
+                    'payment_status' => $latestSubscription ? $latestSubscription->payment_status : 'free'
+                ];
+            })
+            ->groupBy('package_type')
+            ->map(function($group) {
+                return [
+                    'count' => $group->count(),
+                    'total_revenue' => $group->sum('amount_paid'),
+                    'users' => $group->take(5)->values()
+                ];
+            });
+
+        // Tren pelanggan baru 7 hari terakhir
+        $trenPelangganBaru = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i);
+            $count = User::where('role', 'user')
+                ->whereDate('created_at', $date->toDateString())
+                ->count();
+            $trenPelangganBaru[] = [
+                'date' => $date->format('d/m'),
+                'count' => $count
+            ];
+        }
+
         return view('admin.dashboard', compact(
             // Statistik utama
             'totalSoal',
@@ -184,7 +247,14 @@ class DashboardController extends Controller
             // Recent activity
             'tryoutTerbaru',
             'soalTerbaru',
-            'pesertaSelesaiHariIni'
+            'pesertaSelesaiHariIni',
+            
+            // Pelanggan baru dan subscription
+            'pelangganBaruHariIni',
+            'pelangganBaruMingguIni',
+            'pelangganBaruBulanIni',
+            'subscriptionAnalysis',
+            'trenPelangganBaru'
         ));
     }
 

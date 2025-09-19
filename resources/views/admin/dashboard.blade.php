@@ -171,6 +171,95 @@
     color: #6c757d;
     font-size: 11px;
 }
+
+/* Pelanggan Baru Styles */
+.stat-item {
+    padding: 10px 0;
+}
+
+.stat-item h3 {
+    margin: 0;
+    font-weight: bold;
+}
+
+/* Subscription Analysis Styles */
+.subscription-card {
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.subscription-card:hover {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.subscription-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.package-name {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+}
+
+.package-stats {
+    display: flex;
+    gap: 5px;
+}
+
+.package-stats .badge {
+    font-size: 10px;
+    padding: 3px 8px;
+}
+
+.subscription-users {
+    margin-top: 10px;
+}
+
+.user-item {
+    padding: 5px 0;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.user-item:last-child {
+    border-bottom: none;
+}
+
+.user-item strong {
+    display: block;
+    font-size: 12px;
+    color: #333;
+}
+
+.user-item small {
+    font-size: 10px;
+    color: #6c757d;
+}
+
+/* Responsive adjustments for new sections */
+@media (max-width: 768px) {
+    .subscription-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .package-stats {
+        align-self: flex-end;
+    }
+    
+    .stat-item h3 {
+        font-size: 1.5rem;
+    }
+}
 </style>
 @endpush
 
@@ -426,6 +515,148 @@
                                 <p>Belum ada data performa peserta</p>
                             </div>
                         @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Pelanggan Baru dan Subscription Analysis --}}
+        <div class="row">
+            {{-- Statistik Pelanggan Baru --}}
+            <div class="col-lg-4">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-user-plus"></i> Pelanggan Baru</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="row text-center">
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="text-primary">{{ $pelangganBaruHariIni->count() }}</h3>
+                                    <small>Hari Ini</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="text-info">{{ $pelangganBaruMingguIni }}</h3>
+                                    <small>Minggu Ini</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="stat-item">
+                                    <h3 class="text-success">{{ $pelangganBaruBulanIni }}</h3>
+                                    <small>Bulan Ini</small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        @if($pelangganBaruHariIni->count() > 0)
+                            <hr>
+                            <h6><i class="fa fa-users"></i> Pelanggan Baru Hari Ini:</h6>
+                            <div class="feed-activity-list">
+                                @foreach($pelangganBaruHariIni->take(5) as $user)
+                                    <div class="feed-element">
+                                        <div class="media-body">
+                                            <strong>{{ $user->name }}</strong><br>
+                                            <small class="text-muted">
+                                                <i class="fa fa-envelope"></i> {{ $user->email }}<br>
+                                                <i class="fa fa-clock-o"></i> {{ $user->created_at->diffForHumans() }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="fa fa-info-circle"></i>
+                                <p>Belum ada pelanggan baru hari ini</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            {{-- Analisis Subscription --}}
+            <div class="col-lg-8">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-shopping-cart"></i> Analisis Langganan (7 Hari Terakhir)</h5>
+                    </div>
+                    <div class="ibox-content">
+                        @if($subscriptionAnalysis->count() > 0)
+                            <div class="row">
+                                @foreach($subscriptionAnalysis as $packageType => $data)
+                                    <div class="col-lg-6 col-md-6 mb-3">
+                                        <div class="subscription-card">
+                                            <div class="subscription-header">
+                                                <h6 class="package-name">
+                                                    @switch($packageType)
+                                                        @case('free')
+                                                            <i class="fa fa-gift text-muted"></i> Paket Gratis
+                                                            @break
+                                                        @case('kecerdasan')
+                                                            <i class="fa fa-brain text-primary"></i> Paket Kecerdasan
+                                                            @break
+                                                        @case('kepribadian')
+                                                            <i class="fa fa-user text-info"></i> Paket Kepribadian
+                                                            @break
+                                                        @case('lengkap')
+                                                            <i class="fa fa-star text-warning"></i> Paket Lengkap
+                                                            @break
+                                                        @default
+                                                            <i class="fa fa-box text-secondary"></i> {{ ucfirst($packageType) }}
+                                                    @endswitch
+                                                </h6>
+                                                <div class="package-stats">
+                                                    <span class="badge badge-primary">{{ $data['count'] }} pembeli</span>
+                                                    @if($data['total_revenue'] > 0)
+                                                        <span class="badge badge-success">Rp {{ number_format($data['total_revenue'], 0, ',', '.') }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            
+                                            @if($data['users']->count() > 0)
+                                                <div class="subscription-users">
+                                                    <small class="text-muted">Pembeli terbaru:</small>
+                                                    @foreach($data['users']->take(3) as $user)
+                                                        <div class="user-item">
+                                                            <strong>{{ $user['user_name'] }}</strong>
+                                                            <small class="text-muted">
+                                                                {{ \Carbon\Carbon::parse($user['created_at'])->diffForHumans() }}
+                                                                @if($user['amount_paid'] > 0)
+                                                                    - Rp {{ number_format($user['amount_paid'], 0, ',', '.') }}
+                                                                @endif
+                                                            </small>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="fa fa-info-circle fa-2x"></i>
+                                <p>Belum ada data subscription dalam 7 hari terakhir</p>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Tren Pelanggan Baru --}}
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="ibox">
+                    <div class="ibox-title">
+                        <h5><i class="fa fa-line-chart"></i> Tren Pelanggan Baru (7 Hari Terakhir)</h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="flot-chart">
+                            <div class="flot-chart-content" id="tren-pelanggan-baru-chart"></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -714,10 +945,80 @@
 
             $.plot($("#distribusi-skor-chart"), barDataset, barOptions);
 
+            // === TREN PELANGGAN BARU CHART ===
+            var trenPelangganData = @json($trenPelangganBaru);
+            
+            var trenPelangganDataset = [{
+                label: "Pelanggan Baru",
+                data: trenPelangganData.map(function(item, index) {
+                    return [index, item.count];
+                }),
+                color: "#17a2b8",
+                lines: {
+                    lineWidth: 3,
+                    show: true,
+                    fill: true,
+                    fillColor: {
+                        colors: [{
+                            opacity: 0.1
+                        }, {
+                            opacity: 0.3
+                        }]
+                    }
+                },
+                points: {
+                    show: true,
+                    radius: 4,
+                    fillColor: "#17a2b8"
+                }
+            }];
+
+            var trenPelangganOptions = {
+                xaxis: {
+                    ticks: trenPelangganData.map(function(item, index) {
+                        return [index, item.date];
+                    }),
+                    tickLength: 0,
+                    axisLabel: "Tanggal",
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: "Arial",
+                    axisLabelPadding: 10,
+                    color: "#d5d5d5"
+                },
+                yaxis: {
+                    position: "left",
+                    color: "#d5d5d5",
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: "Arial",
+                    axisLabelPadding: 3,
+                    axisLabel: "Jumlah Pelanggan",
+                    min: 0
+                },
+                legend: {
+                    noColumns: 1,
+                    labelBoxBorderColor: "#000000",
+                    position: "nw"
+                },
+                grid: {
+                    hoverable: true,
+                    borderWidth: 0,
+                    backgroundColor: "#ffffff"
+                },
+                tooltip: {
+                    show: true,
+                    content: "Tanggal: %x<br/>Pelanggan: %y"
+                }
+            };
+
+            $.plot($("#tren-pelanggan-baru-chart"), trenPelangganDataset, trenPelangganOptions);
+
             // === RESPONSIVE CHARTS ===
             $(window).resize(function() {
                 $.plot($("#tren-partisipasi-chart"), trenDataset, trenOptions);
                 $.plot($("#distribusi-skor-chart"), barDataset, barOptions);
+                $.plot($("#tren-pelanggan-baru-chart"), trenPelangganDataset, trenPelangganOptions);
             });
         });
     </script>
