@@ -1447,4 +1447,27 @@ class TryoutController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Show paket lengkap completion status and final score
+     */
+    public function paketLengkapStatus()
+    {
+        $user = auth()->user();
+        
+        if ($user->paket_akses !== 'lengkap') {
+            return redirect()->route('user.tryout.index')
+                ->with('error', 'Anda tidak memiliki paket lengkap.');
+        }
+
+        $service = app(\App\Services\PaketLengkapService::class);
+        $status = $service->getCompletionStatus($user);
+        $summary = $service->getDashboardSummary($user);
+
+        return view('user.tryout.paket-lengkap-status', [
+            'user' => $user,
+            'status' => $status,
+            'summary' => $summary
+        ]);
+    }
 }

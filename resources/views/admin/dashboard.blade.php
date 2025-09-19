@@ -1,5 +1,179 @@
 @extends('layouts.app')
 
+@push('styles')
+<style>
+.kategori-performance-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.kategori-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.kategori-item:last-child {
+    border-bottom: none;
+}
+
+.kategori-info {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.kategori-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.kategori-details {
+    flex: 1;
+}
+
+.kategori-details strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #333;
+    font-size: 14px;
+}
+
+.kategori-stats {
+    display: flex;
+    gap: 5px;
+}
+
+.kategori-stats .badge {
+    font-size: 10px;
+    padding: 2px 6px;
+}
+
+.kategori-score {
+    margin-left: 15px;
+}
+
+.score-circle {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #e9ecef;
+    color: #495057;
+    font-weight: bold;
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.score-circle::before {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    right: 3px;
+    bottom: 3px;
+    border-radius: 50%;
+    background: white;
+    z-index: 1;
+}
+
+.score-text {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    line-height: 1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .kategori-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .kategori-score {
+        margin-left: 0;
+        align-self: flex-end;
+    }
+    
+    .score-circle {
+        width: 40px;
+        height: 40px;
+        font-size: 11px;
+    }
+}
+
+/* Chart improvements */
+.flot-chart {
+    height: 300px;
+}
+
+.flot-chart-content {
+    width: 100%;
+    height: 100%;
+}
+
+/* Top performers table improvements */
+.table th {
+    background-color: #f8f9fa;
+    border-top: none;
+    font-weight: 600;
+    color: #495057;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge-success {
+    background-color: #28a745;
+}
+
+.badge-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-danger {
+    background-color: #dc3545;
+}
+
+/* Feed activity improvements */
+.feed-activity-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.feed-element {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.feed-element:last-child {
+    border-bottom: none;
+}
+
+.media-body strong {
+    color: #333;
+    font-size: 13px;
+}
+
+.media-body small {
+    color: #6c757d;
+    font-size: 11px;
+}
+</style>
+@endpush
+
 @section('content')
     <div class="wrapper wrapper-content">
         {{-- Page Header --}}
@@ -150,12 +324,37 @@
             <div class="col-lg-4">
                 <div class="ibox">
                     <div class="ibox-title">
-                        <h5><i class="fa fa-pie-chart"></i> Performa Kategori</h5>
+                        <h5><i class="fa fa-bar-chart"></i> Performa Kategori</h5>
                     </div>
                     <div class="ibox-content">
-                        <div class="flot-chart">
-                            <div class="flot-chart-content" id="performa-kategori-chart"></div>
-                        </div>
+                        @if($kategoriPerformansi->count() > 0)
+                            <div class="kategori-performance-list">
+                                @foreach($kategoriPerformansi as $kategori)
+                                    <div class="kategori-item">
+                                        <div class="kategori-info">
+                                            <div class="kategori-color" style="background-color: {{ $kategori['warna'] }}"></div>
+                                            <div class="kategori-details">
+                                                <strong>{{ $kategori['nama'] }}</strong>
+                                                <div class="kategori-stats">
+                                                    <span class="badge badge-primary">{{ $kategori['total_soal'] }} soal</span>
+                                                    <span class="badge badge-info">{{ $kategori['total_peserta'] }} peserta</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="kategori-score">
+                                            <div class="score-circle" data-score="{{ $kategori['rata_skor'] }}">
+                                                <span class="score-text">{{ $kategori['rata_skor'] }}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center text-muted">
+                                <i class="fa fa-info-circle fa-2x"></i>
+                                <p>Belum ada data kategori</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -434,53 +633,26 @@
 
             $.plot($("#tren-partisipasi-chart"), trenDataset, trenOptions);
 
-            // === PERFORMANSI KATEGORI CHART ===
-            var kategoriData = @json($kategoriPerformansi);
-            
-            var pieData = kategoriData.map(function(item) {
-                return {
-                    label: item.nama + " (" + item.total_peserta + " peserta)",
-                    data: item.total_peserta,
-                    color: item.warna
-                };
-            });
-
-            var pieOptions = {
-                series: {
-                    pie: {
-                        show: true,
-                        radius: 0.8,
-                        label: {
-                            show: true,
-                            radius: 0.6,
-                            formatter: function(label, point) {
-                                return '<div style="font-size:8pt;text-align:center;padding:2px;color:white;">' + 
-                                       Math.round(point.percent) + '%</div>';
-                            },
-                            background: {
-                                opacity: 0.8
-                            }
-                        }
-                    }
-                },
-                legend: {
-                    show: true,
-                    position: "bottom",
-                    labelFormatter: function(label, series) {
-                        return '<div style="font-size:10px;">' + label + '</div>';
-                    }
-                },
-                grid: {
-                    hoverable: true,
-                    clickable: true
-                },
-                tooltip: {
-                    show: true,
-                    content: "%s: %p.0% (%n peserta)"
+            // === PERFORMANSI KATEGORI - Animate Score Circles ===
+            $('.score-circle').each(function() {
+                var $this = $(this);
+                var score = parseFloat($this.data('score'));
+                var percentage = Math.min(score, 100);
+                
+                // Animate the circle
+                $this.css({
+                    'background': 'conic-gradient(from 0deg, #667eea 0deg ' + (percentage * 3.6) + 'deg, #e9ecef ' + (percentage * 3.6) + 'deg 360deg)'
+                });
+                
+                // Add score-based color
+                if (score >= 80) {
+                    $this.css('background', 'conic-gradient(from 0deg, #28a745 0deg ' + (percentage * 3.6) + 'deg, #e9ecef ' + (percentage * 3.6) + 'deg 360deg)');
+                } else if (score >= 60) {
+                    $this.css('background', 'conic-gradient(from 0deg, #ffc107 0deg ' + (percentage * 3.6) + 'deg, #e9ecef ' + (percentage * 3.6) + 'deg 360deg)');
+                } else {
+                    $this.css('background', 'conic-gradient(from 0deg, #dc3545 0deg ' + (percentage * 3.6) + 'deg, #e9ecef ' + (percentage * 3.6) + 'deg 360deg)');
                 }
-            };
-
-            $.plot($("#performa-kategori-chart"), pieData, pieOptions);
+            });
 
             // === DISTRIBUSI SKOR CHART ===
             var distribusiData = @json($distribusiSkor);
@@ -545,7 +717,6 @@
             // === RESPONSIVE CHARTS ===
             $(window).resize(function() {
                 $.plot($("#tren-partisipasi-chart"), trenDataset, trenOptions);
-                $.plot($("#performa-kategori-chart"), pieData, pieOptions);
                 $.plot($("#distribusi-skor-chart"), barDataset, barOptions);
             });
         });

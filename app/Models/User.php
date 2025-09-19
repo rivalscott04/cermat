@@ -192,4 +192,43 @@ class User extends Authenticatable
     {
         return $this->role === 'admin';
     }
+
+    /**
+     * Get paket lengkap completion status
+     */
+    public function getPaketLengkapStatus()
+    {
+        if ($this->paket_akses !== self::PACKAGE_LENGKAP) {
+            return null;
+        }
+
+        $service = app(\App\Services\PaketLengkapService::class);
+        return $service->getCompletionStatus($this);
+    }
+
+    /**
+     * Get paket lengkap dashboard summary
+     */
+    public function getPaketLengkapSummary()
+    {
+        if ($this->paket_akses !== self::PACKAGE_LENGKAP) {
+            return null;
+        }
+
+        $service = app(\App\Services\PaketLengkapService::class);
+        return $service->getDashboardSummary($this);
+    }
+
+    /**
+     * Get paket lengkap progress percentage
+     */
+    public function getPaketLengkapProgress()
+    {
+        if ($this->paket_akses !== self::PACKAGE_LENGKAP) {
+            return 0;
+        }
+
+        $service = app(\App\Services\PaketLengkapService::class);
+        return $service->getProgressPercentage($this);
+    }
 }

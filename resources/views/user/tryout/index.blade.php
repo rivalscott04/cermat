@@ -6,18 +6,29 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                    <h4>Daftar Tryout Tersedia</h4>
-                    <p class="text-muted mb-0">
-                        Paket Anda: 
-                        <span class="badge badge-{{ auth()->user()->paket_akses === 'lengkap' ? 'danger' : (auth()->user()->paket_akses === 'kecerdasan' || auth()->user()->paket_akses === 'kepribadian' ? 'primary' : 'success') }}">
-                            {{ strtoupper(auth()->user()->paket_akses) }}
-                        </span>
-                        @if(auth()->user()->paket_akses === 'free')
-                            <small class="text-muted">(1 tryout tersedia)</small>
-                        @else
-                            <small class="text-muted">({{ auth()->user()->getMaxTryouts() }} tryout tersedia)</small>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h4>Daftar Tryout Tersedia</h4>
+                            <p class="text-muted mb-0">
+                                Paket Anda: 
+                                <span class="badge badge-{{ auth()->user()->paket_akses === 'lengkap' ? 'danger' : (auth()->user()->paket_akses === 'kecerdasan' || auth()->user()->paket_akses === 'kepribadian' ? 'primary' : 'success') }}">
+                                    {{ strtoupper(auth()->user()->paket_akses) }}
+                                </span>
+                                @if(auth()->user()->paket_akses === 'free')
+                                    <small class="text-muted">(1 tryout tersedia)</small>
+                                @else
+                                    <small class="text-muted">({{ auth()->user()->getMaxTryouts() }} tryout tersedia)</small>
+                                @endif
+                            </p>
+                        </div>
+                        @if(auth()->user()->paket_akses === 'lengkap')
+                            <div>
+                                <a href="{{ route('user.tryout.paket-lengkap.status') }}" class="btn btn-info btn-sm">
+                                    <i class="fa fa-trophy"></i> Status Paket Lengkap
+                                </a>
+                            </div>
                         @endif
-                    </p>
+                    </div>
                 </div>
                 <div class="card-body">
                     @if(session('error'))

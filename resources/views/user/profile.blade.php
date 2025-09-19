@@ -386,6 +386,51 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    @if($user->paket_akses === 'lengkap')
+                                        @php
+                                            $paketLengkapSummary = $user->getPaketLengkapSummary();
+                                        @endphp
+                                        @if($paketLengkapSummary)
+                                            <div class="row mt-3">
+                                                <div class="col-12">
+                                                    <div class="card border-left-danger">
+                                                        <div class="card-body">
+                                                            <div class="row no-gutters align-items-center">
+                                                                <div class="col mr-2">
+                                                                    <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                                                        {{ $paketLengkapSummary['title'] }}
+                                                                    </div>
+                                                                    <div class="h6 mb-1 font-weight-bold text-gray-800">
+                                                                        {{ $paketLengkapSummary['message'] }}
+                                                                    </div>
+                                                                    @if($paketLengkapSummary['final_score'])
+                                                                        <div class="h4 mb-0 font-weight-bold text-danger">
+                                                                            Skor Akhir: {{ $paketLengkapSummary['final_score'] }}
+                                                                        </div>
+                                                                    @endif
+                                                                    <div class="progress mt-2" style="height: 8px;">
+                                                                        <div class="progress-bar bg-danger" role="progressbar" 
+                                                                             style="width: {{ $paketLengkapSummary['progress'] }}%">
+                                                                        </div>
+                                                                    </div>
+                                                                    <small class="text-muted">{{ $paketLengkapSummary['progress'] }}% selesai</small>
+                                                                </div>
+                                                                <div class="col-auto">
+                                                                    <i class="fa fa-trophy fa-2x text-danger"></i>
+                                                                </div>
+                                                            </div>
+                                                            <div class="mt-2">
+                                                                <a href="{{ route('user.tryout.paket-lengkap.status') }}" class="btn btn-sm btn-outline-danger">
+                                                                    <i class="fa fa-eye"></i> Lihat Detail
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endif
+                                    @endif
                                 @else
                                     <div class="text-center py-5">
                                         <i class="fa fa-credit-card text-muted" style="font-size: 4rem;"></i>
@@ -477,6 +522,9 @@
     }
     .border-left-primary {
         border-left: 4px solid #007bff !important;
+    }
+    .border-left-danger {
+        border-left: 4px solid #dc3545 !important;
     }
     .text-gray-800 {
         color: #5a5c69 !important;

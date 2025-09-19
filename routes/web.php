@@ -93,6 +93,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('/tryout/{tryout}/toggle-mark', [TryoutController::class, 'toggleMark'])->name('user.tryout.toggle-mark');
             Route::get('/debug-seed/{tryout}', [TryoutController::class, 'debugSessionSeed'])->name('debug.session.seed');
             Route::get('/tryout/{tryout}/finish', [TryoutController::class, 'finish'])->name('user.tryout.finish');
+            Route::get('/tryout/paket-lengkap/status', [TryoutController::class, 'paketLengkapStatus'])->name('user.tryout.paket-lengkap.status');
         });
     });
 
