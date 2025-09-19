@@ -107,7 +107,7 @@
                                             <p><small>Tanggal: {{ \Carbon\Carbon::parse($status['kecerdasan']['tanggal'])->format('d/m/Y H:i') }}</small></p>
                                         @else
                                             <p class="text-muted">{{ $status['kecerdasan']['message'] }}</p>
-                                            <a href="{{ route('user.tryout.index', ['type' => 'kecerdasan']) }}" class="btn btn-primary btn-sm">
+                                            <a href="{{ route('user.tryout.index') }}" class="btn btn-primary btn-sm">
                                                 <i class="fa fa-play"></i> Mulai Tryout
                                             </a>
                                         @endif
@@ -129,7 +129,7 @@
                                             <p><small>Tanggal: {{ \Carbon\Carbon::parse($status['kepribadian']['tanggal'])->format('d/m/Y H:i') }}</small></p>
                                         @else
                                             <p class="text-muted">{{ $status['kepribadian']['message'] }}</p>
-                                            <a href="{{ route('user.tryout.index', ['type' => 'kepribadian']) }}" class="btn btn-primary btn-sm">
+                                            <a href="{{ route('user.tryout.index') }}" class="btn btn-primary btn-sm">
                                                 <i class="fa fa-play"></i> Mulai Tryout
                                             </a>
                                         @endif
@@ -148,9 +148,10 @@
                                 <div class="panel-body">
                                     <p><strong>Cara Kerja:</strong></p>
                                     <ul>
-                                        <li>Paket lengkap terdiri dari 3 komponen: Tes Kecermatan, Tryout Kecerdasan, dan Tryout Kepribadian</li>
-                                        <li>Skor akhir dihitung dari rata-rata ketiga komponen: (Skor Kecermatan + Skor Kecerdasan + Skor Kepribadian) ÷ 3</li>
-                                        <li>Semua komponen harus diselesaikan untuk mendapatkan skor akhir paket lengkap</li>
+                                        <li>Paket lengkap terdiri dari 2 komponen utama: Tes Kecermatan (wajib) dan Tryout CBT</li>
+                                        <li>Tryout CBT bisa berisi kategori Kecerdasan, Kepribadian, atau keduanya (campuran)</li>
+                                        <li>Skor akhir dihitung dari rata-rata komponen yang tersedia: (Skor Kecermatan + Skor Kecerdasan + Skor Kepribadian) ÷ jumlah komponen</li>
+                                        <li>Kecermatan wajib diselesaikan + minimal 1 tryout CBT untuk mendapatkan skor akhir</li>
                                     </ul>
                                 </div>
                             </div>

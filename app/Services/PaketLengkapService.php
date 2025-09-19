@@ -26,9 +26,9 @@ class PaketLengkapService
         $kecerdasanStatus = $this->getKecerdasanStatus($user);
         $kepribadianStatus = $this->getKepribadianStatus($user);
 
+        // Kecermatan wajib + minimal 1 tryout CBT yang berisi kategori yang dibutuhkan
         $isComplete = $kecermatanStatus['completed'] && 
-                     $kecerdasanStatus['completed'] && 
-                     $kepribadianStatus['completed'];
+                     ($kecerdasanStatus['completed'] || $kepribadianStatus['completed']);
 
         return [
             'is_eligible' => true,
@@ -85,31 +85,65 @@ class PaketLengkapService
             ];
         }
 
-        $completedTryout = UserTryoutSession::where('user_id', $user->id)
+        // Find completed tryouts that contain kecerdasan categories
+        $completedTryouts = UserTryoutSession::where('user_id', $user->id)
             ->where('status', 'completed')
             ->whereHas('tryout.blueprints.kategori', function ($query) use ($kecerdasanKategoriCodes) {
                 $query->whereIn('kode', $kecerdasanKategoriCodes);
             })
-            ->with(['tryout'])
+            ->with(['tryout.blueprints.kategori'])
             ->orderBy('finished_at', 'desc')
-            ->first();
+            ->get();
 
-        if (!$completedTryout) {
+        if ($completedTryouts->isEmpty()) {
             return [
                 'completed' => false,
                 'score' => null,
-                'message' => 'Belum menyelesaikan tryout kecerdasan'
+                'message' => 'Belum menyelesaikan tryout yang berisi kategori kecerdasan'
             ];
         }
 
-        // Calculate score from user answers
-        $score = $this->calculateTryoutScore($user, $completedTryout->tryout_id, $completedTryout->id);
+        // Calculate total score from all kecerdasan categories across all completed tryouts
+        $totalScore = 0;
+        $totalQuestions = 0;
+        $tryoutTitles = [];
+
+        foreach ($completedTryouts as $session) {
+            $tryoutTitles[] = $session->tryout->judul;
+            
+            // Get user answers for this tryout session
+            $userAnswers = \App\Models\UserTryoutSoal::where('user_id', $user->id)
+                ->where('tryout_id', $session->tryout_id)
+                ->where('user_tryout_session_id', $session->id)
+                ->with(['soal.kategori'])
+                ->get();
+
+            // Filter answers that belong to kecerdasan categories
+            $kecerdasanAnswers = $userAnswers->filter(function ($answer) use ($kecerdasanKategoriCodes) {
+                $kategori = $answer->soal->kategori ?? null;
+                return $kategori && in_array($kategori->kode, $kecerdasanKategoriCodes);
+            });
+
+            $totalScore += $kecerdasanAnswers->sum('skor');
+            $totalQuestions += $kecerdasanAnswers->count();
+        }
+
+        if ($totalQuestions === 0) {
+            return [
+                'completed' => false,
+                'score' => null,
+                'message' => 'Tidak ada soal kecerdasan yang ditemukan'
+            ];
+        }
+
+        // Convert to percentage (0-100)
+        $score = round(($totalScore / $totalQuestions) * 100, 2);
 
         return [
             'completed' => true,
             'score' => $score,
-            'tryout_title' => $completedTryout->tryout->judul,
-            'tanggal' => $completedTryout->finished_at,
+            'tryout_title' => implode(', ', array_unique($tryoutTitles)),
+            'tanggal' => $completedTryouts->first()->finished_at,
             'message' => 'Tryout kecerdasan sudah selesai'
         ];
     }
@@ -129,42 +163,66 @@ class PaketLengkapService
             ];
         }
 
-        $completedTryout = UserTryoutSession::where('user_id', $user->id)
+        // Find completed tryouts that contain kepribadian categories
+        $completedTryouts = UserTryoutSession::where('user_id', $user->id)
             ->where('status', 'completed')
             ->whereHas('tryout.blueprints.kategori', function ($query) use ($kepribadianKategoriCodes) {
                 $query->whereIn('kode', $kepribadianKategoriCodes);
             })
-            ->with(['tryout'])
+            ->with(['tryout.blueprints.kategori'])
             ->orderBy('finished_at', 'desc')
-            ->first();
+            ->get();
 
-        if (!$completedTryout) {
+        if ($completedTryouts->isEmpty()) {
             return [
                 'completed' => false,
                 'score' => null,
-                'message' => 'Belum menyelesaikan tryout kepribadian'
+                'message' => 'Belum menyelesaikan tryout yang berisi kategori kepribadian'
             ];
         }
 
-        // For kepribadian, use TKP final score if available
-        $tkpFinalScore = $completedTryout->tkp_final_score;
-        
-        if ($tkpFinalScore === null) {
-            // Fallback: calculate from hasil_tes
-            $hasilTes = HasilTes::where('user_id', $user->id)
-                ->where('jenis_tes', 'kepribadian')
-                ->where('tanggal_tes', '>=', $completedTryout->started_at)
-                ->orderBy('tanggal_tes', 'desc')
-                ->first();
+        // Calculate total score from all kepribadian categories across all completed tryouts
+        $totalScore = 0;
+        $totalQuestions = 0;
+        $tryoutTitles = [];
+
+        foreach ($completedTryouts as $session) {
+            $tryoutTitles[] = $session->tryout->judul;
             
-            $tkpFinalScore = $hasilTes ? $hasilTes->tkp_final_score : null;
+            // Get user answers for this tryout session
+            $userAnswers = \App\Models\UserTryoutSoal::where('user_id', $user->id)
+                ->where('tryout_id', $session->tryout_id)
+                ->where('user_tryout_session_id', $session->id)
+                ->with(['soal.kategori'])
+                ->get();
+
+            // Filter answers that belong to kepribadian categories
+            $kepribadianAnswers = $userAnswers->filter(function ($answer) use ($kepribadianKategoriCodes) {
+                $kategori = $answer->soal->kategori ?? null;
+                return $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
+            });
+
+            $totalScore += $kepribadianAnswers->sum('skor');
+            $totalQuestions += $kepribadianAnswers->count();
         }
+
+        if ($totalQuestions === 0) {
+            return [
+                'completed' => false,
+                'score' => null,
+                'message' => 'Tidak ada soal kepribadian yang ditemukan'
+            ];
+        }
+
+        // For kepribadian, calculate TKP final score using the service
+        $scorer = app(\App\Services\TkpScoringService::class);
+        $tkpFinalScore = $scorer->calculateFinalScore($totalQuestions, $totalScore);
 
         return [
             'completed' => true,
             'score' => $tkpFinalScore,
-            'tryout_title' => $completedTryout->tryout->judul,
-            'tanggal' => $completedTryout->finished_at,
+            'tryout_title' => implode(', ', array_unique($tryoutTitles)),
+            'tanggal' => $completedTryouts->first()->finished_at,
             'message' => 'Tryout kepribadian sudah selesai'
         ];
     }
@@ -184,41 +242,32 @@ class PaketLengkapService
         $kecerdasanScore = $status['kecerdasan']['score'];
         $kepribadianScore = $status['kepribadian']['score'];
 
-        // Ensure all scores are numeric
-        if (!is_numeric($kecermatanScore) || !is_numeric($kecerdasanScore) || !is_numeric($kepribadianScore)) {
+        // Kecermatan wajib
+        if (!is_numeric($kecermatanScore)) {
             return null;
         }
 
-        // Calculate average of three scores
-        $finalScore = ($kecermatanScore + $kecerdasanScore + $kepribadianScore) / 3;
+        $scores = [$kecermatanScore];
+        $count = 1;
+
+        // Tambahkan skor kecerdasan jika ada
+        if (is_numeric($kecerdasanScore)) {
+            $scores[] = $kecerdasanScore;
+            $count++;
+        }
+
+        // Tambahkan skor kepribadian jika ada
+        if (is_numeric($kepribadianScore)) {
+            $scores[] = $kepribadianScore;
+            $count++;
+        }
+
+        // Calculate average of available scores
+        $finalScore = array_sum($scores) / $count;
         
         return round($finalScore, 2);
     }
 
-    /**
-     * Calculate tryout score from user answers
-     */
-    private function calculateTryoutScore(User $user, int $tryoutId, int $sessionId): ?float
-    {
-        $userAnswers = \App\Models\UserTryoutSoal::where('user_id', $user->id)
-            ->where('tryout_id', $tryoutId)
-            ->where('user_tryout_session_id', $sessionId)
-            ->get();
-
-        if ($userAnswers->isEmpty()) {
-            return null;
-        }
-
-        $totalScore = $userAnswers->sum('skor');
-        $totalQuestions = $userAnswers->count();
-
-        if ($totalQuestions === 0) {
-            return null;
-        }
-
-        // Convert to percentage (0-100)
-        return round(($totalScore / $totalQuestions) * 100, 2);
-    }
 
     /**
      * Get progress percentage for paket lengkap
@@ -232,11 +281,16 @@ class PaketLengkapService
         $status = $this->getCompletionStatus($user);
         $completedCount = 0;
 
+        // Kecermatan wajib (1 poin)
         if ($status['kecermatan']['completed']) $completedCount++;
-        if ($status['kecerdasan']['completed']) $completedCount++;
-        if ($status['kepribadian']['completed']) $completedCount++;
+        
+        // Tryout CBT (1 poin jika ada kecerdasan atau kepribadian)
+        if ($status['kecerdasan']['completed'] || $status['kepribadian']['completed']) {
+            $completedCount++;
+        }
 
-        return round(($completedCount / 3) * 100);
+        // Total maksimal 2 poin (kecermatan + tryout CBT)
+        return round(($completedCount / 2) * 100);
     }
 
     /**
@@ -274,8 +328,9 @@ class PaketLengkapService
 
         $remainingTasks = [];
         if (!$status['kecermatan']['completed']) $remainingTasks[] = 'Tes Kecermatan';
-        if (!$status['kecerdasan']['completed']) $remainingTasks[] = 'Tryout Kecerdasan';
-        if (!$status['kepribadian']['completed']) $remainingTasks[] = 'Tryout Kepribadian';
+        if (!$status['kecerdasan']['completed'] && !$status['kepribadian']['completed']) {
+            $remainingTasks[] = 'Tryout CBT (Kecerdasan/Kepribadian)';
+        }
 
         return [
             'title' => 'Paket Lengkap',
