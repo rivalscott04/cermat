@@ -586,5 +586,42 @@
     border-color: #dee2e6 !important;
     color: #333 !important;
 }
+
+/* Fix Large Chevron Icons */
+.chevron.icon,
+.left.chevron.icon,
+.right.chevron.icon,
+i.chevron.icon,
+i.left.chevron.icon,
+i.right.chevron.icon {
+    font-size: 14px !important;
+    width: auto !important;
+    height: auto !important;
+    line-height: 1 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+/* Fix any large icons in pagination */
+.pagination i,
+.pagination .icon,
+.pagination .fa {
+    font-size: 14px !important;
+    width: auto !important;
+    height: auto !important;
+    line-height: 1 !important;
+}
+
+/* Override any global icon styles that might be affecting pagination */
+nav .icon,
+nav i,
+.pagination .icon,
+.pagination i {
+    font-size: 14px !important;
+    width: auto !important;
+    height: auto !important;
+    line-height: 1 !important;
+    display: inline !important;
+}
 </style>
 @endpush
