@@ -55,6 +55,12 @@ Route::get('subscription/unfinish', [SubscriptionController::class, 'unfinish'])
 Route::get('subscription/error', [SubscriptionController::class, 'error'])->name('subscription.error');
 
 Route::middleware(['auth'])->group(function () {
+    // User Dashboard (distinct from admin dashboard)
+    Route::get('/dashboard', function () {
+        // Redirect to a suitable landing for regular users
+        return redirect()->route('user.history.index');
+    })->name('user.dashboard');
+
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
 
