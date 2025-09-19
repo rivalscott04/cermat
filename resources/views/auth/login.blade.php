@@ -10,9 +10,28 @@
 
     <link href="{{ asset('css/bootstrap.min.css') }}" rel="stylesheet">
     <link href="{{ asset('font-awesome/css/font-awesome.css') }}" rel="stylesheet">
-
-    <link href="{{ asset('css/animate.css') }}" rel="stylesheet">
     <link href="{{ asset('css/style.css') }}" rel="stylesheet">
+    
+    <!-- Optimasi: Load animate.css hanya jika diperlukan -->
+    <style>
+        .animated {
+            animation-duration: 1s;
+            animation-fill-mode: both;
+        }
+        .fadeInDown {
+            animation-name: fadeInDown;
+        }
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translate3d(0, -100%, 0);
+            }
+            to {
+                opacity: 1;
+                transform: translate3d(0, 0, 0);
+            }
+        }
+    </style>
 
 </head>
 
@@ -62,10 +81,23 @@
         </div>
     </div>
 
-    <!-- Mainly scripts -->
+    <!-- Mainly scripts - Optimasi: Load minimal scripts untuk login -->
     <script src="{{ asset('js/jquery-3.1.1.min.js') }}"></script>
-    <script src="{{ asset('js/popper.min.js') }}"></script>
     <script src="{{ asset('js/bootstrap.js') }}"></script>
+    
+    <!-- Optimasi: Defer loading untuk performa -->
+    <script>
+        // Preload critical resources
+        document.addEventListener('DOMContentLoaded', function() {
+            // Lazy load popper.js hanya jika diperlukan
+            if (typeof Popper === 'undefined') {
+                var script = document.createElement('script');
+                script.src = '{{ asset("js/popper.min.js") }}';
+                script.async = true;
+                document.head.appendChild(script);
+            }
+        });
+    </script>
 
 </body>
 

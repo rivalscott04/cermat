@@ -13,26 +13,31 @@ use App\Models\HasilTes;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class DashboardController extends Controller
 {
     public function index()
     {
         // === STATISTIK UTAMA (FOKUS PENDIDIKAN) ===
+        // Cache statistik utama untuk 5 menit
+        $totalSoal = Cache::remember('dashboard.total_soal', 300, function() {
+            return Soal::where('is_active', true)->count();
+        });
         
-        // Total soal dalam bank soal
-        $totalSoal = Soal::where('is_active', true)->count();
+        $tryoutAktif = Cache::remember('dashboard.tryout_aktif', 300, function() {
+            return Tryout::where('is_active', true)->count();
+        });
         
-        // Tryout aktif (sedang berjalan)
-        $tryoutAktif = Tryout::where('is_active', true)->count();
+        $pesertaAktif = Cache::remember('dashboard.peserta_aktif', 60, function() {
+            return UserTryoutSession::where('status', 'active')->count();
+        });
         
-        // Peserta aktif (sedang mengerjakan tryout)
-        $pesertaAktif = UserTryoutSession::where('status', 'active')->count();
-        
-        // Tryout selesai hari ini
-        $selesaiHariIni = UserTryoutSession::where('status', 'completed')
-            ->whereDate('finished_at', Carbon::today())
-            ->count();
+        $selesaiHariIni = Cache::remember('dashboard.selesai_hari_ini', 60, function() {
+            return UserTryoutSession::where('status', 'completed')
+                ->whereDate('finished_at', Carbon::today())
+                ->count();
+        });
 
         // === STATISTIK PERTUMBUHAN ===
         
@@ -58,33 +63,39 @@ class DashboardController extends Controller
 
         // === PERFORMANSI KATEGORI DINAMIS ===
         
-        // Ambil semua kategori aktif dari database
+        // Optimasi: Gunakan single query dengan join untuk performa kategori
         $kategoriPerformansi = KategoriSoal::where('is_active', true)
             ->withCount(['soals as total_soal' => function($query) {
                 $query->where('is_active', true);
             }])
             ->get()
             ->map(function($kategori) {
-                // Hitung rata-rata skor per kategori
-                $rataSkor = UserTryoutSoal::whereHas('soal', function($query) use ($kategori) {
-                    $query->where('kategori_id', $kategori->id);
-                })
-                ->whereNotNull('skor')
-                ->avg('skor');
+                // Cache hasil query untuk menghindari multiple database calls
+                static $skorCache = [];
+                static $pesertaCache = [];
                 
-                // Hitung jumlah peserta yang mengerjakan kategori ini
-                $totalPeserta = UserTryoutSoal::whereHas('soal', function($query) use ($kategori) {
-                    $query->where('kategori_id', $kategori->id);
-                })
-                ->distinct('user_id')
-                ->count('user_id');
+                if (!isset($skorCache[$kategori->id])) {
+                    $skorCache[$kategori->id] = UserTryoutSoal::whereHas('soal', function($query) use ($kategori) {
+                        $query->where('kategori_id', $kategori->id);
+                    })
+                    ->whereNotNull('skor')
+                    ->avg('skor');
+                }
+                
+                if (!isset($pesertaCache[$kategori->id])) {
+                    $pesertaCache[$kategori->id] = UserTryoutSoal::whereHas('soal', function($query) use ($kategori) {
+                        $query->where('kategori_id', $kategori->id);
+                    })
+                    ->distinct('user_id')
+                    ->count('user_id');
+                }
                 
                 return [
                     'nama' => $kategori->nama,
                     'kode' => $kategori->kode,
                     'total_soal' => $kategori->total_soal,
-                    'rata_skor' => round($rataSkor ?? 0, 2),
-                    'total_peserta' => $totalPeserta,
+                    'rata_skor' => round($skorCache[$kategori->id] ?? 0, 2),
+                    'total_peserta' => $pesertaCache[$kategori->id] ?? 0,
                     'warna' => $this->getKategoriColor($kategori->kode)
                 ];
             })

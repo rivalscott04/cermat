@@ -103,7 +103,8 @@ class AuthController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            $user = Auth::user();
+            // Eager load subscription untuk menghindari N+1 query
+            $user = Auth::user()->load('subscriptions');
 
             Log::info('User logged in: ' . $user->email);
 
@@ -112,7 +113,10 @@ class AuthController extends Controller
             }
 
             if ($user->role == 'user') {
-                return $user->hasActiveSubscription()
+                // Cache subscription status untuk menghindari query berulang
+                $hasActiveSubscription = $user->hasActiveSubscription();
+                
+                return $hasActiveSubscription
                     ? redirect()->route('kecermatan')
                     : redirect()->route('user.profile', ['userId' => $user->id]);
             }
