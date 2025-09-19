@@ -331,6 +331,25 @@
     color: #fff !important;
 }
 
+/* Statistik Utama - Always Open (Disabled Click) */
+.panel-title a[href="#collapseStats"] {
+    cursor: default;
+    pointer-events: none;
+}
+
+.panel-title a[href="#collapseStats"]:hover {
+    background: linear-gradient(to right, #f8f9fa, #ffffff);
+    color: #333;
+}
+
+.panel-title a[href="#collapseStats"]:hover .accordion-icon {
+    color: #999 !important;
+}
+
+.panel-title a[href="#collapseStats"]:hover i:first-child {
+    color: #333 !important;
+}
+
 .panel-body {
     padding: 20px;
     background: #fff;
@@ -373,9 +392,9 @@
             <div class="panel panel-default">
                 <div class="panel-heading" role="tab" id="headingStats">
                     <h4 class="panel-title">
-                        <a role="button" data-toggle="collapse" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
+                        <a role="button" href="#collapseStats" aria-expanded="true" aria-controls="collapseStats" class="accordion-toggle">
                             <i class="fa fa-dashboard text-primary"></i> <strong>Statistik Utama</strong>
-                            <i class="fa fa-chevron-down pull-right accordion-icon"></i>
+                            <i class="fa fa-lock pull-right accordion-icon" style="color: #1ab394;"></i>
                         </a>
                     </h4>
                 </div>
@@ -1238,21 +1257,23 @@
                 $(e.target).prev('.panel-heading').find('a').attr('aria-expanded', 'false');
             });
 
-            // Fix accordion toggle behavior
+            // Fix accordion toggle behavior - Independent sections
             $('#dashboardAccordion .panel-title a').on('click', function(e) {
                 e.preventDefault();
                 var target = $(this).attr('href');
                 var $target = $(target);
                 var isExpanded = $(this).attr('aria-expanded') === 'true';
                 
+                // Skip if it's the main stats section (always open)
+                if (target === '#collapseStats') {
+                    return;
+                }
+                
                 if (isExpanded) {
                     // Close the panel
                     $target.collapse('hide');
                 } else {
-                    // Close all other panels first (accordion behavior)
-                    $('#dashboardAccordion .panel-collapse.in').collapse('hide');
-                    
-                    // Open the panel
+                    // Open the panel (independent, no closing others)
                     $target.collapse('show');
                 }
             });
