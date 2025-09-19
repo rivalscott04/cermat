@@ -14,6 +14,8 @@ use App\Http\Controllers\TryoutController;
 use App\Http\Controllers\KategoriSoalController;
 use App\Http\Controllers\PackageMappingController;
 use App\Http\Controllers\HistoryController;
+use App\Http\Controllers\ScoringSettingController;
+use App\Http\Controllers\SimulasiNilaiController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -109,6 +111,10 @@ Route::middleware(['auth'])->group(function () {
     
     // History routes
     Route::get('/riwayat-tes', [HistoryController::class, 'index'])->name('user.history.index');
+
+    // Simulasi Nilai (accessible to authenticated users)
+    Route::get('/simulasi/nilai', [SimulasiNilaiController::class, 'index'])->name('simulasi.nilai');
+    Route::post('/simulasi/nilai', [SimulasiNilaiController::class, 'calculate'])->name('simulasi.nilai.calculate');
 });
 
 // Admin Routes
@@ -138,6 +144,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('tryout', TryoutController::class);
     Route::post('tryout/{tryout}/toggle-status', [TryoutController::class, 'toggleStatus'])->name('tryout.toggle-status');
+    
+    // Scoring Settings
+    Route::get('scoring-settings', [ScoringSettingController::class, 'index'])->name('scoring-settings.index');
+    Route::put('scoring-settings', [ScoringSettingController::class, 'update'])->name('scoring-settings.update');
     
     // Package Mapping Routes
     Route::get('package-mapping', [PackageMappingController::class, 'index'])->name('package-mapping.index');

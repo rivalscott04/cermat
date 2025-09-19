@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             PackageLimitsSeeder::class,
             PackageMappingSeeder::class,
             TryoutSeeder::class,
+            ScoringSettingSeeder::class,
         ]);
     }
 }

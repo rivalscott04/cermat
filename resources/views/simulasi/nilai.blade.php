@@ -1,0 +1,81 @@
+@extends('layouts.app')
+
+@section('content')
+<div class="row wrapper border-bottom white-bg page-heading">
+	<div class="col-lg-10">
+		<h2>Simulasi Nilai</h2>
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="{{ route('user.dashboard') }}">Dashboard</a></li>
+			<li class="breadcrumb-item active"><strong>Simulasi Nilai</strong></li>
+		</ol>
+	</div>
+</div>
+
+<div class="wrapper wrapper-content">
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="ibox">
+				<div class="ibox-title"><h5>Input Skor</h5></div>
+				<div class="ibox-content">
+					<form method="POST" action="{{ route('simulasi.nilai.calculate') }}" class="form-horizontal">
+						@csrf
+
+						<div class="form-group"><label class="col-sm-5 control-label">Kecermatan</label>
+							<div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kecermatan" value="{{ old('kecermatan', 75) }}" required></div>
+						</div>
+
+						<div class="form-group"><label class="col-sm-5 control-label">Kecerdasan</label>
+							<div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kecerdasan" value="{{ old('kecerdasan', 80) }}" required></div>
+						</div>
+
+						<div class="form-group"><label class="col-sm-5 control-label">Kepribadian</label>
+							<div class="col-sm-7"><input type="number" min="0" max="100" class="form-control" name="kepribadian" value="{{ old('kepribadian', 70) }}" required></div>
+						</div>
+
+                    <div class="form-group">
+                        <div class="col-sm-7 col-sm-offset-5">
+                            <button class="btn btn-primary" type="submit" id="btnHitung">
+                                <i class="fa fa-calculator"></i> Hitung
+                            </button>
+                        </div>
+                    </div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<div class="col-lg-6">
+			<div class="ibox">
+				<div class="ibox-title"><h5>Hasil</h5></div>
+				<div class="ibox-content">
+					<p>Bobot saat ini: Kecermatan {{ $setting->weight_kecermatan }}%, Kecerdasan {{ $setting->weight_kecerdasan }}%, Kepribadian {{ $setting->weight_kepribadian }}%.</p>
+					<p>Nilai minimal kelulusan: <strong>{{ $setting->passing_grade }}</strong></p>
+					@if(isset($result))
+                    <h3 class="m-t-none">Nilai Akhir: <strong>{{ $result['score'] }}</strong>
+                        {!! $result['passed'] ? '<span class="label label-primary m-l-sm">LULUS</span>' : '<span class="label label-danger m-l-sm">TIDAK LULUS</span>' !!}
+                    </h3>
+                    <p class="text-muted">Rumus: ({{ $setting->weight_kecermatan }}% × Kecermatan) + ({{ $setting->weight_kecerdasan }}% × Kecerdasan) + ({{ $setting->weight_kepribadian }}% × Kepribadian)</p>
+					@endif
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+@push('scripts')
+<script>
+    (function(){
+        var form = document.querySelector('form');
+        if (!form) return;
+        var btn = document.getElementById('btnHitung');
+        form.addEventListener('submit', function(){
+            if(btn){
+                btn.disabled = true;
+                btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Menghitung...';
+            }
+        });
+    })();
+</script>
+@endpush
+@endsection
+
+

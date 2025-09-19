@@ -75,6 +75,12 @@
                                 <span class="nav-label">Pengaturan Paket</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.scoring-settings.index') }}">
+                                <i class="fa fa-sliders"></i>
+                                <span class="nav-label">Pengaturan Simulasi Nilai</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             @endif
