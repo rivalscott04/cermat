@@ -24,7 +24,6 @@ return new class extends Migration
         Schema::table('subscriptions', function (Blueprint $table) {
             $table->index(['user_id', 'payment_status', 'end_date']); // Composite index untuk hasActiveSubscription
             $table->index(['payment_status', 'created_at']); // Index untuk revenue stats
-            $table->index('package_type'); // Index untuk subscription analysis
         });
 
         // Soals table indexes
@@ -72,7 +71,6 @@ return new class extends Migration
         Schema::table('subscriptions', function (Blueprint $table) {
             $table->dropIndex(['user_id', 'payment_status', 'end_date']);
             $table->dropIndex(['payment_status', 'created_at']);
-            $table->dropIndex(['package_type']);
         });
 
         Schema::table('soals', function (Blueprint $table) {
