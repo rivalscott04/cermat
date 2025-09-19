@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container">
-    <div class="wrapper wrapper-content animated fadeInRight">
+    <div class="container">
+        <div class="wrapper wrapper-content animated fadeInRight">
         <!-- Statistics Overview Cards -->
         <div class="row mb-4">
             <div class="col-lg-3 col-md-6">
@@ -36,7 +36,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="ibox">
+            <div class="ibox">
                     <div class="ibox-content">
                         <div class="stat-card">
                             <div class="stat-icon">
@@ -52,7 +52,7 @@
             </div>
             <div class="col-lg-3 col-md-6">
                 <div class="ibox">
-                    <div class="ibox-content">
+                <div class="ibox-content">
                         <div class="stat-card">
                             <div class="stat-icon">
                                 <i class="fa fa-calendar-alt text-warning"></i>
@@ -115,86 +115,49 @@
                 @if($hasilTes->count() > 0)
                     <div class="row">
                         @foreach($hasilTes as $tes)
-                            <div class="col-lg-6 col-md-6 mb-4">
-                                <div class="test-history-card {{ $tes->kategori_skor ?? 'fair' }}">
-                                    <div class="card-header">
-                                        <div class="card-title">
+                            <div class="col-lg-4 col-md-6 mb-3">
+                                <div class="compact-test-card {{ $tes->kategori_skor ?? 'fair' }}">
+                                    <div class="card-header-compact">
+                                        <div class="test-type">
                                             <i class="fa {{ $tes->jenis_tes == 'kecermatan' ? 'fa-eye' : ($tes->jenis_tes == 'kecerdasan' ? 'fa-brain' : 'fa-user-friends') }}"></i>
-                                            {{ ucfirst($tes->jenis_tes ?? 'Tes') }}
-                                            <span class="type-badge {{ $tes->jenis_tes ?? 'lain' }}">
-                                                {{ ucfirst($tes->jenis_tes ?? 'Lainnya') }}
-                                            </span>
+                                            <span class="type-text">{{ ucfirst($tes->jenis_tes ?? 'Tes') }}</span>
                                         </div>
-                                        <div class="card-date">
-                                            {{ \Carbon\Carbon::parse($tes->tanggal_tes)->format('d M Y, H:i') }}
+                                        <div class="test-date">
+                                            {{ \Carbon\Carbon::parse($tes->tanggal_tes)->format('d/m H:i') }}
                                         </div>
                                     </div>
                                     
-                                    <div class="card-body">
-                                        <div class="user-info mb-3">
-                                            <div class="user-avatar">
-                                                <i class="fa fa-user"></i>
-                                            </div>
-                                            <div class="user-details">
-                                                <h6 class="user-name">{{ $tes->user_name }}</h6>
-                                                <p class="user-email">{{ $tes->user_email }}</p>
-                                                <span class="user-package badge badge-info">{{ ucfirst($tes->user_package ?? 'free') }}</span>
-                                            </div>
+                                    <div class="card-body-compact">
+                                        <div class="user-info-compact">
+                                            <div class="user-name">{{ $tes->user_name }}</div>
+                                            <div class="user-package">{{ ucfirst($tes->user_package ?? 'free') }}</div>
                                         </div>
 
-                                        <div class="score-section">
-                                            <div class="score-circle">
+                                        <div class="score-compact">
+                                            <div class="score-main">
                                                 @if($tes->skor_akhir)
-                                                    <div class="score-percentage">{{ number_format($tes->skor_akhir, 0) }}</div>
-                                                    <div class="score-label">Skor Akhir</div>
+                                                    <span class="score-number">{{ number_format($tes->skor_akhir, 0) }}</span>
+                                                    <span class="score-label">Skor</span>
                                                 @else
                                                     @php
                                                         $total = $tes->skor_benar + $tes->skor_salah;
                                                         $percentage = $total > 0 ? round(($tes->skor_benar / $total) * 100) : 0;
                                                     @endphp
-                                                    <div class="score-percentage">{{ $percentage }}%</div>
-                                                    <div class="score-label">Skor</div>
+                                                    <span class="score-number">{{ $percentage }}%</span>
+                                                    <span class="score-label">Skor</span>
                                                 @endif
                                             </div>
-                                            
-                                            <div class="score-details">
-                                                <div class="score-item correct">
-                                                    <i class="fa fa-check-circle"></i>
-                                                    <span>{{ $tes->skor_benar }} Benar</span>
-                                                </div>
-                                                <div class="score-item wrong">
-                                                    <i class="fa fa-times-circle"></i>
-                                                    <span>{{ $tes->skor_salah }} Salah</span>
-                                                </div>
-                                                <div class="score-item total">
-                                                    <i class="fa fa-list"></i>
-                                                    <span>{{ $tes->skor_benar + $tes->skor_salah }} Soal</span>
-                                                </div>
+                                            <div class="score-details-compact">
+                                                <span class="score-item correct">{{ $tes->skor_benar }}✓</span>
+                                                <span class="score-item wrong">{{ $tes->skor_salah }}✗</span>
                                                 @if($tes->waktu_total)
-                                                    <div class="score-item duration">
-                                                        <i class="fa fa-clock-o"></i>
-                                                        <span>{{ round($tes->waktu_total / 60) }} menit</span>
-                                                    </div>
+                                                    <span class="score-item duration">{{ round($tes->waktu_total / 60) }}m</span>
                                                 @endif
                                             </div>
                                         </div>
                                         
-                                        @if($tes->skor_akhir)
-                                            <div class="progress-section">
-                                                <div class="progress">
-                                                    <div class="progress-bar {{ $tes->kategori_skor ?? 'fair' }}" 
-                                                         style="width: {{ min(100, ($tes->skor_akhir / 100) * 100) }}%"></div>
-                                                </div>
-                                            </div>
-                                        @endif
-                                        
-                                        <div class="card-footer">
-                                            <div class="test-actions">
-                                                <a href="{{ route('kecermatan.detail', $tes->id) }}" class="btn btn-primary btn-sm">
-                                                    <i class="fa fa-eye"></i> Lihat Detail
-                                                </a>
-                                            </div>
-                                            <div class="status-badge {{ $tes->kategori_skor ?? 'fair' }}">
+                                        <div class="card-footer-compact">
+                                            <div class="status-badge-compact {{ $tes->kategori_skor ?? 'fair' }}">
                                                 @switch($tes->kategori_skor)
                                                     @case('excellent')
                                                         <i class="fa fa-star"></i> Excellent
@@ -212,6 +175,9 @@
                                                         <i class="fa fa-question"></i> Belum Dinilai
                                                 @endswitch
                                             </div>
+                                            <a href="{{ route('kecermatan.detail', $tes->id) }}" class="btn-detail">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -235,10 +201,10 @@
                         </a>
                     </div>
                 @endif
+                </div>
             </div>
         </div>
     </div>
-</div>
 @endsection
 
 @push('styles')
@@ -296,283 +262,206 @@
     margin-bottom: 5px;
 }
 
-/* Test History Cards */
-.test-history-card {
+/* Compact Test Cards */
+.compact-test-card {
     background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    transition: all 0.3s ease;
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: all 0.2s ease;
     overflow: hidden;
-    border-left: 4px solid #ddd;
+    border-left: 3px solid #ddd;
     height: 100%;
 }
 
-.test-history-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+.compact-test-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
 }
 
-.test-history-card.excellent {
+.compact-test-card.excellent {
     border-left-color: #28a745;
 }
 
-.test-history-card.good {
+.compact-test-card.good {
     border-left-color: #17a2b8;
 }
 
-.test-history-card.fair {
+.compact-test-card.fair {
     border-left-color: #ffc107;
 }
 
-.test-history-card.poor {
+.compact-test-card.poor {
     border-left-color: #dc3545;
 }
 
-.card-header {
-    padding: 20px 20px 10px;
-    border-bottom: 1px solid #eee;
+.card-header-compact {
+    padding: 12px 15px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
-.card-title {
-    font-size: 16px;
+.test-type {
+    display: flex;
+    align-items: center;
+    font-size: 13px;
     font-weight: 600;
     color: #333;
-    margin-bottom: 5px;
-    display: flex;
-    align-items: center;
 }
 
-.card-title i {
-    margin-right: 8px;
-    color: #666;
-}
-
-.type-badge {
-    display: inline-block;
-    margin-left: 8px;
-    padding: 2px 8px;
-    border-radius: 12px;
-    font-size: 10px;
-    font-weight: 600;
-    vertical-align: middle;
-}
-
-.type-badge.kecermatan { background: #e8f5e9; color: #2e7d32; }
-.type-badge.kecerdasan { background: #e3f2fd; color: #1565c0; }
-.type-badge.kepribadian { background: #f3e5f5; color: #6a1b9a; }
-.type-badge.lain { background: #f5f5f5; color: #666; }
-
-.card-date {
+.test-type i {
+    margin-right: 6px;
     font-size: 12px;
-    color: #999;
-}
-
-.card-body {
-    padding: 20px;
-}
-
-/* User Info */
-.user-info {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.user-avatar {
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: #f8f9fa;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 15px;
-    border: 2px solid #e9ecef;
-}
-
-.user-avatar i {
-    font-size: 20px;
     color: #666;
 }
 
-.user-details {
-    flex: 1;
+.test-date {
+    font-size: 11px;
+    color: #999;
+    font-weight: 500;
+}
+
+.card-body-compact {
+    padding: 12px 15px;
+}
+
+.user-info-compact {
+    margin-bottom: 12px;
 }
 
 .user-name {
-    margin: 0 0 5px 0;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: #333;
-}
-
-.user-email {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    color: #666;
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .user-package {
-    font-size: 11px;
-    padding: 2px 8px;
+    font-size: 10px;
+    color: #666;
+    background: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 10px;
+    display: inline-block;
 }
 
-/* Score Section */
-.score-section {
+.score-compact {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
-.score-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-right: 20px;
-    position: relative;
+.score-main {
+    text-align: center;
 }
 
-.test-history-card.excellent .score-circle {
-    background: linear-gradient(135deg, #28a745, #20c997);
-    color: white;
-}
-
-.test-history-card.good .score-circle {
-    background: linear-gradient(135deg, #17a2b8, #6f42c1);
-    color: white;
-}
-
-.test-history-card.fair .score-circle {
-    background: linear-gradient(135deg, #ffc107, #fd7e14);
-    color: white;
-}
-
-.test-history-card.poor .score-circle {
-    background: linear-gradient(135deg, #dc3545, #e83e8c);
-    color: white;
-}
-
-.score-percentage {
-    font-size: 20px;
+.score-number {
+    display: block;
+    font-size: 18px;
     font-weight: bold;
+    color: #333;
     line-height: 1;
 }
 
 .score-label {
-    font-size: 10px;
-    opacity: 0.9;
+    font-size: 9px;
+    color: #666;
+    text-transform: uppercase;
 }
 
-.score-details {
-    flex: 1;
+.score-details-compact {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .score-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
-    font-size: 14px;
-}
-
-.score-item i {
-    width: 16px;
-    margin-right: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 1px 4px;
+    border-radius: 3px;
+    text-align: center;
+    min-width: 35px;
 }
 
 .score-item.correct {
     color: #28a745;
+    background: rgba(40, 167, 69, 0.1);
 }
 
 .score-item.wrong {
     color: #dc3545;
-}
-
-.score-item.total {
-    color: #6c757d;
+    background: rgba(220, 53, 69, 0.1);
 }
 
 .score-item.duration {
     color: #17a2b8;
+    background: rgba(23, 162, 184, 0.1);
 }
 
-/* Progress Section */
-.progress-section {
-    margin-bottom: 15px;
-}
-
-.progress {
-    height: 8px;
-    border-radius: 4px;
-    background-color: #e9ecef;
-    overflow: hidden;
-}
-
-.progress-bar {
-    height: 100%;
-    border-radius: 4px;
-    transition: width 0.6s ease;
-}
-
-.progress-bar.excellent {
-    background: linear-gradient(90deg, #28a745, #20c997);
-}
-
-.progress-bar.good {
-    background: linear-gradient(90deg, #17a2b8, #6f42c1);
-}
-
-.progress-bar.fair {
-    background: linear-gradient(90deg, #ffc107, #fd7e14);
-}
-
-.progress-bar.poor {
-    background: linear-gradient(90deg, #dc3545, #e83e8c);
-}
-
-/* Card Footer */
-.card-footer {
+.card-footer-compact {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-top: 15px;
-    border-top: 1px solid #eee;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
 }
 
-.test-actions .btn {
-    padding: 6px 12px;
-    font-size: 12px;
-}
-
-.status-badge {
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
+.status-badge-compact {
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 9px;
     font-weight: 600;
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 3px;
 }
 
-.status-badge.excellent {
+.status-badge-compact.excellent {
     background: #d4edda;
     color: #155724;
 }
 
-.status-badge.good {
+.status-badge-compact.good {
     background: #d1ecf1;
     color: #0c5460;
 }
 
-.status-badge.fair {
+.status-badge-compact.fair {
     background: #fff3cd;
     color: #856404;
 }
 
-.status-badge.poor {
+.status-badge-compact.poor {
     background: #f8d7da;
     color: #721c24;
+}
+
+.btn-detail {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #007bff;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 10px;
+    transition: all 0.2s ease;
+}
+
+.btn-detail:hover {
+    background: #0056b3;
+    color: white;
+    text-decoration: none;
+    transform: scale(1.1);
 }
 
 /* Empty State */
@@ -599,29 +488,19 @@
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .score-section {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .score-circle {
-        margin-right: 0;
+    .compact-test-card {
         margin-bottom: 15px;
     }
-    
-    .card-footer {
+
+    .score-compact {
         flex-direction: column;
-        gap: 10px;
+        gap: 8px;
     }
 
-    .user-info {
-        flex-direction: column;
-        text-align: center;
-    }
-
-    .user-avatar {
-        margin-right: 0;
-        margin-bottom: 10px;
+    .score-details-compact {
+        flex-direction: row;
+        justify-content: center;
+        gap: 8px;
     }
 
     .filter-section .row {
@@ -643,6 +522,69 @@
         margin-right: 0;
         margin-bottom: 10px;
     }
+
+    .compact-test-card {
+        margin-bottom: 12px;
+    }
+
+    .card-header-compact {
+        padding: 10px 12px 6px;
+    }
+
+    .card-body-compact {
+        padding: 10px 12px;
+    }
+
+    .score-number {
+        font-size: 16px;
+    }
+
+    .user-name {
+        font-size: 13px;
+    }
+}
+
+/* Fix Pagination Conflict with DataTables */
+.pagination {
+    font-size: 14px !important;
+}
+
+.pagination .page-link {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    border-radius: 0.25rem !important;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #007bff !important;
+    border-color: #007bff !important;
+}
+
+.pagination .page-link:hover {
+    background-color: #e9ecef !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Override any DataTables pagination styles */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    padding: 0.375rem 0.75rem !important;
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+    border-radius: 0.25rem !important;
+    margin: 0 2px !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+    background: #007bff !important;
+    border-color: #007bff !important;
+    color: white !important;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: #e9ecef !important;
+    border-color: #dee2e6 !important;
+    color: #333 !important;
 }
 </style>
 @endpush
