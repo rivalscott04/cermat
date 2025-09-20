@@ -78,11 +78,18 @@
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="level">Level Kesulitan <span class="text-danger">*</span></label>
-                                        <select class="form-control @error('level') is-invalid @enderror" id="level" name="level" required>
+                                        <select class="form-control @error('level') is-invalid @enderror" id="level"
+                                            name="level" required>
                                             <option value="">Pilih Level</option>
-                                            <option value="mudah" {{ (old('level') ?? $soal->level) == 'mudah' ? 'selected' : '' }}>Mudah</option>
-                                            <option value="sedang" {{ (old('level') ?? $soal->level) == 'sedang' ? 'selected' : '' }}>Sedang</option>
-                                            <option value="sulit" {{ (old('level') ?? $soal->level) == 'sulit' ? 'selected' : '' }}>Sulit</option>
+                                            <option value="mudah"
+                                                {{ (old('level') ?? $soal->level) == 'mudah' ? 'selected' : '' }}>Mudah
+                                            </option>
+                                            <option value="sedang"
+                                                {{ (old('level') ?? $soal->level) == 'sedang' ? 'selected' : '' }}>Sedang
+                                            </option>
+                                            <option value="sulit"
+                                                {{ (old('level') ?? $soal->level) == 'sulit' ? 'selected' : '' }}>Sulit
+                                            </option>
                                         </select>
                                         @error('level')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -152,8 +159,8 @@
 
                             <div class="form-group" id="jawaban-benar-group" style="display: none;">
                                 <label for="jawaban_benar">Jawaban Benar</label>
-                                <select class="form-control @error('jawaban_benar') is-invalid @enderror" id="jawaban_benar"
-                                    name="jawaban_benar">
+                                <select class="form-control @error('jawaban_benar') is-invalid @enderror"
+                                    id="jawaban_benar" name="jawaban_benar">
                                     <option value="">Pilih Jawaban Benar</option>
                                 </select>
                                 @error('jawaban_benar')
@@ -165,15 +172,19 @@
                                 <label class="d-block">Tipe Pembahasan</label>
                                 @php $pType = old('pembahasan_type') ?? ($soal->pembahasan_type ?? 'text'); @endphp
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_text" value="text" {{ $pType == 'text' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="pembahasan_type"
+                                        id="pembahasan_type_text" value="text" {{ $pType == 'text' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="pembahasan_type_text">Text</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_image" value="image" {{ $pType == 'image' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="pembahasan_type"
+                                        id="pembahasan_type_image" value="image"
+                                        {{ $pType == 'image' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="pembahasan_type_image">Gambar</label>
                                 </div>
                                 <div class="form-check form-check-inline">
-                                    <input class="form-check-input" type="radio" name="pembahasan_type" id="pembahasan_type_both" value="both" {{ $pType == 'both' ? 'checked' : '' }}>
+                                    <input class="form-check-input" type="radio" name="pembahasan_type"
+                                        id="pembahasan_type_both" value="both" {{ $pType == 'both' ? 'checked' : '' }}>
                                     <label class="form-check-label" for="pembahasan_type_both">Keduanya</label>
                                 </div>
                                 @error('pembahasan_type')
@@ -197,12 +208,15 @@
                                 @if ($soal->pembahasan_image_url)
                                     <div class="mb-2">
                                         <p class="mb-1"><strong>Gambar pembahasan saat ini:</strong></p>
-                                        <img src="{{ $soal->pembahasan_image_url }}" class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
+                                        <img src="{{ $soal->pembahasan_image_url }}" class="img-thumbnail"
+                                            style="max-width: 300px; max-height: 200px;">
                                     </div>
                                 @endif
 
                                 <div class="custom-file">
-                                    <input type="file" class="custom-file-input @error('pembahasan_image') is-invalid @enderror" id="pembahasan_image" name="pembahasan_image" accept="image/*">
+                                    <input type="file"
+                                        class="custom-file-input @error('pembahasan_image') is-invalid @enderror"
+                                        id="pembahasan_image" name="pembahasan_image" accept="image/*">
                                     <label class="custom-file-label" for="pembahasan_image">Pilih gambar...</label>
                                 </div>
                                 <small class="form-text text-muted">Format: JPEG, PNG, JPG, GIF. Maks: 1MB</small>
@@ -212,8 +226,10 @@
 
                                 <div id="pembahasan-image-preview" class="mt-3" style="display: none;">
                                     <p class="mb-1"><strong>Preview gambar baru:</strong></p>
-                                    <img id="pembahasan-preview-img" src="" alt="Preview Pembahasan" class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
-                                    <button type="button" class="btn btn-sm btn-danger ml-2" id="remove-pembahasan-image">
+                                    <img id="pembahasan-preview-img" src="" alt="Preview Pembahasan"
+                                        class="img-thumbnail" style="max-width: 300px; max-height: 200px;">
+                                    <button type="button" class="btn btn-sm btn-danger ml-2"
+                                        id="remove-pembahasan-image">
                                         <i class="fa fa-times"></i> Hapus
                                     </button>
                                 </div>
@@ -242,10 +258,10 @@
                 const existingOpsi = @json($soal->opsi);
                 const existingTipe = '{{ $soal->tipe }}';
                 const existingJawabanBenar = '{{ $soal->jawaban_benar }}';
-                
+
                 // Load kepribadian categories from server
                 function loadKepribadianCodes() {
-                    $.get('{{ route("admin.soal.kepribadian-categories") }}')
+                    $.get('{{ route('admin.soal.kepribadian-categories') }}')
                         .done(function(data) {
                             kepribadianCodes = data;
                             console.log('Loaded kepribadian codes from API:', kepribadianCodes);
@@ -253,7 +269,9 @@
                         .fail(function() {
                             console.error('Failed to load kepribadian codes from API');
                             // Fallback to comprehensive list including all possible kepribadian codes
-                            kepribadianCodes = ['TKP', 'PSIKOTES', 'ID', 'OPY', 'KB', 'PGD', 'KBS', 'KDDJ', 'IDK', 'KDS', 'TJ', 'OPP'];
+                            kepribadianCodes = ['TKP', 'PSIKOTES', 'ID', 'OPY', 'KB', 'PGD', 'KBS', 'KDDJ', 'IDK',
+                                'KDS', 'TJ', 'OPP'
+                            ];
                             console.log('Using fallback kepribadian codes:', kepribadianCodes);
                         });
                 }
@@ -261,23 +279,21 @@
                 // Function to check if category is in kepribadian package
                 function checkIfKepribadianCategory(kategoriId) {
                     if (!kategoriId) return false;
-                    
+
                     // Get category code from selected option
                     const selectedOption = $(`#kategori_id option[value="${kategoriId}"]`);
                     const optionText = selectedOption.text();
-                    
-                    console.log('Checking category:', optionText, 'against kepribadian package codes:', kepribadianCodes);
-                    
+
+                    console.log('Checking category:', optionText, 'against kepribadian package codes:',
+                        kepribadianCodes);
+
                     // Check if category code is in kepribadian package mapping
                     const isKepribadian = kepribadianCodes.some(code => optionText.includes(code));
                     console.log('Is in kepribadian package:', isKepribadian);
-                    
+
                     return isKepribadian;
                 }
 
-                // Load kepribadian codes on page load
-                loadKepribadianCodes();
-                
                 // Debug: Log data yang diterima
                 console.log('=== DEBUG EDIT FORM ===');
                 console.log('Existing Opsi:', existingOpsi);
@@ -286,11 +302,14 @@
                 console.log('Existing Jawaban Benar:', existingJawabanBenar);
                 console.log('========================');
 
+                // Load kepribadian codes on page load
+                loadKepribadianCodes();
+
                 // Function to toggle kecermatan styling
                 function toggleKecermatanStyling() {
                     const kategoriText = $('#kategori_id option:selected').text();
                     const isKecermatan = kategoriText.includes('KECERMATAN') || kategoriText.includes('Kecermatan');
-                    
+
                     if (isKecermatan) {
                         $('#opsi-container').addClass('kecermatan-opsi');
                     } else {
@@ -298,20 +317,20 @@
                     }
                 }
 
-                // Initialize form - trigger change to generate opsi first
-                console.log('Initializing form with tipe:', existingTipe);
-                
-                // Set the tipe value first
-                $('#tipe').val(existingTipe);
-                
-                // Apply kecermatan styling on initial load
-                toggleKecermatanStyling();
-                
-                // Then trigger change to generate opsi
-                $('#tipe').trigger('change');
-                
-                // Load existing data after form is initialized - wait longer for generateOpsi to complete
-                // This will be handled by the tipe change event instead
+                // Initialize form immediately if we have existing data
+                if (existingTipe) {
+                    $('#tipe').val(existingTipe);
+                    toggleKecermatanStyling();
+                    generateOpsi(existingTipe);
+                    toggleJawabanBenar(existingTipe);
+                    toggleGambarUpload(existingTipe);
+                    setupJawabanHandling(existingTipe);
+
+                    // Load existing data with shorter delay
+                    setTimeout(function() {
+                        loadExistingData(existingTipe);
+                    }, 100);
+                }
 
                 // Handle tipe change
                 $('#tipe').on('change', function() {
@@ -322,24 +341,18 @@
                     toggleGambarUpload(tipe);
                     setupJawabanHandling(tipe);
                     toggleKecermatanStyling();
-                    
-                    // Load existing data after opsi is generated
-                    setTimeout(function() {
-                        console.log('Loading existing data after generateOpsi...');
-                        loadExistingData(tipe);
-                    }, 30000);
                 });
 
                 // Handle kategori change
                 $('#kategori_id').on('change', function() {
                     const tipe = $('#tipe').val();
-                    
+
                     // Update bobot validation for pg_bobot
                     if (tipe === 'pg_bobot') {
                         // Update existing bobot inputs
                         updateBobotInputs();
                     }
-                    
+
                     // Apply kecermatan styling
                     toggleKecermatanStyling();
                 });
@@ -348,7 +361,7 @@
                 function updateBobotInputs() {
                     const kategoriId = $('#kategori_id').val();
                     const isKepribadian = checkIfKepribadianCategory(kategoriId);
-                    
+
                     $('.bobot-input').each(function() {
                         if ($(this).is('input[type="number"]')) {
                             $(this).attr('step', isKepribadian ? '1' : '0.01');
@@ -398,13 +411,14 @@
                         // Check file size (1MB = 1024 * 1024 bytes)
                         const maxSize = 1024 * 1024; // 1MB in bytes
                         if (file.size > maxSize) {
-                            alert('Ukuran file gambar pembahasan maksimal 1MB. File yang dipilih: ' + (file.size / (1024 * 1024)).toFixed(2) + 'MB');
+                            alert('Ukuran file gambar pembahasan maksimal 1MB. File yang dipilih: ' + (file
+                                .size / (1024 * 1024)).toFixed(2) + 'MB');
                             $(this).val('');
                             $('.custom-file-label[for="pembahasan_image"]').text('Pilih gambar...');
                             $('#pembahasan-image-preview').hide();
                             return;
                         }
-                        
+
                         $('.custom-file-label[for="pembahasan_image"]').text(file.name);
                         const reader = new FileReader();
                         reader.onload = function(e) {
@@ -427,7 +441,7 @@
                     console.log('=== GENERATE OPSI ===');
                     console.log('Tipe:', tipe);
                     console.log('Existing Opsi Length:', existingOpsi.length);
-                    
+
                     const wrapper = $('#opsi-wrapper');
                     wrapper.empty();
                     opsiCount = 0;
@@ -470,20 +484,25 @@
                     console.log('=== LOADING EXISTING DATA ===');
                     console.log('Opsi Count:', opsiCount);
                     console.log('Existing Opsi:', existingOpsi);
-                    
+
                     // Load existing opsi
                     if (existingOpsi && existingOpsi.length > 0) {
                         existingOpsi.forEach(function(opsi, index) {
                             console.log('Processing opsi', index, ':', opsi);
                             if (index < opsiCount) {
+                                // Load teks
                                 $(`input[name="opsi[${index}][teks]"]`).val(opsi.teks);
-                                $(`input[name="opsi[${index}][bobot]"]`).val(opsi.bobot);
 
-                                // Handle checkboxes for all types (semua tipe menggunakan checkbox)
+                                // Load bobot - PENTING: Load sebelum mengubah checkbox
+                                if (opsi.bobot !== undefined && opsi.bobot !== null) {
+                                    $(`input[name="opsi[${index}][bobot]"]`).val(opsi.bobot);
+                                    console.log(`Setting bobot for opsi ${index}: ${opsi.bobot}`);
+                                }
+
+                                // Handle checkboxes untuk semua tipe
                                 const jawabanArray = existingJawabanBenar.split(',');
                                 if (jawabanArray.includes(opsi.opsi)) {
-                                    $(`.jawaban-checkbox[data-letter="${opsi.opsi}"]`).prop(
-                                        'checked', true);
+                                    $(`.jawaban-checkbox[data-letter="${opsi.opsi}"]`).prop('checked', true);
                                 }
                             }
                         });
@@ -493,17 +512,31 @@
 
                     // Update UI
                     updateJawabanBenarOptions();
-                    updateJawabanBenarFromCheckboxes(tipe);
+
+                    // PERBAIKAN: Jangan panggil updateJawabanBenarFromCheckboxes untuk pg_bobot
+                    // karena akan menimpa bobot yang sudah di-load
+                    if (tipe !== 'pg_bobot') {
+                        updateJawabanBenarFromCheckboxes(tipe);
+                    } else {
+                        // Untuk pg_bobot, hanya update hidden input jawaban_benar
+                        updateJawabanBenarHiddenInput();
+                    }
+
+                    // Debug console untuk memastikan bobot ter-load
+                    console.log('Final bobot values after loading:');
+                    $('input[name*="[bobot]"]').each(function(index) {
+                        console.log(`Opsi ${index}: ${$(this).val()}`);
+                    });
                 }
 
                 // Add opsi item
                 function addOpsiItem(letter, defaultText = '', showBobot = false) {
                     console.log('Adding opsi item:', letter, defaultText, showBobot);
-                    
+
                     // Check if current category is kepribadian (TKP, PSIKOTES)
                     const kategoriId = $('#kategori_id').val();
                     const isKepribadian = checkIfKepribadianCategory(kategoriId);
-                    
+
                     const opsiHtml = `
             <div class="row mb-2 opsi-item" data-letter="${letter}">
                 <div class="col-1">
@@ -514,24 +547,24 @@
                            value="${defaultText}" placeholder="Teks opsi ${letter}" required>
                 </div>
                 ${showBobot ? `
-                                    <div class="col-2">
-                                        <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
-                                               step="${isKepribadian ? '1' : '0.01'}" 
-                                               min="${isKepribadian ? '1' : '0'}" 
-                                               placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
-                                    </div>
-                                ` : `
-                                    <div class="col-2">
-                                        <input type="hidden" class="bobot-input" name="opsi[${opsiCount}][bobot]" value="0">
-                                        <div class="form-check">
-                                            <input type="checkbox" class="form-check-input jawaban-checkbox"
-                                                   id="jawaban_${letter}" data-letter="${letter}">
-                                            <label class="form-check-label" for="jawaban_${letter}">
-                                                <small>Benar</small>
-                                            </label>
-                                        </div>
-                                    </div>
-                                `}
+                            <div class="col-2">
+                                <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
+                                       step="${isKepribadian ? '1' : '0.01'}"
+                                       min="${isKepribadian ? '1' : '0'}"
+                                       placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
+                            </div>
+                        ` : `
+                            <div class="col-2">
+                                <input type="hidden" class="bobot-input" name="opsi[${opsiCount}][bobot]" value="0">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input jawaban-checkbox"
+                                           id="jawaban_${letter}" data-letter="${letter}">
+                                    <label class="form-check-label" for="jawaban_${letter}">
+                                        <small>Benar</small>
+                                    </label>
+                                </div>
+                            </div>
+                        `}
                 <div class="col-1">
                     ${opsiCount > 1 ? `<button type="button" class="btn btn-sm btn-danger remove-opsi"><i class="fa fa-trash"></i></button>` : ''}
                 </div>
@@ -593,8 +626,29 @@
 
                     // All types use checkboxes for consistency
                     $(document).off('change', '.jawaban-checkbox').on('change', '.jawaban-checkbox', function() {
-                        updateJawabanBenarFromCheckboxes(tipe);
+                        // PERBAIKAN: Hanya update bobot jika bukan pg_bobot
+                        if (tipe !== 'pg_bobot') {
+                            updateJawabanBenarFromCheckboxes(tipe);
+                        } else {
+                            // Untuk pg_bobot, hanya update jawaban benar tanpa mengubah bobot
+                            updateJawabanBenarHiddenInput();
+                        }
                     });
+                }
+
+                // Function khusus untuk update hidden input jawaban_benar tanpa mengubah bobot
+                function updateJawabanBenarHiddenInput() {
+                    const selectedAnswers = [];
+                    $('.jawaban-checkbox:checked').each(function() {
+                        selectedAnswers.push($(this).data('letter'));
+                    });
+
+                    $('input[name="jawaban_benar"]').remove();
+                    if (selectedAnswers.length > 0) {
+                        $('#soalForm').append(
+                            `<input type="hidden" name="jawaban_benar" value="${selectedAnswers.join(',')}" class="jawaban_benar_hidden">`
+                        );
+                    }
                 }
 
                 // Update jawaban benar from checkboxes
@@ -623,33 +677,22 @@
                         }
                     }
 
-                    // Update bobot values for all opsi
-                    $('.opsi-item').each(function() {
-                        const checkbox = $(this).find('.jawaban-checkbox');
-                        const bobotInput = $(this).find('.bobot-input');
+                    // PERBAIKAN: Hanya update bobot untuk tipe yang bukan pg_bobot
+                    if (tipe !== 'pg_bobot') {
+                        $('.opsi-item').each(function() {
+                            const checkbox = $(this).find('.jawaban-checkbox');
+                            const bobotInput = $(this).find('.bobot-input');
 
-                        if (checkbox.is(':checked')) {
-                            // Set bobot to 1 for correct answers
-                            bobotInput.val(1);
-                        } else {
-                            // Set bobot to 0 for incorrect answers
-                            bobotInput.val(0);
-                        }
-                    });
+                            if (checkbox.is(':checked')) {
+                                bobotInput.val(1);
+                            } else {
+                                bobotInput.val(0);
+                            }
+                        });
+                    }
 
                     // Update hidden input for jawaban_benar
-                    const selectedAnswers = [];
-                    $('.jawaban-checkbox:checked').each(function() {
-                        selectedAnswers.push($(this).data('letter'));
-                    });
-
-                    // Remove old hidden input and add new one
-                    $('input[name="jawaban_benar"]').remove();
-                    if (selectedAnswers.length > 0) {
-                        $('#soalForm').append(
-                            `<input type="hidden" name="jawaban_benar" value="${selectedAnswers.join(',')}" class="jawaban_benar_hidden">`
-                        );
-                    }
+                    updateJawabanBenarHiddenInput();
                 }
 
                 // Update jawaban benar options
@@ -675,8 +718,14 @@
                     updateJawabanBenarOptions();
                 });
 
-                // Update bobot when jawaban_benar dropdown changes (DIHAPUS karena tidak dipakai lagi)
-                // Fungsi ini dihapus karena kita hanya menggunakan checkbox
+                // Handle bobot input changes for pg_bobot
+                $(document).on('input', '.bobot-input[type="number"]', function() {
+                    const tipe = $('#tipe').val();
+                    if (tipe === 'pg_bobot') {
+                        // Untuk pg_bobot, bobot diatur manual, bukan dari checkbox
+                        console.log('Bobot changed manually:', $(this).val());
+                    }
+                });
 
                 // Form validation
                 $('#soalForm').on('submit', function(e) {
@@ -729,9 +778,10 @@
                     if (tipe === 'pg_bobot') {
                         const kategoriId = $('#kategori_id').val();
                         const isKepribadian = checkIfKepribadianCategory(kategoriId);
-                        
-                        console.log('Form validation - kategoriId:', kategoriId, 'isInKepribadianPackage:', isKepribadian);
-                        
+
+                        console.log('Form validation - kategoriId:', kategoriId, 'isInKepribadianPackage:',
+                            isKepribadian);
+
                         if (isKepribadian) {
                             // For categories in kepribadian package, validate each bobot is between 1-5
                             let hasInvalidBobot = false;
@@ -742,9 +792,10 @@
                                     return false; // break loop
                                 }
                             });
-                            
+
                             if (hasInvalidBobot) {
-                                alert('Bobot untuk kategori dalam paket kepribadian harus berupa bilangan bulat antara 1-5');
+                                alert(
+                                    'Bobot untuk kategori dalam paket kepribadian harus berupa bilangan bulat antara 1-5');
                                 valid = false;
                             }
                         } else {
@@ -768,7 +819,8 @@
 
                     const pembType = $('input[name="pembahasan_type"]:checked').val();
                     if (pembType === 'image' || pembType === 'both') {
-                        if (!$('#pembahasan_image')[0].files.length && !{{ $soal->pembahasan_image ? 'true' : 'false' }}) {
+                        if (!$('#pembahasan_image')[0].files.length && !
+                            {{ $soal->pembahasan_image ? 'true' : 'false' }}) {
                             alert('Gambar pembahasan harus diupload untuk tipe pembahasan ini');
                             e.preventDefault();
                         }
@@ -776,6 +828,38 @@
                     if (pembType === 'image') {
                         $('#pembahasan').val('');
                     }
+                });
+
+                // Image upload handlers
+                $('#gambar').on('change', function() {
+                    const file = this.files[0];
+                    if (file) {
+                        // Check file size (2MB = 2 * 1024 * 1024 bytes)
+                        const maxSize = 2 * 1024 * 1024; // 2MB in bytes
+                        if (file.size > maxSize) {
+                            alert('Ukuran file gambar maksimal 2MB. File yang dipilih: ' + (file.size / (1024 *
+                                1024)).toFixed(2) + 'MB');
+                            $(this).val('');
+                            $('.custom-file-label[for="gambar"]').text('Pilih gambar...');
+                            $('#image-preview').hide();
+                            return;
+                        }
+
+                        $('.custom-file-label[for="gambar"]').text(file.name);
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            $('#preview-img').attr('src', e.target.result);
+                            $('#image-preview').show();
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+
+                $('#remove-image').on('click', function() {
+                    $('#gambar').val('');
+                    $('.custom-file-label[for="gambar"]').text('Pilih gambar...');
+                    $('#image-preview').hide();
+                    $('#preview-img').attr('src', '');
                 });
             });
         </script>

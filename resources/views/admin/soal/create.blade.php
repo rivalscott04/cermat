@@ -443,24 +443,24 @@
                            value="${defaultText}" placeholder="Teks opsi ${letter}" required>
                 </div>
                 ${showBobot ? `
-                                                                                                <div class="col-2">
-                                                                                                    <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
-                                                                                                           step="${isKepribadian ? '1' : '0.01'}"
-                                                                                                           min="${isKepribadian ? '1' : '0'}"
-                                                                                                           placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
-                                                                                                </div>
-                                                                                                ` : `
-                                                                                                <div class="col-2">
-                                                                                                    <input type="hidden" class="bobot-input" name="opsi[${opsiCount}][bobot]" value="0">
-                                                                                                    <div class="form-check">
-                                                                                                        <input type="checkbox" class="form-check-input jawaban-checkbox"
-                                                                                                               id="jawaban_${letter}" data-letter="${letter}">
-                                                                                                        <label class="form-check-label" for="jawaban_${letter}">
-                                                                                                            <small>Benar</small>
-                                                                                                        </label>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                `}
+                                                                                                        <div class="col-2">
+                                                                                                            <input type="number" class="form-control bobot-input" name="opsi[${opsiCount}][bobot]"
+                                                                                                                   step="${isKepribadian ? '1' : '0.01'}"
+                                                                                                                   min="${isKepribadian ? '1' : '0'}"
+                                                                                                                   placeholder="Bobot" value="${isKepribadian ? '1' : '0'}">
+                                                                                                        </div>
+                                                                                                        ` : `
+                                                                                                        <div class="col-2">
+                                                                                                            <input type="hidden" class="bobot-input" name="opsi[${opsiCount}][bobot]" value="0">
+                                                                                                            <div class="form-check">
+                                                                                                                <input type="checkbox" class="form-check-input jawaban-checkbox"
+                                                                                                                       id="jawaban_${letter}" data-letter="${letter}">
+                                                                                                                <label class="form-check-label" for="jawaban_${letter}">
+                                                                                                                    <small>Benar</small>
+                                                                                                                </label>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        `}
                 <div class="col-1">
                     ${opsiCount > 1 ? `<button type="button" class="btn btn-sm btn-danger remove-opsi"><i class="fa fa-trash"></i></button>` : ''}
                 </div>
@@ -716,7 +716,7 @@
                             if (hasInvalidBobot) {
                                 alert(
                                     'Bobot untuk kategori dalam paket kepribadian harus berupa bilangan bulat antara 1-5'
-                                    );
+                                );
                                 valid = false;
                             }
                         } else {

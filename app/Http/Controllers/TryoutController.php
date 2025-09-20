@@ -213,78 +213,107 @@ class TryoutController extends Controller
 
     public function update(Request $request, Tryout $tryout)
     {
-        $request->validate([
-            'judul' => 'required|string|max:255',
-            'deskripsi' => 'nullable|string',
-            'durasi_menit' => 'required|integer|min:1',
-            'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
-            'blueprint' => 'required|array'
-        ]);
+        try {
+            $request->validate([
+                'judul' => 'required|string|max:255',
+                'deskripsi' => 'nullable|string',
+                'durasi_menit' => 'required|integer|min:1',
+                'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
+                'blueprint' => 'required|array',
+                'blueprint.*' => 'required|array',
+                'blueprint.*.mudah' => 'nullable|integer|min:0',
+                'blueprint.*.sedang' => 'nullable|integer|min:0',
+                'blueprint.*.sulit' => 'nullable|integer|min:0',
+            ]);
 
-        // Validasi jumlah soal tidak melebihi yang tersedia
-        $this->validateBlueprint($request->blueprint);
+            // Validasi jumlah soal tidak melebihi yang tersedia
+            $this->validateBlueprint($request->blueprint, $tryout);
 
-        // Kembalikan soal lama ke status is_used = false
-        $oldBlueprints = $tryout->blueprints;
-        foreach ($oldBlueprints as $blueprint) {
-            $soals = Soal::where('kategori_id', $blueprint->kategori_id)
-                ->where('level', $blueprint->level)
-                ->where('is_used', true)
-                ->limit($blueprint->jumlah)
-                ->get();
+            // Start database transaction
+            \DB::beginTransaction();
 
-            foreach ($soals as $soal) {
-                $soal->update(['is_used' => false]);
+            // Kembalikan soal lama ke status is_used = false
+            $oldBlueprints = $tryout->blueprints;
+            foreach ($oldBlueprints as $blueprint) {
+                \DB::table('soals')
+                    ->where('kategori_id', $blueprint->kategori_id)
+                    ->where('level', $blueprint->level)
+                    ->where('is_used', true)
+                    ->limit($blueprint->jumlah)
+                    ->update(['is_used' => false]);
             }
-        }
 
-        $tryout->update([
-            'judul' => $request->judul,
-            'deskripsi' => $request->deskripsi,
-            'struktur' => [],
-            'shuffle_questions' => (bool)$request->get('shuffle_questions', false),
-            'durasi_menit' => $request->durasi_menit,
-            'jenis_paket' => $request->jenis_paket
-        ]);
+            // Update tryout data
+            $tryout->update([
+                'judul' => $request->judul,
+                'deskripsi' => $request->deskripsi,
+                'struktur' => [],
+                'shuffle_questions' => $request->boolean('shuffle_questions', false),
+                'durasi_menit' => $request->durasi_menit,
+                'jenis_paket' => $request->jenis_paket
+            ]);
 
-        // Replace blueprints
-        $tryout->blueprints()->delete();
+            // Delete old blueprints
+            $tryout->blueprints()->delete();
 
-        $rows = [];
-        foreach ($request->blueprint as $kategoriId => $levels) {
-            foreach (['mudah', 'sedang', 'sulit'] as $level) {
-                $jumlah = intval($levels[$level] ?? 0);
-                if ($jumlah > 0) {
-                    // Ambil soal yang belum dipakai dan tandai sebagai dipakai
-                    $soals = Soal::where('kategori_id', $kategoriId)
-                        ->where('level', $level)
-                        ->where('is_used', false)
-                        ->limit($jumlah)
-                        ->get();
+            // Create new blueprints
+            $blueprintRows = [];
+            foreach ($request->blueprint as $kategoriId => $levels) {
+                foreach (['mudah', 'sedang', 'sulit'] as $level) {
+                    $jumlah = intval($levels[$level] ?? 0);
+                    if ($jumlah > 0) {
+                        // Ambil soal yang belum dipakai dan tandai sebagai dipakai
+                        $soalIds = \DB::table('soals')
+                            ->where('kategori_id', $kategoriId)
+                            ->where('level', $level)
+                            ->where('is_used', false)
+                            ->limit($jumlah)
+                            ->pluck('id')
+                            ->toArray();
 
-                    // Tandai soal sudah dipakai
-                    foreach ($soals as $soal) {
-                        $soal->update(['is_used' => true]);
+                        // Tandai soal sudah dipakai
+                        if (!empty($soalIds)) {
+                            \DB::table('soals')
+                                ->whereIn('id', $soalIds)
+                                ->update(['is_used' => true]);
+                        }
+
+                        $blueprintRows[] = [
+                            'tryout_id' => $tryout->id,
+                            'kategori_id' => $kategoriId,
+                            'level' => $level,
+                            'jumlah' => $jumlah,
+                            'created_at' => now(),
+                            'updated_at' => now()
+                        ];
                     }
-
-                    $rows[] = [
-                        'tryout_id' => $tryout->id,
-                        'kategori_id' => $kategoriId,
-                        'level' => $level,
-                        'jumlah' => $jumlah,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ];
                 }
             }
-        }
 
-        if (!empty($rows)) {
-            TryoutBlueprint::insert($rows);
-        }
+            if (!empty($blueprintRows)) {
+                \DB::table('tryout_blueprints')->insert($blueprintRows);
+            }
 
-        return redirect()->route('admin.tryout.index')->with('success', 'Tryout berhasil diperbarui');
+            // Delete user answers (as warned in your blade template)
+            \DB::table('user_tryout_soal')->where('tryout_id', $tryout->id)->delete();
+
+            \DB::commit();
+
+            return redirect()->route('admin.tryout.index')
+                ->with('success', 'Tryout berhasil diperbarui');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            \DB::rollBack();
+            return back()->withErrors($e->errors())->withInput();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Error updating tryout: ' . $e->getMessage(), [
+                'tryout_id' => $tryout->id,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage())->withInput();
+        }
     }
+
     public function destroy(Tryout $tryout)
     {
         // Kembalikan soal ke status is_used = false sebelum menghapus tryout
@@ -351,7 +380,7 @@ class TryoutController extends Controller
         // Check if tryout is active
         if (!$tryout->is_active) {
             return redirect()->route('user.tryout.index')
-                ->with('error', 'Tryout "'. $tryout->judul .'" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
+                ->with('error', 'Tryout "' . $tryout->judul . '" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
         }
 
         // Check if user can access this tryout
@@ -435,11 +464,11 @@ class TryoutController extends Controller
     public function work(Tryout $tryout, Request $request)
     {
         $user = auth()->user();
-        
+
         // Check if tryout is active
         if (!$tryout->is_active) {
             return redirect()->route('user.tryout.index')
-                ->with('error', 'Tryout "'. $tryout->judul .'" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
+                ->with('error', 'Tryout "' . $tryout->judul . '" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
         }
 
         $questionNumber = $request->get('question', 1);
@@ -921,11 +950,11 @@ class TryoutController extends Controller
     public function finish(Tryout $tryout)
     {
         $user = auth()->user();
-        
+
         // Check if tryout is active
         if (!$tryout->is_active) {
             return redirect()->route('user.tryout.index')
-                ->with('error', 'Tryout "'. $tryout->judul .'" sedang tidak tersedia saat ini.');
+                ->with('error', 'Tryout "' . $tryout->judul . '" sedang tidak tersedia saat ini.');
         }
 
         // Update session status
@@ -1077,7 +1106,7 @@ class TryoutController extends Controller
                             'N' => $tkpCount,
                             'T' => (int) round($tkpQuestions->sum('skor')),
                             'skor_tkp' => $tkpFinalScore,
-                                                        'session_id' => $session->id,
+                            'session_id' => $session->id,
                         ]),
                         'tkp_final_score' => $tkpFinalScore,
                         'skor_akhir' => $tkpFinalScore,
@@ -1096,10 +1125,10 @@ class TryoutController extends Controller
                 $durationMinutes = $tryout->durasi_menit;
                 $durationSeconds = $durationMinutes * 60;
                 $averageTime = $totalQuestions > 0 ? round($durationSeconds / $totalQuestions, 2) : null;
-                
+
                 // Calculate final score percentage
                 $finalScore = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
-                
+
                 // Determine score category
                 $kategoriSkor = $this->getScoreCategory($finalScore);
 
@@ -1184,9 +1213,9 @@ class TryoutController extends Controller
         // Check if tryout is active first
         if (!$tryout->is_active) {
             return redirect()->route('user.tryout.index')
-                ->with('error', 'Tryout "'. $tryout->judul .'" sedang tidak tersedia saat ini. Tidak dapat memulai ulang.');
+                ->with('error', 'Tryout "' . $tryout->judul . '" sedang tidak tersedia saat ini. Tidak dapat memulai ulang.');
         }
-        
+
         return $this->start($tryout, request()->merge(['restart' => true]));
     }
 
@@ -1199,7 +1228,7 @@ class TryoutController extends Controller
     /**
      * Validate blueprint against available questions
      */
-    private function validateBlueprint($blueprint)
+    private function validateBlueprint($blueprint, $tryout = null)
     {
         $errors = [];
         $totalSoal = 0;
@@ -1220,7 +1249,17 @@ class TryoutController extends Controller
                 $totalSoalKategori += $jumlah;
                 $totalSoal += $jumlah;
 
+                // Get available questions
                 $available = $kategori->soals()->where('level', $level)->where('is_used', false)->count();
+
+                // If this is an update operation, add back the current blueprint questions
+                if ($tryout) {
+                    $currentUsed = $tryout->blueprints()
+                        ->where('kategori_id', $kategoriId)
+                        ->where('level', $level)
+                        ->value('jumlah') ?? 0;
+                    $available += $currentUsed;
+                }
 
                 if ($jumlah > $available) {
                     $levelText = ucfirst($level);
@@ -1244,11 +1283,17 @@ class TryoutController extends Controller
             $errors[] = "Minimal 1 kategori harus dipilih dengan minimal 1 soal.";
         }
 
+        // Fix: Use the correct way to throw ValidationException
         if (!empty($errors)) {
-            throw new \Illuminate\Validation\ValidationException(
-                validator([], []),
-                ['blueprint' => $errors]
-            );
+            // Method 1: Using withMessages (Recommended)
+            throw \Illuminate\Validation\ValidationException::withMessages([
+                'blueprint' => $errors
+            ]);
+
+            // Alternative Method 2: Using make validator
+            // $validator = \Illuminate\Support\Facades\Validator::make([], []);
+            // $validator->errors()->add('blueprint', implode(' ', $errors));
+            // throw new \Illuminate\Validation\ValidationException($validator);
         }
     }
 
@@ -1474,7 +1519,7 @@ class TryoutController extends Controller
             ]);
 
             $isActive = filter_var($request->is_active, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
-            
+
             if ($isActive === null) {
                 return response()->json([
                     'success' => false,
@@ -1487,7 +1532,7 @@ class TryoutController extends Controller
             ]);
 
             $statusText = $tryout->is_active ? 'diaktifkan' : 'dinonaktifkan';
-            
+
             return response()->json([
                 'success' => true,
                 'message' => "Tryout \"{$tryout->judul}\" berhasil {$statusText}",
@@ -1500,7 +1545,7 @@ class TryoutController extends Controller
             ], 422);
         } catch (\Exception $e) {
             \Log::error('Toggle Status Error: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Terjadi kesalahan saat mengubah status tryout. Silakan coba lagi atau hubungi administrator jika masalah berlanjut.'
@@ -1514,7 +1559,7 @@ class TryoutController extends Controller
     public function paketLengkapStatus()
     {
         $user = auth()->user();
-        
+
         if ($user->paket_akses !== 'lengkap') {
             return redirect()->route('user.tryout.index')
                 ->with('error', 'Anda tidak memiliki paket lengkap.');

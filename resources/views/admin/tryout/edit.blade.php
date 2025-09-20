@@ -332,35 +332,77 @@
 
             // Check if structure changed
             function checkBlueprintChange() {
-                blueprintChanged = true; // simple flag since we don't load original blueprint here
+                let changed = false;
+                $('.blueprint-input').each(function() {
+                    const current = parseInt($(this).val()) || 0;
+                    const original = parseInt($(this).data('original')) || 0;
+                    if (current !== original) {
+                        changed = true;
+                        return false; // break loop
+                    }
+                });
+                blueprintChanged = changed;
             }
 
-            // Validate input against available questions
+            // Validate input against available questions - FIXED VERSION
             function validateInput(input) {
                 const value = parseInt(input.val()) || 0;
                 const row = input.closest('tr');
                 const tersediaText = row.find('td:last-child small').text();
 
-                // ambil level
-                const level = input.attr('name').includes('mudah') ? 'Mudah' :
-                    input.attr('name').includes('sedang') ? 'Sedang' : 'Sulit';
+                // Debug: log the tersedia text
+                console.log('Tersedia text:', tersediaText);
 
-                const match = tersediaText.match(new RegExp(level + ': (\\d+)'));
-                const available = match ? parseInt(match[1]) : 0;
+                // Get level from input name - perbaiki deteksi level
+                let level = '';
+                let levelKey = '';
+                if (input.attr('name').includes('[mudah]')) {
+                    level = 'Mudah';
+                    levelKey = 'mudah';
+                } else if (input.attr('name').includes('[sedang]')) {
+                    level = 'Sedang';
+                    levelKey = 'sedang';
+                } else if (input.attr('name').includes('[sulit]')) {
+                    level = 'Sulit';
+                    levelKey = 'sulit';
+                }
 
-                // Nilai blueprint lama (dari attribute data)
+                // Extract available count - perbaiki regex parsing
+                // Format text: "Mudah: 0 | Sedang: 0 | Sulit: 0"
+                let availableInDatabase = 0;
+                const patterns = [
+                    new RegExp(level + ':\\s*(\\d+)', 'i'), // "Mudah: 0"
+                    new RegExp(levelKey + ':\\s*(\\d+)', 'i') // "mudah: 0"
+                ];
+
+                for (let pattern of patterns) {
+                    const match = tersediaText.match(pattern);
+                    if (match) {
+                        availableInDatabase = parseInt(match[1]);
+                        break;
+                    }
+                }
+
+                console.log(`Level: ${level}, Available: ${availableInDatabase}`);
+
+                // Get original blueprint value
                 const original = parseInt(input.data('original')) || 0;
 
+                // Calculate actual available: soal di database + soal yang sedang digunakan blueprint lama
+                const actualAvailable = availableInDatabase + original;
+
+                // Clear previous validation
                 input.removeClass('is-valid is-invalid');
                 row.find('.validation-message').remove();
 
-                if (value > original + available) {
+                // Validate: input value should not exceed actual available
+                if (value > actualAvailable) {
                     input.addClass('is-invalid');
                     row.after(`
                 <tr class="validation-message">
                     <td colspan="5" class="text-danger small">
                         <i class="fa fa-exclamation-triangle"></i>
-                        Jumlah soal ${level.toLowerCase()} (${value}) melebihi soal tersedia (${available})
+                        Jumlah soal ${level.toLowerCase()} (${value}) melebihi total tersedia (${actualAvailable}: ${availableInDatabase} unused + ${original} from current blueprint)
                     </td>
                 </tr>
             `);
@@ -375,7 +417,7 @@
             // Check if all inputs are valid
             function checkAllValidations() {
                 let allValid = true;
-                $('.blueprint-input').each(function() {
+                $('.blueprint-input:visible').each(function() {
                     if (!validateInput($(this))) {
                         allValid = false;
                     }
@@ -419,25 +461,6 @@
 
             // Initialize total calculation
             calculateTotal();
-
-            // Validate available questions
-            $('.struktur-input').on('blur', function() {
-                let input = $(this);
-                let value = parseInt(input.val()) || 0;
-                let availableText = input.siblings('small').text();
-                let available = parseInt(availableText.match(/Tersedia: (\d+)/)[1]);
-
-                if (value > available) {
-                    input.addClass('is-invalid');
-                    if (!input.siblings('.invalid-feedback').length) {
-                        input.after('<div class="invalid-feedback">Jumlah soal melebihi yang tersedia (' +
-                            available + ' soal)</div>');
-                    }
-                } else {
-                    input.removeClass('is-invalid');
-                    input.siblings('.invalid-feedback').remove();
-                }
-            });
         });
     </script>
 @endpush

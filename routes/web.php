@@ -66,7 +66,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile/{userId}', [UserController::class, 'show'])->name('user.profile');
     Route::put('/profile', [UserController::class, 'update'])->name('profile.update');
     Route::get('/profile/{userId}/paket-lengkap-summary', [UserController::class, 'paketLengkapSummary'])->name('user.profile.paket-lengkap-summary');
-    
+
     // Test result detail routes
     Route::get('/test-result/{id}', [UserController::class, 'testResultDetail'])->name('user.test.result.detail');
 
@@ -113,7 +113,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/tes-kecermatan/riwayat/{userId}', [KecermatanController::class, 'riwayat'])->name('kecermatan.riwayat');
     Route::get('/tes-kecermatan/detail/{id}', [KecermatanController::class, 'detailTes'])->name('kecermatan.detail');
-    
+
     // History routes
     Route::get('/riwayat-tes', [HistoryController::class, 'index'])->name('user.history.index');
 
@@ -151,11 +151,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('tryout', TryoutController::class);
     Route::post('tryout/{tryout}/toggle-status', [TryoutController::class, 'toggleStatus'])->name('tryout.toggle-status');
-    
+
     // Scoring Settings
     Route::get('scoring-settings', [ScoringSettingController::class, 'index'])->name('scoring-settings.index');
     Route::put('scoring-settings', [ScoringSettingController::class, 'update'])->name('scoring-settings.update');
-    
+
     // Package Mapping Routes
     Route::get('package-mapping', [PackageMappingController::class, 'index'])->name('package-mapping.index');
     Route::put('package-mapping', [PackageMappingController::class, 'update'])->name('package-mapping.update');

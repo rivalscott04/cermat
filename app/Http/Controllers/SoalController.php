@@ -124,165 +124,193 @@ class SoalController extends Controller
                 ]);
             }
         });
+        dd($request->all());
 
         return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil ditambahkan');
     }
 
     public function uploadWord(Request $request)
     {
-        $request->validate([
-            'file' => 'required|file|mimes:docx',
-            'kategori_id' => 'required|exists:kategori_soal,id'
-        ]);
-
         try {
+            $request->validate([
+                'file' => 'required|file|mimes:docx',
+            ]);
+
+            \Log::info("Upload Word dimulai...");
+
             $file = $request->file('file');
-            $phpWord = IOFactory::load($file->getPathname());
+            $path = $file->getRealPath();
 
-            $soals = $this->parseWordDocument($phpWord, $request->kategori_id);
+            \Log::info("File berhasil diupload", [
+                'nama_file' => $file->getClientOriginalName(),
+                'path' => $path,
+            ]);
 
-            // Validate opsi bobot based on kategori package mapping dynamically
-            $kategori = KategoriSoal::find($request->kategori_id);
-            $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
-            $isKepribadian = $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
+            $phpWord = \PhpOffice\PhpWord\IOFactory::load($path);
+            \Log::info("File Word berhasil dibaca oleh PhpWord");
 
-            foreach ($soals as $idx => $soalData) {
-                if (!isset($soalData['opsi']) || !is_array($soalData['opsi'])) {
-                    continue;
-                }
-                foreach ($soalData['opsi'] as $opsi) {
-                    if ($isKepribadian) {
-                        if (!isset($opsi['bobot']) || !is_numeric($opsi['bobot']) || intval($opsi['bobot']) < 1 || intval($opsi['bobot']) > 5) {
-                            return back()->with('error', 'Bobot opsi harus bilangan bulat 1–5 untuk kategori kepribadian.');
-                        }
-                    } else {
-                        if (!isset($opsi['bobot']) || !is_numeric($opsi['bobot']) || floatval($opsi['bobot']) < 0 || floatval($opsi['bobot']) > 1) {
-                            return back()->with('error', 'Bobot opsi harus di antara 0–1 untuk kategori non-kepribadian.');
+            $soals = $this->parseWordDocument($phpWord);
+            \Log::info("Jumlah soal hasil parsing", ['count' => count($soals)]);
+
+            DB::beginTransaction();
+
+            foreach ($soals as $index => $soalData) {
+                try {
+                    \Log::info("Menyimpan soal ke-" . ($index + 1), $soalData);
+
+                    $soal = Soal::create([
+                        'kategori_id'   => $soalData['kategori_id'],
+                        'tipe'          => $soalData['tipe'],
+                        'level'         => $soalData['level'] ?? 'mudah',
+                        'pertanyaan'    => $soalData['pertanyaan'],
+                        'jawaban_benar' => $soalData['jawaban_benar'] ?? null,
+                        'pembahasan'    => $soalData['pembahasan'] ?? null,
+                    ]);
+
+                    if (!empty($soalData['opsi']) && is_array($soalData['opsi'])) {
+                        foreach ($soalData['opsi'] as $opsiData) {
+                            \Log::info("Menyimpan opsi soal", $opsiData);
+
+                            OpsiSoal::create([
+                                'soal_id' => $soal->id,
+                                'opsi'    => $opsiData['opsi'] ?? null, // misalnya A/B/C/D
+                                'teks'    => $opsiData['teks'] ?? '',
+                                'bobot'   => $opsiData['bobot'] ?? 0,
+                            ]);
                         }
                     }
+
+                    \Log::info("Soal ke-" . ($index + 1) . " berhasil disimpan.");
+                } catch (\Exception $e) {
+                    \Log::error("Gagal menyimpan soal ke-" . ($index + 1), [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                    ]);
+                    throw $e; // biar rollback
                 }
             }
 
-            DB::transaction(function () use ($soals) {
-                foreach ($soals as $soalData) {
-                    $soal = Soal::create([
-                        'pertanyaan' => $soalData['pertanyaan'],
-                        'tipe' => $soalData['tipe'],
-                        'level' => $soalData['level'] ?? 'mudah',
-                        'kategori_id' => $soalData['kategori_id'],
-                        'pembahasan' => $soalData['pembahasan'] ?? null,
-                        'jawaban_benar' => $soalData['jawaban_benar'] ?? null
-                    ]);
+            DB::commit();
 
-                    foreach ($soalData['opsi'] as $opsiData) {
-                        OpsiSoal::create([
-                            'soal_id' => $soal->id,
-                            'opsi' => $opsiData['opsi'],
-                            'teks' => $opsiData['teks'],
-                            'bobot' => $opsiData['bobot']
-                        ]);
-                    }
-                }
-            });
-
-            return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil diupload dari file Word');
+            return redirect()->route('admin.soal.index')
+                ->with('success', 'Soal berhasil diupload dari file Word');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal mengupload file: ' . $e->getMessage());
+            DB::rollBack();
+            \Log::error("UploadWord gagal total", [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+            return back()->with('error', 'Terjadi kesalahan saat upload Word. Cek log untuk detail.');
         }
     }
 
-    private function parseWordDocument($phpWord, $kategoriId)
+
+
+    /**
+     * Parse Word Document ke array soal
+     */
+    private function parseWordDocument($phpWord)
     {
-        $soals = [];
-        $currentSoal = null;
+        $text = '';
 
         foreach ($phpWord->getSections() as $section) {
             foreach ($section->getElements() as $element) {
-                if (method_exists($element, 'getElements')) {
-                    foreach ($element->getElements() as $childElement) {
-                        if (method_exists($childElement, 'getText')) {
-                            $text = trim($childElement->getText());
-
-                            if (preg_match('/\[KATEGORI\]\s*(.+)/', $text, $matches)) {
-                                // Skip kategori parsing for now, use provided kategori_id
-                            } elseif (preg_match('/\[TIPE\]\s*(.+)/', $text, $matches)) {
-                                $currentSoal = [
-                                    'tipe' => trim($matches[1]),
-                                    'kategori_id' => $kategoriId,
-                                    'opsi' => []
-                                ];
-                            } elseif (preg_match('/\[LEVEL\]\s*(mudah|sedang|sulit)/i', $text, $matches)) {
-                                if ($currentSoal) {
-                                    $currentSoal['level'] = strtolower(trim($matches[1]));
-                                }
-                            } elseif (preg_match('/\[SOAL\]/', $text)) {
-                                // Start of question
-                            } elseif (preg_match('/\[A\](.+?)\[(\d+(?:\.\d+)?)\]/', $text, $matches)) {
-                                if ($currentSoal) {
-                                    $currentSoal['opsi'][] = [
-                                        'opsi' => 'A',
-                                        'teks' => trim($matches[1]),
-                                        'bobot' => floatval($matches[2])
-                                    ];
-                                }
-                            } elseif (preg_match('/\[B\](.+?)\[(\d+(?:\.\d+)?)\]/', $text, $matches)) {
-                                if ($currentSoal) {
-                                    $currentSoal['opsi'][] = [
-                                        'opsi' => 'B',
-                                        'teks' => trim($matches[1]),
-                                        'bobot' => floatval($matches[2])
-                                    ];
-                                }
-                            } elseif (preg_match('/\[C\](.+?)\[(\d+(?:\.\d+)?)\]/', $text, $matches)) {
-                                if ($currentSoal) {
-                                    $currentSoal['opsi'][] = [
-                                        'opsi' => 'C',
-                                        'teks' => trim($matches[1]),
-                                        'bobot' => floatval($matches[2])
-                                    ];
-                                }
-                            } elseif (preg_match('/\[D\](.+?)\[(\d+(?:\.\d+)?)\]/', $text, $matches)) {
-                                if ($currentSoal) {
-                                    $currentSoal['opsi'][] = [
-                                        'opsi' => 'D',
-                                        'teks' => trim($matches[1]),
-                                        'bobot' => floatval($matches[2])
-                                    ];
-                                }
-                            } elseif (preg_match('/\[E\](.+?)\[(\d+(?:\.\d+)?)\]/', $text, $matches)) {
-                                if ($currentSoal) {
-                                    $currentSoal['opsi'][] = [
-                                        'opsi' => 'E',
-                                        'teks' => trim($matches[1]),
-                                        'bobot' => floatval($matches[2])
-                                    ];
-                                }
-                            } elseif (preg_match('/\[JAWABAN\]\s*(.+)/', $text, $matches)) {
-                                if ($currentSoal) {
-                                    $currentSoal['jawaban_benar'] = trim($matches[1]);
-                                }
-                            } elseif (preg_match('/\[PEMBAHASAN\]/', $text)) {
-                                // Start of explanation
-                            } elseif ($currentSoal && !empty($text) && !preg_match('/\[/', $text)) {
-                                if (!isset($currentSoal['pertanyaan'])) {
-                                    $currentSoal['pertanyaan'] = $text;
-                                } elseif (!isset($currentSoal['pembahasan'])) {
-                                    $currentSoal['pembahasan'] = $text;
-                                }
-                            }
-                        }
-                    }
+                if (method_exists($element, 'getText')) {
+                    $text .= $element->getText() . "\n";
                 }
             }
         }
 
-        // Add current soal if exists
-        if ($currentSoal && isset($currentSoal['pertanyaan'])) {
-            $soals[] = $currentSoal;
+        \Log::info("Raw text dari Word:", [$text]);
+
+        $blocks = preg_split('/---/', $text);
+        $soals = [];
+
+        foreach ($blocks as $i => $block) {
+            $lines = array_filter(array_map('trim', explode("\n", $block)));
+
+            if (empty($lines)) {
+                \Log::warning("Block soal ke-{$i} kosong, dilewati.");
+                continue;
+            }
+
+            \Log::info("Lines block ke-{$i}:", $lines);
+
+            // default
+            $soalData = [
+                'kategori_id'   => null,
+                'tipe'          => null,
+                'level'         => null,
+                'pertanyaan'    => '',
+                'opsi'          => [],
+                'jawaban_benar' => null,
+                'pembahasan'    => null,
+            ];
+
+            $mode = null;
+
+            foreach ($lines as $line) {
+                if (str_starts_with($line, '[kategori]')) {
+                    $kode = trim(str_replace('[kategori]', '', $line));
+                    \Log::info("Mencari kategori dengan kode: {$kode}");
+                    $kategori = KategoriSoal::where('kode', $kode)->first();
+
+                    if (!$kategori) {
+                        \Log::error("Kategori tidak ditemukan", ['kode' => $kode]);
+                        throw new \Exception("Kategori dengan kode '{$kode}' tidak ditemukan di database.");
+                    }
+
+                    $soalData['kategori_id'] = $kategori->id;
+                } elseif (str_starts_with($line, '[tipe]')) {
+                    $soalData['tipe'] = trim(str_replace('[tipe]', '', $line));
+                } elseif (str_starts_with($line, '[level]')) {
+                    $soalData['level'] = trim(str_replace('[level]', '', $line));
+                } elseif (str_starts_with($line, 'Pertanyaan:')) {
+                    $mode = 'pertanyaan';
+                    continue;
+                } elseif (str_starts_with($line, 'Opsi:')) {
+                    $mode = 'opsi';
+                    continue;
+                } elseif (str_starts_with($line, 'Jawaban Benar:')) {
+                    $soalData['jawaban_benar'] = trim(str_replace('Jawaban Benar:', '', $line));
+                    $mode = null;
+                    continue;
+                } elseif (str_starts_with($line, 'Pembahasan:')) {
+                    $mode = 'pembahasan';
+                    continue;
+                }
+
+                // isi data sesuai mode
+                if ($mode === 'pertanyaan') {
+                    $soalData['pertanyaan'] .= ($soalData['pertanyaan'] ? "\n" : '') . $line;
+                } elseif ($mode === 'opsi') {
+                    // format umum: A. teks | bobot: x
+                    if (preg_match('/^([A-Z])\.\s*(.*?)\s*\|\s*bobot:\s*(\d+)/i', $line, $m)) {
+                        $opsiKey = $m[1];
+                        $opsiText = $m[2];
+                        $bobot = (int)$m[3];
+
+                        $soalData['opsi'][] = [
+                            'opsi'  => $opsiKey,
+                            'teks'  => $opsiText,
+                            'bobot' => $bobot,
+                        ];
+                    }
+                } elseif ($mode === 'pembahasan') {
+                    $soalData['pembahasan'] .= ($soalData['pembahasan'] ? "\n" : '') . $line;
+                }
+            }
+
+            $soals[] = $soalData;
         }
+
+        \Log::info("Hasil akhir parsing soal:", $soals);
 
         return $soals;
     }
+
+
+
 
     public function edit(Soal $soal)
     {
@@ -295,6 +323,12 @@ class SoalController extends Controller
 
     public function update(Request $request, Soal $soal)
     {
+        // Debug logging
+        \Log::info('=== UPDATE SOAL DEBUG ===');
+        \Log::info('Soal ID: ' . $soal->id);
+        \Log::info('Request data: ', $request->all());
+        \Log::info('Opsi data: ', $request->opsi ?? []);
+
         $rules = [
             'pertanyaan' => 'required|string',
             'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2,gambar',
@@ -314,83 +348,110 @@ class SoalController extends Controller
             $rules['gambar'] = 'image|mimes:jpeg,png,jpg,gif|max:2048';
         }
 
-        // Dynamic validation for kepribadian categories (TKP/PSIKOTES via package mapping)
-        if ($request->filled('kategori_id')) {
+        // Dynamic validation for kepribadian categories
+        // PERBAIKAN: Dynamic validation hanya untuk pg_bobot dengan kategori kepribadian
+        if ($request->filled('kategori_id') && $request->tipe === 'pg_bobot') {
             $kategori = KategoriSoal::find($request->kategori_id);
             if ($kategori) {
                 $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
                 if (in_array($kategori->kode, $kepribadianKategoriCodes)) {
-                    $rules['opsi.*.bobot'] = 'required|integer|between:1,5';
+                    $rules['opsi.*.bobot'] = 'required|numeric|between:1,5';
                 }
             }
         }
 
-        $request->validate($rules);
+        try {
+            $request->validate($rules);
+            \Log::info('Validation passed');
+        } catch (\Exception $e) {
+            \Log::error('Validation failed: ' . $e->getMessage());
+            throw $e;
+        }
 
-        DB::transaction(function () use ($request, $soal) {
-            $soalData = [
-                'pertanyaan' => $request->pertanyaan,
-                'tipe' => $request->tipe,
-                'level' => $request->level,
-                'kategori_id' => $request->kategori_id,
-                'pembahasan' => $request->pembahasan,
-                'pembahasan_type' => $request->pembahasan_type ?? $soal->pembahasan_type ?? 'text',
-                'jawaban_benar' => $request->jawaban_benar
-            ];
+        try {
+            DB::transaction(function () use ($request, $soal) {
+                \Log::info('Starting transaction...');
 
-            // Handle image upload
-            if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
-                // Delete old image if exists
-                if ($soal->gambar && Storage::disk('public')->exists($soal->gambar)) {
-                    Storage::disk('public')->delete($soal->gambar);
+                $soalData = [
+                    'pertanyaan' => $request->pertanyaan,
+                    'tipe' => $request->tipe,
+                    'level' => $request->level,
+                    'kategori_id' => $request->kategori_id,
+                    'pembahasan' => $request->pembahasan,
+                    'pembahasan_type' => $request->pembahasan_type ?? $soal->pembahasan_type ?? 'text',
+                    'jawaban_benar' => $request->jawaban_benar
+                ];
+
+                \Log::info('Soal data to update: ', $soalData);
+
+                // Handle image upload
+                if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
+                    if ($soal->gambar && Storage::disk('public')->exists($soal->gambar)) {
+                        Storage::disk('public')->delete($soal->gambar);
+                    }
+                    $image = $request->file('gambar');
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $imagePath = $image->storeAs('soal_images', $imageName, 'public');
+                    $soalData['gambar'] = $imagePath;
+                } elseif ($request->tipe !== 'gambar' && $soal->gambar) {
+                    if (Storage::disk('public')->exists($soal->gambar)) {
+                        Storage::disk('public')->delete($soal->gambar);
+                    }
+                    $soalData['gambar'] = null;
                 }
 
-                $image = $request->file('gambar');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $imagePath = $image->storeAs('soal_images', $imageName, 'public');
-                $soalData['gambar'] = $imagePath;
-            } elseif ($request->tipe !== 'gambar' && $soal->gambar) {
-                // Remove image if tipe changed from gambar to something else
-                if (Storage::disk('public')->exists($soal->gambar)) {
-                    Storage::disk('public')->delete($soal->gambar);
+                // Handle pembahasan image
+                if (in_array($request->pembahasan_type, ['image', 'both']) && $request->hasFile('pembahasan_image')) {
+                    if ($soal->pembahasan_image && Storage::disk('public')->exists($soal->pembahasan_image)) {
+                        Storage::disk('public')->delete($soal->pembahasan_image);
+                    }
+                    $img = $request->file('pembahasan_image');
+                    $name = time() . '_' . $img->getClientOriginalName();
+                    $path = $img->storeAs('pembahasan_images', $name, 'public');
+                    $soalData['pembahasan_image'] = $path;
+                } elseif ($request->pembahasan_type === 'text') {
+                    if ($soal->pembahasan_image && Storage::disk('public')->exists($soal->pembahasan_image)) {
+                        Storage::disk('public')->delete($soal->pembahasan_image);
+                    }
+                    $soalData['pembahasan_image'] = null;
                 }
-                $soalData['gambar'] = null;
-            }
 
-            // Handle pembahasan image upload/update
-            if (in_array($request->pembahasan_type, ['image', 'both']) && $request->hasFile('pembahasan_image')) {
-                if ($soal->pembahasan_image && Storage::disk('public')->exists($soal->pembahasan_image)) {
-                    Storage::disk('public')->delete($soal->pembahasan_image);
+                \Log::info('Updating soal with data: ', $soalData);
+                $updated = $soal->update($soalData);
+                \Log::info('Soal update result: ' . ($updated ? 'success' : 'failed'));
+
+                // Delete existing options
+                \Log::info('Deleting existing opsi...');
+                $deletedCount = $soal->opsi()->delete();
+                \Log::info('Deleted opsi count: ' . $deletedCount);
+
+                // Create new options
+                \Log::info('Creating new opsi...');
+                foreach ($request->opsi as $index => $opsiData) {
+                    $newOpsi = OpsiSoal::create([
+                        'soal_id' => $soal->id,
+                        'opsi' => chr(65 + $index),
+                        'teks' => $opsiData['teks'],
+                        'bobot' => $opsiData['bobot'] ?? 0
+                    ]);
+                    \Log::info('Created opsi: ', $newOpsi->toArray());
                 }
-                $img = $request->file('pembahasan_image');
-                $name = time() . '_' . $img->getClientOriginalName();
-                $path = $img->storeAs('pembahasan_images', $name, 'public');
-                $soalData['pembahasan_image'] = $path;
-            } elseif ($request->pembahasan_type === 'text') {
-                // If switching to text-only, remove existing image
-                if ($soal->pembahasan_image && Storage::disk('public')->exists($soal->pembahasan_image)) {
-                    Storage::disk('public')->delete($soal->pembahasan_image);
-                }
-                $soalData['pembahasan_image'] = null;
-            }
 
-            $soal->update($soalData);
+                \Log::info('Transaction completed successfully');
+            });
 
-            // Delete existing options
-            $soal->opsi()->delete();
+            \Log::info('Update completed, redirecting...');
+            return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil diperbarui');
+        } catch (\Exception $e) {
+            \Log::error('Update failed: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            throw $e;
+        }
+    }
 
-            // Create new options
-            foreach ($request->opsi as $index => $opsiData) {
-                OpsiSoal::create([
-                    'soal_id' => $soal->id,
-                    'opsi' => chr(65 + $index),
-                    'teks' => $opsiData['teks'],
-                    'bobot' => $opsiData['bobot'] ?? 0
-                ]);
-            }
-        });
-
-        return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil diperbarui');
+    public function show(Soal $soal)
+    {
+        return redirect()->route('admin.soal.index')->with('success', 'Redirected to soal list');
     }
 
     public function destroy(Soal $soal)
