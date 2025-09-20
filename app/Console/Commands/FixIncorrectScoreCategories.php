@@ -110,11 +110,11 @@ class FixIncorrectScoreCategories extends Command
      */
     private function getTkpCategory($score)
     {
-        if ($score >= 400) return 'Sangat Tinggi';
-        if ($score >= 350) return 'Tinggi';
-        if ($score >= 300) return 'Sedang';
-        if ($score >= 250) return 'Rendah';
-        return 'Sangat Rendah';
+        if ($score >= 91) return 'Sangat Tinggi';
+        if ($score >= 76) return 'Tinggi';
+        if ($score >= 61) return 'Cukup Tinggi';
+        if ($score >= 41) return 'Sedang';
+        return 'Rendah';
     }
 
     /**
