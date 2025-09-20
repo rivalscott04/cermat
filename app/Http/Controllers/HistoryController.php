@@ -51,6 +51,11 @@ class HistoryController extends Controller
                     }
                 }
                 
+                // Determine status based on tryout type
+                $status = $isTkp && $tkpFinal !== null 
+                    ? $this->getTkpStatus($tkpFinal)
+                    : $this->getTryoutStatus($correctAnswers, $totalQuestions);
+
                 return [
                     'id' => $session->id,
                     'tryout_id' => $session->tryout_id,
@@ -63,7 +68,7 @@ class HistoryController extends Controller
                     'wrong_answers' => $totalQuestions - $correctAnswers,
                     'percentage' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 1) : 0,
                     'duration' => $session->elapsed_minutes,
-                    'status' => $this->getTryoutStatus($correctAnswers, $totalQuestions),
+                    'status' => $status,
                     // TKP extras for view
                     'is_tkp' => $isTkp,
                     'tkp_n' => $tkpN,
@@ -117,6 +122,25 @@ class HistoryController extends Controller
         if ($percentage >= 70) return 'good';
         if ($percentage >= 60) return 'fair';
         return 'poor';
+    }
+
+    /**
+     * Get TKP status based on final score according to TKP scoring system
+     * 91-100: Sangat Tinggi (excellent)
+     * 76-90:  Tinggi (good) 
+     * 61-75:  Cukup Tinggi (fair)
+     * 41-60:  Sedang (poor)
+     * ≤40:    Rendah (poor)
+     */
+    private function getTkpStatus($finalScore)
+    {
+        if ($finalScore === null || $finalScore === 0) return 'unknown';
+        
+        if ($finalScore >= 91) return 'excellent';      // Sangat Tinggi
+        if ($finalScore >= 76) return 'good';           // Tinggi
+        if ($finalScore >= 61) return 'fair';           // Cukup Tinggi
+        if ($finalScore >= 41) return 'poor';           // Sedang
+        return 'poor';                                  // Rendah
     }
 
     private function getKecermatanStatus($correct, $total)
