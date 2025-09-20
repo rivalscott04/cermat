@@ -38,6 +38,22 @@ class SimulasiNilaiController extends Controller
 		session()->forget('result');
 		return redirect()->route('simulasi.nilai');
 	}
+
+	/**
+	 * Get scoring settings for AJAX requests
+	 */
+	public function getSettings()
+	{
+		$setting = ScoringSetting::current();
+		return response()->json([
+			'weights' => [
+				'kecermatan' => $setting->weight_kecermatan,
+				'kecerdasan' => $setting->weight_kecerdasan,
+				'kepribadian' => $setting->weight_kepribadian,
+			],
+			'passing_grade' => $setting->passing_grade,
+		]);
+	}
 }
 
 

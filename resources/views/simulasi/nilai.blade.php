@@ -52,32 +52,21 @@
 			<div class="ibox">
 				<div class="ibox-title"><h5>Hasil</h5></div>
 				<div class="ibox-content">
-                <p>Bobot saat ini: Kecermatan {{ $setting->weight_kecermatan }}%, Kecerdasan {{ $setting->weight_kecerdasan }}%, Kepribadian {{ $setting->weight_kepribadian }}%.</p>
-                <p>Nilai minimal kelulusan: <strong>{{ $setting->passing_grade }}</strong></p>
+                <p class="weights-display">Bobot saat ini: Kecermatan {{ $setting->weight_kecermatan }}%, Kecerdasan {{ $setting->weight_kecerdasan }}%, Kepribadian {{ $setting->weight_kepribadian }}%.</p>
+                <p>Nilai minimal kelulusan: <strong class="passing-grade">{{ $setting->passing_grade }}</strong></p>
                 @php $hasResult = isset($result); $score = $hasResult ? $result['score'] : 0; @endphp
-                <h3 class="m-t-none">Nilai Akhir: <strong>{{ $score }}</strong>
-                    {!! $hasResult ? ($result['passed'] ? '<span class="label label-primary m-l-sm">LULUS</span>' : '<span class="label label-danger m-l-sm">TIDAK LULUS</span>') : '<span class="label label-default m-l-sm">Belum dihitung</span>' !!}
+                <h3 class="m-t-none">Nilai Akhir: <strong class="score-display">{{ $score }}</strong>
+                    {!! $hasResult ? ($result['passed'] ? '<span class="label label-success m-l-sm">LULUS</span>' : '<span class="label label-danger m-l-sm">TIDAK LULUS</span>') : '<span class="label label-default m-l-sm">Belum dihitung</span>' !!}
                 </h3>
-                <p class="text-muted">Rumus: ({{ $setting->weight_kecermatan }}% × Kecermatan) + ({{ $setting->weight_kecerdasan }}% × Kecerdasan) + ({{ $setting->weight_kepribadian }}% × Kepribadian)</p>
+                <p class="text-muted formula-display">Rumus: ({{ $setting->weight_kecermatan }}% × Kecermatan) + ({{ $setting->weight_kecerdasan }}% × Kecerdasan) + ({{ $setting->weight_kepribadian }}% × Kepribadian)</p>
 				</div>
 			</div>
 		</div>
 	</div>
 </div>
 @push('scripts')
-<script>
-    (function(){
-        var form = document.querySelector('form');
-        if (!form) return;
-        var btn = document.getElementById('btnHitung');
-        form.addEventListener('submit', function(){
-            if(btn){
-                btn.disabled = true;
-                btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Menghitung...';
-            }
-        });
-    })();
-</script>
+<!-- Load simulasi nilai calculator script -->
+<script src="{{ asset('js/simulasi-nilai.js') }}"></script>
 @endpush
 @endsection
 
