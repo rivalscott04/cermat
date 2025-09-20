@@ -15,7 +15,7 @@
             <div class="ibox-title">
                 <h5><i class="fa fa-user"></i> Riwayat Tes - {{ $user->name }}</h5>
                 <div class="ibox-tools">
-                    <span class="badge badge-info">{{ ucfirst($user->package ?? 'Free') }}</span>
+                    <span class="badge badge-info">{{ $user->getPackageDisplayName() }}</span>
                 </div>
             </div>
             <div class="ibox-content">
@@ -29,7 +29,7 @@
                                 <h4 class="user-name">{{ $user->name }}</h4>
                                 <p class="user-email">{{ $user->email }}</p>
                                 <span class="user-package badge badge-{{ $user->package == 'lengkap' ? 'success' : ($user->package == 'kecermatan' ? 'info' : ($user->package == 'kecerdasan' ? 'primary' : ($user->package == 'kepribadian' ? 'warning' : 'secondary'))) }}">
-                                    Package: {{ ucfirst($user->package ?? 'Free') }}
+                                    Package: {{ $user->getPackageDisplayName() }}
                                 </span>
                             </div>
                         </div>

@@ -68,7 +68,7 @@
                                     @endif
                                     @if ($user->package && $user->package !== 'free')
                                         <span class="badge badge-info badge-lg">
-                                            <i class="fa fa-crown mr-1"></i>{{ ucfirst($user->package) }}
+                                            <i class="fa fa-crown mr-1"></i>{{ $user->getPackageDisplayName() }}
                                         </span>
                                     @endif
                                 </div>
@@ -123,7 +123,7 @@
                             <h6 class="text-muted mb-2">Paket Akses</h6>
                             @if ($user->package && $user->package !== 'free')
                                 <span class="badge badge-info badge-lg w-100 py-2">
-                                    <i class="fa fa-crown mr-2"></i>{{ ucfirst($user->package) }}
+                                    <i class="fa fa-crown mr-2"></i>{{ $user->getPackageDisplayName() }}
                                 </span>
                             @else
                                 <span class="badge badge-secondary badge-lg w-100 py-2">

@@ -247,10 +247,17 @@ class User extends Authenticatable
             'kecerdasan' => 'Paket Kecerdasan', 
             'kepribadian' => 'Paket Kepribadian',
             'lengkap' => 'Paket Lengkap',
-            'psikologi' => 'Paket Kepribadian' // Legacy mapping
+            'psikologi' => 'Psikologi' // Legacy mapping - keep original name for display
         ];
 
-        $userPackage = $this->paket_akses; // Use the mapped package
+        // Check if user has legacy psikologi package
+        $userPackage = $this->package; // Use original package field first
+        if ($userPackage === 'psikologi') {
+            return $packageNames['psikologi'];
+        }
+        
+        // Use mapped package for other cases
+        $userPackage = $this->paket_akses;
         return $packageNames[$userPackage] ?? 'Free';
     }
 

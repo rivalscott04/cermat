@@ -107,7 +107,7 @@
                                     <td>{{ $user->email }}</td>
                                     <td>
                                         <span class="badge badge-{{ $user->package == 'lengkap' ? 'success' : ($user->package == 'kecermatan' ? 'info' : ($user->package == 'kecerdasan' ? 'primary' : ($user->package == 'kepribadian' ? 'warning' : 'secondary'))) }}">
-                                            {{ ucfirst($user->package ?? 'Free') }}
+                                            {{ $user->getPackageDisplayName() }}
                                         </span>
                                     </td>
                                     <td>
