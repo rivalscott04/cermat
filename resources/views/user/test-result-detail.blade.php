@@ -192,6 +192,46 @@
                                         
                                         @if($hasilTes->jenis_tes === 'kecermatan')
                                             @if(is_array($detailJawaban) && count($detailJawaban) > 0)
+                                                @php
+                                                    // Group jawaban by set
+                                                    $jawabanBySet = [];
+                                                    foreach($detailJawaban as $index => $jawaban) {
+                                                        if(isset($jawaban['set']) && isset($jawaban['benar'])) {
+                                                            $setNumber = $jawaban['set'];
+                                                            if(!isset($jawabanBySet[$setNumber])) {
+                                                                $jawabanBySet[$setNumber] = [];
+                                                            }
+                                                            $jawaban['original_index'] = $index;
+                                                            $jawabanBySet[$setNumber][] = $jawaban;
+                                                        }
+                                                    }
+                                                    $availableSets = array_keys($jawabanBySet);
+                                                    sort($availableSets);
+                                                @endphp
+                                                
+                                                <!-- Pagination Controls -->
+                                                <div class="row mb-3">
+                                                    <div class="col-md-6">
+                                                        <div class="btn-group" role="group" id="set-pagination">
+                                                            @foreach($availableSets as $setNum)
+                                                                <button type="button" class="btn btn-outline-primary set-btn" 
+                                                                        data-set="{{ $setNum }}"
+                                                                        onclick="showSet({{ $setNum }})">
+                                                                    Set {{ $setNum }}
+                                                                </button>
+                                                            @endforeach
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 text-right">
+                                                        <small class="text-muted">
+                                                            <i class="fa fa-info-circle"></i> 
+                                                            Menampilkan: <span id="current-set-info">Set 1</span> 
+                                                            (<span id="current-count">{{ count($jawabanBySet[$availableSets[0]] ?? []) }}</span> soal)
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Table Container -->
                                                 <div class="table-responsive">
                                                     <table class="table table-striped table-bordered table-hover">
                                                         <thead>
@@ -207,10 +247,9 @@
                                                                 <th width="10%">Aksi</th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody>
-                                                            @foreach($detailJawaban as $index => $jawaban)
-                                                                @if(isset($jawaban['set']) && isset($jawaban['benar']))
-                                                                <tr>
+                                                        <tbody id="jawaban-table-body">
+                                                            @foreach($jawabanBySet[$availableSets[0]] ?? [] as $jawaban)
+                                                                <tr data-set="{{ $jawaban['set'] }}">
                                                                     <td class="text-center">
                                                                         <span class="badge badge-info">{{ $jawaban['set'] ?? '-' }}</span>
                                                                     </td>
@@ -245,13 +284,12 @@
                                                                     </td>
                                                                     <td class="text-center">
                                                                         <button type="button" class="btn btn-xs btn-outline-info" 
-                                                                                onclick="showDetail({{ $index }})" 
+                                                                                onclick="showDetail({{ $jawaban['original_index'] }})" 
                                                                                 title="Lihat Detail">
                                                                             <i class="fa fa-eye"></i>
                                                                         </button>
                                                                     </td>
                                                                 </tr>
-                                                                @endif
                                                             @endforeach
                                                         </tbody>
                                                     </table>
@@ -307,6 +345,82 @@
 <script>
     // Data jawaban untuk modal detail
     const detailJawaban = @json(json_decode($hasilTes->detail_jawaban ?? '[]', true));
+    
+    // Group jawaban by set untuk pagination
+    const jawabanBySet = {};
+    detailJawaban.forEach((jawaban, index) => {
+        if (jawaban.set && jawaban.benar !== undefined) {
+            if (!jawabanBySet[jawaban.set]) {
+                jawabanBySet[jawaban.set] = [];
+            }
+            jawaban.original_index = index;
+            jawabanBySet[jawaban.set].push(jawaban);
+        }
+    });
+    
+    const availableSets = Object.keys(jawabanBySet).sort((a, b) => parseInt(a) - parseInt(b));
+    let currentSet = availableSets[0] || '1';
+    
+    function showSet(setNumber) {
+        currentSet = setNumber;
+        
+        // Update button states
+        $('.set-btn').removeClass('btn-primary').addClass('btn-outline-primary');
+        $(`.set-btn[data-set="${setNumber}"]`).removeClass('btn-outline-primary').addClass('btn-primary');
+        
+        // Update info
+        $('#current-set-info').text(`Set ${setNumber}`);
+        $('#current-count').text(jawabanBySet[setNumber] ? jawabanBySet[setNumber].length : 0);
+        
+        // Update table content
+        const tbody = $('#jawaban-table-body');
+        tbody.empty();
+        
+        if (jawabanBySet[setNumber]) {
+            jawabanBySet[setNumber].forEach(jawaban => {
+                const statusBadge = jawaban.benar === true ? 
+                    '<span class="badge badge-success"><i class="fa fa-check"></i> Benar</span>' :
+                    '<span class="badge badge-danger"><i class="fa fa-times"></i> Salah</span>';
+                
+                const row = `
+                    <tr data-set="${jawaban.set}">
+                        <td class="text-center">
+                            <span class="badge badge-info">${jawaban.set || '-'}</span>
+                        </td>
+                        <td>
+                            <code class="text-primary">${jawaban.soal_asli || '-'}</code>
+                        </td>
+                        <td>
+                            <code class="text-secondary">${jawaban.soal_acak || '-'}</code>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-warning">${jawaban.huruf_hilang || '-'}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-secondary">${jawaban.posisi_huruf_hilang || '-'}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="badge badge-primary">${jawaban.jawaban || '-'}</span>
+                        </td>
+                        <td class="text-center">
+                            ${statusBadge}
+                        </td>
+                        <td class="text-center">
+                            <small class="text-muted">${jawaban.waktu || 0}s</small>
+                        </td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-xs btn-outline-info" 
+                                    onclick="showDetail(${jawaban.original_index})" 
+                                    title="Lihat Detail">
+                                <i class="fa fa-eye"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+        }
+    }
     
     function showDetail(index) {
         const jawaban = detailJawaban[index];
@@ -381,6 +495,11 @@
     $(document).ready(function() {
         // Collapse detail jawaban section by default
         $('#detail-jawaban-ibox .ibox-content').hide();
+        
+        // Set initial pagination state
+        if (availableSets.length > 0) {
+            $(`.set-btn[data-set="${availableSets[0]}"]`).removeClass('btn-outline-primary').addClass('btn-primary');
+        }
         
         // Toggle collapse functionality khusus untuk detail jawaban
         $('#detail-jawaban-toggle').off('click').on('click', function(e) {
@@ -487,6 +606,46 @@
         transition: transform 0.3s ease;
     }
     
+    /* Pagination styling */
+    .btn-group .btn {
+        margin-right: 2px;
+        border-radius: 0.25rem;
+    }
+    
+    .btn-group .btn:last-child {
+        margin-right: 0;
+    }
+    
+    .set-btn.btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+        font-weight: 600;
+    }
+    
+    .set-btn.btn-outline-primary {
+        color: #007bff;
+        border-color: #007bff;
+        background-color: transparent;
+    }
+    
+    .set-btn.btn-outline-primary:hover {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+    
+    /* Info section styling */
+    #current-set-info {
+        font-weight: 600;
+        color: #007bff;
+    }
+    
+    #current-count {
+        font-weight: 600;
+        color: #28a745;
+    }
+    
     /* Responsive improvements */
     @media (max-width: 768px) {
         .table-responsive {
@@ -496,6 +655,16 @@
         .badge {
             font-size: 0.7em;
             padding: 0.3em 0.5em;
+        }
+        
+        .btn-group .btn {
+            font-size: 0.8em;
+            padding: 0.4rem 0.8rem;
+        }
+        
+        .col-md-6.text-right {
+            text-align: left !important;
+            margin-top: 10px;
         }
     }
 </style>
