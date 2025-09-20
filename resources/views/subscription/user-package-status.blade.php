@@ -28,10 +28,11 @@
                     </div>
                 @endif
 
-                {{-- Status Paket Aktif --}}
+                {{-- Layout 2 Kolom: Status & Detail Paket --}}
                 <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card border-left-{{ $user->hasActiveSubscription() ? 'success' : 'warning' }} shadow h-100 py-2">
+                    {{-- Kolom 1: Status Paket --}}
+                    <div class="col-md-6 mb-3">
+                        <div class="card border-left-{{ $user->hasActiveSubscription() ? 'success' : 'warning' }} shadow h-100">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
@@ -41,7 +42,7 @@
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">
                                             @if ($user->hasActiveSubscription())
                                                 <i class="fa fa-check-circle mr-2 text-success"></i>
-                                                Aktif - {{ $packageDisplayName }}
+                                                {{ $packageDisplayName }}
                                             @else
                                                 <i class="fa fa-exclamation-triangle mr-2 text-warning"></i>
                                                 Belum Berlangganan
@@ -49,8 +50,8 @@
                                         </div>
                                         @if ($user->hasActiveSubscription() && $subscription && $subscription->end_date)
                                             <div class="text-xs text-muted mt-1">
-                                                Berakhir pada: {{ $subscription->end_date->format('d M Y') }}
-                                                ({{ $subscription->end_date->diffForHumans() }})
+                                                Berakhir: {{ $subscription->end_date->format('d M Y') }}
+                                                <br><small>({{ $subscription->end_date->diffForHumans() }})</small>
                                             </div>
                                         @endif
                                     </div>
@@ -65,70 +66,70 @@
                             </div>
                         </div>
                     </div>
+
+                    {{-- Kolom 2: Limit & Kuota --}}
+                    <div class="col-md-6 mb-3">
+                        <div class="card shadow h-100">
+                            <div class="card-header py-2">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    <i class="fa fa-bar-chart mr-2"></i>Limit & Kuota
+                                </h6>
+                            </div>
+                            <div class="card-body py-2">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">
+                                        <i class="fa fa-info-circle text-info mr-2"></i>
+                                        <span class="text-dark">Maksimal Tryout: 
+                                            @if ($maxTryouts == 999)
+                                                <span class="badge badge-success">Unlimited</span>
+                                            @else
+                                                <span class="badge badge-primary">{{ $maxTryouts }}</span>
+                                            @endif
+                                        </span>
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fa fa-graduation-cap text-primary mr-2"></i>
+                                        <span class="text-dark">Jenis Tes: 
+                                            @foreach ($allowedCategories as $category)
+                                                <span class="badge badge-light mr-1">{{ $category }}</span>
+                                            @endforeach
+                                        </span>
+                                    </li>
+                                    <li class="mb-0">
+                                        <i class="fa fa-clock-o text-warning mr-2"></i>
+                                        <span class="text-dark text-sm">{{ $packageLimits['description'] }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {{-- Detail Paket dan Fitur --}}
+                {{-- Detail Fitur Paket --}}
                 <div class="row mb-4">
                     <div class="col-12">
                         <div class="card shadow">
                             <div class="card-header py-3">
                                 <h6 class="m-0 font-weight-bold text-primary">
-                                    <i class="fa fa-info-circle mr-2"></i>Detail Paket: {{ $packageFeatures['title'] }}
+                                    <i class="fa fa-star mr-2"></i>{{ $packageFeatures['title'] }} - {{ $packageFeatures['description'] }}
                                 </h6>
                             </div>
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-md-12 mb-3">
-                                        <p class="text-muted mb-3">{{ $packageFeatures['description'] }}</p>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <h6 class="font-weight-bold text-dark mb-3">
-                                            <i class="fa fa-star mr-2"></i>Fitur yang Tersedia
-                                        </h6>
-                                        @if (count($packageFeatures['features']) > 0)
-                                            <ul class="list-unstyled">
-                                                @foreach ($packageFeatures['features'] as $feature)
-                                                    <li class="mb-2">
-                                                        <i class="fa fa-check text-success mr-2"></i>
-                                                        <span class="text-dark">{{ $feature }}</span>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        @else
+                                    @if (count($packageFeatures['features']) > 0)
+                                        @foreach ($packageFeatures['features'] as $feature)
+                                            <div class="col-md-6 col-lg-4 mb-2">
+                                                <div class="d-flex align-items-center">
+                                                    <i class="fa fa-check text-success mr-2"></i>
+                                                    <span class="text-dark">{{ $feature }}</span>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="col-12">
                                             <p class="text-muted">Tidak ada fitur yang tersedia</p>
-                                        @endif
-                                    </div>
-                                    <div class="col-md-6">
-                                        <h6 class="font-weight-bold text-dark mb-3">
-                                            <i class="fa fa-bar-chart mr-2"></i>Limit & Kuota
-                                        </h6>
-                                        <ul class="list-unstyled">
-                                            <li class="mb-2">
-                                                <i class="fa fa-info-circle text-info mr-2"></i>
-                                                <span class="text-dark">Maksimal Tryout: 
-                                                    @if ($maxTryouts == 999)
-                                                        <span class="badge badge-success">Unlimited</span>
-                                                    @else
-                                                        <span class="badge badge-primary">{{ $maxTryouts }}</span>
-                                                    @endif
-                                                </span>
-                                            </li>
-                                            <li class="mb-2">
-                                                <i class="fa fa-graduation-cap text-primary mr-2"></i>
-                                                <span class="text-dark">Jenis Tes: 
-                                                    @foreach ($allowedCategories as $category)
-                                                        <span class="badge badge-light mr-1">{{ $category }}</span>
-                                                    @endforeach
-                                                </span>
-                                            </li>
-                                            <li class="mb-2">
-                                                <i class="fa fa-clock-o text-warning mr-2"></i>
-                                                <span class="text-dark">Durasi: {{ $packageLimits['description'] }}</span>
-                                            </li>
-                                        </ul>
-                                    </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -204,28 +205,29 @@
                     </div>
                 @endif
 
-                {{-- Menu Akses Cepat --}}
+                {{-- Menu Akses Cepat & Progress (2 Kolom) --}}
                 <div class="row mb-4">
-                    <div class="col-12">
-                        <div class="card shadow">
-                            <div class="card-header py-3">
+                    {{-- Kolom 1: Menu Akses Cepat --}}
+                    <div class="col-md-8 mb-3">
+                        <div class="card shadow h-100">
+                            <div class="card-header py-2">
                                 <h6 class="m-0 font-weight-bold text-primary">
                                     <i class="fa fa-bolt mr-2"></i>Akses Cepat
                                 </h6>
                             </div>
-                            <div class="card-body">
+                            <div class="card-body py-2">
                                 <div class="row">
                                     @if ($user->canAccessTryout())
-                                        <div class="col-md-4 mb-3">
-                                            <a href="{{ route('show.test') }}" class="btn btn-outline-primary btn-block">
-                                                <i class="fa fa-check-square-o mr-2"></i>
+                                        <div class="col-6 mb-2">
+                                            <a href="{{ route('show.test') }}" class="btn btn-outline-primary btn-sm btn-block">
+                                                <i class="fa fa-check-square-o mr-1"></i>
                                                 Mulai Tes
                                             </a>
                                         </div>
                                     @else
-                                        <div class="col-md-4 mb-3">
-                                            <button class="btn btn-outline-secondary btn-block" disabled>
-                                                <i class="fa fa-lock mr-2"></i>
+                                        <div class="col-6 mb-2">
+                                            <button class="btn btn-outline-secondary btn-sm btn-block" disabled>
+                                                <i class="fa fa-lock mr-1"></i>
                                                 Mulai Tes
                                             </button>
                                             <small class="text-muted">Berlangganan untuk akses</small>
@@ -233,25 +235,25 @@
                                     @endif
                                     
                                     @if ($user->canAccessKecermatan())
-                                        <div class="col-md-4 mb-3">
-                                            <a href="{{ route('kecermatan.index') }}" class="btn btn-outline-success btn-block">
-                                                <i class="fa fa-eye mr-2"></i>
+                                        <div class="col-6 mb-2">
+                                            <a href="{{ route('kecermatan.index') }}" class="btn btn-outline-success btn-sm btn-block">
+                                                <i class="fa fa-eye mr-1"></i>
                                                 Tes Kecermatan
                                             </a>
                                         </div>
                                     @else
-                                        <div class="col-md-4 mb-3">
-                                            <button class="btn btn-outline-secondary btn-block" disabled>
-                                                <i class="fa fa-lock mr-2"></i>
+                                        <div class="col-6 mb-2">
+                                            <button class="btn btn-outline-secondary btn-sm btn-block" disabled>
+                                                <i class="fa fa-lock mr-1"></i>
                                                 Tes Kecermatan
                                             </button>
                                             <small class="text-muted">Paket Kecermatan/Lengkap</small>
                                         </div>
                                     @endif
                                     
-                                    <div class="col-md-4 mb-3">
-                                        <a href="{{ route('user.history.index') }}" class="btn btn-outline-info btn-block">
-                                            <i class="fa fa-history mr-2"></i>
+                                    <div class="col-12">
+                                        <a href="{{ route('user.history.index') }}" class="btn btn-outline-info btn-sm btn-block">
+                                            <i class="fa fa-history mr-1"></i>
                                             Riwayat Tes
                                         </a>
                                     </div>
@@ -259,43 +261,48 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Paket Lengkap Status (jika user memiliki paket lengkap) --}}
-                @if ($user->package === 'lengkap' && $user->getPaketLengkapStatus())
-                    <div class="row mb-4">
-                        <div class="col-12">
-                            <div class="card border-left-success shadow">
-                                <div class="card-header py-3 bg-success text-white">
+                    {{-- Kolom 2: Progress Paket Lengkap (jika ada) --}}
+                    <div class="col-md-4 mb-3">
+                        @if ($user->package === 'lengkap' && $user->getPaketLengkapStatus())
+                            <div class="card border-left-success shadow h-100">
+                                <div class="card-header py-2 bg-success text-white">
                                     <h6 class="m-0 font-weight-bold">
-                                        <i class="fa fa-crown mr-2"></i>Progress Paket Lengkap
+                                        <i class="fa fa-crown mr-2"></i>Progress
                                     </h6>
                                 </div>
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-8">
-                                            <h6 class="font-weight-bold text-dark mb-2">Anda memiliki akses penuh!</h6>
-                                            <p class="text-muted mb-3">
-                                                Nikmati semua fitur dengan paket tertinggi. Terus tingkatkan kemampuan Anda!
-                                            </p>
-                                        </div>
-                                        <div class="col-md-4">
-                                            <div class="text-center">
-                                                <div class="progress mb-2" style="height: 20px;">
-                                                    <div class="progress-bar bg-success" role="progressbar" 
-                                                         style="width: {{ $user->getPaketLengkapProgress() }}%">
-                                                        {{ $user->getPaketLengkapProgress() }}%
-                                                    </div>
-                                                </div>
-                                                <small class="text-muted">Progress Penyelesaian</small>
-                                            </div>
+                                <div class="card-body py-2 text-center">
+                                    <div class="progress mb-2" style="height: 20px;">
+                                        <div class="progress-bar bg-success" role="progressbar" 
+                                             style="width: {{ $user->getPaketLengkapProgress() }}%">
+                                            {{ $user->getPaketLengkapProgress() }}%
                                         </div>
                                     </div>
+                                    <small class="text-muted">Penyelesaian Paket Lengkap</small>
                                 </div>
                             </div>
-                        </div>
+                        @else
+                            <div class="card border-left-info shadow h-100">
+                                <div class="card-header py-2 bg-info text-white">
+                                    <h6 class="m-0 font-weight-bold">
+                                        <i class="fa fa-info-circle mr-2"></i>Info
+                                    </h6>
+                                </div>
+                                <div class="card-body py-2 text-center">
+                                    <i class="fa fa-lightbulb-o fa-2x text-warning mb-2"></i>
+                                    <p class="mb-0 text-sm">
+                                        @if (!$user->hasActiveSubscription())
+                                            Berlangganan untuk akses penuh
+                                        @else
+                                            Upgrade ke Paket Lengkap untuk progress tracking
+                                        @endif
+                                    </p>
+                                </div>
+                            </div>
+                        @endif
                     </div>
-                @endif
+                </div>
+
 
                 <div class="text-center mt-4">
                     <small class="text-muted">
@@ -361,6 +368,27 @@
         
         .text-gray-800 {
             color: #5a5c69 !important;
+        }
+        
+        .text-sm {
+            font-size: 0.875rem;
+        }
+        
+        .card-header {
+            padding: 0.5rem 1rem !important;
+        }
+        
+        .card-body {
+            padding: 0.75rem 1rem !important;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .h-100 {
+            height: 100% !important;
         }
     </style>
 @endsection
