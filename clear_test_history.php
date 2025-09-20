@@ -18,10 +18,16 @@ echo "UserTryoutSoal count: " . UserTryoutSoal::count() . "\n\n";
 
 echo "Clearing data...\n";
 
-// Clear all test history data
+// Clear all test history data in correct order (child tables first)
+// Disable foreign key checks temporarily
+DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
 UserTryoutSoal::truncate();
 UserTryoutSession::truncate();
 HasilTes::truncate();
+
+// Re-enable foreign key checks
+DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
 echo "After clearing:\n";
 echo "UserTryoutSession count: " . UserTryoutSession::count() . "\n";
