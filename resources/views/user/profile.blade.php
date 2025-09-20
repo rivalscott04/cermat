@@ -434,9 +434,23 @@
                                                 @foreach ($user->hasilTes()->latest()->take(10)->get() as $hasil)
                                                     <tr>
                                                         <td>
-                                                            <span class="badge badge-info">
-                                                                {{ ucfirst($hasil->jenis_tes) }}
-                                                            </span>
+                                                            @if($hasil->jenis_tes === 'kecermatan')
+                                                                <span class="badge badge-primary">
+                                                                    <i class="fa fa-eye"></i> {{ ucfirst($hasil->jenis_tes) }}
+                                                                </span>
+                                                            @elseif($hasil->jenis_tes === 'kecerdasan')
+                                                                <span class="badge badge-success">
+                                                                    <i class="fa fa-brain"></i> {{ ucfirst($hasil->jenis_tes) }}
+                                                                </span>
+                                                            @elseif($hasil->jenis_tes === 'kepribadian')
+                                                                <span class="badge badge-warning">
+                                                                    <i class="fa fa-user"></i> {{ ucfirst($hasil->jenis_tes) }}
+                                                                </span>
+                                                            @else
+                                                                <span class="badge badge-info">
+                                                                    {{ ucfirst($hasil->jenis_tes) }}
+                                                                </span>
+                                                            @endif
                                                         </td>
                                                         <td>{{ date('d M Y H:i', strtotime($hasil->tanggal_tes)) }}</td>
                                                         <td>
@@ -484,6 +498,38 @@
 
 @push('styles')
 <style>
+    /* Badge styles for test types - simple and consistent */
+    .badge {
+        font-size: 0.75em;
+        padding: 0.4em 0.6em;
+        border-radius: 0.25rem;
+        font-weight: 500;
+    }
+    
+    .badge i {
+        margin-right: 0.3em;
+    }
+    
+    /* Consistent colors for each test type */
+    .badge-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .badge-success {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .badge-warning {
+        background-color: #ffc107;
+        color: #212529;
+    }
+    
+    .badge-info {
+        background-color: #17a2b8;
+        color: white;
+    }
     .border-left-success {
         border-left: 4px solid #28a745 !important;
     }

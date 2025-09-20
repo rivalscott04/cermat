@@ -23,9 +23,19 @@
                                                 <div class="card-title">
                                                     <i class="fa {{ $history['type'] == 'tryout' ? 'fa-graduation-cap' : 'fa-eye' }}"></i>
                                                     {{ $history['title'] }}
-                                                    <span class="type-badge {{ $history['type'] == 'tryout' ? 'tryout' : ($history['type'] == 'kecermatan' ? 'kecermatan' : 'lain') }}">
-                                                        {{ ucfirst($history['type']) }}
-                                                    </span>
+                                                    @if($history['type'] === 'kecermatan')
+                                                        <span class="type-badge kecermatan">
+                                                            <i class="fa fa-eye"></i> {{ ucfirst($history['type']) }}
+                                                        </span>
+                                                    @elseif($history['type'] === 'tryout')
+                                                        <span class="type-badge tryout">
+                                                            <i class="fa fa-graduation-cap"></i> {{ ucfirst($history['type']) }}
+                                                        </span>
+                                                    @else
+                                                        <span class="type-badge lain">
+                                                            <i class="fa fa-question"></i> {{ ucfirst($history['type']) }}
+                                                        </span>
+                                                    @endif
                                                 </div>
                                                 <div class="card-date">
                                                     {{ \Carbon\Carbon::parse($history['date'])->format('d M Y, H:i') }}
@@ -187,9 +197,18 @@
     vertical-align: middle;
 }
 
-.type-badge.tryout { background: #e3f2fd; color: #1565c0; }
-.type-badge.kecermatan { background: #e8f5e9; color: #2e7d32; }
-.type-badge.lain { background: #f3e5f5; color: #6a1b9a; }
+.type-badge.tryout { 
+    background-color: #007bff; 
+    color: white; 
+}
+.type-badge.kecermatan { 
+    background-color: #28a745; 
+    color: white; 
+}
+.type-badge.lain { 
+    background-color: #6c757d; 
+    color: white; 
+}
 
 .card-date {
     font-size: 12px;
