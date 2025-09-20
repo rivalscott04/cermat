@@ -302,13 +302,6 @@
                         @endif
                     </div>
                 </div>
-
-
-                <div class="text-center mt-4">
-                    <small class="text-muted">
-                        Butuh bantuan? <a href="#">Hubungi Customer Service</a> kami
-                    </small>
-                </div>
             </div>
         </div>
     </div>
