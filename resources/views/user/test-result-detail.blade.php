@@ -320,6 +320,79 @@
                                                     Detail jawaban tidak tersedia atau format tidak valid.
                                                 </div>
                                             @endif
+                                        @elseif($hasilTes->jenis_tes === 'kecerdasan')
+                                            @if(is_array($detailJawaban) && isset($detailJawaban['category_scores']))
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <h6><i class="fa fa-chart-bar text-primary"></i> Ringkasan Skor</h6>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm table-bordered">
+                                                                <thead class="thead-light">
+                                                                    <tr>
+                                                                        <th>Kategori</th>
+                                                                        <th class="text-center">Benar</th>
+                                                                        <th class="text-center">Total</th>
+                                                                        <th class="text-center">Persentase</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach($detailJawaban['category_scores'] as $category)
+                                                                    <tr>
+                                                                        <td><strong>{{ $category['nama'] }}</strong></td>
+                                                                        <td class="text-center">
+                                                                            <span class="badge badge-success">{{ $category['correct'] }}</span>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <span class="badge badge-info">{{ $category['total'] }}</span>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            @php
+                                                                                $percentage = $category['total'] > 0 ? round(($category['correct'] / $category['total']) * 100, 1) : 0;
+                                                                                $badgeClass = $percentage >= 80 ? 'badge-success' : ($percentage >= 60 ? 'badge-warning' : 'badge-danger');
+                                                                            @endphp
+                                                                            <span class="badge {{ $badgeClass }}">{{ $percentage }}%</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    @endforeach
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <h6><i class="fa fa-info-circle text-info"></i> Informasi Tes</h6>
+                                                        <div class="card">
+                                                            <div class="card-body">
+                                                                <div class="row text-center">
+                                                                    <div class="col-6">
+                                                                        <h4 class="text-primary">{{ $detailJawaban['final_score'] ?? 0 }}%</h4>
+                                                                        <small class="text-muted">Skor Akhir</small>
+                                                                    </div>
+                                                                    <div class="col-6">
+                                                                        <h4 class="text-success">{{ $detailJawaban['total_score'] ?? 0 }}</h4>
+                                                                        <small class="text-muted">Total Benar</small>
+                                                                    </div>
+                                                                </div>
+                                                                <hr>
+                                                                <div class="row text-center">
+                                                                    <div class="col-6">
+                                                                        <h5 class="text-danger">{{ $detailJawaban['wrong_answers'] ?? 0 }}</h5>
+                                                                        <small class="text-muted">Jawaban Salah</small>
+                                                                    </div>
+                                                                    <div class="col-6">
+                                                                        <h5 class="text-info">{{ count($detailJawaban['category_scores'] ?? []) }}</h5>
+                                                                        <small class="text-muted">Kategori</small>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="alert alert-warning">
+                                                    <i class="fa fa-exclamation-triangle"></i> 
+                                                    Detail jawaban tidak tersedia atau format tidak valid.
+                                                </div>
+                                            @endif
                                         @else
                                             <!-- Untuk jenis tes lain, tampilkan JSON yang diformat -->
                                             <div class="alert alert-info">
