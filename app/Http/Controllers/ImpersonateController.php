@@ -17,8 +17,8 @@ class ImpersonateController extends BaseImpersonateController
         // Call parent method
         $response = parent::take($request, $id, $guardName);
         
-        // Redirect to a lightweight user landing after impersonation
-        return redirect()->route('user.history.index');
+        // Redirect to user profile after impersonation
+        return redirect()->route('user.profile', ['userId' => $id]);
     }
     
     /**

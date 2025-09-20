@@ -1077,7 +1077,7 @@ class TryoutController extends Controller
                             'N' => $tkpCount,
                             'T' => (int) round($tkpQuestions->sum('skor')),
                             'skor_tkp' => $tkpFinalScore,
-                            'session_id' => $session->id,
+                                                        'session_id' => $session->id,
                         ]),
                         'tkp_final_score' => $tkpFinalScore,
                         'skor_akhir' => $tkpFinalScore,
