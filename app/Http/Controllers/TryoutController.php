@@ -1059,10 +1059,10 @@ class TryoutController extends Controller
                 // Determine TKP score category
                 $tkpKategoriSkor = $this->getTkpScoreCategory($tkpFinalScore);
 
-                // Check if record already exists to prevent duplicates
+                // Check if record already exists to prevent duplicates based on session
                 $existingRecord = \App\Models\HasilTes::where('user_id', $user->id)
                     ->where('jenis_tes', 'kepribadian')
-                    ->where('tanggal_tes', '>=', now()->subMinutes(5)) // Within last 5 minutes
+                    ->where('detail_jawaban', 'like', '%"session_id":"' . $session->id . '"%')
                     ->first();
 
                 if (!$existingRecord) {
@@ -1077,6 +1077,7 @@ class TryoutController extends Controller
                             'N' => $tkpCount,
                             'T' => (int) round($tkpQuestions->sum('skor')),
                             'skor_tkp' => $tkpFinalScore,
+                            'session_id' => $session->id,
                         ]),
                         'tkp_final_score' => $tkpFinalScore,
                         'skor_akhir' => $tkpFinalScore,
@@ -1102,10 +1103,10 @@ class TryoutController extends Controller
                 // Determine score category
                 $kategoriSkor = $this->getScoreCategory($finalScore);
 
-                // Check if record already exists to prevent duplicates
+                // Check if record already exists to prevent duplicates based on session
                 $existingRecord = \App\Models\HasilTes::where('user_id', $user->id)
                     ->where('jenis_tes', 'kecerdasan')
-                    ->where('tanggal_tes', '>=', now()->subMinutes(5)) // Within last 5 minutes
+                    ->where('detail_jawaban', 'like', '%"session_id":"' . $session->id . '"%')
                     ->first();
 
                 if (!$existingRecord) {
@@ -1123,6 +1124,7 @@ class TryoutController extends Controller
                             'total_score' => $totalScore,
                             'final_score' => $finalScore,
                             'category_scores' => $categoryScores,
+                            'session_id' => $session->id,
                         ]),
                         'skor_akhir' => $finalScore,
                         'kategori_skor' => $kategoriSkor,
