@@ -1056,6 +1056,9 @@ class TryoutController extends Controller
                 $tkpCount = $tkpQuestions->count();
                 $averageTime = $tkpCount > 0 ? round($durationSeconds / $tkpCount, 2) : null;
 
+                // Determine TKP score category
+                $tkpKategoriSkor = $this->getTkpScoreCategory($tkpFinalScore);
+
                 \App\Models\HasilTes::create([
                     'user_id' => $user->id,
                     'jenis_tes' => 'kepribadian',
@@ -1069,6 +1072,45 @@ class TryoutController extends Controller
                         'skor_tkp' => $tkpFinalScore,
                     ]),
                     'tkp_final_score' => $tkpFinalScore,
+                    'skor_akhir' => $tkpFinalScore,
+                    'kategori_skor' => $tkpKategoriSkor,
+                    'tanggal_tes' => now(),
+                ]);
+            } catch (\Throwable $e) {
+                // ignore persistence errors
+            }
+        }
+
+        // Persist intelligence test results to hasil_tes
+        if ($tryout->jenis_paket === 'kecerdasan' || $tryout->jenis_paket === 'lengkap') {
+            try {
+                $durationMinutes = $tryout->durasi_menit;
+                $durationSeconds = $durationMinutes * 60;
+                $averageTime = $totalQuestions > 0 ? round($durationSeconds / $totalQuestions, 2) : null;
+                
+                // Calculate final score percentage
+                $finalScore = $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0;
+                
+                // Determine score category
+                $kategoriSkor = $this->getScoreCategory($finalScore);
+
+                \App\Models\HasilTes::create([
+                    'user_id' => $user->id,
+                    'jenis_tes' => 'kecerdasan',
+                    'skor_benar' => $correctAnswers,
+                    'skor_salah' => $wrongAnswers,
+                    'waktu_total' => $durationSeconds,
+                    'average_time' => $averageTime,
+                    'detail_jawaban' => json_encode([
+                        'total_questions' => $totalQuestions,
+                        'correct_answers' => $correctAnswers,
+                        'wrong_answers' => $wrongAnswers,
+                        'total_score' => $totalScore,
+                        'final_score' => $finalScore,
+                        'category_scores' => $categoryScores,
+                    ]),
+                    'skor_akhir' => $finalScore,
+                    'kategori_skor' => $kategoriSkor,
                     'tanggal_tes' => now(),
                 ]);
             } catch (\Throwable $e) {
@@ -1469,5 +1511,23 @@ class TryoutController extends Controller
             'status' => $status,
             'summary' => $summary
         ]);
+    }
+
+    private function getScoreCategory($score)
+    {
+        if ($score >= 85) return 'Sangat Tinggi';
+        if ($score >= 75) return 'Tinggi';
+        if ($score >= 65) return 'Sedang';
+        if ($score >= 55) return 'Rendah';
+        return 'Sangat Rendah';
+    }
+
+    private function getTkpScoreCategory($score)
+    {
+        if ($score >= 400) return 'Sangat Tinggi';
+        if ($score >= 350) return 'Tinggi';
+        if ($score >= 300) return 'Sedang';
+        if ($score >= 250) return 'Rendah';
+        return 'Sangat Rendah';
     }
 }

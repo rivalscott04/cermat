@@ -197,4 +197,14 @@ class UserController extends Controller
     {
         return view('user.test');
     }
+
+    public function testResultDetail($id)
+    {
+        $user = auth()->user();
+        $hasilTes = \App\Models\HasilTes::where('id', $id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        return view('user.test-result-detail', compact('hasilTes'));
+    }
 }

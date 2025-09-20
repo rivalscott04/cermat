@@ -690,8 +690,7 @@
 
         // Function to view test detail
         function viewTestDetail(testId) {
-            // This would typically open a modal or redirect to detail page
-            alert('Fitur detail tes akan segera tersedia untuk ID: ' + testId);
+            window.location.href = '/test-result/' + testId;
         }
     </script>
 @endpush
