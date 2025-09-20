@@ -462,7 +462,36 @@
                                                         </td>
                                                         <td>
                                                             @if ($hasil->kategori_skor)
-                                                                <span class="badge badge-success">{{ $hasil->kategori_skor }}</span>
+                                                                @php
+                                                                    $badgeClass = 'badge-secondary';
+                                                                    switch($hasil->kategori_skor) {
+                                                                        case 'Sangat Tinggi':
+                                                                            $badgeClass = 'badge-success';
+                                                                            break;
+                                                                        case 'Tinggi':
+                                                                            $badgeClass = 'badge-success';
+                                                                            break;
+                                                                        case 'Cukup Tinggi':
+                                                                        case 'Cukup':
+                                                                            $badgeClass = 'badge-info';
+                                                                            break;
+                                                                        case 'Sedang':
+                                                                            $badgeClass = 'badge-warning';
+                                                                            break;
+                                                                        case 'Rendah':
+                                                                            $badgeClass = 'badge-danger';
+                                                                            break;
+                                                                        case 'Sangat Rendah':
+                                                                            $badgeClass = 'badge-danger';
+                                                                            break;
+                                                                        case 'Baik':
+                                                                            $badgeClass = 'badge-info';
+                                                                            break;
+                                                                        default:
+                                                                            $badgeClass = 'badge-secondary';
+                                                                    }
+                                                                @endphp
+                                                                <span class="badge {{ $badgeClass }}">{{ $hasil->kategori_skor }}</span>
                                                             @else
                                                                 <span class="badge badge-secondary">Belum Dinilai</span>
                                                             @endif
@@ -528,6 +557,16 @@
     
     .badge-info {
         background-color: #17a2b8;
+        color: white;
+    }
+    
+    .badge-danger {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .badge-secondary {
+        background-color: #6c757d;
         color: white;
     }
     .border-left-success {

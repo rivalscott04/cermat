@@ -163,7 +163,7 @@
 }
 
 .history-card.fair {
-    border-left-color: #ffc107;
+    border-left-color: #007bff;
 }
 
 .history-card.poor {
@@ -248,7 +248,7 @@
 }
 
 .history-card.fair .score-circle {
-    background: linear-gradient(135deg, #ffc107, #fd7e14);
+    background: linear-gradient(135deg, #007bff, #0056b3);
     color: white;
 }
 
@@ -322,7 +322,7 @@
 }
 
 .progress-bar.fair {
-    background: linear-gradient(90deg, #ffc107, #fd7e14);
+    background: linear-gradient(90deg, #007bff, #0056b3);
 }
 
 .progress-bar.poor {
@@ -365,8 +365,8 @@
 }
 
 .status-badge.fair {
-    background: #fff3cd;
-    color: #856404;
+    background: #cce5ff;
+    color: #004085;
 }
 
 .status-badge.poor {
