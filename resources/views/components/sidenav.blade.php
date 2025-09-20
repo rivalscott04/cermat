@@ -100,7 +100,7 @@
                         <span class="nav-label">Paket</span>
                         {{-- Badge untuk menunjukkan paket saat ini --}}
                         <span class="badge badge-primary pull-right" style="font-size: 10px;">
-                            {{ ucfirst(Auth::user()->package ?? 'Free') }}
+                            {{ Auth::user()->getPackageDisplayName() }}
                         </span>
                     </a>
                 </li>

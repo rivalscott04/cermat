@@ -246,10 +246,12 @@ class User extends Authenticatable
             'kecermatan' => 'Paket Kecermatan',
             'kecerdasan' => 'Paket Kecerdasan', 
             'kepribadian' => 'Paket Kepribadian',
-            'lengkap' => 'Paket Lengkap'
+            'lengkap' => 'Paket Lengkap',
+            'psikologi' => 'Paket Kepribadian' // Legacy mapping
         ];
 
-        return $packageNames[$this->package ?? 'free'] ?? 'Free';
+        $userPackage = $this->paket_akses; // Use the mapped package
+        return $packageNames[$userPackage] ?? 'Free';
     }
 
     /**
@@ -314,6 +316,7 @@ class User extends Authenticatable
             ]
         ];
 
-        return $features[$this->package ?? 'free'] ?? $features['free'];
+        $userPackage = $this->paket_akses; // Use the mapped package
+        return $features[$userPackage] ?? $features['free'];
     }
 }
