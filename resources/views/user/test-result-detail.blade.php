@@ -393,6 +393,59 @@
                                                     Detail jawaban tidak tersedia atau format tidak valid.
                                                 </div>
                                             @endif
+                                        @elseif($hasilTes->jenis_tes === 'kepribadian')
+                                            <!-- Tampilan khusus untuk tes kepribadian (TKP) -->
+                                            <div class="alert alert-info">
+                                                <i class="fa fa-info-circle"></i> 
+                                                Detail jawaban untuk jenis tes kepribadian (TKP):
+                                            </div>
+                                            
+                                            @if(is_array($detailJawaban) && isset($detailJawaban['N']) && isset($detailJawaban['T']))
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <div class="card text-center">
+                                                            <div class="card-body">
+                                                                <h3 class="text-primary">{{ $detailJawaban['N'] }}</h3>
+                                                                <p class="card-text">Total Soal TKP</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="card text-center">
+                                                            <div class="card-body">
+                                                                <h3 class="text-success">{{ $detailJawaban['T'] }}</h3>
+                                                                <p class="card-text">Total Poin (T)</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="card text-center">
+                                                            <div class="card-body">
+                                                                <h3 class="text-warning">{{ number_format($detailJawaban['skor_tkp'] ?? 0, 2) }}</h3>
+                                                                <p class="card-text">Skor Final TKP</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div class="mt-3">
+                                                    <h6><i class="fa fa-calculator"></i> Informasi Perhitungan:</h6>
+                                                    <div class="bg-light p-3 rounded">
+                                                        <p><strong>Formula:</strong> Skor Akhir = 1 + ((T - N) × 99) / (4N)</p>
+                                                        <p><strong>Keterangan:</strong></p>
+                                                        <ul class="mb-0">
+                                                            <li><strong>N</strong> = Jumlah soal ({{ $detailJawaban['N'] }})</li>
+                                                            <li><strong>T</strong> = Total poin dari jawaban ({{ $detailJawaban['T'] }})</li>
+                                                            <li><strong>Skor Final</strong> = {{ number_format($detailJawaban['skor_tkp'] ?? 0, 2) }} (skala 1-100)</li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            @else
+                                                <div class="alert alert-warning">
+                                                    <i class="fa fa-exclamation-triangle"></i> 
+                                                    Format detail jawaban kepribadian tidak valid atau tidak lengkap.
+                                                </div>
+                                            @endif
                                         @else
                                             <!-- Untuk jenis tes lain, tampilkan JSON yang diformat -->
                                             <div class="alert alert-info">
