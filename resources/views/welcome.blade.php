@@ -27,6 +27,10 @@
             min-height: 100vh;
         }
 
+        .container {
+            max-width: 1200px;
+        }
+
         .background {
             position: fixed;
             width: 100vw;
@@ -308,83 +312,106 @@
         }
 
         .package-card {
-            border: 2px solid #e9ecef;
-            border-radius: 20px;
-            padding: 2.5rem 2rem;
-            transition: all 0.4s ease;
+            border: 1px solid #e0e7ff;
+            border-radius: 10px;
+            padding: 2rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             background: white;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
             position: relative;
             display: flex;
             flex-direction: column;
-            height: 100%;
+            height: 90%;
             overflow: hidden;
-        }
-
-        .package-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: linear-gradient(45deg, #1ab394, #0f8a73);
-            transform: scaleX(0);
-            transition: transform 0.3s ease;
+            justify-content: space-between;
         }
 
         .package-card:hover {
-            border-color: #1ab394;
-            transform: translateY(-10px);
-            box-shadow: 0 20px 60px rgba(26, 179, 148, 0.15);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+            /* bayangan lebih dalam */
+            cursor: pointer;
         }
 
-        .package-card:hover::before {
-            transform: scaleX(1);
+        .popular-package::before {
+            content: "⭐ Paling Populer";
+            position: absolute;
+            top: 12px;
+            /* geser sedikit ke bawah */
+            right: -50px;
+            /* atur posisi horizontal */
+            background: #10B981;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 5px 40px;
+            transform: rotate(45deg);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            z-index: 2;
         }
 
         .popular-package {
-            border-color: #1ab394;
-            position: relative;
-            background: linear-gradient(135deg, #fff 0%, #f8fffd 100%);
-        }
-
-        .popular-badge {
-            position: absolute;
-            top: 15px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: linear-gradient(45deg, #1ab394, #0f8a73);
-            color: white;
-            padding: 10px 25px;
-            border-radius: 25px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: 0 6px 20px rgba(26, 179, 148, 0.3);
-            z-index: 10;
-        }
-
-        .package-header {
-            text-align: center;
-            margin-block: 1.5rem;
-        }
-
-        .package-header h3 {
-            color: #2c3e50;
-            font-weight: 700;
-            font-size: 1.8rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .package-header p {
-            color: #6c757d;
-            font-size: 1rem;
+            border: 3px solid #10B981;
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.3);
         }
 
         .package-features {
+            flex-grow: 1;
+            /* biar fitur ngisi ruang tengah */
             display: flex;
             flex-direction: column;
-            flex: 1;
+            justify-content: space-between;
+        }
+
+        .package-pricing {
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .package-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+        }
+
+        .package-header {
+            margin-bottom: 0.5rem;
+            min-height: 100px;
+        }
+
+        .package-header h3 {
+            color: #111827;
+            font-weight: 700;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .package-description {
+            color: #6B7280;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .package-price {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 0.25rem;
+        }
+
+        .price-period {
+            color: #6B7280;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 2rem;
         }
 
         .features-list {
@@ -392,97 +419,118 @@
             margin-bottom: 2rem;
         }
 
-        .button-container {
-            margin-top: auto;
-        }
-
-        .package-price {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #1ab394;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(45deg, #1ab394, #0f8a73);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .price-period {
-            color: #6c757d;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-
         .feature-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem 0;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .feature-item:hover {
-            transform: translateX(5px);
-            color: #1ab394;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
         }
 
         .feature-item i {
-            margin-right: 1rem;
-            font-size: 1.2rem;
-            color: #1ab394;
-            min-width: 20px;
+            margin-right: 0.75rem;
+            font-size: 1rem;
+            min-width: 16px;
+        }
+
+        .feature-item.available {
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item.available:hover {
+            transform: translateX(5px);
+            cursor: pointer;
+        }
+
+        .feature-item.available i {
+            color: #10B981;
+        }
+
+        .feature-item.unavailable {
+            opacity: 0.4;
+        }
+
+        .feature-item.unavailable i {
+            color: #D1D5DB;
         }
 
         .btn-package {
-            padding: 1rem 2rem;
+            padding: 0.875rem 1.5rem;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 0.95rem;
             border-radius: 10px;
             width: 100%;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
             text-decoration: none;
-            border: 2px solid transparent;
+            border: none;
+            cursor: pointer;
         }
 
-        .btn-success {
+        /* Variants for different package buttons */
+        .btn-package.btn-outline-primary {
+            border-color: #007bff;
+            border: 1px solid #007bff;
+            color: #007bff;
+            background-color: transparent;
+        }
+
+        .btn-package.btn-outline-primary:hover {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+        }
+
+        .btn-package.btn-outline-info {
+            border-color: #17a2b8;
+            color: #17a2b8;
+            border: 1px solid #17a2b8;
+            background-color: transparent;
+        }
+
+        .btn-package.btn-outline-info:hover {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+
+        .btn-package.btn-outline-warning {
+            border-color: #ffc107;
+            color: #ffc107;
+            border: 1px solid #ffc107;
+            background-color: transparent;
+        }
+
+        .btn-package.btn-outline-warning:hover {
+            background-color: #ffc107;
+            border-color: #ffc107;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        }
+
+
+        .btn-package.btn-success {
             background: linear-gradient(45deg, #28a745, #1e7e34);
             border: none;
             color: white;
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
         }
 
-        .btn-success:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
-            color: white;
+        .btn-package.btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(45deg, #218838, #1c7430);
         }
 
-        .btn-outline-info {
-            border-color: #17a2b8;
-            color: #17a2b8;
-            background: transparent;
-        }
-
-        .btn-outline-info:hover {
-            background: linear-gradient(45deg, #17a2b8, #138496);
-            border-color: #17a2b8;
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(23, 162, 184, 0.3);
-        }
-
-        .btn-outline-primary {
-            border-color: #007bff;
-            color: #007bff;
-            background: transparent;
-        }
-
-        .btn-outline-primary:hover {
-            background: linear-gradient(45deg, #007bff, #0056b3);
-            border-color: #007bff;
-            color: white;
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 123, 255, 0.3);
+        .enterprise-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
         }
 
         /* Responsive Adjustments */
@@ -677,7 +725,7 @@
                 <p>Akses penuh ke semua fitur persiapan tes BINTARA POLRI</p>
             </div>
 
-            <div class="row">
+            <div class="row d-flex align-items-stretch">
                 <!-- Paket Tes Kecermatan -->
                 <div class="col-md-3 mb-4">
                     <div class="package-card h-100">
@@ -687,32 +735,32 @@
                         </div>
 
                         <div class="package-features">
-                            <div class="text-center mb-4">
+                            <div class="text-center mb-2 package-pricing">
                                 <div class="package-price">Rp 75.000</div>
                                 <p class="price-period">Berlaku 30 hari</p>
                             </div>
 
                             <div class="features-list">
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Bank soal kecermatan lengkap
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Latihan soal unlimited
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Analisis kecepatan & akurasi
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Timer simulasi ujian
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Riwayat progress harian
                                 </div>
                             </div>
 
                             <div class="button-container">
                                 <a href="{{ route('subscription.packages') }}"
-                                    class="btn btn-outline-primary btn-package">
+                                    class="btn btn-package btn-outline-primary">
                                     Pilih Paket
                                 </a>
                             </div>
@@ -729,32 +777,32 @@
                         </div>
 
                         <div class="package-features">
-                            <div class="text-center mb-4">
+                            <div class="text-center mb-2 package-pricing">
                                 <div class="package-price">Rp 75.000</div>
                                 <p class="price-period">Berlaku 30 hari</p>
                             </div>
 
                             <div class="features-list">
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Bank soal psikologi lengkap
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Tes kepribadian & karakter
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Simulasi wawancara psikologi
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Tips & strategi psikotes
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Analisis profil psikologi
                                 </div>
                             </div>
 
                             <div class="button-container">
                                 <a href="{{ route('subscription.packages') }}"
-                                    class="btn btn-outline-info btn-package">
+                                    class="btn btn-package btn-outline-info">
                                     Pilih Paket
                                 </a>
                             </div>
@@ -771,32 +819,32 @@
                         </div>
 
                         <div class="package-features">
-                            <div class="text-center mb-4">
+                            <div class="text-center mb-2 package-pricing">
                                 <div class="package-price">Rp 75.000</div>
                                 <p class="price-period">Berlaku 30 hari</p>
                             </div>
 
                             <div class="features-list">
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Bank soal akademik lengkap
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Matematika, Bahasa Indonesia, PKN
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Pembahasan soal detail
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Simulasi ujian akademik
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Analisis kemampuan per mata pelajaran
                                 </div>
                             </div>
 
                             <div class="button-container">
                                 <a href="{{ route('subscription.packages') }}"
-                                    class="btn btn-outline-warning btn-package">
+                                    class="btn btn-package btn-outline-warning">
                                     Pilih Paket
                                 </a>
                             </div>
@@ -807,37 +855,34 @@
                 <!-- Paket Lengkap -->
                 <div class="col-md-3 mb-4">
                     <div class="package-card h-100 popular-package">
-                        <div class="popular-badge">
-                            <span>Terpopuler</span>
-                        </div>
                         <div class="package-header">
                             <h3>Paket Lengkap</h3>
                             <p>Kecermatan + Psikologi + Akademik</p>
                         </div>
 
                         <div class="package-features">
-                            <div class="text-center mb-4">
+                            <div class="text-center mb-2 package-pricing">
                                 <div class="package-price">Rp 120.000</div>
                                 <p class="price-period">Berlaku 45 hari</p>
                             </div>
 
                             <div class="features-list">
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Semua fitur Kecermatan
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Semua fitur Psikologi
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Semua fitur Akademik
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Try out gabungan berkala
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Laporan progress lengkap
                                 </div>
-                                <div class="feature-item">
+                                <div class="feature-item available">
                                     <i class="fas fa-check"></i> Sertifikat penyelesaian
                                 </div>
                             </div>
@@ -901,14 +946,6 @@
                 }
             });
         }, observerOptions);
-
-        // Observe package cards
-        document.querySelectorAll('.package-card').forEach(card => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(30px)';
-            card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(card);
-        });
     </script>
 </body>
 
