@@ -176,11 +176,11 @@
                         @if($hasilTes->detail_jawaban)
                         <div class="row mt-4">
                             <div class="col-lg-12">
-                                <div class="ibox">
+                                <div class="ibox" id="detail-jawaban-ibox">
                                     <div class="ibox-title">
                                         <h5><i class="fa fa-list-alt"></i> Detail Jawaban</h5>
                                         <div class="ibox-tools">
-                                            <a class="collapse-link">
+                                            <a class="collapse-link" id="detail-jawaban-toggle">
                                                 <i class="fa fa-chevron-up"></i>
                                             </a>
                                         </div>
@@ -380,16 +380,20 @@
     // Auto-collapse detail jawaban section on page load
     $(document).ready(function() {
         // Collapse detail jawaban section by default
-        $('.ibox-content').find('.table-responsive').parent().hide();
+        $('#detail-jawaban-ibox .ibox-content').hide();
         
-        // Toggle collapse functionality
-        $('.collapse-link').click(function() {
-            const ibox = $(this).closest('.ibox');
-            const content = ibox.find('.ibox-content');
+        // Toggle collapse functionality khusus untuk detail jawaban
+        $('#detail-jawaban-toggle').off('click').on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const content = $('#detail-jawaban-ibox .ibox-content');
             const icon = $(this).find('i');
             
             content.slideToggle(200);
             icon.toggleClass('fa-chevron-up fa-chevron-down');
+            
+            return false;
         });
     });
 </script>
