@@ -235,4 +235,85 @@ class User extends Authenticatable
         $service = app(\App\Services\PaketLengkapService::class);
         return $service->getProgressPercentage($this);
     }
+
+    /**
+     * Get package display name
+     */
+    public function getPackageDisplayName()
+    {
+        $packageNames = [
+            'free' => 'Free',
+            'kecermatan' => 'Paket Kecermatan',
+            'kecerdasan' => 'Paket Kecerdasan', 
+            'kepribadian' => 'Paket Kepribadian',
+            'lengkap' => 'Paket Lengkap'
+        ];
+
+        return $packageNames[$this->package ?? 'free'] ?? 'Free';
+    }
+
+    /**
+     * Get package features description
+     */
+    public function getPackageFeaturesDescription()
+    {
+        $features = [
+            'free' => [
+                'title' => 'Paket Gratis',
+                'description' => 'Akses terbatas untuk mencoba sistem',
+                'features' => [
+                    '1 tryout gratis dari semua jenis',
+                    'Akses terbatas ke bank soal',
+                    'Riwayat tes dasar'
+                ]
+            ],
+            'kecermatan' => [
+                'title' => 'Paket Kecermatan',
+                'description' => 'Fokus pada tes kecermatan dan kecepatan',
+                'features' => [
+                    'Bank soal kecermatan lengkap',
+                    'Latihan soal unlimited',
+                    'Analisis kecepatan & akurasi',
+                    'Timer simulasi ujian',
+                    'Riwayat progress harian'
+                ]
+            ],
+            'kecerdasan' => [
+                'title' => 'Paket Kecerdasan',
+                'description' => 'Tes kecerdasan dan kemampuan kognitif',
+                'features' => [
+                    'Bank soal TIU, TWK, TKD lengkap',
+                    'Tes intelejensi umum',
+                    'Tes wawasan kebangsaan',
+                    'Tes kemampuan dasar',
+                    'Analisis kemampuan kognitif'
+                ]
+            ],
+            'kepribadian' => [
+                'title' => 'Paket Kepribadian',
+                'description' => 'Tes kepribadian dan psikotes',
+                'features' => [
+                    'Bank soal TKP, PSIKOTES lengkap',
+                    'Tes karakteristik pribadi',
+                    'Tes psikotes komprehensif',
+                    'Analisis kepribadian',
+                    'Tips & strategi psikotes'
+                ]
+            ],
+            'lengkap' => [
+                'title' => 'Paket Lengkap',
+                'description' => 'Akses penuh ke semua jenis tes',
+                'features' => [
+                    'Semua fitur Kecermatan',
+                    'Semua fitur Kecerdasan',
+                    'Semua fitur Kepribadian',
+                    'Try out gabungan berkala',
+                    'Laporan progress lengkap',
+                    'Sertifikat penyelesaian'
+                ]
+            ]
+        ];
+
+        return $features[$this->package ?? 'free'] ?? $features['free'];
+    }
 }

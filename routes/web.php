@@ -76,6 +76,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
     Route::get('/subscription/packages', [SubscriptionController::class, 'packages'])->name('subscription.packages');
+    Route::get('/subscription/packages/admin', [SubscriptionController::class, 'packagesAdmin'])->name('subscription.packages.admin');
     Route::get('/subscription/process/{package}', [SubscriptionController::class, 'processSubscription'])->name('subscription.process.packages');
     Route::get('/subscription/checkout/{package}', [SubscriptionController::class, 'showCheckout'])->name('subscription.checkout');
     Route::get('/test', [UserController::class, 'showTest'])->name('show.test');
@@ -85,6 +86,7 @@ Route::middleware(['auth'])->group(function () {
         //Tes Kecermatan Routes dengan middleware package tambahan
         Route::middleware(['check.package:kecermatan'])->group(function () {
             Route::get('/tes-kecermatan', [KecermatanController::class, 'index'])->name('kecermatan');
+            Route::get('/kecermatan', [KecermatanController::class, 'index'])->name('kecermatan.index');
             Route::post('/kecermatan/generate', [KecermatanController::class, 'generateKarakter'])->name('kecermatan.generateKarakter');
             Route::get('/tes-kecermatan/soal', [SoalKecermatanController::class, 'index'])->name('kecermatan.soal');
             Route::post('/tes-kecermatan/next-soal', [SoalKecermatanController::class, 'getNextSoal'])->name('kecermatan.nextSoal');

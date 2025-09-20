@@ -28,6 +28,28 @@ class SubscriptionController extends Controller
 
     public function packages()
     {
+        $user = Auth::user();
+        
+        // Jika admin, tampilkan halaman pembelian paket
+        if ($user->role === 'admin') {
+            return view('subscription.packages');
+        }
+        
+        // Jika user, tampilkan status paket dan informasi
+        return view('subscription.user-package-status', [
+            'user' => $user,
+            'packageLimits' => $user->getPackageLimits(),
+            'subscription' => $user->subscriptions,
+            'allowedCategories' => $user->getAllowedCategories(),
+            'maxTryouts' => $user->getMaxTryouts(),
+            'packageFeatures' => $user->getPackageFeaturesDescription(),
+            'packageDisplayName' => $user->getPackageDisplayName()
+        ]);
+    }
+
+    public function packagesAdmin()
+    {
+        // Halaman pembelian paket khusus untuk admin
         return view('subscription.packages');
     }
 
