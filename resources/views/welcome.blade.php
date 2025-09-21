@@ -799,8 +799,8 @@
                 <div class="col-md-3 mb-4">
                     <div class="package-card h-100">
                         <div class="package-header">
-                            <h3>Paket Psikologi</h3>
-                            <p>Fokus Tes Psikologi</p>
+                            <h3>Paket Kepribadian</h3>
+                            <p>Fokus Tes Kepribadian</p>
                         </div>
 
                         <div class="package-features">
@@ -811,19 +811,19 @@
 
                             <div class="features-list">
                                 <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Bank soal psikologi lengkap
+                                    <i class="fas fa-check"></i> Bank soal kepribadian lengkap
                                 </div>
                                 <div class="feature-item available">
                                     <i class="fas fa-check"></i> Tes kepribadian & karakter
                                 </div>
                                 <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Simulasi wawancara psikologi
+                                    <i class="fas fa-check"></i> Simulasi wawancara kepribadian
                                 </div>
                                 <div class="feature-item available">
                                     <i class="fas fa-check"></i> Tips & strategi psikotes
                                 </div>
                                 <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Analisis profil psikologi
+                                    <i class="fas fa-check"></i> Analisis profil kepribadian
                                 </div>
                             </div>
 
@@ -841,8 +841,8 @@
                 <div class="col-md-3 mb-4">
                     <div class="package-card h-100">
                         <div class="package-header">
-                            <h3>Paket Akademik</h3>
-                            <p>Fokus Tes Akademik</p>
+                            <h3>Paket Kecerdasan</h3>
+                            <p>Fokus Tes Kecerdasan</p>
                         </div>
 
                         <div class="package-features">
@@ -853,7 +853,7 @@
 
                             <div class="features-list">
                                 <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Bank soal akademik lengkap
+                                    <i class="fas fa-check"></i> Bank soal kecerdasan lengkap
                                 </div>
                                 <div class="feature-item available">
                                     <i class="fas fa-check"></i> Matematika, Bahasa Indonesia, PKN
@@ -862,7 +862,7 @@
                                     <i class="fas fa-check"></i> Pembahasan soal detail
                                 </div>
                                 <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Simulasi ujian akademik
+                                    <i class="fas fa-check"></i> Simulasi ujian kecerdasan
                                 </div>
                                 <div class="feature-item available">
                                     <i class="fas fa-check"></i> Analisis kemampuan per mata pelajaran
@@ -884,7 +884,7 @@
                     <div class="package-card h-100 popular-package">
                         <div class="package-header">
                             <h3>Paket Lengkap</h3>
-                            <p>Kecermatan + Psikologi + Akademik</p>
+                            <p>Kecermatan + Kepribadian + Kecerdasan</p>
                         </div>
 
                         <div class="package-features">
@@ -898,10 +898,10 @@
                                     <i class="fas fa-check"></i> Semua fitur Kecermatan
                                 </div>
                                 <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Semua fitur Psikologi
+                                    <i class="fas fa-check"></i> Semua fitur Kepribadian
                                 </div>
                                 <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Semua fitur Akademik
+                                    <i class="fas fa-check"></i> Semua fitur Kecerdasan
                                 </div>
                                 <div class="feature-item available">
                                     <i class="fas fa-check"></i> Try out gabungan berkala
