@@ -67,7 +67,7 @@ class AuthController extends Controller
                 'email' => $request->email,
                 'password' => Hash::make($request->password),
                 'phone_number' => $request->phone_number,
-                'is_active' => false,
+                'is_active' => true,
                 'province' => $request->province,
                 'regency' => $request->regency,
                 'role' => 'user',
@@ -83,7 +83,7 @@ class AuthController extends Controller
             DB::commit();
 
             return redirect()->route('user.profile', ['userId' => Auth::user()->id])
-                ->with('success', 'Pendaftaran berhasil! Silakan pilih paket berlangganan.');
+                ->with('success', 'Pendaftaran berhasil! Anda dapat langsung mencoba tryout gratis.');
         } catch (\Exception $e) {
             DB::rollback();
             Log::error('Error during registration: ' . $e->getMessage());
