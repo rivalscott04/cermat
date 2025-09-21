@@ -1585,32 +1585,57 @@ function generatePerformanceChart(score, correct, wrong, unanswered) {
     const wrongPercent = total > 0 ? Math.round((wrong / total) * 100) : 0;
     const unansweredPercent = total > 0 ? Math.round((unanswered / total) * 100) : 0;
     
+    // Calculate circumference for the circle (2 * π * radius)
+    const circumference = 2 * Math.PI * 50; // radius = 50
+    
+    // Calculate stroke-dasharray based on percentage
+    const correctDashArray = (correctPercent / 100) * circumference;
+    const wrongDashArray = (wrongPercent / 100) * circumference;
+    const unansweredDashArray = (unansweredPercent / 100) * circumference;
+    
+    // Calculate stroke-dashoffset for positioning
+    const wrongDashOffset = -correctDashArray;
+    const unansweredDashOffset = -(correctDashArray + wrongDashArray);
+    
     return `
         <div class="chart-container">
             <div class="progress-ring">
                 <svg width="120" height="120">
                     <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="8"/>
+                    ${correctPercent > 0 ? `
                     <circle cx="60" cy="60" r="50" fill="none" stroke="#1ab394" stroke-width="8" 
-                            stroke-dasharray="${correctPercent * 3.14}" stroke-dashoffset="0" 
+                            stroke-dasharray="${correctDashArray} ${circumference}" stroke-dashoffset="0" 
                             transform="rotate(-90 60 60)" class="progress-correct"/>
+                    ` : ''}
+                    ${wrongPercent > 0 ? `
                     <circle cx="60" cy="60" r="50" fill="none" stroke="#ed5565" stroke-width="8" 
-                            stroke-dasharray="${wrongPercent * 3.14}" stroke-dashoffset="${-correctPercent * 3.14}" 
+                            stroke-dasharray="${wrongDashArray} ${circumference}" stroke-dashoffset="${wrongDashOffset}" 
                             transform="rotate(-90 60 60)" class="progress-wrong"/>
+                    ` : ''}
+                    ${unansweredPercent > 0 ? `
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#f8ac59" stroke-width="8" 
+                            stroke-dasharray="${unansweredDashArray} ${circumference}" stroke-dashoffset="${unansweredDashOffset}" 
+                            transform="rotate(-90 60 60)" class="progress-unanswered"/>
+                    ` : ''}
                 </svg>
                 <div class="chart-center">
                     <span class="chart-score">${score}%</span>
                 </div>
             </div>
             <div class="chart-legend">
+                ${correctPercent > 0 ? `
                 <div class="legend-item">
                     <span class="legend-color correct"></span>
                     <span>Benar (${correctPercent}%)</span>
                 </div>
+                ` : ''}
+                ${wrongPercent > 0 ? `
                 <div class="legend-item">
                     <span class="legend-color wrong"></span>
                     <span>Salah (${wrongPercent}%)</span>
                 </div>
-                ${unanswered > 0 ? `
+                ` : ''}
+                ${unansweredPercent > 0 ? `
                 <div class="legend-item">
                     <span class="legend-color unanswered"></span>
                     <span>Tidak Dijawab (${unansweredPercent}%)</span>
