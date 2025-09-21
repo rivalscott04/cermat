@@ -94,7 +94,7 @@
         <div class="wrapper wrapper-content animated fadeInRight">
             <div class="back-section">
                 @if (Auth::user()->role === 'admin')
-                    <a href="{{ route('riwayat.tes') }}" class="btn-back">
+                    <a href="{{ route('admin.riwayat-tes') }}" class="btn-back">
                     @else
                         <a href="{{ route('kecermatan.riwayat', ['userId' => Auth::user()->id]) }}" class="btn-back">
                 @endif

@@ -268,4 +268,28 @@ class AdminController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'Akun pengguna berhasil dihapus.');
     }
+
+    public function getTestDetail($testId)
+    {
+        try {
+            $test = DB::table('hasil_tes')->where('id', $testId)->first();
+            
+            if (!$test) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data tes tidak ditemukan'
+                ], 404);
+            }
+
+            return response()->json([
+                'success' => true,
+                'test' => $test
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat mengambil data tes'
+            ], 500);
+        }
+    }
 }

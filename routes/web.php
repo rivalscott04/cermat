@@ -134,6 +134,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/users/{id}', [AdminController::class, 'update'])->name('users.update');
     Route::get('/riwayat-tes', [AdminController::class, 'riwayatTes'])->name('riwayat-tes');
     Route::get('/riwayat-tes/user/{userId}', [AdminController::class, 'riwayatTesUser'])->name('riwayat-tes-user');
+    Route::get('/test-detail/{testId}', [AdminController::class, 'getTestDetail'])->name('admin.test-detail');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
     Route::put('/users/{user}/package', [AdminController::class, 'updatePackage'])->name('users.updatePackage');
 

@@ -240,9 +240,15 @@
                                                             <i class="fa fa-question"></i> Belum Dinilai
                                                     @endswitch
                                                 </div>
-                                                <a href="{{ route('kecermatan.detail', $tes->id) }}" class="btn-detail">
-                                                    <i class="fa fa-eye"></i>
-                                                </a>
+                                                @if($tes->jenis_tes == 'kecermatan')
+                                                    <a href="{{ route('kecermatan.detail', $tes->id) }}" class="btn-detail">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                @else
+                                                    <a href="#" class="btn-detail" onclick="showTestDetail({{ $tes->id }}, '{{ $tes->jenis_tes }}')">
+                                                        <i class="fa fa-eye"></i>
+                                                    </a>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -646,4 +652,356 @@
             }
         }
     </style>
+@endpush
+
+@push('scripts')
+<script>
+// Admin Riwayat Tes Filter - Custom JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize filter functionality
+    initAdminTestFilter();
+    
+    // Initialize test detail modal
+    initTestDetailModal();
+});
+
+function initAdminTestFilter() {
+    const filterForm = document.querySelector('.filter-section form');
+    const filterButton = filterForm.querySelector('button[type="submit"]');
+    const resetButton = filterForm.querySelector('a[href*="riwayat-tes-user"]');
+    
+    // Add loading state to filter button
+    filterButton.addEventListener('click', function(e) {
+        const originalText = this.innerHTML;
+        this.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Memproses...';
+        this.disabled = true;
+        
+        // Re-enable after 2 seconds (fallback)
+        setTimeout(() => {
+            this.innerHTML = originalText;
+            this.disabled = false;
+        }, 2000);
+    });
+    
+    // Auto-submit on date change
+    const dateInputs = filterForm.querySelectorAll('input[type="date"]');
+    dateInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            // Auto-submit form when date changes
+            setTimeout(() => {
+                filterForm.submit();
+            }, 500);
+        });
+    });
+    
+    // Auto-submit on jenis tes change
+    const jenisTesSelect = filterForm.querySelector('select[name="jenis_tes"]');
+    if (jenisTesSelect) {
+        jenisTesSelect.addEventListener('change', function() {
+            setTimeout(() => {
+                filterForm.submit();
+            }, 300);
+        });
+    }
+}
+
+function initTestDetailModal() {
+    // Create modal if it doesn't exist
+    if (!document.getElementById('testDetailModal')) {
+        const modalHTML = `
+            <div class="modal fade" id="testDetailModal" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="fa fa-eye"></i> Detail Hasil Tes
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body" id="testDetailContent">
+                            <div class="text-center">
+                                <i class="fa fa-spinner fa-spin fa-2x"></i>
+                                <p>Memuat detail tes...</p>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                <i class="fa fa-times"></i> Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    }
+}
+
+function showTestDetail(testId, testType) {
+    const modal = document.getElementById('testDetailModal');
+    const content = document.getElementById('testDetailContent');
+    
+    // Show modal
+    $(modal).modal('show');
+    
+    // Reset content
+    content.innerHTML = `
+        <div class="text-center">
+            <i class="fa fa-spinner fa-spin fa-2x"></i>
+            <p>Memuat detail tes...</p>
+        </div>
+    `;
+    
+    // Fetch test details
+    fetch(`/admin/test-detail/${testId}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            content.innerHTML = generateTestDetailHTML(data.test, testType);
+        } else {
+            content.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle"></i>
+                    ${data.message || 'Gagal memuat detail tes'}
+                </div>
+            `;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        content.innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fa fa-exclamation-circle"></i>
+                Terjadi kesalahan saat memuat detail tes. Silakan coba lagi.
+            </div>
+        `;
+    });
+}
+
+function generateTestDetailHTML(test, testType) {
+    const testDate = new Date(test.tanggal_tes).toLocaleDateString('id-ID', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const scorePercentage = test.skor_benar + test.skor_salah > 0 
+        ? Math.round((test.skor_benar / (test.skor_benar + test.skor_salah)) * 100)
+        : 0;
+    
+    return `
+        <div class="test-detail-content">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="detail-section">
+                        <h6><i class="fa fa-info-circle"></i> Informasi Tes</h6>
+                        <table class="table table-sm">
+                            <tr>
+                                <td><strong>Jenis Tes:</strong></td>
+                                <td>
+                                    <span class="badge badge-primary">
+                                        ${testType.charAt(0).toUpperCase() + testType.slice(1)}
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>Tanggal Tes:</strong></td>
+                                <td>${testDate}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Waktu Total:</strong></td>
+                                <td>${test.waktu_total ? Math.round(test.waktu_total / 60) + ' menit' : 'Tidak tersedia'}</td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="detail-section">
+                        <h6><i class="fa fa-chart-bar"></i> Hasil Tes</h6>
+                        <div class="score-display">
+                            <div class="score-circle">
+                                <span class="score-number">${scorePercentage}%</span>
+                                <span class="score-label">Skor</span>
+                            </div>
+                            <div class="score-breakdown">
+                                <div class="score-item correct">
+                                    <i class="fa fa-check"></i>
+                                    <span>${test.skor_benar} Benar</span>
+                                </div>
+                                <div class="score-item wrong">
+                                    <i class="fa fa-times"></i>
+                                    <span>${test.skor_salah} Salah</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            ${test.skor_akhir ? `
+                <div class="detail-section">
+                    <h6><i class="fa fa-star"></i> Skor Akhir</h6>
+                    <div class="final-score">
+                        <span class="final-score-number">${test.skor_akhir}</span>
+                        <span class="final-score-label">Skor Akhir</span>
+                    </div>
+                </div>
+            ` : ''}
+            
+            ${test.kategori_skor ? `
+                <div class="detail-section">
+                    <h6><i class="fa fa-trophy"></i> Kategori Skor</h6>
+                    <div class="category-badge ${test.kategori_skor}">
+                        ${getCategoryDisplay(test.kategori_skor)}
+                    </div>
+                </div>
+            ` : ''}
+        </div>
+        
+        <style>
+            .test-detail-content .detail-section {
+                margin-bottom: 20px;
+                padding: 15px;
+                background: #f8f9fa;
+                border-radius: 8px;
+                border-left: 4px solid #007bff;
+            }
+            
+            .test-detail-content .detail-section h6 {
+                margin-bottom: 15px;
+                color: #333;
+                font-weight: 600;
+            }
+            
+            .score-display {
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .score-circle {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #007bff, #0056b3);
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                text-align: center;
+            }
+            
+            .score-number {
+                font-size: 20px;
+                font-weight: bold;
+                line-height: 1;
+            }
+            
+            .score-label {
+                font-size: 10px;
+                opacity: 0.9;
+            }
+            
+            .score-breakdown {
+                flex: 1;
+            }
+            
+            .score-item {
+                display: flex;
+                align-items: center;
+                margin-bottom: 8px;
+                font-size: 14px;
+            }
+            
+            .score-item.correct {
+                color: #28a745;
+            }
+            
+            .score-item.wrong {
+                color: #dc3545;
+            }
+            
+            .score-item i {
+                margin-right: 8px;
+                width: 16px;
+            }
+            
+            .final-score {
+                text-align: center;
+                padding: 20px;
+                background: linear-gradient(135deg, #28a745, #20c997);
+                border-radius: 8px;
+                color: white;
+            }
+            
+            .final-score-number {
+                display: block;
+                font-size: 32px;
+                font-weight: bold;
+                line-height: 1;
+            }
+            
+            .final-score-label {
+                font-size: 14px;
+                opacity: 0.9;
+            }
+            
+            .category-badge {
+                display: inline-block;
+                padding: 8px 16px;
+                border-radius: 20px;
+                font-weight: 600;
+                text-transform: uppercase;
+                font-size: 12px;
+            }
+            
+            .category-badge.excellent {
+                background: #d4edda;
+                color: #155724;
+            }
+            
+            .category-badge.good {
+                background: #d1ecf1;
+                color: #0c5460;
+            }
+            
+            .category-badge.fair {
+                background: #fff3cd;
+                color: #856404;
+            }
+            
+            .category-badge.poor {
+                background: #f8d7da;
+                color: #721c24;
+            }
+        </style>
+    `;
+}
+
+function getCategoryDisplay(category) {
+    const categories = {
+        'excellent': '<i class="fa fa-star"></i> Excellent',
+        'good': '<i class="fa fa-thumbs-up"></i> Good',
+        'fair': '<i class="fa fa-meh-o"></i> Fair',
+        'poor': '<i class="fa fa-frown-o"></i> Poor'
+    };
+    return categories[category] || '<i class="fa fa-question"></i> Belum Dinilai';
+}
+
+// Export functions for global access
+window.showTestDetail = showTestDetail;
+window.initAdminTestFilter = initAdminTestFilter;
+</script>
 @endpush
