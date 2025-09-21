@@ -731,7 +731,15 @@
                         <div class="laptop-frame">
                             <img src="{{ asset('img/laptop_image.png') }}" alt="Laptop Frame" class="laptop-base">
                             <div class="screen-content">
-                                <img src="{{ asset('img/soal_cermat.png') }}" alt="Soal Image">
+                                @if($activeVideo && $activeVideo->embed_url)
+                                    <iframe src="{{ $activeVideo->embed_url }}" 
+                                            frameborder="0" 
+                                            allowfullscreen
+                                            style="width: 100%; height: 100%;">
+                                    </iframe>
+                                @else
+                                    <img src="{{ asset('img/soal_cermat.png') }}" alt="Soal Image">
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -795,48 +803,6 @@
                     </div>
                 </div>
 
-                <!-- Paket Psikologi -->
-                <div class="col-md-3 mb-4">
-                    <div class="package-card h-100">
-                        <div class="package-header">
-                            <h3>Paket Kepribadian</h3>
-                            <p>Fokus Tes Kepribadian</p>
-                        </div>
-
-                        <div class="package-features">
-                            <div class="text-center mb-2 package-pricing">
-                                <div class="package-price">Rp 75.000</div>
-                                <p class="price-period">Berlaku 30 hari</p>
-                            </div>
-
-                            <div class="features-list">
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Bank soal kepribadian lengkap
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Tes kepribadian & karakter
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Simulasi wawancara kepribadian
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Tips & strategi psikotes
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Analisis profil kepribadian
-                                </div>
-                            </div>
-
-                            <div class="button-container">
-                                <a href="{{ route('subscription.packages') }}"
-                                    class="btn btn-package btn-outline-info">
-                                    Pilih Paket
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Paket Akademik -->
                 <div class="col-md-3 mb-4">
                     <div class="package-card h-100">
@@ -872,6 +838,47 @@
                             <div class="button-container">
                                 <a href="{{ route('subscription.packages') }}"
                                     class="btn btn-package btn-outline-warning">
+                                    Pilih Paket
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Paket Psikologi -->
+                <div class="col-md-3 mb-4">
+                    <div class="package-card h-100">
+                        <div class="package-header">
+                            <h3>Paket Kepribadian</h3>
+                            <p>Fokus Tes Kepribadian</p>
+                        </div>
+
+                        <div class="package-features">
+                            <div class="text-center mb-2 package-pricing">
+                                <div class="package-price">Rp 75.000</div>
+                                <p class="price-period">Berlaku 30 hari</p>
+                            </div>
+
+                            <div class="features-list">
+                                <div class="feature-item available">
+                                    <i class="fas fa-check"></i> Bank soal kepribadian lengkap
+                                </div>
+                                <div class="feature-item available">
+                                    <i class="fas fa-check"></i> Tes kepribadian & karakter
+                                </div>
+                                <div class="feature-item available">
+                                    <i class="fas fa-check"></i> Simulasi wawancara kepribadian
+                                </div>
+                                <div class="feature-item available">
+                                    <i class="fas fa-check"></i> Tips & strategi psikotes
+                                </div>
+                                <div class="feature-item available">
+                                    <i class="fas fa-check"></i> Analisis profil kepribadian
+                                </div>
+                            </div>
+
+                            <div class="button-container">
+                                <a href="{{ route('subscription.packages') }}"
+                                    class="btn btn-package btn-outline-info">
                                     Pilih Paket
                                 </a>
                             </div>

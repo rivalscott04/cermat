@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PackageMappingSeeder::class,
             TryoutSeeder::class,
             ScoringSettingSeeder::class,
+            YoutubeVideoSeeder::class,
         ]);
     }
 }

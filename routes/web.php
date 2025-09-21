@@ -17,9 +17,7 @@ use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ScoringSettingController;
 use App\Http\Controllers\SimulasiNilaiController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index']);
 
 
 //Routes Harga Paket
@@ -163,4 +161,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('package-mapping', [PackageMappingController::class, 'update'])->name('package-mapping.update');
     Route::post('package-mapping/reset', [PackageMappingController::class, 'reset'])->name('package-mapping.reset');
     Route::get('package-mapping/api', [PackageMappingController::class, 'api'])->name('package-mapping.api');
+
+    // YouTube Video Routes
+    Route::resource('youtube-videos', App\Http\Controllers\Admin\YoutubeVideoController::class);
 });

@@ -81,6 +81,12 @@
                                 <span class="nav-label">Pengaturan Simulasi Nilai</span>
                             </a>
                         </li>
+                        <li>
+                            <a href="{{ route('admin.youtube-videos.index') }}">
+                                <i class="fa fa-youtube-play"></i>
+                                <span class="nav-label">Link YouTube Video</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
             @endif
