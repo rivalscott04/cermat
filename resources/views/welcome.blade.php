@@ -234,20 +234,22 @@
         }
 
         .tagline-container {
-            margin: 2rem 0;
-            text-align: center;
+            margin: 2.5rem 0;
+            text-align: left;
         }
 
         .tagline-item {
             color: white;
-            font-size: calc(1.5rem + 1vw);
-            font-weight: bold;
-            margin: 0 0.5rem;
+            font-size: calc(1.8rem + 1.2vw);
+            font-weight: 800;
+            margin: 0 0.3rem;
             display: inline-block;
+            letter-spacing: 0.5px;
         }
 
         .tagline-item.highlight {
             color: #FFD700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         /* Laptop Container Styles */
