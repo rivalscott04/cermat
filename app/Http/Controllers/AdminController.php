@@ -445,7 +445,7 @@ class AdminController extends Controller
 
                 <!-- Test Information -->
                 <div class="section">
-                    <h2>📋 Informasi Tes</h2>
+                    <h2>Informasi Tes</h2>
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Jenis Tes</div>
@@ -470,7 +470,7 @@ class AdminController extends Controller
 
                 <!-- Score Display -->
                 <div class="section">
-                    <h2>🎯 Hasil Tes</h2>
+                    <h2>Hasil Tes</h2>
                     <div class="score-display">
                         <div class="score-circle">
                             <span class="score-number">' . $data['scorePercentage'] . '%</span>
@@ -483,7 +483,7 @@ class AdminController extends Controller
 
                 <!-- Breakdown -->
                 <div class="section">
-                    <h2>📊 Breakdown Soal</h2>
+                    <h2>Breakdown Soal</h2>
                     <div class="breakdown">
                         <div class="breakdown-item breakdown-correct">
                             <span class="breakdown-number">' . $test->skor_benar . '</span>
@@ -506,7 +506,7 @@ class AdminController extends Controller
 
                 <!-- Performance Analysis -->
                 <div class="section">
-                    <h2>📈 Analisis Performa</h2>
+                    <h2>Analisis Performa</h2>
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">Percentile</div>
@@ -521,7 +521,7 @@ class AdminController extends Controller
 
                 <!-- Recommendations -->
                 <div class="section">
-                    <h2>💡 Rekomendasi</h2>
+                    <h2>Rekomendasi</h2>
                     <div class="recommendations">
                         <ul>
                             ' . implode('', array_map(function($rec) { return '<li>' . $rec . '</li>'; }, $data['recommendations'])) . '
