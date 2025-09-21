@@ -698,7 +698,7 @@
             align-items: center;
             margin-bottom: 20px;
             padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1ab394;
             border-radius: 8px;
             color: white;
         }
@@ -717,11 +717,11 @@
         }
         
         .test-status.completed {
-            background: rgba(40, 167, 69, 0.8);
+            background: #1ab394;
         }
         
         .test-status.incomplete {
-            background: rgba(255, 193, 7, 0.8);
+            background: #f8ac59;
         }
         
         /* Question Breakdown */
@@ -742,9 +742,9 @@
         
         .breakdown-item.total {
             grid-column: 1 / -1;
-            background: linear-gradient(135deg, #007bff, #0056b3);
+            background: #1ab394;
             color: white;
-            border-left-color: #0056b3;
+            border-left-color: #1ab394;
         }
         
         .breakdown-icon {
@@ -759,18 +759,18 @@
         }
         
         .breakdown-icon.correct {
-            background: #d4edda;
-            color: #155724;
+            background: #1ab394;
+            color: white;
         }
         
         .breakdown-icon.wrong {
-            background: #f8d7da;
-            color: #721c24;
+            background: #ed5565;
+            color: white;
         }
         
         .breakdown-icon.unanswered {
-            background: #fff3cd;
-            color: #856404;
+            background: #f8ac59;
+            color: white;
         }
         
         .breakdown-icon.total {
@@ -796,19 +796,19 @@
         
         /* Enhanced Score Display */
         .score-circle.excellent {
-            background: linear-gradient(135deg, #28a745, #20c997);
+            background: #1ab394;
         }
         
         .score-circle.good {
-            background: linear-gradient(135deg, #17a2b8, #138496);
+            background: #23c6c8;
         }
         
         .score-circle.fair {
-            background: linear-gradient(135deg, #ffc107, #e0a800);
+            background: #f8ac59;
         }
         
         .score-circle.poor {
-            background: linear-gradient(135deg, #dc3545, #c82333);
+            background: #ed5565;
         }
         
         .score-details {
@@ -816,7 +816,7 @@
         }
         
         .score-item.time {
-            color: #17a2b8;
+            color: #23c6c8;
         }
         
         /* Performance Chart */
@@ -863,15 +863,15 @@
         }
         
         .legend-color.correct {
-            background: #28a745;
+            background: #1ab394;
         }
         
         .legend-color.wrong {
-            background: #dc3545;
+            background: #ed5565;
         }
         
         .legend-color.unanswered {
-            background: #ffc107;
+            background: #f8ac59;
         }
         
         /* Benchmarking */
@@ -886,7 +886,7 @@
             padding: 15px;
             background: #f8f9fa;
             border-radius: 8px;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid #1ab394;
         }
         
         .benchmark-label {
@@ -902,19 +902,19 @@
         }
         
         .benchmark-value.percentile-excellent {
-            color: #28a745;
+            color: #1ab394;
         }
         
         .benchmark-value.percentile-good {
-            color: #17a2b8;
+            color: #23c6c8;
         }
         
         .benchmark-value.percentile-fair {
-            color: #ffc107;
+            color: #f8ac59;
         }
         
         .benchmark-value.percentile-poor {
-            color: #dc3545;
+            color: #ed5565;
         }
         
         .benchmark-desc {
@@ -939,24 +939,24 @@
             padding: 10px 15px;
             background: white;
             border-radius: 6px;
-            border-left: 4px solid #007bff;
+            border-left: 4px solid #1ab394;
             font-size: 14px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         
         .recommendation-item.excellent {
-            border-left-color: #28a745;
-            background: #f8fff9;
+            border-left-color: #1ab394;
+            background: #f0f9f7;
         }
         
         .recommendation-item.good {
-            border-left-color: #17a2b8;
-            background: #f0f9ff;
+            border-left-color: #23c6c8;
+            background: #f0f9f9;
         }
         
         .recommendation-item.poor {
-            border-left-color: #dc3545;
-            background: #fff8f8;
+            border-left-color: #ed5565;
+            background: #fef7f7;
         }
         
         .recommendation-item i {
@@ -1475,7 +1475,7 @@ function generateTestDetailHTML(test, testType) {
             .final-score {
                 text-align: center;
                 padding: 20px;
-                background: linear-gradient(135deg, #28a745, #20c997);
+                background: #1ab394;
                 border-radius: 8px;
                 color: white;
             }
@@ -1502,23 +1502,23 @@ function generateTestDetailHTML(test, testType) {
             }
             
             .category-badge.excellent {
-                background: #d4edda;
-                color: #155724;
+                background: #1ab394;
+                color: white;
             }
             
             .category-badge.good {
-                background: #d1ecf1;
-                color: #0c5460;
+                background: #23c6c8;
+                color: white;
             }
             
             .category-badge.fair {
-                background: #fff3cd;
-                color: #856404;
+                background: #f8ac59;
+                color: white;
             }
             
             .category-badge.poor {
-                background: #f8d7da;
-                color: #721c24;
+                background: #ed5565;
+                color: white;
             }
         </style>
     `;
@@ -1590,10 +1590,10 @@ function generatePerformanceChart(score, correct, wrong, unanswered) {
             <div class="progress-ring">
                 <svg width="120" height="120">
                     <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="8"/>
-                    <circle cx="60" cy="60" r="50" fill="none" stroke="#28a745" stroke-width="8" 
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#1ab394" stroke-width="8" 
                             stroke-dasharray="${correctPercent * 3.14}" stroke-dashoffset="0" 
                             transform="rotate(-90 60 60)" class="progress-correct"/>
-                    <circle cx="60" cy="60" r="50" fill="none" stroke="#dc3545" stroke-width="8" 
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#ed5565" stroke-width="8" 
                             stroke-dasharray="${wrongPercent * 3.14}" stroke-dashoffset="${-correctPercent * 3.14}" 
                             transform="rotate(-90 60 60)" class="progress-wrong"/>
                 </svg>
