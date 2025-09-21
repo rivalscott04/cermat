@@ -690,6 +690,327 @@
         .modal-header .close:hover {
             opacity: .75;
         }
+        
+        /* Enhanced Modal Styles */
+        .test-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 8px;
+            color: white;
+        }
+        
+        .test-id-badge {
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .test-status {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .test-status.completed {
+            background: rgba(40, 167, 69, 0.8);
+        }
+        
+        .test-status.incomplete {
+            background: rgba(255, 193, 7, 0.8);
+        }
+        
+        /* Question Breakdown */
+        .question-breakdown {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .breakdown-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border-left: 4px solid #ddd;
+        }
+        
+        .breakdown-item.total {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            border-left-color: #0056b3;
+        }
+        
+        .breakdown-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 16px;
+        }
+        
+        .breakdown-icon.correct {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .breakdown-icon.wrong {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .breakdown-icon.unanswered {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .breakdown-icon.total {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        .breakdown-content {
+            flex: 1;
+        }
+        
+        .breakdown-number {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            line-height: 1;
+        }
+        
+        .breakdown-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* Enhanced Score Display */
+        .score-circle.excellent {
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+        
+        .score-circle.good {
+            background: linear-gradient(135deg, #17a2b8, #138496);
+        }
+        
+        .score-circle.fair {
+            background: linear-gradient(135deg, #ffc107, #e0a800);
+        }
+        
+        .score-circle.poor {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+        
+        .score-details {
+            flex: 1;
+        }
+        
+        .score-item.time {
+            color: #17a2b8;
+        }
+        
+        /* Performance Chart */
+        .chart-container {
+            text-align: center;
+        }
+        
+        .progress-ring {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .chart-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .chart-score {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .chart-legend {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .legend-color.correct {
+            background: #28a745;
+        }
+        
+        .legend-color.wrong {
+            background: #dc3545;
+        }
+        
+        .legend-color.unanswered {
+            background: #ffc107;
+        }
+        
+        /* Benchmarking */
+        .benchmark-info {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .benchmark-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #007bff;
+        }
+        
+        .benchmark-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .benchmark-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .benchmark-value.percentile-excellent {
+            color: #28a745;
+        }
+        
+        .benchmark-value.percentile-good {
+            color: #17a2b8;
+        }
+        
+        .benchmark-value.percentile-fair {
+            color: #ffc107;
+        }
+        
+        .benchmark-value.percentile-poor {
+            color: #dc3545;
+        }
+        
+        .benchmark-desc {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* Recommendations */
+        .recommendations {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        }
+        
+        .recommendations-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .recommendation-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 15px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #007bff;
+            font-size: 14px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .recommendation-item.excellent {
+            border-left-color: #28a745;
+            background: #f8fff9;
+        }
+        
+        .recommendation-item.good {
+            border-left-color: #17a2b8;
+            background: #f0f9ff;
+        }
+        
+        .recommendation-item.poor {
+            border-left-color: #dc3545;
+            background: #fff8f8;
+        }
+        
+        .recommendation-item i {
+            margin-right: 10px;
+            width: 16px;
+        }
+        
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .action-buttons .btn {
+            min-width: 120px;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .test-header {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            
+            .question-breakdown {
+                grid-template-columns: 1fr;
+            }
+            
+            .breakdown-item.total {
+                grid-column: 1;
+            }
+            
+            .score-display {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .benchmark-info {
+                gap: 10px;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons .btn {
+                width: 100%;
+            }
+        }
     </style>
 @endpush
 
@@ -859,14 +1180,51 @@ function generateTestDetailHTML(test, testType) {
         minute: '2-digit'
     });
     
+    const testStartTime = new Date(test.tanggal_tes).toLocaleTimeString('id-ID', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    
+    const testEndTime = test.waktu_total ? 
+        new Date(new Date(test.tanggal_tes).getTime() + (test.waktu_total * 1000)).toLocaleTimeString('id-ID', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit'
+        }) : 'Tidak tersedia';
+    
     const scorePercentage = test.skor_benar + test.skor_salah > 0 
         ? Math.round((test.skor_benar / (test.skor_benar + test.skor_salah)) * 100)
         : 0;
     
+    const totalQuestions = test.skor_benar + test.skor_salah;
+    const unansweredQuestions = (test.total_soal || totalQuestions) - totalQuestions;
+    
+    // Calculate percentile (mock calculation - in real app, this would come from database)
+    const percentile = calculatePercentile(scorePercentage);
+    
+    // Generate performance chart data
+    const chartData = generatePerformanceChart(scorePercentage, test.skor_benar, test.skor_salah, unansweredQuestions);
+    
+    // Generate recommendations
+    const recommendations = generateRecommendations(scorePercentage, test.kategori_skor, testType);
+    
     return `
         <div class="test-detail-content">
+            <!-- Header with Test ID and Status -->
+            <div class="test-header">
+                <div class="test-id-badge">
+                    <i class="fa fa-hashtag"></i> Test ID: ${test.id}
+                </div>
+                <div class="test-status ${test.status || 'completed'}">
+                    <i class="fa fa-${getStatusIcon(test.status)}"></i> ${getStatusText(test.status)}
+                </div>
+            </div>
+
             <div class="row">
+                <!-- Left Column -->
                 <div class="col-md-6">
+                    <!-- Test Information -->
                     <div class="detail-section">
                         <h6><i class="fa fa-info-circle"></i> Informasi Tes</h6>
                         <table class="table table-sm">
@@ -883,21 +1241,79 @@ function generateTestDetailHTML(test, testType) {
                                 <td>${testDate}</td>
                             </tr>
                             <tr>
-                                <td><strong>Waktu Total:</strong></td>
+                                <td><strong>Waktu Mulai:</strong></td>
+                                <td>${testStartTime}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Waktu Selesai:</strong></td>
+                                <td>${testEndTime}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Durasi Total:</strong></td>
                                 <td>${test.waktu_total ? Math.round(test.waktu_total / 60) + ' menit' : 'Tidak tersedia'}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Attempt:</strong></td>
+                                <td>${test.attempt_number || 1}</td>
                             </tr>
                         </table>
                     </div>
+
+                    <!-- Question Breakdown -->
+                    <div class="detail-section">
+                        <h6><i class="fa fa-list-ol"></i> Breakdown Soal</h6>
+                        <div class="question-breakdown">
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon correct">
+                                    <i class="fa fa-check"></i>
+                                </div>
+                                <div class="breakdown-content">
+                                    <span class="breakdown-number">${test.skor_benar}</span>
+                                    <span class="breakdown-label">Benar</span>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon wrong">
+                                    <i class="fa fa-times"></i>
+                                </div>
+                                <div class="breakdown-content">
+                                    <span class="breakdown-number">${test.skor_salah}</span>
+                                    <span class="breakdown-label">Salah</span>
+                                </div>
+                            </div>
+                            <div class="breakdown-item">
+                                <div class="breakdown-icon unanswered">
+                                    <i class="fa fa-question"></i>
+                                </div>
+                                <div class="breakdown-content">
+                                    <span class="breakdown-number">${unansweredQuestions}</span>
+                                    <span class="breakdown-label">Tidak Dijawab</span>
+                                </div>
+                            </div>
+                            <div class="breakdown-item total">
+                                <div class="breakdown-icon total">
+                                    <i class="fa fa-list"></i>
+                                </div>
+                                <div class="breakdown-content">
+                                    <span class="breakdown-number">${test.total_soal || totalQuestions}</span>
+                                    <span class="breakdown-label">Total Soal</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <!-- Right Column -->
                 <div class="col-md-6">
+                    <!-- Performance Score -->
                     <div class="detail-section">
                         <h6><i class="fa fa-chart-bar"></i> Hasil Tes</h6>
                         <div class="score-display">
-                            <div class="score-circle">
+                            <div class="score-circle ${getScoreClass(scorePercentage)}">
                                 <span class="score-number">${scorePercentage}%</span>
                                 <span class="score-label">Skor</span>
                             </div>
-                            <div class="score-breakdown">
+                            <div class="score-details">
                                 <div class="score-item correct">
                                     <i class="fa fa-check"></i>
                                     <span>${test.skor_benar} Benar</span>
@@ -906,30 +1322,85 @@ function generateTestDetailHTML(test, testType) {
                                     <i class="fa fa-times"></i>
                                     <span>${test.skor_salah} Salah</span>
                                 </div>
+                                <div class="score-item time">
+                                    <i class="fa fa-clock-o"></i>
+                                    <span>${test.waktu_total ? Math.round(test.waktu_total / 60) + 'm' : 'N/A'}</span>
+                                </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- Performance Chart -->
+                    <div class="detail-section">
+                        <h6><i class="fa fa-pie-chart"></i> Visualisasi Performa</h6>
+                        <div class="performance-chart">
+                            ${chartData}
                         </div>
                     </div>
                 </div>
             </div>
-            
-            ${test.skor_akhir ? `
-                <div class="detail-section">
-                    <h6><i class="fa fa-star"></i> Skor Akhir</h6>
-                    <div class="final-score">
-                        <span class="final-score-number">${test.skor_akhir}</span>
-                        <span class="final-score-label">Skor Akhir</span>
+
+            <!-- Performance Analysis Row -->
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- Benchmarking -->
+                    <div class="detail-section">
+                        <h6><i class="fa fa-trophy"></i> Benchmarking</h6>
+                        <div class="benchmark-info">
+                            <div class="benchmark-item">
+                                <div class="benchmark-label">Percentile</div>
+                                <div class="benchmark-value percentile-${getPercentileClass(percentile)}">
+                                    ${percentile}%
+                                </div>
+                                <div class="benchmark-desc">Lebih baik dari ${percentile}% user</div>
+                            </div>
+                            <div class="benchmark-item">
+                                <div class="benchmark-label">Rata-rata User</div>
+                                <div class="benchmark-value">75%</div>
+                                <div class="benchmark-desc">${scorePercentage >= 75 ? 'Di atas rata-rata' : 'Di bawah rata-rata'}</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            ` : ''}
-            
-            ${test.kategori_skor ? `
-                <div class="detail-section">
-                    <h6><i class="fa fa-trophy"></i> Kategori Skor</h6>
-                    <div class="category-badge ${test.kategori_skor}">
-                        ${getCategoryDisplay(test.kategori_skor)}
+                <div class="col-md-6">
+                    <!-- Final Score & Category -->
+                    <div class="detail-section">
+                        <h6><i class="fa fa-star"></i> Hasil Akhir</h6>
+                        ${test.skor_akhir ? `
+                            <div class="final-score">
+                                <span class="final-score-number">${test.skor_akhir}</span>
+                                <span class="final-score-label">Skor Akhir</span>
+                            </div>
+                        ` : ''}
+                        ${test.kategori_skor ? `
+                            <div class="category-badge ${test.kategori_skor}">
+                                ${getCategoryDisplay(test.kategori_skor)}
+                            </div>
+                        ` : ''}
                     </div>
                 </div>
-            ` : ''}
+            </div>
+
+            <!-- Recommendations -->
+            <div class="detail-section recommendations">
+                <h6><i class="fa fa-lightbulb-o"></i> Rekomendasi</h6>
+                <div class="recommendations-list">
+                    ${recommendations}
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+                <button class="btn btn-primary" onclick="downloadTestPDF(${test.id})">
+                    <i class="fa fa-download"></i> Download PDF
+                </button>
+                <button class="btn btn-info" onclick="printTestResult()">
+                    <i class="fa fa-print"></i> Print
+                </button>
+                <button class="btn btn-success" onclick="shareTestResult(${test.id})">
+                    <i class="fa fa-share"></i> Share
+                </button>
+            </div>
         </div>
         
         <style>
@@ -1061,6 +1532,145 @@ function getCategoryDisplay(category) {
         'poor': '<i class="fa fa-frown-o"></i> Poor'
     };
     return categories[category] || '<i class="fa fa-question"></i> Belum Dinilai';
+}
+
+// Helper functions for enhanced modal
+function calculatePercentile(score) {
+    // Mock calculation - in real app, this would query database
+    if (score >= 90) return 95;
+    if (score >= 80) return 85;
+    if (score >= 70) return 70;
+    if (score >= 60) return 50;
+    if (score >= 50) return 30;
+    return 15;
+}
+
+function getScoreClass(score) {
+    if (score >= 80) return 'excellent';
+    if (score >= 60) return 'good';
+    if (score >= 40) return 'fair';
+    return 'poor';
+}
+
+function getPercentileClass(percentile) {
+    if (percentile >= 80) return 'excellent';
+    if (percentile >= 60) return 'good';
+    if (percentile >= 40) return 'fair';
+    return 'poor';
+}
+
+function getStatusIcon(status) {
+    const icons = {
+        'completed': 'check-circle',
+        'incomplete': 'clock-o',
+        'cancelled': 'times-circle',
+        'pending': 'hourglass-half'
+    };
+    return icons[status] || 'check-circle';
+}
+
+function getStatusText(status) {
+    const texts = {
+        'completed': 'Selesai',
+        'incomplete': 'Belum Selesai',
+        'cancelled': 'Dibatalkan',
+        'pending': 'Menunggu'
+    };
+    return texts[status] || 'Selesai';
+}
+
+function generatePerformanceChart(score, correct, wrong, unanswered) {
+    const total = correct + wrong + unanswered;
+    const correctPercent = total > 0 ? Math.round((correct / total) * 100) : 0;
+    const wrongPercent = total > 0 ? Math.round((wrong / total) * 100) : 0;
+    const unansweredPercent = total > 0 ? Math.round((unanswered / total) * 100) : 0;
+    
+    return `
+        <div class="chart-container">
+            <div class="progress-ring">
+                <svg width="120" height="120">
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#e9ecef" stroke-width="8"/>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#28a745" stroke-width="8" 
+                            stroke-dasharray="${correctPercent * 3.14}" stroke-dashoffset="0" 
+                            transform="rotate(-90 60 60)" class="progress-correct"/>
+                    <circle cx="60" cy="60" r="50" fill="none" stroke="#dc3545" stroke-width="8" 
+                            stroke-dasharray="${wrongPercent * 3.14}" stroke-dashoffset="${-correctPercent * 3.14}" 
+                            transform="rotate(-90 60 60)" class="progress-wrong"/>
+                </svg>
+                <div class="chart-center">
+                    <span class="chart-score">${score}%</span>
+                </div>
+            </div>
+            <div class="chart-legend">
+                <div class="legend-item">
+                    <span class="legend-color correct"></span>
+                    <span>Benar (${correctPercent}%)</span>
+                </div>
+                <div class="legend-item">
+                    <span class="legend-color wrong"></span>
+                    <span>Salah (${wrongPercent}%)</span>
+                </div>
+                ${unanswered > 0 ? `
+                <div class="legend-item">
+                    <span class="legend-color unanswered"></span>
+                    <span>Tidak Dijawab (${unansweredPercent}%)</span>
+                </div>
+                ` : ''}
+            </div>
+        </div>
+    `;
+}
+
+function generateRecommendations(score, category, testType) {
+    let recommendations = [];
+    
+    if (score >= 80) {
+        recommendations.push('<div class="recommendation-item excellent"><i class="fa fa-star"></i> Performa sangat baik! Pertahankan konsistensi.</div>');
+    } else if (score >= 60) {
+        recommendations.push('<div class="recommendation-item good"><i class="fa fa-thumbs-up"></i> Hasil cukup baik. Fokus pada area yang masih lemah.</div>');
+    } else {
+        recommendations.push('<div class="recommendation-item poor"><i class="fa fa-exclamation-triangle"></i> Perlu peningkatan. Disarankan untuk latihan lebih intensif.</div>');
+    }
+    
+    // Test type specific recommendations
+    if (testType === 'kecermatan') {
+        recommendations.push('<div class="recommendation-item"><i class="fa fa-eye"></i> Latih kecepatan dan ketelitian dalam mengamati detail.</div>');
+    } else if (testType === 'kecerdasan') {
+        recommendations.push('<div class="recommendation-item"><i class="fa fa-brain"></i> Tingkatkan kemampuan analisis dan pemecahan masalah.</div>');
+    } else if (testType === 'kepribadian') {
+        recommendations.push('<div class="recommendation-item"><i class="fa fa-user"></i> Evaluasi jawaban untuk memahami karakteristik diri.</div>');
+    }
+    
+    // General recommendations
+    recommendations.push('<div class="recommendation-item"><i class="fa fa-clock-o"></i> Manajemen waktu yang lebih baik dapat meningkatkan hasil.</div>');
+    recommendations.push('<div class="recommendation-item"><i class="fa fa-book"></i> Lakukan latihan rutin untuk meningkatkan kemampuan.</div>');
+    
+    return recommendations.join('');
+}
+
+// Action functions
+function downloadTestPDF(testId) {
+    // Implementation for PDF download
+    window.open(`/admin/test-pdf/${testId}`, '_blank');
+}
+
+function printTestResult() {
+    window.print();
+}
+
+function shareTestResult(testId) {
+    if (navigator.share) {
+        navigator.share({
+            title: 'Hasil Tes',
+            text: 'Lihat hasil tes saya',
+            url: window.location.href
+        });
+    } else {
+        // Fallback - copy to clipboard
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            alert('Link hasil tes telah disalin ke clipboard');
+        });
+    }
 }
 
 function closeTestModal() {

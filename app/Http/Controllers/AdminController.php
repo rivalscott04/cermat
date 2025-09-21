@@ -292,4 +292,31 @@ class AdminController extends Controller
             ], 500);
         }
     }
+
+    public function downloadTestPDF($testId)
+    {
+        try {
+            $test = DB::table('hasil_tes')->where('id', $testId)->first();
+            
+            if (!$test) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data tes tidak ditemukan'
+                ], 404);
+            }
+
+            // For now, return a simple response
+            // In a real implementation, you would generate a PDF using a library like DomPDF or TCPDF
+            return response()->json([
+                'success' => true,
+                'message' => 'PDF generation not implemented yet',
+                'test' => $test
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat membuat PDF'
+            ], 500);
+        }
+    }
 }
