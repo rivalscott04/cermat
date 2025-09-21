@@ -92,21 +92,19 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/tes-kecermatan/hasil', [SoalKecermatanController::class, 'hasilTes'])->name('kecermatan.hasil');
         });
 
-        // Tryout CBT Routes dengan middleware package tambahan
-        Route::middleware(['check.package:tryout'])->group(function () {
-            Route::get('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index');
-            Route::post('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index.post');
-            Route::get('/tryout/{tryout}/start', [TryoutController::class, 'start'])->name('user.tryout.start');
-            Route::get('/{tryout}/restart', [TryoutController::class, 'restart'])->name('user.tryout.restart');
-            Route::get('/tryout/{tryout}/work', [TryoutController::class, 'work'])->name('user.tryout.work');
-            Route::get('{tryout}/remaining-time', [TryoutController::class, 'getRemainingTime'])->name('remaining-time');
-            Route::post('/tryout/{tryout}/reset-answer', [TryoutController::class, 'resetAnswer'])->name('user.tryout.reset-answer');
-            Route::post('/tryout/{tryout}/submit-answer', [TryoutController::class, 'submitAnswer'])->name('user.tryout.submit-answer');
-            Route::post('/tryout/{tryout}/toggle-mark', [TryoutController::class, 'toggleMark'])->name('user.tryout.toggle-mark');
-            Route::get('/debug-seed/{tryout}', [TryoutController::class, 'debugSessionSeed'])->name('debug.session.seed');
-            Route::get('/tryout/{tryout}/finish', [TryoutController::class, 'finish'])->name('user.tryout.finish');
-            Route::get('/tryout/paket-lengkap/status', [TryoutController::class, 'paketLengkapStatus'])->name('user.tryout.paket-lengkap.status');
-        });
+        // Tryout CBT Routes - logic akses dihandle di controller
+        Route::get('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index');
+        Route::post('/tryout', [TryoutController::class, 'userIndex'])->name('user.tryout.index.post');
+        Route::get('/tryout/{tryout}/start', [TryoutController::class, 'start'])->name('user.tryout.start');
+        Route::get('/{tryout}/restart', [TryoutController::class, 'restart'])->name('user.tryout.restart');
+        Route::get('/tryout/{tryout}/work', [TryoutController::class, 'work'])->name('user.tryout.work');
+        Route::get('{tryout}/remaining-time', [TryoutController::class, 'getRemainingTime'])->name('remaining-time');
+        Route::post('/tryout/{tryout}/reset-answer', [TryoutController::class, 'resetAnswer'])->name('user.tryout.reset-answer');
+        Route::post('/tryout/{tryout}/submit-answer', [TryoutController::class, 'submitAnswer'])->name('user.tryout.submit-answer');
+        Route::post('/tryout/{tryout}/toggle-mark', [TryoutController::class, 'toggleMark'])->name('user.tryout.toggle-mark');
+        Route::get('/debug-seed/{tryout}', [TryoutController::class, 'debugSessionSeed'])->name('debug.session.seed');
+        Route::get('/tryout/{tryout}/finish', [TryoutController::class, 'finish'])->name('user.tryout.finish');
+        Route::get('/tryout/paket-lengkap/status', [TryoutController::class, 'paketLengkapStatus'])->name('user.tryout.paket-lengkap.status');
     });
 
     Route::get('/tes-kecermatan/riwayat/{userId}', [KecermatanController::class, 'riwayat'])->name('kecermatan.riwayat');
