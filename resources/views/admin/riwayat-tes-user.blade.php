@@ -1675,7 +1675,7 @@ function generateRecommendations(score, category, testType) {
 
 // Action functions
 function downloadTestPDF(testId) {
-    // Implementation for PDF download
+    // Open PDF in new tab
     window.open(`/admin/test-pdf/${testId}`, '_blank');
 }
 

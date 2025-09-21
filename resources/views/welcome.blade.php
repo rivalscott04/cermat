@@ -227,7 +227,25 @@
             color: white;
             font-size: calc(1rem + 0.5vw);
             margin: 1.5rem 0;
+            font-weight: normal;
+            text-align: center;
+        }
+
+        .tagline-container {
+            margin: 2rem 0;
+            text-align: center;
+        }
+
+        .tagline-item {
+            color: white;
+            font-size: calc(1.5rem + 1vw);
             font-weight: bold;
+            margin: 0 0.5rem;
+            display: inline-block;
+        }
+
+        .tagline-item.highlight {
+            color: #FFD700;
         }
 
         /* Laptop Container Styles */
@@ -692,8 +710,14 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-6">
-                    <h2 style="color: white; font-weight: bold;">Tool Latihan</h2>
-                    <h1 class="hero-text">TES KECERMATAN</h1>
+                    <h1 class="hero-text">Tryout Psikotes</h1>
+                    <h1 class="hero-text">Bintara POLRI</h1>
+                    <h3 class="hero-subtext">Asah Kecermatan, Kecerdasan, dan Kepribadian untuk Raih Nilai Tinggi</h3>
+                    <div class="tagline-container">
+                        <span class="tagline-item">Cermat.</span>
+                        <span class="tagline-item highlight">Cerdas.</span>
+                        <span class="tagline-item highlight">Lulus.</span>
+                    </div>
                     <div class="d-flex">
                         <a href="{{ route('trial') }}" class="get-started-btn me-2">Coba</a>
                         <a href="{{ route('register') }}" class="get-started-btn">Daftar</a>

@@ -358,7 +358,7 @@ class AdminController extends Controller
                 'isFontSubsettingEnabled' => true,
             ]);
             
-            return $pdf->download('hasil_tes_' . $testId . '.pdf');
+            return $pdf->stream('hasil_tes_' . $testId . '.pdf');
                 
         } catch (\Exception $e) {
             return response()->json([
@@ -452,11 +452,21 @@ class AdminController extends Controller
                 @media print { 
                     body { background: white !important; } 
                     .container { box-shadow: none !important; } 
-                    * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+                    * { 
+                        -webkit-print-color-adjust: exact !important; 
+                        color-adjust: exact !important; 
+                        print-color-adjust: exact !important;
+                    }
                 }
                 @page { 
                     margin: 0.5in; 
                     size: A4; 
+                }
+                /* Force colors for all elements */
+                .score-circle, .breakdown-correct, .breakdown-wrong, .breakdown-unanswered, .breakdown-total, .badge-primary, .badge-success, .badge-warning, .badge-danger {
+                    -webkit-print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                    print-color-adjust: exact !important;
                 }
             </style>
         </head>
@@ -477,7 +487,7 @@ class AdminController extends Controller
                         <div class="info-item">
                             <div class="info-label">Jenis Tes</div>
                             <div class="info-value">
-                                <span class="badge badge-primary">' . ucfirst($test->jenis_tes ?? 'Tes') . '</span>
+                                <span class="badge badge-primary" style="background-color: #1ab394 !important; color: white !important;">' . ucfirst($test->jenis_tes ?? 'Tes') . '</span>
                             </div>
                         </div>
                         <div class="info-item">
@@ -498,33 +508,33 @@ class AdminController extends Controller
                 <!-- Score Display -->
                 <div class="section">
                     <h2>Hasil Tes</h2>
-                    <div class="score-display">
-                        <div class="score-circle">
-                            <span class="score-number">' . $data['scorePercentage'] . '%</span>
-                            <span class="score-label">Skor</span>
+                        <div class="score-display">
+                            <div class="score-circle" style="background-color: #1ab394 !important; color: white !important;">
+                                <span class="score-number">' . $data['scorePercentage'] . '%</span>
+                                <span class="score-label">Skor</span>
+                            </div>
+                            ' . ($test->skor_akhir ? '<p><strong>Skor Akhir: ' . $test->skor_akhir . '</strong></p>' : '') . '
+                            ' . ($test->kategori_skor ? '<p><span class="badge badge-success" style="background-color: #1ab394 !important; color: white !important;">' . ucfirst($test->kategori_skor) . '</span></p>' : '') . '
                         </div>
-                        ' . ($test->skor_akhir ? '<p><strong>Skor Akhir: ' . $test->skor_akhir . '</strong></p>' : '') . '
-                        ' . ($test->kategori_skor ? '<p><span class="badge badge-success">' . ucfirst($test->kategori_skor) . '</span></p>' : '') . '
-                    </div>
                 </div>
 
                 <!-- Breakdown -->
                 <div class="section">
                     <h2>Breakdown Soal</h2>
                     <div class="breakdown">
-                        <div class="breakdown-item breakdown-correct">
+                        <div class="breakdown-item breakdown-correct" style="background-color: #d4edda !important; color: #155724 !important;">
                             <span class="breakdown-number">' . $test->skor_benar . '</span>
                             <span class="breakdown-label">Benar</span>
                         </div>
-                        <div class="breakdown-item breakdown-wrong">
+                        <div class="breakdown-item breakdown-wrong" style="background-color: #f8d7da !important; color: #721c24 !important;">
                             <span class="breakdown-number">' . $test->skor_salah . '</span>
                             <span class="breakdown-label">Salah</span>
                         </div>
-                        <div class="breakdown-item breakdown-unanswered">
+                        <div class="breakdown-item breakdown-unanswered" style="background-color: #fff3cd !important; color: #856404 !important;">
                             <span class="breakdown-number">' . $data['unansweredQuestions'] . '</span>
                             <span class="breakdown-label">Tidak Dijawab</span>
                         </div>
-                        <div class="breakdown-item breakdown-total">
+                        <div class="breakdown-item breakdown-total" style="background-color: #1ab394 !important; color: white !important;">
                             <span class="breakdown-number">' . ($test->total_soal ?? $data['totalQuestions']) . '</span>
                             <span class="breakdown-label">Total Soal</span>
                         </div>
