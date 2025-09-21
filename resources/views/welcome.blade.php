@@ -225,10 +225,12 @@
 
         .hero-subtext {
             color: white;
-            font-size: calc(1rem + 0.5vw);
-            margin: 1.5rem 0;
-            font-weight: normal;
-            text-align: center;
+            font-size: calc(1.1rem + 0.8vw);
+            margin: 2rem 0;
+            font-weight: 400;
+            text-align: left;
+            line-height: 1.4;
+            max-width: 500px;
         }
 
         .tagline-container {
@@ -700,7 +702,6 @@
                 </ul>
                 <div class="d-flex">
                     <a href="{{ route('login') }}" class="btn btn-light me-2">Masuk</a>
-                    <a href="{{ route('privacy') }}" class="btn btn-light me-2">Informasi</a>
                 </div>
             </div>
         </div>
