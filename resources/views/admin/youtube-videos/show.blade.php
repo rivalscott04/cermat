@@ -81,17 +81,68 @@
                         <a href="{{ route('admin.youtube-videos.edit', $youtubeVideo) }}" class="btn btn-warning">
                             <i class="fa fa-edit"></i> Edit
                         </a>
-                        <form action="{{ route('admin.youtube-videos.destroy', $youtubeVideo) }}" method="POST" style="display: inline-block;" onsubmit="return confirm('Apakah Anda yakin ingin menghapus video ini?')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fa fa-trash"></i> Hapus
-                            </button>
-                        </form>
+                        <button type="button" class="btn btn-danger" onclick="showDeleteModal({{ $youtubeVideo->id }}, '{{ $youtubeVideo->title ?? 'Video YouTube' }}')">
+                            <i class="fa fa-trash"></i> Hapus
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal Hapus YouTube Video -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="deleteModalLabel">
+                    <i class="fa fa-exclamation-triangle"></i> Konfirmasi Hapus Video
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-3">
+                    <i class="fa fa-youtube-play fa-3x text-danger"></i>
+                </div>
+                <p class="text-center">
+                    Apakah Anda yakin ingin menghapus video berikut?
+                </p>
+                <div class="alert alert-warning">
+                    <strong>Video:</strong>
+                    <div id="videoPreview" class="mt-2 p-2 bg-light rounded"></div>
+                </div>
+                <div class="alert alert-danger">
+                    <i class="fa fa-warning"></i>
+                    <strong>Peringatan:</strong> Tindakan ini tidak dapat dibatalkan. Video akan dihapus permanen.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                    <i class="fa fa-times"></i> Batal
+                </button>
+                <form id="deleteForm" method="POST" style="display: inline;">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa fa-trash"></i> Ya, Hapus Video
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+    // Function to show delete modal
+    function showDeleteModal(videoId, videoTitle) {
+        $('#deleteForm').attr('action', `/admin/youtube-videos/${videoId}`);
+        $('#videoPreview').text(videoTitle);
+        $('#deleteModal').modal('show');
+    }
+</script>
+@endpush
