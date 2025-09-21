@@ -129,11 +129,24 @@
 
 @push('scripts')
 <script>
-    // Function to show delete modal
-    function showDeleteModal(videoId, videoTitle) {
-        $('#deleteForm').attr('action', `/admin/youtube-videos/${videoId}`);
-        $('#videoPreview').text(videoTitle);
-        $('#deleteModal').modal('show');
-    }
+    $(document).ready(function() {
+        // Function to show delete modal
+        window.showDeleteModal = function(videoId, videoTitle) {
+            $('#deleteForm').attr('action', `/admin/youtube-videos/${videoId}`);
+            $('#videoPreview').text(videoTitle);
+            $('#deleteModal').modal('show');
+        };
+
+        // Handle modal close events
+        $('#deleteModal').on('hidden.bs.modal', function () {
+            // Reset form action when modal is closed
+            $('#deleteForm').attr('action', '');
+        });
+
+        // Handle close button clicks
+        $('#deleteModal .close, #deleteModal [data-dismiss="modal"]').on('click', function() {
+            $('#deleteModal').modal('hide');
+        });
+    });
 </script>
 @endpush
