@@ -8,8 +8,8 @@ use App\Models\Subscription;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-
 use Illuminate\Support\Facades\Auth;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -333,13 +333,32 @@ class AdminController extends Controller
                 'duration' => $test->waktu_total ? round($test->waktu_total / 60) : 0,
             ];
 
-            // Generate PDF using simple HTML to PDF
+            // Generate PDF using DomPDF
             $html = $this->generatePDFHTML($pdfData);
             
-            // For now, return HTML content (in production, use DomPDF or similar)
-            return response($html)
-                ->header('Content-Type', 'text/html')
-                ->header('Content-Disposition', 'inline; filename="hasil_tes_' . $testId . '.html"');
+            // Create PDF with proper settings for color printing
+            $pdf = Pdf::loadHTML($html);
+            $pdf->setPaper('A4', 'portrait');
+            $pdf->setOptions([
+                'isHtml5ParserEnabled' => true,
+                'isRemoteEnabled' => true,
+                'defaultFont' => 'Arial',
+                'isPhpEnabled' => true,
+                'isJavascriptEnabled' => false,
+                'isFontSubsettingEnabled' => true,
+                'debugKeepTemp' => false,
+                'debugCss' => false,
+                'debugLayout' => false,
+                'debugLayoutLines' => false,
+                'debugLayoutBlocks' => false,
+                'debugLayoutInline' => false,
+                'debugLayoutPaddingBox' => false,
+                'dpi' => 96,
+                'defaultMediaType' => 'print',
+                'isFontSubsettingEnabled' => true,
+            ]);
+            
+            return $pdf->download('hasil_tes_' . $testId . '.pdf');
                 
         } catch (\Exception $e) {
             return response()->json([
@@ -410,15 +429,15 @@ class AdminController extends Controller
                 .info-label { font-weight: bold; color: #333; margin-bottom: 5px; }
                 .info-value { color: #666; }
                 .score-display { text-align: center; margin: 20px 0; }
-                .score-circle { width: 120px; height: 120px; border-radius: 50%; background: #1ab394; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; }
+                .score-circle { width: 120px; height: 120px; border-radius: 50%; background: #1ab394 !important; color: white !important; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto 20px; }
                 .score-number { font-size: 36px; font-weight: bold; line-height: 1; }
                 .score-label { font-size: 14px; opacity: 0.9; }
                 .breakdown { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin: 20px 0; }
                 .breakdown-item { text-align: center; padding: 15px; border-radius: 6px; }
-                .breakdown-correct { background: #d4edda; color: #155724; }
-                .breakdown-wrong { background: #f8d7da; color: #721c24; }
-                .breakdown-unanswered { background: #fff3cd; color: #856404; }
-                .breakdown-total { background: #1ab394; color: white; }
+                .breakdown-correct { background: #d4edda !important; color: #155724 !important; }
+                .breakdown-wrong { background: #f8d7da !important; color: #721c24 !important; }
+                .breakdown-unanswered { background: #fff3cd !important; color: #856404 !important; }
+                .breakdown-total { background: #1ab394 !important; color: white !important; }
                 .breakdown-number { font-size: 24px; font-weight: bold; display: block; }
                 .breakdown-label { font-size: 12px; margin-top: 5px; }
                 .recommendations { background: #f8f9fa; padding: 20px; border-radius: 6px; border-left: 4px solid #1ab394; }
@@ -426,11 +445,19 @@ class AdminController extends Controller
                 .recommendations li { margin-bottom: 8px; color: #333; }
                 .footer { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; font-size: 12px; }
                 .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; }
-                .badge-primary { background: #1ab394; color: white; }
-                .badge-success { background: #1ab394; color: white; }
-                .badge-warning { background: #f8ac59; color: white; }
-                .badge-danger { background: #ed5565; color: white; }
-                @media print { body { background: white; } .container { box-shadow: none; } }
+                .badge-primary { background: #1ab394 !important; color: white !important; }
+                .badge-success { background: #1ab394 !important; color: white !important; }
+                .badge-warning { background: #f8ac59 !important; color: white !important; }
+                .badge-danger { background: #ed5565 !important; color: white !important; }
+                @media print { 
+                    body { background: white !important; } 
+                    .container { box-shadow: none !important; } 
+                    * { -webkit-print-color-adjust: exact !important; color-adjust: exact !important; }
+                }
+                @page { 
+                    margin: 0.5in; 
+                    size: A4; 
+                }
             </style>
         </head>
         <body>
