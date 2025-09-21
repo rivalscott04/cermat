@@ -125,8 +125,8 @@ class User extends Authenticatable
      */
     public function canAccessTryout()
     {
-        // Free user bisa akses 1 tryout
-        if (!$this->hasActiveSubscription()) {
+        // Free user bisa akses 1 tryout (baik yang tidak punya subscription maupun yang is_active=true tapi package=free)
+        if (!$this->hasActiveSubscription() || $this->package === self::PACKAGE_FREE) {
             return true;
         }
 
