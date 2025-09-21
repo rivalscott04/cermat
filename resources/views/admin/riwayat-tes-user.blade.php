@@ -651,6 +651,45 @@
                 font-size: 16px;
             }
         }
+        
+        /* Modal Fix Styles */
+        #testDetailModal {
+            z-index: 1050;
+        }
+        
+        #testDetailModal.show {
+            display: block !important;
+        }
+        
+        .modal-backdrop {
+            z-index: 1040;
+        }
+        
+        .modal-open {
+            overflow: hidden;
+        }
+        
+        /* Ensure modal is properly centered */
+        .modal-dialog {
+            margin: 1.75rem auto;
+        }
+        
+        /* Fix for close button */
+        .modal-header .close {
+            padding: 1rem 1rem;
+            margin: -1rem -1rem -1rem auto;
+            font-size: 1.5rem;
+            font-weight: 700;
+            line-height: 1;
+            color: #000;
+            text-shadow: 0 1px 0 #fff;
+            opacity: .5;
+            cursor: pointer;
+        }
+        
+        .modal-header .close:hover {
+            opacity: .75;
+        }
     </style>
 @endpush
 
@@ -709,15 +748,15 @@ function initTestDetailModal() {
     // Create modal if it doesn't exist
     if (!document.getElementById('testDetailModal')) {
         const modalHTML = `
-            <div class="modal fade" id="testDetailModal" tabindex="-1" role="dialog">
+            <div class="modal fade" id="testDetailModal" tabindex="-1" role="dialog" aria-labelledby="testDetailModalLabel" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title">
+                            <h5 class="modal-title" id="testDetailModalLabel">
                                 <i class="fa fa-eye"></i> Detail Hasil Tes
                             </h5>
-                            <button type="button" class="close" data-dismiss="modal">
-                                <span>&times;</span>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="closeTestModal()">
+                                <span aria-hidden="true">&times;</span>
                             </button>
                         </div>
                         <div class="modal-body" id="testDetailContent">
@@ -727,7 +766,7 @@ function initTestDetailModal() {
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="closeTestModal()">
                                 <i class="fa fa-times"></i> Tutup
                             </button>
                         </div>
@@ -736,15 +775,27 @@ function initTestDetailModal() {
             </div>
         `;
         document.body.insertAdjacentHTML('beforeend', modalHTML);
+        
+        // Add event listeners for modal close
+        const modal = document.getElementById('testDetailModal');
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeTestModal();
+            }
+        });
+        
+        // Add ESC key listener
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                closeTestModal();
+            }
+        });
     }
 }
 
 function showTestDetail(testId, testType) {
     const modal = document.getElementById('testDetailModal');
     const content = document.getElementById('testDetailContent');
-    
-    // Show modal
-    $(modal).modal('show');
     
     // Reset content
     content.innerHTML = `
@@ -753,6 +804,18 @@ function showTestDetail(testId, testType) {
             <p>Memuat detail tes...</p>
         </div>
     `;
+    
+    // Show modal using multiple methods to ensure compatibility
+    modal.style.display = 'block';
+    modal.classList.add('show');
+    modal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('modal-open');
+    
+    // Add backdrop
+    const backdrop = document.createElement('div');
+    backdrop.className = 'modal-backdrop fade show';
+    backdrop.id = 'testModalBackdrop';
+    document.body.appendChild(backdrop);
     
     // Fetch test details
     fetch(`/admin/test-detail/${testId}`, {
@@ -1000,8 +1063,26 @@ function getCategoryDisplay(category) {
     return categories[category] || '<i class="fa fa-question"></i> Belum Dinilai';
 }
 
+function closeTestModal() {
+    const modal = document.getElementById('testDetailModal');
+    const backdrop = document.getElementById('testModalBackdrop');
+    
+    if (modal) {
+        // Hide modal
+        modal.style.display = 'none';
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.classList.remove('modal-open');
+    }
+    
+    if (backdrop) {
+        backdrop.remove();
+    }
+}
+
 // Export functions for global access
 window.showTestDetail = showTestDetail;
 window.initAdminTestFilter = initAdminTestFilter;
+window.closeTestModal = closeTestModal;
 </script>
 @endpush
