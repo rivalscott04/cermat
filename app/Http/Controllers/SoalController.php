@@ -54,6 +54,11 @@ class SoalController extends Controller
 
     public function store(Request $request)
     {
+        // Debug logging
+        \Log::info('=== STORE SOAL DEBUG ===');
+        \Log::info('Request data: ', $request->all());
+        \Log::info('Tipe soal: ' . $request->tipe);
+        
         $rules = [
             'pertanyaan' => 'required|string',
             'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2,gambar',
@@ -84,48 +89,73 @@ class SoalController extends Controller
             }
         }
 
-        $request->validate($rules);
+        try {
+            $request->validate($rules);
+            \Log::info('Validation passed for tipe: ' . $request->tipe);
+        } catch (\Exception $e) {
+            \Log::error('Validation failed: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Validasi gagal: ' . $e->getMessage());
+        }
 
-        DB::transaction(function () use ($request) {
-            $soalData = [
-                'pertanyaan' => $request->pertanyaan,
-                'tipe' => $request->tipe,
-                'level' => $request->level,
-                'kategori_id' => $request->kategori_id,
-                'pembahasan' => $request->pembahasan,
-                'pembahasan_type' => $request->pembahasan_type ?? 'text',
-                'jawaban_benar' => $request->jawaban_benar
-            ];
+        try {
+            DB::transaction(function () use ($request) {
+                \Log::info('Starting transaction for tipe: ' . $request->tipe);
+                
+                $soalData = [
+                    'pertanyaan' => $request->pertanyaan,
+                    'tipe' => $request->tipe,
+                    'level' => $request->level,
+                    'kategori_id' => $request->kategori_id,
+                    'pembahasan' => $request->pembahasan,
+                    'pembahasan_type' => $request->pembahasan_type ?? 'text',
+                    'jawaban_benar' => $request->jawaban_benar
+                ];
 
-            // Handle image upload
-            if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
-                $image = $request->file('gambar');
-                $imageName = time() . '_' . $image->getClientOriginalName();
-                $imagePath = $image->storeAs('soal_images', $imageName, 'public');
-                $soalData['gambar'] = $imagePath;
-            }
+                // Handle image upload
+                if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
+                    $image = $request->file('gambar');
+                    $imageName = time() . '_' . $image->getClientOriginalName();
+                    $imagePath = $image->storeAs('soal_images', $imageName, 'public');
+                    $soalData['gambar'] = $imagePath;
+                }
 
-            // Pembahasan image upload
-            if (in_array($request->pembahasan_type, ['image', 'both']) && $request->hasFile('pembahasan_image')) {
-                $img = $request->file('pembahasan_image');
-                $name = time() . '_' . $img->getClientOriginalName();
-                $path = $img->storeAs('pembahasan_images', $name, 'public');
-                $soalData['pembahasan_image'] = $path;
-            }
+                // Pembahasan image upload
+                if (in_array($request->pembahasan_type, ['image', 'both']) && $request->hasFile('pembahasan_image')) {
+                    $img = $request->file('pembahasan_image');
+                    $name = time() . '_' . $img->getClientOriginalName();
+                    $path = $img->storeAs('pembahasan_images', $name, 'public');
+                    $soalData['pembahasan_image'] = $path;
+                }
 
-            $soal = Soal::create($soalData);
+                \Log::info('Creating soal with data: ', $soalData);
+                $soal = Soal::create($soalData);
+                \Log::info('Soal created with ID: ' . $soal->id);
 
-            foreach ($request->opsi as $index => $opsiData) {
-                OpsiSoal::create([
-                    'soal_id' => $soal->id,
-                    'opsi' => chr(65 + $index), // A, B, C, D, E
-                    'teks' => $opsiData['teks'],
-                    'bobot' => $opsiData['bobot'] ?? 0
-                ]);
-            }
-        });
-
-        return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil ditambahkan!');
+                foreach ($request->opsi as $index => $opsiData) {
+                    $opsi = OpsiSoal::create([
+                        'soal_id' => $soal->id,
+                        'opsi' => chr(65 + $index), // A, B, C, D, E
+                        'teks' => $opsiData['teks'],
+                        'bobot' => $opsiData['bobot'] ?? 0
+                    ]);
+                    \Log::info('Created opsi: ', $opsi->toArray());
+                }
+                
+                \Log::info('Transaction completed successfully');
+            });
+            
+            \Log::info('Redirecting with success message');
+            return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil ditambahkan!');
+            
+        } catch (\Exception $e) {
+            \Log::error('Database transaction failed: ' . $e->getMessage());
+            \Log::error('Stack trace: ' . $e->getTraceAsString());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal menyimpan soal: ' . $e->getMessage());
+        }
     }
 
     public function uploadWord(Request $request)
