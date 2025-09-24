@@ -48,8 +48,6 @@
                                         <select class="form-control @error('jenis_paket') is-invalid @enderror"
                                             id="jenis_paket" name="jenis_paket" required>
                                             <option value="">Pilih Jenis Paket</option>
-                                            <option value="free" {{ old('jenis_paket') == 'free' ? 'selected' : '' }}>Free
-                                                - 1 tryout untuk semua user</option>
                                             <option value="kecerdasan"
                                                 {{ old('jenis_paket') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan
                                             </option>
@@ -64,7 +62,6 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <strong>Free:</strong> User free bisa akses 1 tryout<br>
                                             <strong>Kecerdasan:</strong> User paket kecerdasan bisa akses<br>
                                             <strong>Kepribadian:</strong> User paket kepribadian bisa akses<br>
                                             <strong>Lengkap:</strong> User paket lengkap bisa akses

@@ -361,12 +361,12 @@ class TryoutController extends Controller
             $query->byJenisPaket($type);
         }
 
-        // Enforce FREE user quota: max 1 tryout per jenis
+        // Enforce FREE user quota: max 1 tryout per jenis (kecerdasan, kepribadian, lengkap)
         if ($user->paket_akses === 'free') {
             $all = $query->get();
             $grouped = $all->groupBy('jenis_paket');
             $limited = collect();
-            foreach (['free', 'kecerdasan', 'kepribadian', 'lengkap'] as $jenis) {
+            foreach (['kecerdasan', 'kepribadian', 'lengkap'] as $jenis) {
                 if ($grouped->has($jenis)) {
                     $limited->push($grouped[$jenis]->first());
                 }

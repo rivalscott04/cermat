@@ -75,8 +75,9 @@ class Tryout extends Model
             return $standard[$userPackage] ?? [];
         }
 
-        // Untuk FREE, izinkan akses ke semua jenis tryout utama dengan kuota 1 per jenis
-        return ['free', 'kecerdasan', 'kepribadian', 'lengkap'];
+        // Untuk FREE, izinkan akses ke semua jenis tryout utama (tanpa jenis 'free')
+        // Kuota 1 per jenis diterapkan di controller listing
+        return ['kecerdasan', 'kepribadian', 'lengkap'];
     }
 
     /**

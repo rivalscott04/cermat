@@ -50,9 +50,6 @@
                                         <select class="form-control @error('jenis_paket') is-invalid @enderror"
                                             id="jenis_paket" name="jenis_paket" required>
                                             <option value="">Pilih Jenis Paket</option>
-                                            <option value="free"
-                                                {{ old('jenis_paket', $tryout->jenis_paket) == 'free' ? 'selected' : '' }}>
-                                                Free - 1 tryout untuk semua user</option>
                                             <option value="kecerdasan"
                                                 {{ old('jenis_paket', $tryout->jenis_paket) == 'kecerdasan' ? 'selected' : '' }}>
                                                 Kecerdasan - TIU, TWK, TKD</option>
@@ -67,10 +64,10 @@
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <strong>Free:</strong> User free bisa akses 1 tryout<br>
                                             <strong>Kecerdasan:</strong> User paket kecerdasan bisa akses<br>
                                             <strong>Kepribadian:</strong> User paket kepribadian bisa akses<br>
-                                            <strong>Lengkap:</strong> User paket lengkap bisa akses
+                                            <strong>Lengkap:</strong> User paket lengkap bisa akses<br>
+                                            <em>User FREE boleh mencoba masing-masing jenis ini maksimal 1.</em>
                                         </small>
                                     </div>
                                 </div>
@@ -278,13 +275,8 @@
         $(document).ready(function() {
             let blueprintChanged = false;
 
-            // Package mapping
-            const packageMapping = {
-                'free': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
-                'kecerdasan': ['TIU', 'TWK', 'TKD'],
-                'kepribadian': ['TKP', 'PSIKOTES'],
-                'lengkap': ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
-            };
+            // Package mapping - Dynamic from database
+            const packageMapping = @json($packageMappings);
 
             // Update kategori preview and filter table when jenis paket changes
             $('#jenis_paket').on('change', function() {
