@@ -124,7 +124,16 @@
                                 <i class="fa fa-book fa-3x text-muted mb-3"></i>
                                 <h5>Tidak ada tryout tersedia</h5>
                                 <p class="text-muted">
-                                    Saat ini belum ada tryout yang tersedia untuk paket Anda.
+                                    @php $t = request('type'); @endphp
+                                    @if($t === 'kecerdasan')
+                                        Tidak ada tryout kecerdasan yang tersedia untuk paket Anda saat ini.
+                                    @elseif($t === 'kepribadian')
+                                        Tidak ada tryout kepribadian yang tersedia untuk paket Anda saat ini.
+                                    @elseif($t === 'lengkap')
+                                        Tidak ada tryout paket lengkap yang tersedia untuk paket Anda saat ini.
+                                    @else
+                                        Saat ini belum ada tryout yang tersedia untuk paket Anda.
+                                    @endif
                                 </p>
                             </div>
                         </div>
