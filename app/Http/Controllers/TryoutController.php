@@ -356,18 +356,9 @@ class TryoutController extends Controller
         // Build base query with dynamic allowed types
         $query = Tryout::active()->with('blueprints')->forUserPackage($user->paket_akses);
 
-        // Apply optional type filter only if it is allowed for this user
+        // Apply optional type filter unconditionally (empty result is acceptable if not allowed)
         if (!empty($type)) {
-            // Derive allowed types dynamically based on user's package
-            $allowedTypes = (new \App\Models\Tryout())->scopeForUserPackage(\App\Models\Tryout::query(), $user->paket_akses)
-                ->clone()
-                ->pluck('jenis_paket')
-                ->unique()
-                ->toArray();
-
-            if (in_array($type, $allowedTypes, true)) {
-                $query->byJenisPaket($type);
-            }
+            $query->byJenisPaket($type);
         }
 
         // Enforce FREE user quota: max 1 tryout per jenis
