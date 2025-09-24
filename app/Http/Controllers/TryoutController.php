@@ -353,18 +353,38 @@ class TryoutController extends Controller
         // Optional filter by tryout type (kecerdasan/kepribadian/lengkap/free)
         $type = $request->get('type');
 
+        // Build base query with dynamic allowed types
         $query = Tryout::active()->with('blueprints')->forUserPackage($user->paket_akses);
 
+        // Apply optional type filter only if it is allowed for this user
         if (!empty($type)) {
-            // Validate type is one of the known types
-            $allowedTypes = ['free', 'kecerdasan', 'kepribadian', 'lengkap'];
+            // Derive allowed types dynamically based on user's package
+            $allowedTypes = (new \App\Models\Tryout())->scopeForUserPackage(\App\Models\Tryout::query(), $user->paket_akses)
+                ->clone()
+                ->pluck('jenis_paket')
+                ->unique()
+                ->toArray();
+
             if (in_array($type, $allowedTypes, true)) {
                 $query->byJenisPaket($type);
             }
         }
 
-        // Get tryouts based on user package (and optional filter)
-        $tryouts = $query->limit($user->getMaxTryouts())->get();
+        // Enforce FREE user quota: max 1 tryout per jenis
+        if ($user->paket_akses === 'free') {
+            $all = $query->get();
+            $grouped = $all->groupBy('jenis_paket');
+            $limited = collect();
+            foreach (['free', 'kecerdasan', 'kepribadian', 'lengkap'] as $jenis) {
+                if ($grouped->has($jenis)) {
+                    $limited->push($grouped[$jenis]->first());
+                }
+            }
+            $tryouts = $limited->values();
+        } else {
+            // For paid packages, keep existing max tryouts limit
+            $tryouts = $query->limit($user->getMaxTryouts())->get();
+        }
 
         return view('user.tryout.index', [
             'user' => $user,
@@ -1024,36 +1044,39 @@ class TryoutController extends Controller
         $totalScore = $userAnswers->sum('skor');
         $totalQuestions = $userAnswers->count();
 
-        // TKP scaling: treat empty as 0; for scaling clamp to min N
+        // TKP dihitung hanya untuk tryout kepribadian atau lengkap
         $tkpFinalScore = null;
         $tkpN = null; // jumlah soal TKP
         $tkpT = null; // total poin TKP (raw sum 1..5)
-        try {
-            $kepribadianKategoriCodes = \App\Models\PackageCategoryMapping::getCategoriesForPackage('kepribadian');
-            $tkpQuestions = $userAnswers->filter(function ($ans) use ($kepribadianKategoriCodes) {
-                $kategori = $ans->soal->kategori ?? null;
-                return $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
-            });
+        $tkpQuestions = collect();
+        if (in_array($tryout->jenis_paket, ['kepribadian', 'lengkap'], true)) {
+            try {
+                $kepribadianKategoriCodes = \App\Models\PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+                $tkpQuestions = $userAnswers->filter(function ($ans) use ($kepribadianKategoriCodes) {
+                    $kategori = $ans->soal->kategori ?? null;
+                    return $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
+                });
 
-            if ($tkpQuestions->count() > 0) {
-                $N = $tkpQuestions->count();
-                // Raw T sums selected option weights (already stored in skor per-question for kepribadian as 1..5)
-                $T = (int) round($tkpQuestions->sum('skor'));
+                if ($tkpQuestions->count() > 0) {
+                    $N = $tkpQuestions->count();
+                    // Raw T sums selected option weights (already stored in skor per-question for kepribadian as 1..5)
+                    $T = (int) round($tkpQuestions->sum('skor'));
 
-                $scorer = app(\App\Services\TkpScoringService::class);
-                $tkpFinalScore = $scorer->calculateFinalScore($N, $T);
+                    $scorer = app(\App\Services\TkpScoringService::class);
+                    $tkpFinalScore = $scorer->calculateFinalScore($N, $T);
 
-                // expose for view consumption
-                $tkpN = $N;
-                $tkpT = $T;
+                    // expose for view consumption
+                    $tkpN = $N;
+                    $tkpT = $T;
 
-                // Persist to session for quick retrieval
-                if ($session) {
-                    $session->update(['tkp_final_score' => $tkpFinalScore]);
+                    // Persist to session for quick retrieval
+                    if ($session) {
+                        $session->update(['tkp_final_score' => $tkpFinalScore]);
+                    }
                 }
+            } catch (\Throwable $e) {
+                // Fail-safe: ignore TKP score calculation errors to avoid blocking result page
             }
-        } catch (\Throwable $e) {
-            // Fail-safe: ignore TKP score calculation errors to avoid blocking result page
         }
 
         $correctAnswers = $userAnswers->where('skor', '>', 0)->count();
@@ -1170,7 +1193,7 @@ class TryoutController extends Controller
         $currentReviewNumber = is_numeric($requestedReview) ? max(1, min((int)$requestedReview, $totalQuestions)) : 1;
         $currentReviewItem = $userAnswers->firstWhere('urutan', $currentReviewNumber) ?? $userAnswers->first();
 
-        $isTkp = !is_null($tkpFinalScore);
+        $isTkp = !is_null($tkpFinalScore) && in_array($tryout->jenis_paket, ['kepribadian', 'lengkap'], true);
 
         return view('user.tryout.result', compact(
             'tryout',
@@ -1488,20 +1511,19 @@ class TryoutController extends Controller
                 }
 
             case 'pg_pilih_2':
+                // Skor adalah penjumlahan bobot opsi terpilih, masing-masing opsi benar = 0.5, salah = 0; maksimum 1.0
                 if (count($jawaban) !== 2) return 0;
 
-                // Untuk pg_pilih_2, kedua jawaban HARUS benar untuk mendapat skor 1
-                // Jika hanya 1 benar atau 0 benar, skor = 0
-                $correctCount = 0;
+                $totalBobot = 0;
                 foreach ($jawaban as $opsi) {
                     $opsiSoal = $soal->opsi()->where('opsi', $opsi)->first();
-                    if ($opsiSoal && $opsiSoal->bobot > 0) {
-                        $correctCount++;
+                    if ($opsiSoal) {
+                        $totalBobot += floatval($opsiSoal->bobot);
                     }
                 }
 
-                // Hanya berikan skor 1 jika KEDUA jawaban benar (untuk semua kategori)
-                return $correctCount === 2 ? 1 : 0;
+                // Pastikan tidak melebihi 1.0
+                return min($totalBobot, 1);
 
             default:
                 return 0;

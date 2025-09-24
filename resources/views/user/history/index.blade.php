@@ -45,7 +45,7 @@
                                             <div class="card-body">
                                                 <div class="score-section">
                                                     <div class="score-circle">
-                                                        @if(!empty($history['is_tkp']) && $history['is_tkp'])
+                                                        @if(!empty($history['is_tkp']) && $history['is_tkp'] && in_array(($history['jenis_paket'] ?? ''), ['kepribadian','lengkap']))
                                                             <div class="score-percentage">{{ number_format($history['tkp_final'] ?? 0, 0) }}</div>
                                                             <div class="score-label">Skor TKP</div>
                                                         @else
@@ -55,7 +55,7 @@
                                                     </div>
                                                     
                                                     <div class="score-details">
-                                                        @if(!empty($history['is_tkp']) && $history['is_tkp'])
+                                                        @if(!empty($history['is_tkp']) && $history['is_tkp'] && in_array(($history['jenis_paket'] ?? ''), ['kepribadian','lengkap']))
                                                             <div class="score-item total">
                                                                 <i class="fa fa-list"></i>
                                                                 <span>{{ $history['tkp_n'] }} Soal</span>
@@ -81,7 +81,7 @@
                                                     </div>
                                                 </div>
                                                 
-                                                @if(empty($history['is_tkp']) || !$history['is_tkp'])
+                                                @if(empty($history['is_tkp']) || !$history['is_tkp'] || !in_array(($history['jenis_paket'] ?? ''), ['kepribadian','lengkap']))
                                                     <div class="progress-section">
                                                         <div class="progress">
                                                             <div class="progress-bar {{ $history['status'] }}" 
