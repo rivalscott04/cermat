@@ -93,10 +93,6 @@ class SoalController extends Controller
 
     public function store(Request $request)
     {
-        // Debug logging
-        \Log::info('=== STORE SOAL DEBUG ===');
-        \Log::info('Request data: ', $request->all());
-        \Log::info('Tipe soal: ' . $request->tipe);
         
         $rules = [
             'pertanyaan' => 'required|string',
@@ -131,9 +127,7 @@ class SoalController extends Controller
 
         try {
             $request->validate($rules);
-            \Log::info('Validation passed for tipe: ' . $request->tipe);
         } catch (\Exception $e) {
-            \Log::error('Validation failed: ' . $e->getMessage());
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Validasi gagal: ' . $e->getMessage());
@@ -141,8 +135,6 @@ class SoalController extends Controller
 
         try {
             DB::transaction(function () use ($request) {
-                \Log::info('Starting transaction for tipe: ' . $request->tipe);
-                
                 $soalData = [
                     'pertanyaan' => $request->pertanyaan,
                     'tipe' => $request->tipe,
@@ -169,32 +161,24 @@ class SoalController extends Controller
                     $soalData['pembahasan_image'] = $path;
                 }
 
-                \Log::info('Creating soal with data: ', $soalData);
                 $soal = Soal::create($soalData);
-                \Log::info('Soal created with ID: ' . $soal->id);
 
                 foreach ($request->opsi as $index => $opsiData) {
                     // Set bobot berdasarkan tipe soal
                     $bobot = $this->calculateBobot($request->tipe, $opsiData['bobot'] ?? 0, $request->kategori_id);
                     
-                    $opsi = OpsiSoal::create([
+                    OpsiSoal::create([
                         'soal_id' => $soal->id,
                         'opsi' => chr(65 + $index), // A, B, C, D, E
                         'teks' => $opsiData['teks'],
                         'bobot' => $bobot
                     ]);
-                    \Log::info('Created opsi with calculated bobot: ', $opsi->toArray());
                 }
-                
-                \Log::info('Transaction completed successfully');
             });
             
-            \Log::info('Redirecting with success message');
             return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil ditambahkan!');
             
         } catch (\Exception $e) {
-            \Log::error('Database transaction failed: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Gagal menyimpan soal: ' . $e->getMessage());
@@ -208,28 +192,16 @@ class SoalController extends Controller
                 'file' => 'required|file|mimes:docx',
             ]);
 
-            \Log::info("Upload Word dimulai...");
-
             $file = $request->file('file');
             $path = $file->getRealPath();
 
-            \Log::info("File berhasil diupload", [
-                'nama_file' => $file->getClientOriginalName(),
-                'path' => $path,
-            ]);
-
             $phpWord = \PhpOffice\PhpWord\IOFactory::load($path);
-            \Log::info("File Word berhasil dibaca oleh PhpWord");
-
             $soals = $this->parseWordDocument($phpWord);
-            \Log::info("Jumlah soal hasil parsing", ['count' => count($soals)]);
 
             DB::beginTransaction();
 
             foreach ($soals as $index => $soalData) {
                 try {
-                    \Log::info("Menyimpan soal ke-" . ($index + 1), $soalData);
-
                     $soal = Soal::create([
                         'kategori_id'   => $soalData['kategori_id'],
                         'tipe'          => $soalData['tipe'],
@@ -241,23 +213,15 @@ class SoalController extends Controller
 
                     if (!empty($soalData['opsi']) && is_array($soalData['opsi'])) {
                         foreach ($soalData['opsi'] as $opsiData) {
-                            \Log::info("Menyimpan opsi soal", $opsiData);
-
                             OpsiSoal::create([
                                 'soal_id' => $soal->id,
-                                'opsi'    => $opsiData['opsi'] ?? null, // misalnya A/B/C/D
+                                'opsi'    => $opsiData['opsi'] ?? null,
                                 'teks'    => $opsiData['teks'] ?? '',
                                 'bobot'   => $opsiData['bobot'] ?? 0,
                             ]);
                         }
                     }
-
-                    \Log::info("Soal ke-" . ($index + 1) . " berhasil disimpan.");
                 } catch (\Exception $e) {
-                    \Log::error("Gagal menyimpan soal ke-" . ($index + 1), [
-                        'error' => $e->getMessage(),
-                        'trace' => $e->getTraceAsString(),
-                    ]);
                     throw $e; // biar rollback
                 }
             }
@@ -268,11 +232,7 @@ class SoalController extends Controller
                 ->with('success', 'Soal berhasil diupload dari file Word');
         } catch (\Exception $e) {
             DB::rollBack();
-            \Log::error("UploadWord gagal total", [
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-            return back()->with('error', 'Terjadi kesalahan saat upload Word. Cek log untuk detail.');
+            return back()->with('error', 'Terjadi kesalahan saat upload Word: ' . $e->getMessage());
         }
     }
 
@@ -293,7 +253,6 @@ class SoalController extends Controller
             }
         }
 
-        \Log::info("Raw text dari Word:", [$text]);
 
         $blocks = preg_split('/---/', $text);
         $soals = [];
@@ -302,11 +261,9 @@ class SoalController extends Controller
             $lines = array_filter(array_map('trim', explode("\n", $block)));
 
             if (empty($lines)) {
-                \Log::warning("Block soal ke-{$i} kosong, dilewati.");
                 continue;
             }
 
-            \Log::info("Lines block ke-{$i}:", $lines);
 
             // default
             $soalData = [
@@ -324,11 +281,9 @@ class SoalController extends Controller
             foreach ($lines as $line) {
                 if (str_starts_with($line, '[kategori]')) {
                     $kode = trim(str_replace('[kategori]', '', $line));
-                    \Log::info("Mencari kategori dengan kode: {$kode}");
                     $kategori = KategoriSoal::where('kode', $kode)->first();
 
                     if (!$kategori) {
-                        \Log::error("Kategori tidak ditemukan", ['kode' => $kode]);
                         throw new \Exception("Kategori dengan kode '{$kode}' tidak ditemukan di database.");
                     }
 
@@ -376,7 +331,6 @@ class SoalController extends Controller
             $soals[] = $soalData;
         }
 
-        \Log::info("Hasil akhir parsing soal:", $soals);
 
         return $soals;
     }
@@ -395,11 +349,6 @@ class SoalController extends Controller
 
     public function update(Request $request, Soal $soal)
     {
-        // Debug logging
-        \Log::info('=== UPDATE SOAL DEBUG ===');
-        \Log::info('Soal ID: ' . $soal->id);
-        \Log::info('Request data: ', $request->all());
-        \Log::info('Opsi data: ', $request->opsi ?? []);
 
         $rules = [
             'pertanyaan' => 'required|string',
@@ -434,16 +383,12 @@ class SoalController extends Controller
 
         try {
             $request->validate($rules);
-            \Log::info('Validation passed');
         } catch (\Exception $e) {
-            \Log::error('Validation failed: ' . $e->getMessage());
             throw $e;
         }
 
         try {
             DB::transaction(function () use ($request, $soal) {
-                \Log::info('Starting transaction...');
-
                 $soalData = [
                     'pertanyaan' => $request->pertanyaan,
                     'tipe' => $request->tipe,
@@ -453,8 +398,6 @@ class SoalController extends Controller
                     'pembahasan_type' => $request->pembahasan_type ?? $soal->pembahasan_type ?? 'text',
                     'jawaban_benar' => $request->jawaban_benar
                 ];
-
-                \Log::info('Soal data to update: ', $soalData);
 
                 // Handle image upload
                 if ($request->tipe === 'gambar' && $request->hasFile('gambar')) {
@@ -488,39 +431,30 @@ class SoalController extends Controller
                     $soalData['pembahasan_image'] = null;
                 }
 
-                \Log::info('Updating soal with data: ', $soalData);
-                $updated = $soal->update($soalData);
-                \Log::info('Soal update result: ' . ($updated ? 'success' : 'failed'));
+                $soal->update($soalData);
 
                 // Delete existing options
-                \Log::info('Deleting existing opsi...');
-                $deletedCount = $soal->opsi()->delete();
-                \Log::info('Deleted opsi count: ' . $deletedCount);
+                $soal->opsi()->delete();
 
                 // Create new options
-                \Log::info('Creating new opsi...');
                 foreach ($request->opsi as $index => $opsiData) {
                     // Set bobot berdasarkan tipe soal
                     $bobot = $this->calculateBobot($request->tipe, $opsiData['bobot'] ?? 0, $request->kategori_id);
                     
-                    $newOpsi = OpsiSoal::create([
+                    OpsiSoal::create([
                         'soal_id' => $soal->id,
                         'opsi' => chr(65 + $index),
                         'teks' => $opsiData['teks'],
                         'bobot' => $bobot
                     ]);
-                    \Log::info('Created opsi with calculated bobot: ', $newOpsi->toArray());
                 }
-
-                \Log::info('Transaction completed successfully');
             });
 
-            \Log::info('Update completed, redirecting...');
             return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil diperbarui');
         } catch (\Exception $e) {
-            \Log::error('Update failed: ' . $e->getMessage());
-            \Log::error('Stack trace: ' . $e->getTraceAsString());
-            throw $e;
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Gagal memperbarui soal: ' . $e->getMessage());
         }
     }
 

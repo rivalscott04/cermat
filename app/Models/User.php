@@ -167,12 +167,43 @@ class User extends Authenticatable
     }
 
     /**
-     * Get allowed package types for user
+     * Get allowed package types for user (dynamic from database)
      */
     private function getAllowedPackageTypes($userPackage)
     {
+        // Get dynamic mapping from database
+        $dynamicMapping = \App\Models\PackageCategoryMapping::getAllMappings();
+        
+        // For FREE users, they can access all tryout types that have categories mapped to FREE package
+        if ($userPackage === 'free') {
+            $allowedTypes = ['free']; // Always include free tryouts
+            
+            // Check which tryout types have categories that FREE users can access
+            $freeCategories = $dynamicMapping['free'] ?? [];
+            
+            // If FREE has access to TIU, TWK, TKD categories, they can access 'kecerdasan' tryouts
+            $kecerdasanCategories = $dynamicMapping['kecerdasan'] ?? [];
+            if (!empty(array_intersect($freeCategories, $kecerdasanCategories))) {
+                $allowedTypes[] = 'kecerdasan';
+            }
+            
+            // If FREE has access to TKP, PSIKOTES categories, they can access 'kepribadian' tryouts
+            $kepribadianCategories = $dynamicMapping['kepribadian'] ?? [];
+            if (!empty(array_intersect($freeCategories, $kepribadianCategories))) {
+                $allowedTypes[] = 'kepribadian';
+            }
+            
+            // If FREE has access to all categories, they can access 'lengkap' tryouts
+            $lengkapCategories = $dynamicMapping['lengkap'] ?? [];
+            if (!empty(array_intersect($freeCategories, $lengkapCategories))) {
+                $allowedTypes[] = 'lengkap';
+            }
+            
+            return $allowedTypes;
+        }
+        
+        // For other packages, use the standard mapping
         $mapping = [
-            'free' => ['free'],
             'kecerdasan' => ['free', 'kecerdasan'],
             'kepribadian' => ['free', 'kepribadian'],
             'lengkap' => ['free', 'kecerdasan', 'kepribadian', 'lengkap']
