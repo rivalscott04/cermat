@@ -662,9 +662,6 @@
                                             <div class="subscription-header">
                                                 <h6 class="package-name">
                                                     @switch($packageType)
-                                                        @case('free')
-                                                            <i class="fa fa-gift text-muted"></i> Paket Gratis
-                                                            @break
                                                         @case('kecerdasan')
                                                             <i class="fa fa-brain text-primary"></i> Paket Kecerdasan
                                                             @break

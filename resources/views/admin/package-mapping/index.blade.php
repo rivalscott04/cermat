@@ -40,12 +40,12 @@
                         @method('PUT')
                         
                         <div class="row">
-                            @foreach(['free' => 'Paket Free', 'kecerdasan' => 'Paket Kecerdasan', 'kepribadian' => 'Paket Kepribadian', 'lengkap' => 'Paket Lengkap'] as $packageType => $packageName)
+                            @foreach(['kecerdasan' => 'Paket Kecerdasan', 'kepribadian' => 'Paket Kepribadian', 'lengkap' => 'Paket Lengkap'] as $packageType => $packageName)
                             <div class="col-md-3 mb-4">
                                 <div class="card h-100">
-                                    <div class="card-header bg-{{ $packageType === 'lengkap' ? 'danger' : ($packageType === 'kecerdasan' ? 'primary' : ($packageType === 'free' ? 'success' : 'warning')) }} text-white">
+                                    <div class="card-header bg-{{ $packageType === 'lengkap' ? 'danger' : ($packageType === 'kecerdasan' ? 'primary' : 'warning') }} text-white">
                                         <h5 class="mb-0">
-                                            <i class="fa fa-{{ $packageType === 'lengkap' ? 'star' : ($packageType === 'kecerdasan' ? 'brain' : ($packageType === 'free' ? 'gift' : 'user')) }}"></i>
+                                            <i class="fa fa-{{ $packageType === 'lengkap' ? 'star' : ($packageType === 'kecerdasan' ? 'brain' : 'user') }}"></i>
                                             {{ $packageName }}
                                         </h5>
                                     </div>
@@ -123,7 +123,7 @@
 function saveMappings() {
     // Validate at least one category is selected for each package
     let hasError = false;
-    const packageTypes = ['free', 'kecerdasan', 'kepribadian', 'lengkap'];
+    const packageTypes = ['kecerdasan', 'kepribadian', 'lengkap'];
     
     packageTypes.forEach(packageType => {
         const checkedBoxes = $(`input[name="mappings[${packageType}][]"]:checked`);
@@ -146,6 +146,15 @@ function saveMappings() {
 function resetMappings() {
     $('#resetModal').modal('show');
 }
+
+// Ensure reset modal can be closed via X and Cancel
+$('#resetModal').on('shown.bs.modal', function() {
+    $(this).attr('data-backdrop', true).attr('data-keyboard', true);
+});
+$(document).on('click', '#resetModal .close, #resetModal .btn-secondary', function(e) {
+    e.preventDefault();
+    $('#resetModal').modal('hide');
+});
 
 // Remove border-danger class when checkbox is checked
 $('.package-checkbox').on('change', function() {

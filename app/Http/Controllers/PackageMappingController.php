@@ -40,9 +40,8 @@ class PackageMappingController extends Controller
     public function reset()
     {
         try {
-            // Reset to default mappings
+            // Reset to default mappings (tanpa paket free)
             $defaultMappings = [
-                'free' => ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD'],
                 'kecerdasan' => ['TIU', 'TWK', 'TKD'],
                 'kepribadian' => ['TKP', 'PSIKOTES'],
                 'lengkap' => ['TIU', 'TWK', 'TKP', 'PSIKOTES', 'TKD']
