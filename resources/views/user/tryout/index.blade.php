@@ -111,7 +111,7 @@
                                     </div>
                                 </div>
                                 <div class="card-footer">
-                                    <a href="{{ route('user.tryout.start', $tryout) }}" 
+                                    <a href="{{ route('user.tryout.start', $tryout) }}?type={{ $tryout->jenis_paket }}" 
                                        class="btn btn-primary btn-block">
                                         <i class="fa fa-play"></i> Mulai Tryout
                                     </a>

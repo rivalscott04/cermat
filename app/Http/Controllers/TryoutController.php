@@ -403,6 +403,13 @@ class TryoutController extends Controller
                 ->with('error', 'Tryout "' . $tryout->judul . '" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
         }
 
+        // Optional guard: enforce type from query if provided
+        $requestedType = $request->get('type');
+        if (!empty($requestedType) && $requestedType !== $tryout->jenis_paket) {
+            return redirect()->route('user.tryout.index', ['type' => $requestedType])
+                ->with('error', 'Tryout tidak sesuai dengan jenis yang dipilih.');
+        }
+
         // Check if user can access this tryout
         if (!$this->canAccessTryout($user, $tryout)) {
             return redirect()->route('user.tryout.index')
@@ -489,6 +496,13 @@ class TryoutController extends Controller
         if (!$tryout->is_active) {
             return redirect()->route('user.tryout.index')
                 ->with('error', 'Tryout "' . $tryout->judul . '" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
+        }
+
+        // Optional guard: if type provided and mismatch, redirect
+        $requestedType = $request->get('type');
+        if (!empty($requestedType) && $requestedType !== $tryout->jenis_paket) {
+            return redirect()->route('user.tryout.index', ['type' => $requestedType])
+                ->with('error', 'Tryout tidak sesuai dengan jenis yang dipilih.');
         }
 
         $questionNumber = $request->get('question', 1);

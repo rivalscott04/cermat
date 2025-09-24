@@ -43,7 +43,7 @@
                                 </div>
                             </div>
                             <div class="test-button-container">
-                                <a href="{{ route('user.tryout.index') }}" class="btn btn-test-primary">
+                                <a href="{{ route('user.tryout.index', ['type' => 'free']) }}" class="btn btn-test-primary">
                                     <i class="fa fa-play"></i> Mulai Tryout Gratis
                                 </a>
                             </div>
@@ -217,7 +217,7 @@
                             </div>
                             <div class="test-button-container">
                                 @if (Auth::user()->canAccessKecermatan() && Auth::user()->canAccessTryout())
-                                    <a href="{{ route('user.tryout.index') }}" class="btn btn-test-warning">
+                                    <a href="{{ route('user.tryout.index', ['type' => 'lengkap']) }}" class="btn btn-test-warning">
                                         <i class="fa fa-play"></i> Mulai Tes Lengkap
                                     </a>
                                 @else
