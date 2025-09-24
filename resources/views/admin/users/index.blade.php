@@ -115,32 +115,21 @@
                 box-shadow: 0 0 0 2px rgba(26, 179, 148, 0.1);
             }
 
-            /* Package-specific styling using Inspinia badge colors */
-            .package-select.free {
+            /* Package-specific hover styling using Inspinia colors */
+            .package-select:hover {
+                border-color: #1ab394;
+                box-shadow: 0 2px 4px rgba(26, 179, 148, 0.1);
+            }
+
+            /* Package-specific hover colors */
+            .package-select.free:hover {
                 background-color: #D1DADE;
                 color: #5E5E5E;
                 border-color: #D1DADE;
                 background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E5E5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             }
 
-            .package-select.free:hover {
-                background-color: #c4c9ce;
-                border-color: #c4c9ce;
-            }
-
-            .package-select.kecermatan {
-                background-color: #1c84c6;
-                color: #FFFFFF;
-                border-color: #1c84c6;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
             .package-select.kecermatan:hover {
-                background-color: #1a73b3;
-                border-color: #1a73b3;
-            }
-
-            .package-select.kecerdasan {
                 background-color: #1c84c6;
                 color: #FFFFFF;
                 border-color: #1c84c6;
@@ -148,44 +137,31 @@
             }
 
             .package-select.kecerdasan:hover {
-                background-color: #1a73b3;
-                border-color: #1a73b3;
+                background-color: #1c84c6;
+                color: #FFFFFF;
+                border-color: #1c84c6;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             }
 
-            .package-select.kepribadian {
+            .package-select.kepribadian:hover {
                 background-color: #f8ac59;
                 color: #FFFFFF;
                 border-color: #f8ac59;
                 background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             }
 
-            .package-select.kepribadian:hover {
-                background-color: #e69c4a;
-                border-color: #e69c4a;
-            }
-
-            .package-select.lengkap {
+            .package-select.lengkap:hover {
                 background-color: #1ab394;
                 color: #FFFFFF;
                 border-color: #1ab394;
                 background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             }
 
-            .package-select.lengkap:hover {
-                background-color: #18a085;
-                border-color: #18a085;
-            }
-
-            .package-select.no-package {
+            .package-select.no-package:hover {
                 background-color: #D1DADE;
                 color: #5E5E5E;
                 border-color: #D1DADE;
                 background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E5E5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.no-package:hover {
-                background-color: #c4c9ce;
-                border-color: #c4c9ce;
             }
 
             .action-icon {
