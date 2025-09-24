@@ -17,17 +17,7 @@
                     </div>
                 </div>
                 <div class="card-body">
-                    @if(session('success'))
-                        <div class="alert alert-success">
-                            <i class="fa fa-check"></i> {{ session('success') }}
-                        </div>
-                    @endif
-
-                    @if(session('error'))
-                        <div class="alert alert-danger">
-                            <i class="fa fa-exclamation-triangle"></i> {{ session('error') }}
-                        </div>
-                    @endif
+                    
 
                     <div class="alert alert-info">
                         <i class="fa fa-info-circle"></i>
@@ -41,7 +31,7 @@
                         
                         <div class="row">
                             @foreach(['kecerdasan' => 'Paket Kecerdasan', 'kepribadian' => 'Paket Kepribadian', 'lengkap' => 'Paket Lengkap'] as $packageType => $packageName)
-                            <div class="col-md-3 mb-4">
+                            <div class="col-lg-4 col-md-4 mb-4">
                                 <div class="card h-100">
                                     <div class="card-header bg-{{ $packageType === 'lengkap' ? 'danger' : ($packageType === 'kecerdasan' ? 'primary' : 'warning') }} text-white">
                                         <h5 class="mb-0">
