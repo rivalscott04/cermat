@@ -52,6 +52,45 @@ class SoalController extends Controller
         return response()->json($kepribadianCodes);
     }
 
+    /**
+     * Calculate bobot berdasarkan tipe soal
+     */
+    private function calculateBobot($tipe, $inputBobot, $kategoriId = null)
+    {
+        switch ($tipe) {
+            case 'pg_pilih_2':
+                // Untuk pilih 2, bobot = 0.5 untuk jawaban benar, 0 untuk salah
+                return $inputBobot > 0 ? 0.5 : 0;
+                
+            case 'pg_bobot':
+                // Untuk pg_bobot, gunakan bobot asli dari input (1-5 untuk kepribadian, 0-1 untuk lainnya)
+                if ($kategoriId) {
+                    $kategori = KategoriSoal::find($kategoriId);
+                    if ($kategori) {
+                        $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+                        if (in_array($kategori->kode, $kepribadianKategoriCodes)) {
+                            // Untuk kategori kepribadian, bobot 1-5
+                            return max(1, min(5, $inputBobot));
+                        }
+                    }
+                }
+                // Untuk non-kepribadian, bobot 0-1
+                return max(0, min(1, $inputBobot));
+                
+            case 'pg_satu':
+            case 'gambar':
+                // Untuk PG 1 jawaban dan gambar, bobot = 1 untuk benar, 0 untuk salah
+                return $inputBobot > 0 ? 1 : 0;
+                
+            case 'benar_salah':
+                // Untuk benar/salah, bobot = 1 untuk benar, 0 untuk salah
+                return $inputBobot > 0 ? 1 : 0;
+                
+            default:
+                return $inputBobot;
+        }
+    }
+
     public function store(Request $request)
     {
         // Debug logging
@@ -135,13 +174,16 @@ class SoalController extends Controller
                 \Log::info('Soal created with ID: ' . $soal->id);
 
                 foreach ($request->opsi as $index => $opsiData) {
+                    // Set bobot berdasarkan tipe soal
+                    $bobot = $this->calculateBobot($request->tipe, $opsiData['bobot'] ?? 0, $request->kategori_id);
+                    
                     $opsi = OpsiSoal::create([
                         'soal_id' => $soal->id,
                         'opsi' => chr(65 + $index), // A, B, C, D, E
                         'teks' => $opsiData['teks'],
-                        'bobot' => $opsiData['bobot'] ?? 0
+                        'bobot' => $bobot
                     ]);
-                    \Log::info('Created opsi: ', $opsi->toArray());
+                    \Log::info('Created opsi with calculated bobot: ', $opsi->toArray());
                 }
                 
                 \Log::info('Transaction completed successfully');
@@ -458,13 +500,16 @@ class SoalController extends Controller
                 // Create new options
                 \Log::info('Creating new opsi...');
                 foreach ($request->opsi as $index => $opsiData) {
+                    // Set bobot berdasarkan tipe soal
+                    $bobot = $this->calculateBobot($request->tipe, $opsiData['bobot'] ?? 0, $request->kategori_id);
+                    
                     $newOpsi = OpsiSoal::create([
                         'soal_id' => $soal->id,
                         'opsi' => chr(65 + $index),
                         'teks' => $opsiData['teks'],
-                        'bobot' => $opsiData['bobot'] ?? 0
+                        'bobot' => $bobot
                     ]);
-                    \Log::info('Created opsi: ', $newOpsi->toArray());
+                    \Log::info('Created opsi with calculated bobot: ', $newOpsi->toArray());
                 }
 
                 \Log::info('Transaction completed successfully');

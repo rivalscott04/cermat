@@ -677,19 +677,32 @@
                         }
                     }
 
-                    // PERBAIKAN: Hanya update bobot untuk tipe yang bukan pg_bobot
-                    if (tipe !== 'pg_bobot') {
-                        $('.opsi-item').each(function() {
-                            const checkbox = $(this).find('.jawaban-checkbox');
-                            const bobotInput = $(this).find('.bobot-input');
+                    // Update bobot values berdasarkan tipe soal
+                    $('.opsi-item').each(function() {
+                        const checkbox = $(this).find('.jawaban-checkbox');
+                        const bobotInput = $(this).find('.bobot-input');
 
-                            if (checkbox.is(':checked')) {
-                                bobotInput.val(1);
-                            } else {
-                                bobotInput.val(0);
+                        if (checkbox.is(':checked')) {
+                            // Set bobot berdasarkan tipe soal
+                            switch (tipe) {
+                                case 'pg_pilih_2':
+                                    bobotInput.val(0.5); // 0.5 untuk pilih 2
+                                    break;
+                                case 'pg_bobot':
+                                    // Untuk pg_bobot, biarkan user input sendiri
+                                    if (bobotInput.val() === '0' || bobotInput.val() === '') {
+                                        bobotInput.val(1); // Default 1 jika kosong
+                                    }
+                                    break;
+                                default:
+                                    bobotInput.val(1); // 1 untuk tipe lain
+                                    break;
                             }
-                        });
-                    }
+                        } else {
+                            // Set bobot to 0 for incorrect answers
+                            bobotInput.val(0);
+                        }
+                    });
 
                     // Update hidden input for jawaban_benar
                     updateJawabanBenarHiddenInput();

@@ -587,14 +587,27 @@
                         }
                     }
 
-                    // Update bobot values for all opsi
+                    // Update bobot values berdasarkan tipe soal
                     $('.opsi-item').each(function() {
                         const checkbox = $(this).find('.jawaban-checkbox');
                         const bobotInput = $(this).find('.bobot-input');
 
                         if (checkbox.is(':checked')) {
-                            // Set bobot to 1 for correct answers
-                            bobotInput.val(1);
+                            // Set bobot berdasarkan tipe soal
+                            switch (tipe) {
+                                case 'pg_pilih_2':
+                                    bobotInput.val(0.5); // 0.5 untuk pilih 2
+                                    break;
+                                case 'pg_bobot':
+                                    // Untuk pg_bobot, biarkan user input sendiri
+                                    if (bobotInput.val() === '0' || bobotInput.val() === '') {
+                                        bobotInput.val(1); // Default 1 jika kosong
+                                    }
+                                    break;
+                                default:
+                                    bobotInput.val(1); // 1 untuk tipe lain
+                                    break;
+                            }
                         } else {
                             // Set bobot to 0 for incorrect answers
                             bobotInput.val(0);
