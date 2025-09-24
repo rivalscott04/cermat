@@ -75,26 +75,8 @@ class Tryout extends Model
             return $standard[$userPackage] ?? [];
         }
 
-        // Untuk FREE, tentukan jenis yang boleh diakses berdasarkan overlap kategori
-        $allowedTypes = ['free'];
-
-        $freeCategories = $dynamicMapping['free'] ?? [];
-        $kecerdasanCategories = $dynamicMapping['kecerdasan'] ?? [];
-        if (!empty(array_intersect($freeCategories, $kecerdasanCategories))) {
-            $allowedTypes[] = 'kecerdasan';
-        }
-
-        $kepribadianCategories = $dynamicMapping['kepribadian'] ?? [];
-        if (!empty(array_intersect($freeCategories, $kepribadianCategories))) {
-            $allowedTypes[] = 'kepribadian';
-        }
-
-        $lengkapCategories = $dynamicMapping['lengkap'] ?? [];
-        if (!empty(array_intersect($freeCategories, $lengkapCategories))) {
-            $allowedTypes[] = 'lengkap';
-        }
-
-        return $allowedTypes;
+        // Untuk FREE, izinkan akses ke semua jenis tryout utama dengan kuota 1 per jenis
+        return ['free', 'kecerdasan', 'kepribadian', 'lengkap'];
     }
 
     /**
