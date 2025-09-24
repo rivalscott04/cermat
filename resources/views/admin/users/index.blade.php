@@ -140,16 +140,28 @@
                 border-color: #1a73b3;
             }
 
-            .package-select.psikologi {
-                background-color: #23c6c8;
+            .package-select.kecerdasan {
+                background-color: #1c84c6;
                 color: #FFFFFF;
-                border-color: #23c6c8;
+                border-color: #1c84c6;
                 background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
             }
 
-            .package-select.psikologi:hover {
-                background-color: #20b2b4;
-                border-color: #20b2b4;
+            .package-select.kecerdasan:hover {
+                background-color: #1a73b3;
+                border-color: #1a73b3;
+            }
+
+            .package-select.kepribadian {
+                background-color: #f8ac59;
+                color: #FFFFFF;
+                border-color: #f8ac59;
+                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            }
+
+            .package-select.kepribadian:hover {
+                background-color: #e69c4a;
+                border-color: #e69c4a;
             }
 
             .package-select.lengkap {
@@ -527,9 +539,12 @@
                                                                 <option value="kecermatan"
                                                                     {{ $currentPackage === 'kecermatan' ? 'selected' : '' }}>
                                                                     Kecermatan</option>
-                                                                <option value="psikologi"
-                                                                    {{ $currentPackage === 'psikologi' ? 'selected' : '' }}>
-                                                                    Psikologi</option>
+                                                                <option value="kecerdasan"
+                                                                    {{ $currentPackage === 'kecerdasan' ? 'selected' : '' }}>
+                                                                    Kecerdasan</option>
+                                                                <option value="kepribadian"
+                                                                    {{ $currentPackage === 'kepribadian' ? 'selected' : '' }}>
+                                                                    Kepribadian</option>
                                                                 <option value="lengkap"
                                                                     {{ $currentPackage === 'lengkap' ? 'selected' : '' }}>
                                                                     Lengkap</option>
@@ -731,8 +746,11 @@
                             case 'kecermatan':
                                 packageClass = 'kecermatan';
                                 break;
-                            case 'psikologi':
-                                packageClass = 'psikologi';
+                            case 'kecerdasan':
+                                packageClass = 'kecerdasan';
+                                break;
+                            case 'kepribadian':
+                                packageClass = 'kepribadian';
                                 break;
                             case 'lengkap':
                                 packageClass = 'lengkap';
