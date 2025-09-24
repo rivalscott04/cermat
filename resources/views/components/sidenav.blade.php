@@ -104,16 +104,8 @@
                     <a href="{{ route('subscription.packages') }}">
                         <i class="fa fa-gem"></i>
                         <span class="nav-label">Paket</span>
-                        {{-- Badge untuk menunjukkan paket saat ini (warna mengikuti Inspinia) --}}
-                        @php
-                            $userPkgKey = Auth::user()->paket_akses ?? (Auth::user()->package ?? 'free');
-                            $labelClass = $userPkgKey === 'lengkap'
-                                ? 'label-primary'     // green (brand Inspinia)
-                                : ($userPkgKey === 'free'
-                                    ? ''               // default gray label
-                                    : 'label-info');   // teal for other paid tiers
-                        @endphp
-                        <span class="label {{ $labelClass }} pull-right" style="font-size: 10px;">
+                        {{-- Badge untuk menunjukkan paket saat ini --}}
+                        <span class="badge badge-primary pull-right" style="font-size: 10px;">
                             {{ Auth::user()->getPackageDisplayName() }}
                         </span>
                     </a>

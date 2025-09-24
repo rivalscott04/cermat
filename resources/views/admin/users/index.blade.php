@@ -77,129 +77,33 @@
                 border-color: #e74c3c;
             }
 
-            /* Package select styling - Inspinia Badge Colors */
-            .package-wrapper {
-                display: inline-block;
-                min-width: 120px;
-            }
-
-            .package-select {
-                appearance: none;
-                -webkit-appearance: none;
-                -moz-appearance: none;
-                background: #fff;
-                border: 1px solid #e1e5e9;
-                border-radius: 4px;
-                padding: 6px 25px 6px 10px;
+            /* Pill dropdown badge styles to mimic example */
+            .package-wrapper, .status-wrapper { display: inline-block; min-width: 120px; }
+            .pill-dropdown { position: relative; display: inline-block; }
+            .pill-btn {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                padding: 6px 12px;
                 font-size: 12px;
-                font-weight: 500;
-                color: #2c3e50;
+                font-weight: 600;
+                border-radius: 999px;
+                border: 1px solid transparent;
+                color: #fff;
                 cursor: pointer;
-                transition: all 0.2s ease;
                 min-width: 120px;
-                text-align: center;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-                background-repeat: no-repeat;
-                background-position: right 8px center;
-                background-size: 12px;
             }
-
-            .package-select:hover {
-                border-color: #1ab394;
-                box-shadow: 0 2px 4px rgba(26, 179, 148, 0.1);
-            }
-
-            .package-select:focus {
-                outline: none;
-                border-color: #1ab394;
-                box-shadow: 0 0 0 2px rgba(26, 179, 148, 0.1);
-            }
-
-            /* Package-specific styling - selected state stays colored */
-            .package-select.free {
-                background-color: #D1DADE;
-                color: #5E5E5E;
-                border-color: #D1DADE;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E5E5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.kecermatan {
-                background-color: #1c84c6;
-                color: #FFFFFF;
-                border-color: #1c84c6;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.kecerdasan {
-                background-color: #1c84c6;
-                color: #FFFFFF;
-                border-color: #1c84c6;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.kepribadian {
-                background-color: #f8ac59;
-                color: #FFFFFF;
-                border-color: #f8ac59;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.lengkap {
-                background-color: #1ab394;
-                color: #FFFFFF;
-                border-color: #1ab394;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.no-package {
-                background-color: #D1DADE;
-                color: #5E5E5E;
-                border-color: #D1DADE;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E5E5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            /* Package-specific hover colors for dropdown options */
-            .package-select.free:hover {
-                background-color: #D1DADE;
-                color: #5E5E5E;
-                border-color: #D1DADE;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E5E5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.kecermatan:hover {
-                background-color: #1c84c6;
-                color: #FFFFFF;
-                border-color: #1c84c6;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.kecerdasan:hover {
-                background-color: #1c84c6;
-                color: #FFFFFF;
-                border-color: #1c84c6;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.kepribadian:hover {
-                background-color: #f8ac59;
-                color: #FFFFFF;
-                border-color: #f8ac59;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.lengkap:hover {
-                background-color: #1ab394;
-                color: #FFFFFF;
-                border-color: #1ab394;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23FFFFFF' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
-
-            .package-select.no-package:hover {
-                background-color: #D1DADE;
-                color: #5E5E5E;
-                border-color: #D1DADE;
-                background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235E5E5E' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
-            }
+            .pill-caret { margin-left: 6px; font-size: 11px; opacity: .9; }
+            .pill-primary { background-color: #1ab394; border-color: #1ab394; }
+            .pill-info { background-color: #1c84c6; border-color: #1c84c6; }
+            .pill-warning { background-color: #f8ac59; border-color: #f8ac59; }
+            .pill-danger { background-color: #ED5565; border-color: #ED5565; }
+            .pill-default { background-color: #D1DADE; border-color: #D1DADE; color: #5E5E5E; }
+            .pill-menu { position: absolute; top: 100%; left: 0; z-index: 1000; display: none; min-width: 140px; padding: 6px 0; margin-top: 4px; background: #fff; border: 1px solid #e7eaec; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.08); }
+            .pill-menu.show { display: block; }
+            .pill-item { display: block; width: 100%; text-align: left; padding: 8px 12px; font-size: 12px; color: #676a6c; background: #fff; border: 0; cursor: pointer; }
+            .pill-item:hover { background: #f5f5f5; }
 
             .action-icon {
                 color: #667085;
@@ -533,55 +437,58 @@
                                                 <td>{{ $user->email }}</td>
                                                 <td class="text-center">
                                                     <div class="package-wrapper">
-                                                        <form method="POST"
-                                                            action="{{ route('admin.users.updatePackage', $user->id) }}"
-                                                            class="m-0">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            @php
-                                                                $currentPackage = $user->package ?? '';
-                                                            @endphp
-                                                            <select name="package" onchange="this.form.submit()"
-                                                                class="package-select {{ $currentPackage ? strtolower($currentPackage) : 'no-package' }}">
-                                                                <option value=""
-                                                                    {{ !$currentPackage ? 'selected' : '' }}>No Package
-                                                                </option>
-                                                                <option value="free"
-                                                                    {{ $currentPackage === 'free' ? 'selected' : '' }}>
-                                                                    Free</option>
-                                                                <option value="kecermatan"
-                                                                    {{ $currentPackage === 'kecermatan' ? 'selected' : '' }}>
-                                                                    Kecermatan</option>
-                                                                <option value="kecerdasan"
-                                                                    {{ $currentPackage === 'kecerdasan' ? 'selected' : '' }}>
-                                                                    Kecerdasan</option>
-                                                                <option value="kepribadian"
-                                                                    {{ $currentPackage === 'kepribadian' ? 'selected' : '' }}>
-                                                                    Kepribadian</option>
-                                                                <option value="lengkap"
-                                                                    {{ $currentPackage === 'lengkap' ? 'selected' : '' }}>
-                                                                    Lengkap</option>
-                                                            </select>
-                                                        </form>
+                                                        @php
+                                                            $currentPackage = $user->package ?? '';
+                                                            $pkgLabel = $currentPackage ? ucfirst($currentPackage) : 'No Package';
+                                                            $pkgClass = match($currentPackage){
+                                                                'lengkap' => 'pill-primary',
+                                                                'kecerdasan','kecermatan' => 'pill-info',
+                                                                'kepribadian' => 'pill-warning',
+                                                                'free' => 'pill-default',
+                                                                default => 'pill-default',
+                                                            };
+                                                        @endphp
+                                                        <div class="pill-dropdown" data-dropdown="pkg-{{ $user->id }}">
+                                                            <button type="button" class="pill-btn {{ $pkgClass }}">
+                                                                {{ $pkgLabel }} <span class="pill-caret">▾</span>
+                                                            </button>
+                                                            <div class="pill-menu" id="pkg-{{ $user->id }}">
+                                                                <form method="POST" action="{{ route('admin.users.updatePackage', $user->id) }}">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <input type="hidden" name="package" value="">
+                                                                    <button class="pill-item" data-value="lengkap">Lengkap</button>
+                                                                    <button class="pill-item" data-value="kecermatan">Kecermatan</button>
+                                                                    <button class="pill-item" data-value="kecerdasan">Kecerdasan</button>
+                                                                    <button class="pill-item" data-value="kepribadian">Kepribadian</button>
+                                                                    <button class="pill-item" data-value="free">Free</button>
+                                                                    <button class="pill-item" data-value="">No Package</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="status-wrapper">
-                                                        <form method="POST"
-                                                            action="{{ route('admin.users.update', $user->id) }}"
-                                                            class="m-0">
-                                                            @csrf
-                                                            @method('PUT')
-                                                            <select name="is_active" onchange="this.form.submit()"
-                                                                class="status-select {{ $user->is_active ? 'active' : 'inactive' }}">
-                                                                <option value="1"
-                                                                    {{ $user->is_active ? 'selected' : '' }}>Active
-                                                                </option>
-                                                                <option value="0"
-                                                                    {{ !$user->is_active ? 'selected' : '' }}>Inactive
-                                                                </option>
-                                                            </select>
-                                                        </form>
+                                                        @php
+                                                            $isActive = (bool) $user->is_active;
+                                                            $statusLabel = $isActive ? 'Active' : 'Inactive';
+                                                            $statusClass = $isActive ? 'pill-primary' : 'pill-danger';
+                                                        @endphp
+                                                        <div class="pill-dropdown" data-dropdown="sts-{{ $user->id }}">
+                                                            <button type="button" class="pill-btn {{ $statusClass }}">
+                                                                {{ $statusLabel }} <span class="pill-caret">▾</span>
+                                                            </button>
+                                                            <div class="pill-menu" id="sts-{{ $user->id }}">
+                                                                <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
+                                                                    @csrf
+                                                                    @method('PUT')
+                                                                    <input type="hidden" name="is_active" value="">
+                                                                    <button class="pill-item" data-value="1">Active</button>
+                                                                    <button class="pill-item" data-value="0">Inactive</button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td class="text-center">
@@ -740,39 +647,30 @@
                     }
                 });
 
-                // Update select background color when value changes for status
-                document.querySelectorAll('.status-select').forEach(select => {
-                    select.addEventListener('change', function() {
-                        this.className = 'status-select ' + (this.value === '1' ? 'active' :
-                            'inactive');
-                    });
+                // Pill dropdown interactions (open/close and submit)
+                document.addEventListener('click', function(e) {
+                    // Toggle menus
+                    if (e.target.closest('.pill-dropdown')) {
+                        const dd = e.target.closest('.pill-dropdown');
+                        const menu = dd.querySelector('.pill-menu');
+                        // Close others
+                        document.querySelectorAll('.pill-menu.show').forEach(m => { if (m !== menu) m.classList.remove('show'); });
+                        menu.classList.toggle('show');
+                        return;
+                    }
+                    // Clicked outside -> close all
+                    document.querySelectorAll('.pill-menu.show').forEach(m => m.classList.remove('show'));
                 });
 
-                // Update select background color when value changes for package
-                document.querySelectorAll('.package-select').forEach(select => {
-                    select.addEventListener('change', function() {
-                        let packageClass = '';
-                        switch (this.value) {
-                            case 'free':
-                                packageClass = 'free';
-                                break;
-                            case 'kecermatan':
-                                packageClass = 'kecermatan';
-                                break;
-                            case 'kecerdasan':
-                                packageClass = 'kecerdasan';
-                                break;
-                            case 'kepribadian':
-                                packageClass = 'kepribadian';
-                                break;
-                            case 'lengkap':
-                                packageClass = 'lengkap';
-                                break;
-                            default:
-                                packageClass = 'no-package';
-                        }
-                        this.className = 'package-select ' + packageClass;
-                    });
+                // Submit on item click
+                document.addEventListener('click', function(e) {
+                    const item = e.target.closest('.pill-item');
+                    if (!item) return;
+                    e.preventDefault();
+                    const form = item.closest('form');
+                    const hidden = form.querySelector('input[type="hidden"]');
+                    hidden.value = item.getAttribute('data-value');
+                    form.submit();
                 });
 
             }, 100); // 100ms delay to ensure DOM is ready
