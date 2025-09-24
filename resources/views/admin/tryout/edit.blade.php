@@ -52,22 +52,19 @@
                                             <option value="">Pilih Jenis Paket</option>
                                             <option value="kecerdasan"
                                                 {{ old('jenis_paket', $tryout->jenis_paket) == 'kecerdasan' ? 'selected' : '' }}>
-                                                Kecerdasan - TIU, TWK, TKD</option>
+                                                Kecerdasan</option>
                                             <option value="kepribadian"
                                                 {{ old('jenis_paket', $tryout->jenis_paket) == 'kepribadian' ? 'selected' : '' }}>
-                                                Kepribadian - TKP, PSIKOTES</option>
+                                                Kepribadian</option>
                                             <option value="lengkap"
                                                 {{ old('jenis_paket', $tryout->jenis_paket) == 'lengkap' ? 'selected' : '' }}>
-                                                Lengkap - Semua kategori</option>
+                                                Lengkap</option>
                                         </select>
                                         @error('jenis_paket')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <small class="text-muted">
-                                            <strong>Kecerdasan:</strong> User paket kecerdasan bisa akses<br>
-                                            <strong>Kepribadian:</strong> User paket kepribadian bisa akses<br>
-                                            <strong>Lengkap:</strong> User paket lengkap bisa akses<br>
-                                            <em>User FREE boleh mencoba masing-masing jenis ini maksimal 1.</em>
+                                            Pilih jenis paket utama. User FREE boleh mencoba masing-masing jenis maksimal 1.
                                         </small>
                                     </div>
                                 </div>

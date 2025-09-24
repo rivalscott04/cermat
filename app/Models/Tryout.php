@@ -56,28 +56,24 @@ class Tryout extends Model
 
     private function getAllowedPackageTypes($userPackage)
     {
-        // Gunakan mapping dinamis berbasis kategori dari database
+        // FREE users: always allow main types; quota handled in controller
+        if ($userPackage === 'free') {
+            return ['kecerdasan', 'kepribadian', 'lengkap'];
+        }
+
+        // Use dynamic mapping if available (not currently used here, but fetched to honor future configs)
         $dynamicMapping = \App\Models\PackageCategoryMapping::getAllMappings();
+        // If dynamic mapping is empty, fall back to standard rules
 
-        // Default fallback jika mapping kosong
-        if (empty($dynamicMapping)) {
-            return ['free'];
-        }
+        // For non-FREE packages
+        $standard = [
+            'kecerdasan' => ['kecerdasan'],
+            'kepribadian' => ['kepribadian'],
+            // Paket lengkap boleh melihat semua jenis
+            'lengkap' => ['kecerdasan', 'kepribadian', 'lengkap']
+        ];
 
-        // Untuk paket selain FREE, hanya bisa mengakses paketnya sendiri
-        if ($userPackage !== 'free') {
-            $standard = [
-                'kecerdasan' => ['kecerdasan'],
-                'kepribadian' => ['kepribadian'],
-                'lengkap' => ['lengkap']
-            ];
-
-            return $standard[$userPackage] ?? [];
-        }
-
-        // Untuk FREE, izinkan akses ke semua jenis tryout utama (tanpa jenis 'free')
-        // Kuota 1 per jenis diterapkan di controller listing
-        return ['kecerdasan', 'kepribadian', 'lengkap'];
+        return $standard[$userPackage] ?? [];
     }
 
     /**

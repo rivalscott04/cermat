@@ -55,8 +55,7 @@
                                                 {{ old('jenis_paket') == 'kepribadian' ? 'selected' : '' }}>Kepribadian
                                             </option>
                                             <option value="lengkap"
-                                                {{ old('jenis_paket') == 'lengkap' ? 'selected' : '' }}>Lengkap - Semua
-                                                kategori</option>
+                                                {{ old('jenis_paket') == 'lengkap' ? 'selected' : '' }}>Lengkap</option>
                                         </select>
                                         @error('jenis_paket')
                                             <div class="invalid-feedback">{{ $message }}</div>
