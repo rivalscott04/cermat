@@ -124,9 +124,8 @@ class SoalController extends Controller
                 ]);
             }
         });
-        dd($request->all());
 
-        return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil ditambahkan');
+        return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil ditambahkan!');
     }
 
     public function uploadWord(Request $request)
