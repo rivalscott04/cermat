@@ -372,6 +372,10 @@ class TryoutController extends Controller
                 }
             }
             $tryouts = $limited->values();
+            // If a type filter is provided, enforce it on the limited collection for FREE users
+            if (!empty($type)) {
+                $tryouts = $tryouts->where('jenis_paket', $type)->values();
+            }
         } else {
             // For paid packages, keep existing max tryouts limit
             $tryouts = $query->limit($user->getMaxTryouts())->get();
