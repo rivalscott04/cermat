@@ -79,7 +79,8 @@ class SoalController extends Controller
         }
 
         // Dynamic validation for kepribadian categories (TKP/PSIKOTES via package mapping)
-        if ($request->filled('kategori_id')) {
+        // PERBAIKAN: Validasi bobot 1-5 hanya untuk tipe pg_bobot dengan kategori kepribadian
+        if ($request->filled('kategori_id') && $request->tipe === 'pg_bobot') {
             $kategori = KategoriSoal::find($request->kategori_id);
             if ($kategori) {
                 $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
