@@ -60,10 +60,12 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('hasil_tes', function (Blueprint $table) {
-            // Drop the new unique constraint
-            $table->dropUnique('unique_user_test_session');
-        });
+        // Drop the new unique constraint safely
+        try {
+            DB::statement('ALTER TABLE hasil_tes DROP INDEX unique_user_test_session');
+        } catch (\Exception $e) {
+            // Index doesn't exist, continue
+        }
         
         // Drop the generated column using raw SQL
         try {
