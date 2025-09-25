@@ -19,9 +19,16 @@ return new class extends Migration
         }
         
         Schema::table('hasil_tes', function (Blueprint $table) {
-            // Add stronger unique constraint based on user, test type, and session_id in detail_jawaban
-            // This prevents duplicates when viewing test details multiple times
-            $table->unique(['user_id', 'jenis_tes', 'detail_jawaban'], 'unique_user_test_session');
+            // Add a generated column to extract session_id from JSON
+            $table->string('session_id_extracted')->nullable()->after('detail_jawaban');
+        });
+        
+        // Create the generated column using raw SQL
+        DB::statement("ALTER TABLE hasil_tes MODIFY COLUMN session_id_extracted VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(detail_jawaban, '$.session_id'))) STORED");
+        
+        Schema::table('hasil_tes', function (Blueprint $table) {
+            // Add unique constraint using the generated column
+            $table->unique(['user_id', 'jenis_tes', 'session_id_extracted'], 'unique_user_test_session');
         });
     }
 
@@ -33,6 +40,9 @@ return new class extends Migration
         Schema::table('hasil_tes', function (Blueprint $table) {
             // Drop the new unique constraint
             $table->dropUnique('unique_user_test_session');
+            
+            // Drop the generated column
+            $table->dropColumn('session_id_extracted');
             
             // Restore the old unique constraint
             $table->unique(['user_id', 'jenis_tes', 'tanggal_tes'], 'unique_user_test_date');
