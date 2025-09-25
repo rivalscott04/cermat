@@ -13,7 +13,7 @@ class HistoryController extends Controller
     public function index()
     {
         $user = auth()->user();
-        
+
         // Get tryout history
         $tryoutHistory = UserTryoutSession::where('user_id', $user->id)
             ->where('status', 'completed')
@@ -26,9 +26,9 @@ class HistoryController extends Controller
                     ->where('tryout_id', $session->tryout_id)
                     ->where('user_tryout_session_id', $session->id);
                 $totalScore = (clone $answersQuery)->sum('skor');
-                
+
                 $totalQuestions = (clone $answersQuery)->count();
-                
+
                 $correctAnswers = (clone $answersQuery)->where('skor', '>', 0)->count();
 
                 // Determine if this tryout session is TKP by checking kategori codes
@@ -39,7 +39,9 @@ class HistoryController extends Controller
                 });
                 $isTkp = $tkpQuestions->count() > 0;
 
-                $tkpN = null; $tkpT = null; $tkpFinal = null;
+                $tkpN = null;
+                $tkpT = null;
+                $tkpFinal = null;
                 if ($isTkp) {
                     $tkpN = $tkpQuestions->count();
                     $tkpT = (int) round($tkpQuestions->sum('skor'));
@@ -50,9 +52,9 @@ class HistoryController extends Controller
                         $tkpFinal = null;
                     }
                 }
-                
+
                 // Determine status based on tryout type
-                $status = $isTkp && $tkpFinal !== null 
+                $status = $isTkp && $tkpFinal !== null
                     ? $this->getTkpStatus($tkpFinal)
                     : $this->getTryoutStatus($correctAnswers, $totalQuestions);
 
@@ -86,7 +88,7 @@ class HistoryController extends Controller
             ->map(function ($hasil) {
                 $totalQuestions = $hasil->skor_benar + $hasil->skor_salah;
                 $percentage = $totalQuestions > 0 ? round(($hasil->skor_benar / $totalQuestions) * 100, 1) : 0;
-                
+
                 return [
                     'id' => $hasil->id,
                     'type' => 'kecermatan',
@@ -116,9 +118,9 @@ class HistoryController extends Controller
     private function getTryoutStatus($correct, $total)
     {
         if ($total == 0) return 'unknown';
-        
+
         $percentage = ($correct / $total) * 100;
-        
+
         if ($percentage >= 80) return 'excellent';
         if ($percentage >= 70) return 'good';
         if ($percentage >= 60) return 'fair';
@@ -128,7 +130,7 @@ class HistoryController extends Controller
     /**
      * Get TKP status based on final score according to TKP scoring system
      * 91-100: Sangat Tinggi (excellent)
-     * 76-90:  Tinggi (good) 
+     * 76-90:  Tinggi (good)
      * 61-75:  Cukup Tinggi (fair)
      * 41-60:  Sedang (poor)
      * ≤40:    Rendah (poor)
@@ -136,7 +138,7 @@ class HistoryController extends Controller
     private function getTkpStatus($finalScore)
     {
         if ($finalScore === null || $finalScore === 0) return 'unknown';
-        
+
         if ($finalScore >= 91) return 'excellent';      // Sangat Tinggi
         if ($finalScore >= 76) return 'good';           // Tinggi
         if ($finalScore >= 61) return 'fair';           // Cukup Tinggi
@@ -147,9 +149,9 @@ class HistoryController extends Controller
     private function getKecermatanStatus($correct, $total)
     {
         if ($total == 0) return 'unknown';
-        
+
         $percentage = ($correct / $total) * 100;
-        
+
         if ($percentage >= 90) return 'excellent';
         if ($percentage >= 80) return 'good';
         if ($percentage >= 70) return 'fair';

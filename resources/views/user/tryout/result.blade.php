@@ -54,7 +54,7 @@
                                 <span>Skor terendah:</span>
                                 <strong>{{ number_format($userAnswers->min('skor'), 2) }}</strong>
                             </div>
-                            @if($tryout->jenis_paket === 'kepribadian' || $tryout->jenis_paket === 'lengkap')
+                            @if ($tryout->jenis_paket === 'kepribadian' || $tryout->jenis_paket === 'lengkap')
                                 @isset($tkpFinalScore)
                                     <div class="stat-row">
                                         <span>Skor TKP (1–100):</span>
@@ -294,7 +294,7 @@
                         @endphp
 
                         <div id="review-soal-{{ $userAnswer->urutan }}"
-                            class="answer-review mb-4 {{ (!empty($isTkp) && $isTkp && ($tryout->jenis_paket === 'kepribadian' || $tryout->jenis_paket === 'lengkap')) ? 'tkp' : ($userAnswer->skor > 0 ? 'correct' : 'incorrect') }}">
+                            class="answer-review mb-4 {{ !empty($isTkp) && $isTkp && ($tryout->jenis_paket === 'kepribadian' || $tryout->jenis_paket === 'lengkap') ? 'tkp' : ($userAnswer->skor > 0 ? 'correct' : 'incorrect') }}">
                             <div class="question-header">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <h6 class="mb-1">Soal {{ $userAnswer->urutan }}</h6>
@@ -421,13 +421,26 @@
                                 <div class="options-review mt-3">
                                     @if ($userAnswer->soal->tipe == 'benar_salah')
                                         @php
-                                            $correctAnswerOrig = is_array($userAnswer->soal->jawaban_benar)
-                                                ? $userAnswer->soal->jawaban_benar
-                                                : [$userAnswer->soal->jawaban_benar];
-                                            $trueCorrect = in_array('benar', $correctAnswerOrig);
-                                            $falseCorrect = in_array('salah', $correctAnswerOrig);
-                                            $userSelectedTrue = in_array('benar', $userAnswerShuffled);
-                                            $userSelectedFalse = in_array('salah', $userAnswerShuffled);
+                                            // Get correct answer data from reviewData (already processed by backend)
+                                            $reviewDataItem = $reviewData[$userAnswer->id] ?? null;
+                                            $correctAnswerShuffled = $reviewDataItem['correctAnswerShuffled'] ?? [];
+                                            $userAnswerShuffled = $reviewDataItem['userAnswerShuffled'] ?? [];
+
+                                            // Normalize to uppercase for comparison
+                                            $correctAnswerNormalized = array_map(
+                                                'strtoupper',
+                                                array_map('trim', $correctAnswerShuffled),
+                                            );
+                                            $userAnswerNormalized = array_map(
+                                                'strtoupper',
+                                                array_map('trim', $userAnswerShuffled),
+                                            );
+
+                                            // Check what answers are correct and what user selected
+                                            $trueCorrect = in_array('BENAR', $correctAnswerNormalized);
+                                            $falseCorrect = in_array('SALAH', $correctAnswerNormalized);
+                                            $userSelectedTrue = in_array('BENAR', $userAnswerNormalized);
+                                            $userSelectedFalse = in_array('SALAH', $userAnswerNormalized);
                                         @endphp
 
                                         <div
@@ -471,6 +484,7 @@
                                                 @endif
                                             </div>
                                         </div>
+
                                         @if ($userAnswer->skor <= 0)
                                             @php
                                                 $correctTexts = [];

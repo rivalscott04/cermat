@@ -697,11 +697,66 @@ class TryoutController extends Controller
             }
         }
 
-        // PERUBAHAN: Convert shuffled answer back to original using session seed
-        $originalJawaban = $this->convertShuffledAnswerToOriginal($jawabanArray, $userSoal, $session->shuffle_seed);
-
         $soal = $userSoal->soal;
-        $skor = $this->calculateScore($soal, $originalJawaban);
+
+        // SPECIAL HANDLING FOR BENAR/SALAH QUESTIONS
+        if ($soal->tipe === 'benar_salah') {
+            // For benar/salah, compare directly without conversion
+            $correctAnswerOriginal = $soal->jawaban_benar;
+            if (!is_array($correctAnswerOriginal)) {
+                $correctAnswerOriginal = [$correctAnswerOriginal];
+            }
+
+            // Convert correct answer letters to text for comparison
+            $correctAnswerText = [];
+            $letters = ['A', 'B', 'C', 'D', 'E'];
+
+            foreach ($correctAnswerOriginal as $correctLetter) {
+                $letterIndex = array_search(strtoupper($correctLetter), $letters);
+                if ($letterIndex !== false && isset($soal->opsi[$letterIndex])) {
+                    $option = $soal->opsi[$letterIndex];
+                    $optionText = is_array($option) ? $option['teks'] : $option->teks;
+                    $correctAnswerText[] = $optionText;
+                }
+            }
+
+            // Normalize both answers for comparison
+            $correctAnswerNormalized = array_map('strtoupper', array_map('trim', $correctAnswerText));
+            $userAnswerNormalized = array_map('strtoupper', array_map('trim', $jawabanArray));
+
+            // Calculate score for benar/salah
+            $isCorrect = $correctAnswerNormalized === $userAnswerNormalized;
+            $skor = $isCorrect ? 1 : 0; // or use the weight from the correct option
+
+            // Convert user answer text to letters for original jawaban (for consistency)
+            $originalJawaban = [];
+            foreach ($jawabanArray as $answer) {
+                foreach ($soal->opsi as $index => $option) {
+                    $optionText = is_array($option) ? $option['teks'] : $option->teks;
+                    if (strtoupper(trim($optionText)) === strtoupper(trim($answer))) {
+                        $originalJawaban[] = $letters[$index];
+                        break;
+                    }
+                }
+            }
+
+            // Log for debugging
+            \Log::info('Benar/Salah Scoring', [
+                'correct_letters' => $correctAnswerOriginal,
+                'correct_text' => $correctAnswerText,
+                'correct_normalized' => $correctAnswerNormalized,
+                'user_raw' => $jawabanArray,
+                'user_normalized' => $userAnswerNormalized,
+                'is_correct' => $isCorrect,
+                'score' => $skor,
+                'original_jawaban' => $originalJawaban
+            ]);
+        } else {
+            // NORMAL HANDLING FOR OTHER QUESTION TYPES
+            // Convert shuffled answer back to original using session seed
+            $originalJawaban = $this->convertShuffledAnswerToOriginal($jawabanArray, $userSoal, $session->shuffle_seed);
+            $skor = $this->calculateScore($soal, $originalJawaban);
+        }
 
         $userSoal->update([
             'jawaban_user' => $jawabanArray, // Simpan jawaban yang sudah diacak untuk display
@@ -863,7 +918,8 @@ class TryoutController extends Controller
         if ($soal->tipe == 'benar_salah') {
             return [
                 'options' => $soal->opsi,
-                'mapping' => []
+                'mapping' => [],
+                'originalToShuffle' => []
             ];
         }
 
@@ -920,15 +976,47 @@ class TryoutController extends Controller
             $correctAnswerOriginal = [$correctAnswerOriginal];
         }
 
-        $correctAnswerShuffled = $this->convertOriginalAnswerToShuffled(
-            $correctAnswerOriginal,
-            $shuffleData['originalToShuffle']
-        );
-
         // Jawaban user sudah dalam format shuffled (dari jawaban_user)
         $userAnswerShuffled = $userAnswer->jawaban_user ?? [];
         if (!is_array($userAnswerShuffled)) {
             $userAnswerShuffled = [$userAnswerShuffled];
+        }
+
+        // Khusus untuk soal benar/salah, konversi ke format yang sama
+        if ($userAnswer->soal->tipe == 'benar_salah') {
+            // Convert correct answer (letters) to option text
+            $correctAnswerText = [];
+            $letters = ['A', 'B', 'C', 'D', 'E'];
+
+            foreach ($correctAnswerOriginal as $correctLetter) {
+                $letterIndex = array_search(strtoupper($correctLetter), $letters);
+                if ($letterIndex !== false && isset($userAnswer->soal->opsi[$letterIndex])) {
+                    $option = $userAnswer->soal->opsi[$letterIndex];
+                    $optionText = is_array($option) ? $option['teks'] : $option->teks;
+                    $correctAnswerText[] = $optionText;
+                }
+            }
+
+            $correctAnswerShuffled = $correctAnswerText;
+
+            // Normalize untuk perbandingan (both are now text)
+            $correctAnswerNormalized = array_map('strtoupper', array_map('trim', $correctAnswerShuffled));
+            $userAnswerNormalized = array_map('strtoupper', array_map('trim', $userAnswerShuffled));
+
+            // Debug
+            \Log::info('Benar/Salah Comparison Fixed', [
+                'correct_letters' => $correctAnswerOriginal,
+                'correct_text' => $correctAnswerShuffled,
+                'correct_normalized' => $correctAnswerNormalized,
+                'user_raw' => $userAnswerShuffled,
+                'user_normalized' => $userAnswerNormalized,
+                'is_match' => $correctAnswerNormalized === $userAnswerNormalized
+            ]);
+        } else {
+            $correctAnswerShuffled = $this->convertOriginalAnswerToShuffled(
+                $correctAnswerOriginal,
+                $shuffleData['originalToShuffle']
+            );
         }
 
         // Cari opsi terbaik dari shuffled (bobot tertinggi)
