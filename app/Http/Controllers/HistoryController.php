@@ -69,6 +69,7 @@ class HistoryController extends Controller
                     'percentage' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 1) : 0,
                     'duration' => $session->elapsed_minutes,
                     'status' => $status,
+                    'jenis_paket' => $session->tryout->jenis_paket ?? null,
                     // TKP extras for view
                     'is_tkp' => $isTkp,
                     'tkp_n' => $tkpN,

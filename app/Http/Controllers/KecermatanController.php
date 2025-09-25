@@ -144,15 +144,20 @@ class KecermatanController extends Controller
         }
 
         try {
-            $hasilTes = HasilTes::create([
-                'user_id' => $request->user_id,
-                'jenis_tes' => $request->jenis_tes,
-                'detail_jawaban' => json_encode($request->jawaban),
-                'waktu_total' => $request->waktu_pengerjaan,
-                'skor_benar' => $request->skor_benar,
-                'skor_salah' => 9 - $request->skor_benar,
-                'tanggal_tes' => now()
-            ]);
+            // Use updateOrCreate to prevent duplicates based on user, test type, and answers
+            $hasilTes = HasilTes::updateOrCreate(
+                [
+                    'user_id' => $request->user_id,
+                    'jenis_tes' => $request->jenis_tes,
+                    'detail_jawaban' => json_encode($request->jawaban),
+                    'tanggal_tes' => now()->format('Y-m-d H:i:s') // Same day and hour
+                ],
+                [
+                    'waktu_total' => $request->waktu_pengerjaan,
+                    'skor_benar' => $request->skor_benar,
+                    'skor_salah' => 9 - $request->skor_benar,
+                ]
+            );
 
             return response()->json([
                 'success' => true,

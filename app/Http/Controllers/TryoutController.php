@@ -1120,33 +1120,29 @@ class TryoutController extends Controller
                 // Determine TKP score category
                 $tkpKategoriSkor = $this->getTkpScoreCategory($tkpFinalScore);
 
-                // Check if record already exists to prevent duplicates based on session and recent time
-                $existingRecord = \App\Models\HasilTes::where('user_id', $user->id)
-                    ->where('jenis_tes', 'kepribadian')
-                    ->where('detail_jawaban', 'like', '%"session_id":"' . $session->id . '"%')
-                    ->where('created_at', '>=', now()->subMinutes(5)) // Within last 5 minutes
-                    ->first();
-
-                if (!$existingRecord) {
-                    \App\Models\HasilTes::create([
+                // Use updateOrCreate to prevent duplicates based on session ID
+                \App\Models\HasilTes::updateOrCreate(
+                    [
                         'user_id' => $user->id,
                         'jenis_tes' => 'kepribadian',
-                        'skor_benar' => 0,
-                        'skor_salah' => 0,
-                        'waktu_total' => $durationSeconds,
-                        'average_time' => $averageTime,
                         'detail_jawaban' => json_encode([
                             'N' => $tkpCount,
                             'T' => (int) round($tkpQuestions->sum('skor')),
                             'skor_tkp' => $tkpFinalScore,
                             'session_id' => $session->id,
-                        ]),
+                        ])
+                    ],
+                    [
+                        'skor_benar' => 0,
+                        'skor_salah' => 0,
+                        'waktu_total' => $durationSeconds,
+                        'average_time' => $averageTime,
                         'tkp_final_score' => $tkpFinalScore,
                         'skor_akhir' => $tkpFinalScore,
                         'kategori_skor' => $tkpKategoriSkor,
                         'tanggal_tes' => now(),
-                    ]);
-                }
+                    ]
+                );
             } catch (\Throwable $e) {
                 // ignore persistence errors
             }
@@ -1165,21 +1161,11 @@ class TryoutController extends Controller
                 // Determine score category
                 $kategoriSkor = $this->getScoreCategory($finalScore);
 
-                // Check if record already exists to prevent duplicates based on session and recent time
-                $existingRecord = \App\Models\HasilTes::where('user_id', $user->id)
-                    ->where('jenis_tes', 'kecerdasan')
-                    ->where('detail_jawaban', 'like', '%"session_id":"' . $session->id . '"%')
-                    ->where('created_at', '>=', now()->subMinutes(5)) // Within last 5 minutes
-                    ->first();
-
-                if (!$existingRecord) {
-                    \App\Models\HasilTes::create([
+                // Use updateOrCreate to prevent duplicates based on session ID
+                \App\Models\HasilTes::updateOrCreate(
+                    [
                         'user_id' => $user->id,
                         'jenis_tes' => 'kecerdasan',
-                        'skor_benar' => $correctAnswers,
-                        'skor_salah' => $wrongAnswers,
-                        'waktu_total' => $durationSeconds,
-                        'average_time' => $averageTime,
                         'detail_jawaban' => json_encode([
                             'total_questions' => $totalQuestions,
                             'correct_answers' => $correctAnswers,
@@ -1188,12 +1174,18 @@ class TryoutController extends Controller
                             'final_score' => $finalScore,
                             'category_scores' => $categoryScores,
                             'session_id' => $session->id,
-                        ]),
+                        ])
+                    ],
+                    [
+                        'skor_benar' => $correctAnswers,
+                        'skor_salah' => $wrongAnswers,
+                        'waktu_total' => $durationSeconds,
+                        'average_time' => $averageTime,
                         'skor_akhir' => $finalScore,
                         'kategori_skor' => $kategoriSkor,
                         'tanggal_tes' => now(),
-                    ]);
-                }
+                    ]
+                );
             } catch (\Throwable $e) {
                 // ignore persistence errors
             }
