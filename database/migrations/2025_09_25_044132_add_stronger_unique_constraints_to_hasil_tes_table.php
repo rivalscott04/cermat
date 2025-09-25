@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Use raw SQL to safely handle the constraint
-        DB::statement('ALTER TABLE hasil_tes DROP INDEX IF EXISTS unique_user_test_date');
+        // Check if the old unique constraint exists and drop it safely
+        try {
+            DB::statement('ALTER TABLE hasil_tes DROP INDEX unique_user_test_date');
+        } catch (\Exception $e) {
+            // Index doesn't exist, continue
+        }
         
         Schema::table('hasil_tes', function (Blueprint $table) {
             // Add stronger unique constraint based on user, test type, and session_id in detail_jawaban
