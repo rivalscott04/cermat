@@ -26,10 +26,33 @@ return new class extends Migration
         // Create the generated column using raw SQL
         DB::statement("ALTER TABLE hasil_tes MODIFY COLUMN session_id_extracted VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(detail_jawaban, '$.session_id'))) STORED");
         
+        // Clean up duplicates before adding unique constraint
+        $this->cleanDuplicates();
+        
         Schema::table('hasil_tes', function (Blueprint $table) {
             // Add unique constraint using the generated column
             $table->unique(['user_id', 'jenis_tes', 'session_id_extracted'], 'unique_user_test_session');
         });
+    }
+    
+    private function cleanDuplicates()
+    {
+        // Find and remove duplicates based on user_id, jenis_tes, and session_id_extracted
+        $duplicates = DB::table('hasil_tes')
+            ->select('user_id', 'jenis_tes', 'session_id_extracted', DB::raw('COUNT(*) as count'), DB::raw('GROUP_CONCAT(id ORDER BY id) as ids'))
+            ->whereNotNull('session_id_extracted')
+            ->groupBy('user_id', 'jenis_tes', 'session_id_extracted')
+            ->having('count', '>', 1)
+            ->get();
+
+        foreach ($duplicates as $duplicate) {
+            $ids = explode(',', $duplicate->ids);
+            $keepId = $ids[0]; // Keep the first (oldest) record
+            $deleteIds = array_slice($ids, 1); // Delete the rest
+            
+            // Delete duplicate records
+            DB::table('hasil_tes')->whereIn('id', $deleteIds)->delete();
+        }
     }
 
     /**
@@ -40,10 +63,16 @@ return new class extends Migration
         Schema::table('hasil_tes', function (Blueprint $table) {
             // Drop the new unique constraint
             $table->dropUnique('unique_user_test_session');
-            
-            // Drop the generated column
-            $table->dropColumn('session_id_extracted');
-            
+        });
+        
+        // Drop the generated column using raw SQL
+        try {
+            DB::statement('ALTER TABLE hasil_tes DROP COLUMN session_id_extracted');
+        } catch (\Exception $e) {
+            // Column doesn't exist, continue
+        }
+        
+        Schema::table('hasil_tes', function (Blueprint $table) {
             // Restore the old unique constraint
             $table->unique(['user_id', 'jenis_tes', 'tanggal_tes'], 'unique_user_test_date');
         });
