@@ -1120,10 +1120,11 @@ class TryoutController extends Controller
                 // Determine TKP score category
                 $tkpKategoriSkor = $this->getTkpScoreCategory($tkpFinalScore);
 
-                // Check if record already exists to prevent duplicates based on session
+                // Check if record already exists to prevent duplicates based on session and recent time
                 $existingRecord = \App\Models\HasilTes::where('user_id', $user->id)
                     ->where('jenis_tes', 'kepribadian')
                     ->where('detail_jawaban', 'like', '%"session_id":"' . $session->id . '"%')
+                    ->where('created_at', '>=', now()->subMinutes(5)) // Within last 5 minutes
                     ->first();
 
                 if (!$existingRecord) {
@@ -1164,10 +1165,11 @@ class TryoutController extends Controller
                 // Determine score category
                 $kategoriSkor = $this->getScoreCategory($finalScore);
 
-                // Check if record already exists to prevent duplicates based on session
+                // Check if record already exists to prevent duplicates based on session and recent time
                 $existingRecord = \App\Models\HasilTes::where('user_id', $user->id)
                     ->where('jenis_tes', 'kecerdasan')
                     ->where('detail_jawaban', 'like', '%"session_id":"' . $session->id . '"%')
+                    ->where('created_at', '>=', now()->subMinutes(5)) // Within last 5 minutes
                     ->first();
 
                 if (!$existingRecord) {

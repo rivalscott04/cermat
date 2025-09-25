@@ -40,6 +40,19 @@ class KecermatanService
             // Hitung indikator (mengembalikan PANKER, TIANKER, JANKER, HANKER)
             $indikator = $this->hitungIndikator($detailJawaban, $totalQuestions);
 
+            // Check if similar result already exists within last 5 minutes to prevent duplicates
+            $existingResult = HasilTes::where('user_id', $data['user_id'])
+                ->where('jenis_tes', 'kecermatan')
+                ->where('skor_benar', $data['skor_benar'])
+                ->where('skor_salah', $data['skor_salah'])
+                ->where('created_at', '>=', now()->subMinutes(5))
+                ->first();
+
+            if ($existingResult) {
+                DB::rollBack();
+                return $existingResult; // Return existing result instead of creating new one
+            }
+
             // Simpan hasil
             $hasil = HasilTes::create([
                 'user_id' => $data['user_id'],

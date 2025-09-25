@@ -40,8 +40,7 @@
                                         </h5>
                                     </div>
                                     <div class="card-body">
-                                        <div class="form-group">
-                                            <label class="font-weight-bold">Pilih Kategori Soal:</label>
+                                        <div class="form-group">                                            <label class="font-weight-bold">Pilih Kategori Soal:</label>
                                             @foreach($kategoris as $kategori)
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" 

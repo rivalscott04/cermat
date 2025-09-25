@@ -455,7 +455,11 @@
                                                         <td>{{ date('d M Y H:i', strtotime($hasil->tanggal_tes)) }}</td>
                                                         <td>
                                                             @if ($hasil->skor_akhir)
-                                                                <span class="font-weight-bold text-primary">{{ $hasil->skor_akhir }}</span>
+                                                                <span class="font-weight-bold text-primary">{{ $hasil->skor_akhir }}
+                                                                @if($hasil->jenis_tes === 'kecerdasan' || $hasil->jenis_tes === 'kepribadian')
+                                                                    %
+                                                                @endif
+                                                                </span>
                                                             @else
                                                                 <span class="text-muted">-</span>
                                                             @endif
