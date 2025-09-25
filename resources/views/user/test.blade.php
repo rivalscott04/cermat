@@ -17,39 +17,6 @@
                 </div>
 
                 <div class="row justify-content-center">
-                    {{-- Card Tryout Gratis untuk Free User --}}
-                    @if (Auth::user()->paket_akses === 'free')
-                    <div class="col-md-3 mb-4">
-                        <div class="test-card h-100 free-card">
-                            <div class="test-icon-container">
-                                <i class="fa fa-gift test-icon"></i>
-                            </div>
-                            <div class="test-content">
-                                <h3 class="test-title">Tryout Gratis</h3>
-                                <p class="test-description">
-                                    Akses 1 tryout gratis dari semua jenis soal. 
-                                    Coba sistem dan rasakan pengalaman ujian yang sesungguhnya.
-                                </p>
-                                <div class="test-features">
-                                    <div class="feature-badge">
-                                        <i class="fa fa-check-circle"></i> 1 Tryout Gratis
-                                    </div>
-                                    <div class="feature-badge">
-                                        <i class="fa fa-clock-o"></i> Timer Real
-                                    </div>
-                                    <div class="feature-badge">
-                                        <i class="fa fa-chart-bar"></i> Hasil Instan
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="test-button-container">
-                                <a href="{{ route('user.tryout.index', ['type' => 'free']) }}" class="btn btn-test-primary">
-                                    <i class="fa fa-play"></i> Mulai Tryout Gratis
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    @endif
 
                     {{-- Card Tes Kecermatan --}}
                     <div class="col-md-3 mb-4">
@@ -187,9 +154,11 @@
 
                     {{-- Card Tes Lengkap --}}
                     <div class="col-md-3 mb-4">
-                        <div
-                            class="test-card h-100 {{ !Auth::user()->canAccessKecermatan() || !Auth::user()->canAccessTryout() ? 'disabled-card' : '' }}">
-                            @if (!Auth::user()->canAccessKecermatan() || !Auth::user()->canAccessTryout())
+                        @php
+                            $canAccessLengkap = Auth::user()->canAccessTryout() && in_array(Auth::user()->paket_akses, ['free', 'lengkap']);
+                        @endphp
+                        <div class="test-card h-100 {{ !$canAccessLengkap ? 'disabled-card' : '' }}">
+                            @if (!$canAccessLengkap)
                                 <div class="lock-overlay">
                                     <i class="fa fa-lock"></i>
                                 </div>
@@ -216,7 +185,7 @@
                                 </div>
                             </div>
                             <div class="test-button-container">
-                                @if (Auth::user()->canAccessKecermatan() && Auth::user()->canAccessTryout())
+                                @if ($canAccessLengkap)
                                     <a href="{{ route('user.tryout.index', ['type' => 'lengkap']) }}" class="btn btn-test-warning">
                                         <i class="fa fa-play"></i> Mulai Tes Lengkap
                                     </a>
@@ -231,7 +200,7 @@
                 </div>
 
                 {{-- Info paket berlangganan jika ada yang terkunci --}}
-                @if (!Auth::user()->canAccessKecermatan() || !Auth::user()->canAccessTryout())
+                @if (!Auth::user()->canAccessKecermatan())
                     <div class="row justify-content-center mt-4">
                         <div class="col-md-10">
                             <div class="subscription-info-card">
@@ -558,44 +527,3 @@
     </style>
 @endsection
 
-@section('styles')
-<style>
-.free-card {
-    border: 2px solid #28a745 !important;
-    background: linear-gradient(135deg, #f8fff9 0%, #e8f5e8 100%);
-    position: relative;
-}
-
-.free-card::before {
-    content: "GRATIS";
-    position: absolute;
-    top: -10px;
-    right: 10px;
-    background: #28a745;
-    color: white;
-    padding: 4px 12px;
-    border-radius: 12px;
-    font-size: 10px;
-    font-weight: bold;
-    z-index: 10;
-}
-
-.free-card .test-icon {
-    color: #28a745 !important;
-}
-
-.free-card .test-title {
-    color: #28a745 !important;
-}
-
-.free-card .btn-test-primary {
-    background: #28a745 !important;
-    border-color: #28a745 !important;
-}
-
-.free-card .btn-test-primary:hover {
-    background: #218838 !important;
-    border-color: #1e7e34 !important;
-}
-</style>
-@endsection
