@@ -18,13 +18,21 @@ return new class extends Migration
             // Index doesn't exist, continue
         }
         
-        Schema::table('hasil_tes', function (Blueprint $table) {
-            // Add a generated column to extract session_id from JSON
-            $table->string('session_id_extracted')->nullable()->after('detail_jawaban');
-        });
+        // Check if column already exists before adding it
+        $columns = DB::select("SHOW COLUMNS FROM hasil_tes LIKE 'session_id_extracted'");
+        if (empty($columns)) {
+            Schema::table('hasil_tes', function (Blueprint $table) {
+                // Add a generated column to extract session_id from JSON
+                $table->string('session_id_extracted')->nullable()->after('detail_jawaban');
+            });
+        }
         
-        // Create the generated column using raw SQL
-        DB::statement("ALTER TABLE hasil_tes MODIFY COLUMN session_id_extracted VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(detail_jawaban, '$.session_id'))) STORED");
+        // Create the generated column using raw SQL (this will modify existing column if it exists)
+        try {
+            DB::statement("ALTER TABLE hasil_tes MODIFY COLUMN session_id_extracted VARCHAR(255) GENERATED ALWAYS AS (JSON_UNQUOTE(JSON_EXTRACT(detail_jawaban, '$.session_id'))) STORED");
+        } catch (\Exception $e) {
+            // Column might already be a generated column, continue
+        }
         
         // Clean up duplicates before adding unique constraint
         $this->cleanDuplicates();
