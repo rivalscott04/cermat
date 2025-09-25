@@ -64,6 +64,7 @@ class CleanDuplicateTestResults extends Command
                     ->whereRaw('DATE_FORMAT(tanggal_tes, "%Y-%m-%d %H:%i") = ?', [$duplicate->minute_timestamp])
                     ->orderBy('created_at', 'desc') // Keep the oldest, delete newer ones
                     ->skip(1) // Skip the first (oldest) record
+                    ->limit(999) // Add limit to fix SQL syntax error
                     ->get();
 
                 foreach ($recordsToDelete as $record) {
