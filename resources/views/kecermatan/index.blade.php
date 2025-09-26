@@ -350,7 +350,9 @@
             dropdownItems.forEach((item) => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
+                    const tipe = item.getAttribute('data-value');
                     dropdownBtn.textContent = item.textContent.trim(); // e.g., 'Huruf'
+                    dropdownBtn.dataset.type = tipe; // canonical value: huruf/angka/simbol/acak
                     if (dropdownMenu) dropdownMenu.classList.remove('show');
                 });
             });

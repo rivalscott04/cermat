@@ -117,6 +117,15 @@ document.addEventListener("DOMContentLoaded", function () {
         return true;
     }
 
+    // Helper: get selected canonical type from dropdown (data-type or text fallback)
+    function getSelectedType() {
+        const dataType = (dropdownButton && dropdownButton.dataset && dropdownButton.dataset.type) || '';
+        const text = (dropdownButton && dropdownButton.textContent || '').trim().toLowerCase();
+        const allowed = ['huruf','angka','simbol','acak'];
+        if (allowed.includes(dataType)) return dataType;
+        return allowed.includes(text) ? text : 'huruf';
+    }
+
     let currentHoverPlaceholders = [];
 
     // Dropdown items click handler
@@ -181,6 +190,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Update text permanently
             dropdownButton.textContent = buttonText;
+            dropdownButton.dataset.type = selectedType; // store canonical value
             karakterBtns.forEach((btn) => {
                 btn.textContent = buttonText;
             });
@@ -210,7 +220,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const queryString = orderedInputs
             .map((value) => `questions[]=${encodeURIComponent(value)}`)
             .join("&");
-        const selectedType = dropdownButton.textContent.toLowerCase();
+        const selectedType = getSelectedType();
         const fullQueryString = `jenis=${selectedType}&${queryString}`;
 
         // Redirect to the URL with query parameters
@@ -222,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!btn) return; // Skip if btn is null
         btn.addEventListener("click", function () {
             const index = parseInt(this.dataset.index);
-            const selectedType = dropdownButton.textContent.toLowerCase();
+            const selectedType = getSelectedType();
             const karakter = generateRandomString(selectedType);
             const correspondingInput = inputs[index];
 
@@ -234,7 +244,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Auto-fill button handler
     isiOtomatisBtn.addEventListener("click", function () {
-        const selectedType = dropdownButton.textContent.toLowerCase();
+        const selectedType = getSelectedType();
         inputs.forEach((input) => {
             input.value = generateRandomString(selectedType);
         });
@@ -244,7 +254,7 @@ document.addEventListener("DOMContentLoaded", function () {
     inputs.forEach((input) => {
         if (!input) return; // Skip if input is null
         input.addEventListener("input", function () {
-            const selectedType = dropdownButton.textContent.toLowerCase();
+            const selectedType = getSelectedType();
 
             // Convert to uppercase for letter type
             if (selectedType === "huruf") {
