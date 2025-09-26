@@ -152,10 +152,17 @@ class LaporanKemampuanController extends Controller
         $kategoriIds = PackageCategoryMapping::where('package_type', $packageType)
             ->pluck('kategori_id');
 
-        // Get hasil tes untuk kategori dalam paket
+        // Get hasil tes untuk jenis tes yang sesuai paket
         $hasilTes = HasilTes::where('user_id', $userId)
-            ->whereIn('kategori_soal_id', $kategoriIds)
-            ->with(['kategoriSoal', 'tryout'])
+            ->where(function($query) use ($packageType) {
+                if ($packageType === 'kecerdasan') {
+                    $query->where('jenis_tes', 'kecerdasan');
+                } elseif ($packageType === 'kepribadian') {
+                    $query->where('jenis_tes', 'kepribadian');
+                } elseif ($packageType === 'lengkap') {
+                    $query->whereIn('jenis_tes', ['kecerdasan', 'kepribadian']);
+                }
+            })
             ->orderBy('created_at', 'asc')
             ->get();
 
@@ -174,25 +181,24 @@ class LaporanKemampuanController extends Controller
      */
     private function analisisPaketLengkap($hasilTes)
     {
-        $groupedByKategori = $hasilTes->groupBy('kategori_soal_id');
+        $groupedByJenisTes = $hasilTes->groupBy('jenis_tes');
         
         $analisis = [];
         
-        foreach ($groupedByKategori as $kategoriId => $tes) {
-            $kategori = $tes->first()->kategoriSoal;
+        foreach ($groupedByJenisTes as $jenisTes => $tes) {
             $tesPertama = $tes->first();
             $tesTerakhir = $tes->last();
             
             $analisis[] = [
-                'kategori' => $kategori,
+                'jenis_tes' => $jenisTes,
                 'tes_pertama' => $tesPertama,
                 'tes_terakhir' => $tesTerakhir,
-                'selisih_skor' => $tesTerakhir->skor - $tesPertama->skor,
-                'persentase_naik' => $tesPertama->skor > 0 ? (($tesTerakhir->skor - $tesPertama->skor) / $tesPertama->skor) * 100 : 0,
+                'selisih_skor' => $tesTerakhir->skor_akhir - $tesPertama->skor_akhir,
+                'persentase_naik' => $tesPertama->skor_akhir > 0 ? (($tesTerakhir->skor_akhir - $tesPertama->skor_akhir) / $tesPertama->skor_akhir) * 100 : 0,
                 'total_tes' => $tes->count(),
-                'skor_tertinggi' => $tes->max('skor'),
-                'skor_terendah' => $tes->min('skor'),
-                'rata_rata' => $tes->avg('skor')
+                'skor_tertinggi' => $tes->max('skor_akhir'),
+                'skor_terendah' => $tes->min('skor_akhir'),
+                'rata_rata' => $tes->avg('skor_akhir')
             ];
         }
 
@@ -209,25 +215,24 @@ class LaporanKemampuanController extends Controller
      */
     private function analisisPerPaket($hasilTes, $packageType)
     {
-        $groupedByKategori = $hasilTes->groupBy('kategori_soal_id');
+        $groupedByJenisTes = $hasilTes->groupBy('jenis_tes');
         
         $analisis = [];
         
-        foreach ($groupedByKategori as $kategoriId => $tes) {
-            $kategori = $tes->first()->kategoriSoal;
+        foreach ($groupedByJenisTes as $jenisTes => $tes) {
             $tesPertama = $tes->first();
             $tesTerakhir = $tes->last();
             
             $analisis[] = [
-                'kategori' => $kategori,
+                'jenis_tes' => $jenisTes,
                 'tes_pertama' => $tesPertama,
                 'tes_terakhir' => $tesTerakhir,
-                'selisih_skor' => $tesTerakhir->skor - $tesPertama->skor,
-                'persentase_naik' => $tesPertama->skor > 0 ? (($tesTerakhir->skor - $tesPertama->skor) / $tesPertama->skor) * 100 : 0,
+                'selisih_skor' => $tesTerakhir->skor_akhir - $tesPertama->skor_akhir,
+                'persentase_naik' => $tesPertama->skor_akhir > 0 ? (($tesTerakhir->skor_akhir - $tesPertama->skor_akhir) / $tesPertama->skor_akhir) * 100 : 0,
                 'total_tes' => $tes->count(),
-                'skor_tertinggi' => $tes->max('skor'),
-                'skor_terendah' => $tes->min('skor'),
-                'rata_rata' => $tes->avg('skor')
+                'skor_tertinggi' => $tes->max('skor_akhir'),
+                'skor_terendah' => $tes->min('skor_akhir'),
+                'rata_rata' => $tes->avg('skor_akhir')
             ];
         }
 
