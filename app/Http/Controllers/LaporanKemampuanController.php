@@ -40,7 +40,7 @@ class LaporanKemampuanController extends Controller
      */
     public function perPaket()
     {
-        $packages = PackageCategoryMapping::with('kategoriSoal')
+        $packages = PackageCategoryMapping::with('kategori')
             ->select('package_type')
             ->distinct()
             ->get();
@@ -65,9 +65,9 @@ class LaporanKemampuanController extends Controller
         $packageType = $request->package_type;
         
         $kategori = PackageCategoryMapping::where('package_type', $packageType)
-            ->with('kategoriSoal')
+            ->with('kategori')
             ->get()
-            ->pluck('kategoriSoal');
+            ->pluck('kategori');
 
         return response()->json($kategori);
     }
