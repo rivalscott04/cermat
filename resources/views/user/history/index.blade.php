@@ -55,11 +55,11 @@
                                                                         $history['is_tkp'] &&
                                                                         in_array($history['jenis_paket'] ?? '', ['kepribadian', 'lengkap']))
                                                                     <div class="score-percentage">
-                                                                        {{ number_format($history['tkp_final'] ?? 0, 0) }}
+                                                                        {{ number_format($history['tkp_final'] ?? 0, 2) }}%
                                                                     </div>
                                                                     <div class="score-label">Skor TKP</div>
                                                                 @else
-                                                                    <div class="score-percentage">{{ $history['score'] }}
+                                                                    <div class="score-percentage">{{ number_format($history['percentage'] ?? 0, 2) }}%
                                                                     </div>
                                                                     <div class="score-label">Skor</div>
                                                                 @endif
