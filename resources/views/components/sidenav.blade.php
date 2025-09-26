@@ -65,6 +65,14 @@
                     </ul>
                 </li>
 
+                <!-- Laporan -->
+                <li>
+                    <a href="{{ route('laporan.kemampuan.index') }}">
+                        <i class="fa fa-chart-line"></i>
+                        <span class="nav-label">Laporan Kemampuan</span>
+                    </a>
+                </li>
+
                 <!-- Pengaturan -->
                 <li>
                     <a href="#"><i class="fa fa-cogs"></i> <span class="nav-label">Pengaturan</span> <span class="fa arrow"></span></a>

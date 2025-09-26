@@ -16,6 +16,7 @@ use App\Http\Controllers\PackageMappingController;
 use App\Http\Controllers\HistoryController;
 use App\Http\Controllers\ScoringSettingController;
 use App\Http\Controllers\SimulasiNilaiController;
+use App\Http\Controllers\LaporanKemampuanController;
 
 Route::get('/', [App\Http\Controllers\WelcomeController::class, 'index']);
 
@@ -118,6 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/simulasi/nilai', [SimulasiNilaiController::class, 'calculate'])->name('simulasi.nilai.calculate');
     Route::post('/simulasi/nilai/reset', [SimulasiNilaiController::class, 'reset'])->name('simulasi.nilai.reset');
     Route::get('/simulasi/nilai/settings', [SimulasiNilaiController::class, 'getSettings'])->name('simulasi.nilai.settings');
+
 });
 
 // Admin Routes
@@ -162,4 +164,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // YouTube Video Routes
     Route::resource('youtube-videos', App\Http\Controllers\Admin\YoutubeVideoController::class);
+
+    // Laporan Kemampuan Siswa (Admin Only)
+    Route::get('/laporan-kemampuan', [LaporanKemampuanController::class, 'index'])->name('laporan.kemampuan.index');
+    Route::get('/laporan-kemampuan/paket-lengkap', [LaporanKemampuanController::class, 'paketLengkap'])->name('laporan.kemampuan.paket-lengkap');
+    Route::get('/laporan-kemampuan/per-paket', [LaporanKemampuanController::class, 'perPaket'])->name('laporan.kemampuan.per-paket');
+    Route::get('/laporan-kemampuan/per-paket/{package}', [LaporanKemampuanController::class, 'perPaketDetail'])->name('laporan.kemampuan.per-paket-detail');
+    Route::get('/laporan-kemampuan/kategori-by-paket', [LaporanKemampuanController::class, 'getKategoriByPaket'])->name('laporan.kemampuan.kategori-by-paket');
+    Route::get('/laporan-kemampuan/siswa-by-paket', [LaporanKemampuanController::class, 'getSiswaByPaket'])->name('laporan.kemampuan.siswa-by-paket');
+    Route::post('/laporan-kemampuan/generate-paket-lengkap', [LaporanKemampuanController::class, 'generateLaporanPaketLengkap'])->name('laporan.kemampuan.generate-paket-lengkap');
+    Route::post('/laporan-kemampuan/generate-per-paket', [LaporanKemampuanController::class, 'generateLaporanPerPaket'])->name('laporan.kemampuan.generate-per-paket');
 });
