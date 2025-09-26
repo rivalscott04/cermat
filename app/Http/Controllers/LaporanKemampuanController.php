@@ -173,7 +173,7 @@ class LaporanKemampuanController extends Controller
         // Analisis data
         $analisis = $this->analisisPerPaket($hasilTes, $packageType);
 
-        return view('laporan-kemampuan.detail-per-paket', compact('user', 'analisis', 'packageName'));
+        return view('laporan-kemampuan.detail-per-paket', compact('user', 'analisis', 'packageType'));
     }
 
     /**
