@@ -54,7 +54,7 @@
                                         <i class="fa fa-arrow-up text-success"></i>
                                     </div>
                                     <div class="summary-content">
-                                        <h4>{{ $analisis->where('selisih_skor', '>', 0)->count() }}</h4>
+                                        <h4>{{ collect($analisis)->where('selisih_skor', '>', 0)->count() }}</h4>
                                         <p>Kategori Meningkat</p>
                                     </div>
                                 </div>
@@ -67,7 +67,7 @@
                                         <i class="fa fa-arrow-down text-danger"></i>
                                     </div>
                                     <div class="summary-content">
-                                        <h4>{{ $analisis->where('selisih_skor', '<', 0)->count() }}</h4>
+                                        <h4>{{ collect($analisis)->where('selisih_skor', '<', 0)->count() }}</h4>
                                         <p>Kategori Menurun</p>
                                     </div>
                                 </div>
@@ -80,7 +80,7 @@
                                         <i class="fa fa-chart-bar text-warning"></i>
                                     </div>
                                     <div class="summary-content">
-                                        <h4>{{ number_format($analisis->avg('selisih_skor'), 1) }}</h4>
+                                        <h4>{{ number_format(collect($analisis)->avg('selisih_skor'), 1) }}</h4>
                                         <p>Rata-rata Peningkatan</p>
                                     </div>
                                 </div>

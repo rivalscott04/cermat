@@ -131,8 +131,8 @@ class LaporanKemampuanController extends Controller
             return redirect()->back()->with('error', 'Siswa belum memiliki data tes.');
         }
 
-        // Analisis data
-        $analisis = $this->analisisPaketLengkap($hasilTes);
+        // Analisis data (wrap as collection for easy querying in views)
+        $analisis = collect($this->analisisPaketLengkap($hasilTes));
 
         return view('laporan-kemampuan.detail-paket-lengkap', compact('user', 'analisis'));
     }
@@ -170,8 +170,8 @@ class LaporanKemampuanController extends Controller
             return redirect()->back()->with('error', 'Siswa belum memiliki data tes untuk paket ini.');
         }
 
-        // Analisis data
-        $analisis = $this->analisisPerPaket($hasilTes, $packageType);
+        // Analisis data (wrap as collection for easy querying in views)
+        $analisis = collect($this->analisisPerPaket($hasilTes, $packageType));
 
         return view('laporan-kemampuan.detail-per-paket', compact('user', 'analisis', 'packageType'));
     }
