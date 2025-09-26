@@ -1602,7 +1602,7 @@ class TryoutController extends Controller
                 }
 
             case 'pg_pilih_2':
-                // Skor adalah penjumlahan bobot opsi terpilih, masing-masing opsi benar = 0.5, salah = 0; maksimum 1.0
+                // Binary scoring: kedua jawaban harus benar untuk mendapat skor 1.0, selain itu 0.0
                 if (count($jawaban) !== 2) return 0;
 
                 $totalBobot = 0;
@@ -1613,8 +1613,8 @@ class TryoutController extends Controller
                     }
                 }
 
-                // Pastikan tidak melebihi 1.0
-                return min($totalBobot, 1);
+                // Hanya skor 1.0 jika total bobot = 1.0 (kedua jawaban benar), selain itu 0.0
+                return $totalBobot == 1.0 ? 1.0 : 0.0;
 
             default:
                 return 0;
