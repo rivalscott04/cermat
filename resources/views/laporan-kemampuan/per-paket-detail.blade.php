@@ -71,7 +71,7 @@ $(document).ready(function() {
     const packageName = '{{ $packageName }}';
     
     // Load kategori berdasarkan paket
-    $.get('{{ route("admin.laporan.kemampuan.kategori-by-paket") }}', {package_name: packageName})
+    $.get('{{ route("admin.laporan.kemampuan.kategori-by-paket") }}', {package_type: packageName})
         .done(function(data) {
             const select = $('#kategori-select');
             data.forEach(function(kategori) {
@@ -89,7 +89,7 @@ $(document).ready(function() {
         
         if (kategoriId) {
             $.get('{{ route("admin.laporan.kemampuan.siswa-by-paket") }}', {
-                package_name: packageName,
+                package_type: packageName,
                 kategori_id: kategoriId
             }).done(function(data) {
                 data.forEach(function(siswa) {
@@ -127,7 +127,7 @@ $(document).ready(function() {
         
         form.append($('<input>', {
             type: 'hidden',
-            name: 'package_name',
+            name: 'package_type',
             value: packageName
         }));
         

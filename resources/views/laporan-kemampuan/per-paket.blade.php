@@ -34,18 +34,18 @@
                                             <div class="paket-icon">
                                                 <i class="fa fa-layer-group fa-3x text-info"></i>
                                             </div>
-                                            <h5 class="paket-name">{{ $package->package_name }}</h5>
+                                            <h5 class="paket-name">{{ $package->package_type }}</h5>
                                             
                                             <div class="paket-info">
                                                 <p class="text-muted">
-                                                    Analisis kemampuan siswa untuk paket {{ $package->package_name }} 
+                                                    Analisis kemampuan siswa untuk paket {{ $package->package_type }} 
                                                     dengan breakdown per kategori soal.
                                                 </p>
                                             </div>
                                             
-                            <a href="{{ route('admin.laporan.kemampuan.per-paket-detail', ['package' => $package->package_name]) }}" 
+                            <a href="{{ route('admin.laporan.kemampuan.per-paket-detail', ['package' => $package->package_type]) }}" 
                                class="btn btn-info btn-block">
-                                                <i class="fa fa-chart-pie"></i> Lihat Laporan {{ $package->package_name }}
+                                                <i class="fa fa-chart-pie"></i> Lihat Laporan {{ $package->package_type }}
                                             </a>
                                         </div>
                                     </div>

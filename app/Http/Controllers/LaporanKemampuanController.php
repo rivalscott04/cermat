@@ -41,7 +41,7 @@ class LaporanKemampuanController extends Controller
     public function perPaket()
     {
         $packages = PackageCategoryMapping::with('kategoriSoal')
-            ->select('package_name')
+            ->select('package_type')
             ->distinct()
             ->get();
 
@@ -62,9 +62,9 @@ class LaporanKemampuanController extends Controller
      */
     public function getKategoriByPaket(Request $request)
     {
-        $packageName = $request->package_name;
+        $packageType = $request->package_type;
         
-        $kategori = PackageCategoryMapping::where('package_name', $packageName)
+        $kategori = PackageCategoryMapping::where('package_type', $packageType)
             ->with('kategoriSoal')
             ->get()
             ->pluck('kategoriSoal');
@@ -77,12 +77,12 @@ class LaporanKemampuanController extends Controller
      */
     public function getSiswaByPaket(Request $request)
     {
-        $packageName = $request->package_name;
+        $packageType = $request->package_type;
         $kategoriId = $request->kategori_id;
 
         // Get kategori soal yang termasuk dalam paket
-        $kategoriIds = PackageCategoryMapping::where('package_name', $packageName)
-            ->pluck('kategori_soal_id');
+        $kategoriIds = PackageCategoryMapping::where('package_type', $packageType)
+            ->pluck('kategori_id');
 
         // Get siswa yang pernah tes dengan kategori tersebut
         $users = User::whereHas('hasilTes', function($query) use ($kategoriIds) {
@@ -122,14 +122,14 @@ class LaporanKemampuanController extends Controller
     public function generateLaporanPerPaket(Request $request)
     {
         $userId = $request->user_id;
-        $packageName = $request->package_name;
+        $packageType = $request->package_type;
         $kategoriId = $request->kategori_id;
 
         $user = User::findOrFail($userId);
 
         // Get kategori soal dalam paket
-        $kategoriIds = PackageCategoryMapping::where('package_name', $packageName)
-            ->pluck('kategori_soal_id');
+        $kategoriIds = PackageCategoryMapping::where('package_type', $packageType)
+            ->pluck('kategori_id');
 
         // Get hasil tes untuk kategori dalam paket
         $hasilTes = HasilTes::where('user_id', $userId)
@@ -143,7 +143,7 @@ class LaporanKemampuanController extends Controller
         }
 
         // Analisis data
-        $analisis = $this->analisisPerPaket($hasilTes, $packageName);
+        $analisis = $this->analisisPerPaket($hasilTes, $packageType);
 
         return view('laporan-kemampuan.detail-per-paket', compact('user', 'analisis', 'packageName'));
     }
@@ -186,7 +186,7 @@ class LaporanKemampuanController extends Controller
     /**
      * Analisis data untuk per paket
      */
-    private function analisisPerPaket($hasilTes, $packageName)
+    private function analisisPerPaket($hasilTes, $packageType)
     {
         $groupedByKategori = $hasilTes->groupBy('kategori_soal_id');
         
