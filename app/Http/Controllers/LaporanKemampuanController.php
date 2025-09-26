@@ -77,25 +77,39 @@ class LaporanKemampuanController extends Controller
      */
     public function getSiswaByPaket(Request $request)
     {
-        $packageType = $request->package_type;
-        $kategoriId = $request->kategori_id;
+        try {
+            $packageType = $request->package_type;
+            $kategoriId = $request->kategori_id;
 
-        // Get kategori soal yang termasuk dalam paket
-        $kategoriIds = PackageCategoryMapping::where('package_type', $packageType)
-            ->pluck('kategori_id');
-
-        // Get siswa yang pernah tes dengan kategori dalam paket tersebut
-        $users = User::whereHas('hasilTes', function($query) use ($kategoriIds, $kategoriId) {
-            if ($kategoriId) {
-                // Filter berdasarkan kategori tertentu
-                $query->where('kategori_soal_id', $kategoriId);
-            } else {
-                // Ambil semua kategori dalam paket
-                $query->whereIn('kategori_soal_id', $kategoriIds);
+            // Validasi input
+            if (!$packageType) {
+                return response()->json(['error' => 'Package type is required'], 400);
             }
-        })->get();
 
-        return response()->json($users);
+            // Get kategori soal yang termasuk dalam paket
+            $kategoriIds = PackageCategoryMapping::where('package_type', $packageType)
+                ->pluck('kategori_id');
+
+            if ($kategoriIds->isEmpty()) {
+                return response()->json(['error' => 'No categories found for this package'], 404);
+            }
+
+            // Get siswa yang pernah tes dengan kategori dalam paket tersebut
+            $users = User::whereHas('hasilTes', function($query) use ($kategoriIds, $kategoriId) {
+                if ($kategoriId) {
+                    // Filter berdasarkan kategori tertentu
+                    $query->where('kategori_soal_id', $kategoriId);
+                } else {
+                    // Ambil semua kategori dalam paket
+                    $query->whereIn('kategori_soal_id', $kategoriIds);
+                }
+            })->select('id', 'name', 'email')->get();
+
+            return response()->json($users);
+        } catch (\Exception $e) {
+            \Log::error('Error in getSiswaByPaket: ' . $e->getMessage());
+            return response()->json(['error' => 'Internal server error'], 500);
+        }
     }
 
     /**
