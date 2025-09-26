@@ -68,7 +68,7 @@ class HistoryController extends Controller
                     'total_questions' => $totalQuestions,
                     'correct_answers' => $correctAnswers,
                     'wrong_answers' => $totalQuestions - $correctAnswers,
-                    'percentage' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 1) : 0,
+                    'percentage' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 2) : 0,
                     'duration' => $session->elapsed_minutes,
                     'status' => $status,
                     'jenis_paket' => $session->tryout->jenis_paket ?? null,
@@ -87,7 +87,7 @@ class HistoryController extends Controller
             ->get()
             ->map(function ($hasil) {
                 $totalQuestions = $hasil->skor_benar + $hasil->skor_salah;
-                $percentage = $totalQuestions > 0 ? round(($hasil->skor_benar / $totalQuestions) * 100, 1) : 0;
+                $percentage = $totalQuestions > 0 ? round(($hasil->skor_benar / $totalQuestions) * 100, 2) : 0;
 
                 return [
                     'id' => $hasil->id,
