@@ -8,7 +8,7 @@
         <div class="col-lg-12">
             <div class="ibox">
                 <div class="ibox-title">
-                    <h5><i class="fa fa-layer-group"></i> Laporan {{ $packageName }} - {{ $user->name }}</h5>
+                    <h5><i class="fa fa-layer-group"></i> Laporan {{ $packageType }} - {{ $user->name }}</h5>
                     <div class="ibox-tools">
                         <a href="{{ route('admin.laporan.kemampuan.per-paket') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Kembali
@@ -26,7 +26,7 @@
                                 <div class="siswa-info">
                                     <h3>{{ $user->name }}</h3>
                                     <p class="text-muted">{{ $user->email }}</p>
-                                    <p class="text-muted">Paket: {{ $packageName }} | Total Kategori: {{ count($analisis) }}</p>
+                                    <p class="text-muted">Paket: {{ $packageType }} | Total Kategori: {{ count($analisis) }}</p>
                                 </div>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <div class="analisis-section">
-                                <h4><i class="fa fa-chart-pie"></i> Analisis Detail per Kategori dalam Paket {{ $packageName }}</h4>
+                                <h4><i class="fa fa-chart-pie"></i> Analisis Detail per Kategori dalam Paket {{ $packageType }}</h4>
                                 
                                 @foreach($analisis as $item)
                                     <div class="kategori-card">
@@ -139,14 +139,14 @@
                                             
                                             <!-- Rekomendasi Spesifik Paket -->
                                             <div class="rekomendasi-section">
-                                                <h6><i class="fa fa-lightbulb"></i> Rekomendasi untuk Paket {{ $packageName }}:</h6>
+                                                <h6><i class="fa fa-lightbulb"></i> Rekomendasi untuk Paket {{ $packageType }}:</h6>
                                                 <p class="rekomendasi-text">
                                                     @if($item['selisih_skor'] > 0)
-                                                        <span class="text-success">✓ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageName }} menunjukkan peningkatan yang baik. Pertahankan konsistensi latihan untuk mempertahankan performa.</span>
+                                                        <span class="text-success">✓ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageType }} menunjukkan peningkatan yang baik. Pertahankan konsistensi latihan untuk mempertahankan performa.</span>
                                                     @elseif($item['selisih_skor'] < 0)
-                                                        <span class="text-danger">⚠ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageName }} mengalami penurunan. Perbanyak latihan dan fokus pada area yang lemah dalam paket ini.</span>
+                                                        <span class="text-danger">⚠ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageType }} mengalami penurunan. Perbanyak latihan dan fokus pada area yang lemah dalam paket ini.</span>
                                                     @else
-                                                        <span class="text-warning">→ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageName }} stagnan. Coba variasi metode belajar untuk meningkatkan performa dalam paket ini.</span>
+                                                        <span class="text-warning">→ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageType }} stagnan. Coba variasi metode belajar untuk meningkatkan performa dalam paket ini.</span>
                                                     @endif
                                                 </p>
                                             </div>
