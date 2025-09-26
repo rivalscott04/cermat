@@ -329,38 +329,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let selectedJenis = 'huruf';
-
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-            const inputs = Array.from(document.querySelectorAll('input[name="questions[]"]'));
             const dropdownBtn = document.getElementById('dropdownMenuButton');
             const dropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="dropdownMenuButton"]');
             const dropdownItems = Array.from(document.querySelectorAll('.dropdown-item'));
-            const isiOtomatisBtn = document.getElementById('isiOtomatisBtn');
-            const form = document.getElementById('kecermatanForm');
 
-            const CHAR_SETS = {
-                huruf: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-                angka: '0123456789',
-                simbol: '!@#$%^&*()_+-=[]{}|;:",.<>?'
-            };
-
-            function generateRandomStringFrom(set, length = 5) {
-                let result = '';
-                const n = set.length;
-                for (let i = 0; i < length; i++) {
-                    result += set[Math.floor(Math.random() * n)];
-                }
-                return result;
-            }
-
-            function fillInputs(values) {
-                inputs.forEach((input, idx) => {
-                    input.value = values[idx] || '';
-                });
-            }
-
-            // Dropdown: open/close fallback (avoid Bootstrap JS conflicts)
+            // Lightweight dropdown toggle to avoid conflicts with other pages' scripts
             if (dropdownBtn && dropdownMenu) {
                 dropdownBtn.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -373,84 +346,13 @@
                 });
             }
 
-            // Dropdown: pilih jenis
+            // Keep dropdown button text compatible with existing generateSoal.js logic
             dropdownItems.forEach((item) => {
                 item.addEventListener('click', (e) => {
                     e.preventDefault();
-                    const value = item.getAttribute('data-value');
-                    selectedJenis = value;
-                    dropdownBtn.textContent = 'Jenis: ' + item.textContent.trim();
+                    dropdownBtn.textContent = item.textContent.trim(); // e.g., 'Huruf'
                     if (dropdownMenu) dropdownMenu.classList.remove('show');
                 });
-            });
-
-            // Isi otomatis via backend agar konsisten dengan aturan server
-            isiOtomatisBtn.addEventListener('click', async () => {
-                try {
-                    const resp = await fetch("{{ route('kecermatan.generateKarakter') }}", {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': csrfToken,
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify({ jenis: selectedJenis })
-                    });
-                    const data = await resp.json();
-                    if (!data.success) {
-                        throw new Error(data.message || 'Gagal menghasilkan karakter');
-                    }
-                    const hasil = data.data || [];
-                    if (hasil.length !== 10) {
-                        throw new Error('Server mengembalikan jumlah set tidak sesuai');
-                    }
-                    fillInputs(hasil);
-                } catch (err) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: err.message || 'Terjadi kesalahan saat isi otomatis'
-                    });
-                }
-            });
-
-            // Tombol per kolom (karakter-btn) untuk cepat mengisi 5 karakter
-            document.querySelectorAll('.karakter-btn').forEach((btn) => {
-                btn.addEventListener('click', () => {
-                    const idx = Number(btn.getAttribute('data-index'));
-                    if (Number.isNaN(idx)) return;
-
-                    // Tentukan jenis dari label tombol (Huruf/Angka/Simbol/Acak)
-                    const label = (btn.textContent || '').trim().toLowerCase();
-                    let setToUse = '';
-                    if (label === 'huruf') setToUse = CHAR_SETS.huruf;
-                    else if (label === 'angka') setToUse = CHAR_SETS.angka;
-                    else if (label === 'simbol') setToUse = CHAR_SETS.simbol;
-                    else { // acak
-                        setToUse = CHAR_SETS.huruf + CHAR_SETS.angka + CHAR_SETS.simbol;
-                    }
-                    inputs[idx].value = generateRandomStringFrom(setToUse, 5);
-
-                    // Siklus label tombol Huruf -> Angka -> Simbol -> Acak -> Huruf
-                    const labels = ['Huruf', 'Angka', 'Simbol', 'Acak'];
-                    const currentIdx = labels.findIndex(l => l.toLowerCase() === (btn.textContent || '').trim().toLowerCase());
-                    const nextLabel = labels[(currentIdx + 1) % labels.length];
-                    btn.textContent = nextLabel;
-                });
-            });
-
-            // Validasi sebelum submit: pastikan 10 input terisi dan max 5 karakter
-            form.addEventListener('submit', (e) => {
-                const values = inputs.map(i => (i.value || '').trim());
-                const isComplete = values.length === 10 && values.every(v => v.length > 0 && v.length <= 5);
-                if (!isComplete) {
-                    e.preventDefault();
-                    Swal.fire({
-                        icon: 'warning',
-                        title: 'Data belum lengkap',
-                        text: 'Pastikan semua 10 kolom terisi maksimal 5 karakter.'
-                    });
-                }
             });
         });
     </script>
