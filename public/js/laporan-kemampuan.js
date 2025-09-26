@@ -9,8 +9,8 @@ $(document).ready(function() {
     // Initialize popovers
     $('[data-toggle="popover"]').popover();
     
-    // Add loading states to buttons
-    $('.btn').on('click', function() {
+    // Add loading states to buttons (only for form buttons, not links)
+    $('.btn:not(a)').on('click', function() {
         if ($(this).hasClass('btn-loading')) {
             return false;
         }
