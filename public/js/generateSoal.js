@@ -76,34 +76,49 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     };
 
-    // Generate random string function - IMPROVED with better randomization
+    // Generate random string function - FIXED to ensure unique characters only
     function generateRandomString(type, length = 5) {
         const chars = karakterSet[type] || karakterSet.huruf;
         let result = "";
-        const charsLength = chars.length;
+        const charsArray = chars.split(""); // Convert to array for easier manipulation
 
-        // For better randomization, especially for multiple calls
-        for (let i = 0; i < length; i++) {
-            // Use crypto.getRandomValues for better randomness if available
+        // Shuffle the characters array to ensure randomness
+        const shuffled = [...charsArray];
+
+        // Fisher-Yates shuffle algorithm for better randomization
+        for (let i = shuffled.length - 1; i > 0; i--) {
             let randomIndex;
             if (window.crypto && window.crypto.getRandomValues) {
                 const array = new Uint32Array(1);
                 window.crypto.getRandomValues(array);
-                randomIndex = array[0] % charsLength;
+                randomIndex = array[0] % (i + 1);
             } else {
-                // Fallback to Math.random with better seed
-                randomIndex = Math.floor(Math.random() * charsLength);
+                randomIndex = Math.floor(Math.random() * (i + 1));
             }
-            result += chars.charAt(randomIndex);
+            [shuffled[i], shuffled[randomIndex]] = [
+                shuffled[randomIndex],
+                shuffled[i],
+            ];
         }
 
+        // Take the first 'length' characters from shuffled array
+        // This ensures all characters are unique
+        const maxLength = Math.min(length, shuffled.length);
+        for (let i = 0; i < maxLength; i++) {
+            result += shuffled[i];
+        }
+
+        // If requested length is more than available unique characters,
+        // just return what we have (all unique characters available)
         return result;
     }
 
-    // Update placeholders based on selected type
+    // Update placeholders based on selected type - FIXED to use unique characters
     function updatePlaceholders(type) {
         inputs.forEach((input, index) => {
-            input.placeholder = placeholderExamples[type][index];
+            // Generate unique placeholder for each input
+            const uniquePlaceholder = generateRandomString(type);
+            input.placeholder = uniquePlaceholder;
         });
     }
 
@@ -167,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 btn.textContent = buttonText;
             });
 
-            // Generate new values for preview
+            // Generate new UNIQUE values for preview
             inputs.forEach((input) => {
                 input.dataset.originalValue = input.value;
                 input.value = generateRandomString(selectedType);
@@ -208,6 +223,9 @@ document.addEventListener("DOMContentLoaded", function () {
             karakterBtns.forEach((btn) => {
                 btn.textContent = buttonText;
             });
+
+            // Update placeholders with unique characters for the new type
+            updatePlaceholders(selectedType);
 
             // The current values from hover will remain
             // Just clean up the temporary data attributes
@@ -303,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // IMPROVED Auto-fill button handler - NO ANIMATIONS
+    // IMPROVED Auto-fill button handler - generates UNIQUE characters for each column
     function handleIsiOtomatis(e) {
         // Prevent any form submission or other event bubbling
         e.preventDefault();
@@ -313,7 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         console.log("Auto-fill clicked, type:", selectedType);
 
-        // Generate new values for all inputs immediately
+        // Generate new UNIQUE values for all inputs immediately
         inputs.forEach((input, index) => {
             const newValue = generateRandomString(selectedType);
             input.value = newValue;
@@ -331,7 +349,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Update reference to the new button
     const updatedIsiOtomatisBtn = document.getElementById("isiOtomatisBtn");
 
-    // Input field validation handler
+    // Input field validation handler - IMPROVED to prevent duplicate characters
     inputs.forEach((input) => {
         if (!input) return; // Skip if input is null
         input.addEventListener("input", function () {
@@ -351,6 +369,17 @@ document.addEventListener("DOMContentLoaded", function () {
                 this.value = (this.value.match(validChars) || []).join("");
             }
 
+            // Remove duplicate characters to ensure uniqueness
+            const uniqueChars = [];
+            const inputValue = this.value;
+            for (let i = 0; i < inputValue.length; i++) {
+                const char = inputValue[i];
+                if (!uniqueChars.includes(char)) {
+                    uniqueChars.push(char);
+                }
+            }
+            this.value = uniqueChars.join("");
+
             // Enforce maximum length
             if (this.value.length > 5) {
                 this.value = this.value.slice(0, 5);
@@ -358,7 +387,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Initialize placeholders
+    // Initialize placeholders with unique characters
     updatePlaceholders("huruf");
 
     // Debug info
