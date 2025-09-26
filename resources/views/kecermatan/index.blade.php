@@ -329,6 +329,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            window.DEBUG_KECERMATAN = true;
             const dropdownBtn = document.getElementById('dropdownMenuButton');
             const dropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="dropdownMenuButton"]');
             const dropdownItems = Array.from(document.querySelectorAll('.dropdown-item'));
@@ -353,6 +354,9 @@
                     const tipe = item.getAttribute('data-value');
                     dropdownBtn.textContent = item.textContent.trim(); // e.g., 'Huruf'
                     dropdownBtn.dataset.type = tipe; // canonical value: huruf/angka/simbol/acak
+                    if (window.DEBUG_KECERMATAN) {
+                        console.log('[kecermatan] Selected type:', tipe);
+                    }
                     if (dropdownMenu) dropdownMenu.classList.remove('show');
                 });
             });

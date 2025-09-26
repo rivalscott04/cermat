@@ -221,10 +221,32 @@ document.addEventListener("DOMContentLoaded", function () {
             .map((value) => `questions[]=${encodeURIComponent(value)}`)
             .join("&");
         const selectedType = getSelectedType();
+        if (window.DEBUG_KECERMATAN) {
+            console.log('[kecermatan] Submit clicked');
+            console.log('[kecermatan] Selected type:', selectedType);
+            console.log('[kecermatan] Filled inputs:', orderedInputs.length);
+        }
         const fullQueryString = `jenis=${selectedType}&${queryString}`;
 
         // Redirect to the URL with query parameters
-        window.location.href = `${form.action}?${fullQueryString}`;
+        const targetUrl = `${form.action}?${fullQueryString}`;
+        if (window.DEBUG_KECERMATAN) {
+            console.log('[kecermatan] Redirect URL:', targetUrl);
+        }
+        try {
+            window.location.assign(targetUrl);
+        } catch (err) {
+            if (window.DEBUG_KECERMATAN) {
+                console.warn('[kecermatan] assign() failed, fallback to href', err);
+            }
+            window.location.href = targetUrl;
+        }
+        // Last-resort fallback in case other handlers block immediate navigation
+        setTimeout(function(){
+            if (window.location.href.indexOf(targetUrl) === -1) {
+                window.location.href = targetUrl;
+            }
+        }, 0);
     });
 
     // Individual character buttons handler
