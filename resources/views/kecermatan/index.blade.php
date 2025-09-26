@@ -326,47 +326,64 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             window.DEBUG_KECERMATAN = true;
-            const dropdownBtn = document.getElementById('dropdownMenuButton');
-            const dropdownMenu = document.querySelector('.dropdown-menu[aria-labelledby="dropdownMenuButton"]');
-            const dropdownItems = Array.from(document.querySelectorAll('.dropdown-item'));
 
-            // Lightweight dropdown toggle to avoid conflicts with other pages' scripts
-            if (dropdownBtn && dropdownMenu) {
-                dropdownBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    dropdownMenu.classList.toggle('show');
-                });
-                document.addEventListener('click', (e) => {
-                    if (!dropdownBtn.contains(e.target) && !dropdownMenu.contains(e.target)) {
-                        dropdownMenu.classList.remove('show');
-                    }
-                });
-            }
+            // Wait a bit for other scripts to load
+            setTimeout(() => {
+                const dropdownBtn = document.getElementById('dropdownMenuButton');
+                const dropdownMenu = document.querySelector(
+                    '.dropdown-menu[aria-labelledby="dropdownMenuButton"]');
+                const dropdownItems = Array.from(document.querySelectorAll('.dropdown-item'));
 
-            // Keep dropdown button text compatible with existing generateSoal.js logic
-            dropdownItems.forEach((item) => {
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const tipe = item.getAttribute('data-value');
-                    dropdownBtn.textContent = item.textContent.trim(); // e.g., 'Huruf'
-                    dropdownBtn.dataset.type = tipe; // canonical value: huruf/angka/simbol/acak
-                    if (window.DEBUG_KECERMATAN) {
-                        console.log('[kecermatan] Selected type:', tipe);
-                    }
-                    if (dropdownMenu) dropdownMenu.classList.remove('show');
-                });
-            });
+                // Lightweight dropdown toggle to avoid conflicts with other pages' scripts
+                if (dropdownBtn && dropdownMenu) {
+                    // Remove existing event listeners
+                    dropdownBtn.replaceWith(dropdownBtn.cloneNode(true));
+                    const newDropdownBtn = document.getElementById('dropdownMenuButton');
+
+                    newDropdownBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        dropdownMenu.classList.toggle('show');
+                        console.log('Dropdown toggled:', dropdownMenu.classList.contains('show'));
+                    });
+
+                    document.addEventListener('click', (e) => {
+                        if (!newDropdownBtn.contains(e.target) && !dropdownMenu.contains(e
+                                .target)) {
+                            dropdownMenu.classList.remove('show');
+                        }
+                    });
+
+                    // Keep dropdown button text compatible with existing generateSoal.js logic
+                    dropdownItems.forEach((item) => {
+                        item.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+
+                            const tipe = item.getAttribute('data-value');
+                            const text = item.textContent.trim();
+
+                            newDropdownBtn.textContent = text; // e.g., 'Huruf'
+                            newDropdownBtn.dataset.type =
+                                tipe; // canonical value: huruf/angka/simbol/acak
+
+                            if (window.DEBUG_KECERMATAN) {
+                                console.log('[kecermatan] Selected type:', tipe, 'Display:',
+                                    text);
+                            }
+
+                            if (dropdownMenu) dropdownMenu.classList.remove('show');
+                        });
+                    });
+                }
+            }, 100); // Small delay to ensure DOM is fully ready
         });
     </script>
-@endpush
-
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Load class KecermatanSoal -->
     <script src="{{ asset('js/kecermatanSoal.js') }}"></script>
@@ -374,17 +391,25 @@
     <!-- Inisialisasi game -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const config = {
-                routes: {
-                    nextSoal: "{{ route('kecermatan.nextSoal') }}",
-                    simpanHasil: "{{ route('kecermatan.simpanHasil') }}"
-                },
-                userId: "{{ auth()->id() }}",
-                csrfToken: document.querySelector('meta[name="csrf-token"]').content
-            };
+            // Wait for other scripts to initialize first
+            setTimeout(() => {
+                const config = {
+                    routes: {
+                        nextSoal: "{{ route('kecermatan.nextSoal') }}",
+                        simpanHasil: "{{ route('kecermatan.simpanHasil') }}"
+                    },
+                    userId: "{{ auth()->id() }}",
+                    csrfToken: document.querySelector('meta[name="csrf-token"]').content
+                };
 
-            const game = new KecermatanSoal(config);
-            game.init();
+                try {
+                    const game = new KecermatanSoal(config);
+                    game.init();
+                    console.log('KecermatanSoal game initialized');
+                } catch (error) {
+                    console.error('Error initializing KecermatanSoal:', error);
+                }
+            }, 200);
         });
     </script>
 @endpush

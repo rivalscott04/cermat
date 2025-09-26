@@ -9,7 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Check if required elements exist
     if (!form || !dropdownButton || !isiOtomatisBtn) {
-        console.log("Some required elements not found, skipping generateSoal.js initialization");
+        console.log(
+            "Some required elements not found, skipping generateSoal.js initialization"
+        );
         return;
     }
 
@@ -74,19 +76,25 @@ document.addEventListener("DOMContentLoaded", function () {
         },
     };
 
-    // Generate random string function
+    // Generate random string function - IMPROVED with better randomization
     function generateRandomString(type, length = 5) {
         const chars = karakterSet[type] || karakterSet.huruf;
         let result = "";
         const charsLength = chars.length;
-        const usedIndexes = new Set();
 
-        while (result.length < length) {
-            const randomIndex = Math.floor(Math.random() * charsLength);
-            if (type === "acak" || !usedIndexes.has(randomIndex)) {
-                result += chars.charAt(randomIndex);
-                usedIndexes.add(randomIndex);
+        // For better randomization, especially for multiple calls
+        for (let i = 0; i < length; i++) {
+            // Use crypto.getRandomValues for better randomness if available
+            let randomIndex;
+            if (window.crypto && window.crypto.getRandomValues) {
+                const array = new Uint32Array(1);
+                window.crypto.getRandomValues(array);
+                randomIndex = array[0] % charsLength;
+            } else {
+                // Fallback to Math.random with better seed
+                randomIndex = Math.floor(Math.random() * charsLength);
             }
+            result += chars.charAt(randomIndex);
         }
 
         return result;
@@ -119,11 +127,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Helper: get selected canonical type from dropdown (data-type or text fallback)
     function getSelectedType() {
-        const dataType = (dropdownButton && dropdownButton.dataset && dropdownButton.dataset.type) || '';
-        const text = (dropdownButton && dropdownButton.textContent || '').trim().toLowerCase();
-        const allowed = ['huruf','angka','simbol','acak'];
+        const dataType =
+            (dropdownButton &&
+                dropdownButton.dataset &&
+                dropdownButton.dataset.type) ||
+            "";
+        const text = ((dropdownButton && dropdownButton.textContent) || "")
+            .trim()
+            .toLowerCase();
+        const allowed = ["huruf", "angka", "simbol", "acak"];
         if (allowed.includes(dataType)) return dataType;
-        return allowed.includes(text) ? text : 'huruf';
+        return allowed.includes(text) ? text : "huruf";
     }
 
     let currentHoverPlaceholders = [];
@@ -218,24 +232,27 @@ document.addEventListener("DOMContentLoaded", function () {
             .join("&");
         const selectedType = getSelectedType();
         if (window.DEBUG_KECERMATAN) {
-            console.log('[kecermatan] Submit clicked');
-            console.log('[kecermatan] Selected type:', selectedType);
-            console.log('[kecermatan] Filled inputs:', orderedInputs.length);
+            console.log("[kecermatan] Submit clicked");
+            console.log("[kecermatan] Selected type:", selectedType);
+            console.log("[kecermatan] Filled inputs:", orderedInputs.length);
         }
         const fullQueryString = `jenis=${selectedType}&${queryString}`;
         const targetUrl = `${form.action}?${fullQueryString}`;
         if (window.DEBUG_KECERMATAN) {
-            console.log('[kecermatan] Redirect URL:', targetUrl);
+            console.log("[kecermatan] Redirect URL:", targetUrl);
         }
         try {
             window.location.assign(targetUrl);
         } catch (err) {
             if (window.DEBUG_KECERMATAN) {
-                console.warn('[kecermatan] assign() failed, fallback to href', err);
+                console.warn(
+                    "[kecermatan] assign() failed, fallback to href",
+                    err
+                );
             }
             window.location.href = targetUrl;
         }
-        setTimeout(function(){
+        setTimeout(function () {
             if (window.location.href.indexOf(targetUrl) === -1) {
                 window.location.href = targetUrl;
             }
@@ -243,26 +260,38 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Form submission handler (capture to outrank other listeners)
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        navigateToSoal();
-    }, true);
-
-    // Direct click handler on the submit button as a backup
-    const submitBtn = document.querySelector('#kecermatanForm .btn-mulai-tes');
-    if (submitBtn) {
-        submitBtn.addEventListener('click', function (e) {
+    form.addEventListener(
+        "submit",
+        function (e) {
             e.preventDefault();
             e.stopPropagation();
             navigateToSoal();
-        }, true);
+        },
+        true
+    );
+
+    // Direct click handler on the submit button as a backup
+    const submitBtn = document.querySelector("#kecermatanForm .btn-mulai-tes");
+    if (submitBtn) {
+        submitBtn.addEventListener(
+            "click",
+            function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                navigateToSoal();
+            },
+            true
+        );
     }
 
     // Individual character buttons handler
     karakterBtns.forEach((btn) => {
         if (!btn) return; // Skip if btn is null
-        btn.addEventListener("click", function () {
+        btn.addEventListener("click", function (e) {
+            // Prevent any form submission or other event bubbling
+            e.preventDefault();
+            e.stopPropagation();
+
             const index = parseInt(this.dataset.index);
             const selectedType = getSelectedType();
             const karakter = generateRandomString(selectedType);
@@ -274,13 +303,33 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Auto-fill button handler
-    isiOtomatisBtn.addEventListener("click", function () {
+    // IMPROVED Auto-fill button handler - NO ANIMATIONS
+    function handleIsiOtomatis(e) {
+        // Prevent any form submission or other event bubbling
+        e.preventDefault();
+        e.stopPropagation();
+
         const selectedType = getSelectedType();
-        inputs.forEach((input) => {
-            input.value = generateRandomString(selectedType);
+
+        console.log("Auto-fill clicked, type:", selectedType);
+
+        // Generate new values for all inputs immediately
+        inputs.forEach((input, index) => {
+            const newValue = generateRandomString(selectedType);
+            input.value = newValue;
+            console.log(`Input ${index + 1}: ${newValue}`);
         });
-    });
+    }
+
+    // Remove any existing listeners first to prevent duplicates
+    const newIsiOtomatisBtn = isiOtomatisBtn.cloneNode(true);
+    isiOtomatisBtn.parentNode.replaceChild(newIsiOtomatisBtn, isiOtomatisBtn);
+
+    // Add fresh event listeners with high priority
+    newIsiOtomatisBtn.addEventListener("click", handleIsiOtomatis, true);
+
+    // Update reference to the new button
+    const updatedIsiOtomatisBtn = document.getElementById("isiOtomatisBtn");
 
     // Input field validation handler
     inputs.forEach((input) => {
@@ -311,4 +360,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Initialize placeholders
     updatePlaceholders("huruf");
+
+    // Debug info
+    console.log("generateSoal.js loaded successfully");
+    console.log("Auto-fill button found:", !!updatedIsiOtomatisBtn);
+    console.log("Form found:", !!form);
+    console.log("Inputs found:", inputs.length);
 });

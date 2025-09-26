@@ -17,6 +17,14 @@
             padding-top: 1.2rem;
         }
 
+        .soal-table td:nth-child(1),
+        .soal-table td:nth-child(2),
+        .soal-table td:nth-child(3),
+        .soal-table td:nth-child(4),
+        .soal-table td:nth-child(5) {
+            width: 20%;
+        }
+
         .question-container {
             display: flex;
             flex-direction: column;
