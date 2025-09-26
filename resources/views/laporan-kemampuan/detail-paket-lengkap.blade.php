@@ -10,7 +10,7 @@
                 <div class="ibox-title">
                     <h5><i class="fa fa-graduation-cap"></i> Laporan Paket Lengkap - {{ $user->name }}</h5>
                     <div class="ibox-tools">
-                        <a href="{{ route('laporan.kemampuan.paket-lengkap') }}" class="btn btn-default btn-sm">
+                        <a href="{{ route('admin.laporan.kemampuan.paket-lengkap') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Kembali
                         </a>
                         <button class="btn btn-success btn-sm" onclick="printLaporan()">

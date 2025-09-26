@@ -10,7 +10,7 @@
                 <div class="ibox-title">
                     <h5><i class="fa fa-layer-group"></i> Laporan Per Paket - {{ $packageName }}</h5>
                     <div class="ibox-tools">
-                        <a href="{{ route('laporan.kemampuan.per-paket') }}" class="btn btn-default btn-sm">
+                        <a href="{{ route('admin.laporan.kemampuan.per-paket') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Kembali
                         </a>
                     </div>
@@ -71,7 +71,7 @@ $(document).ready(function() {
     const packageName = '{{ $packageName }}';
     
     // Load kategori berdasarkan paket
-    $.get('{{ route("laporan.kemampuan.kategori-by-paket") }}', {package_name: packageName})
+    $.get('{{ route("admin.laporan.kemampuan.kategori-by-paket") }}', {package_name: packageName})
         .done(function(data) {
             const select = $('#kategori-select');
             data.forEach(function(kategori) {
@@ -88,7 +88,7 @@ $(document).ready(function() {
         $('#generate-laporan').prop('disabled', true);
         
         if (kategoriId) {
-            $.get('{{ route("laporan.kemampuan.siswa-by-paket") }}', {
+            $.get('{{ route("admin.laporan.kemampuan.siswa-by-paket") }}', {
                 package_name: packageName,
                 kategori_id: kategoriId
             }).done(function(data) {
@@ -110,7 +110,7 @@ $(document).ready(function() {
     $('#generate-laporan').click(function() {
         const form = $('<form>', {
             method: 'POST',
-            action: '{{ route("laporan.kemampuan.generate-per-paket") }}'
+            action: '{{ route("admin.laporan.kemampuan.generate-per-paket") }}'
         });
         
         form.append($('<input>', {

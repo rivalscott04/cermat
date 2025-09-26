@@ -10,7 +10,7 @@
                 <div class="ibox-title">
                     <h5><i class="fa fa-graduation-cap"></i> Laporan Paket Lengkap</h5>
                     <div class="ibox-tools">
-                        <a href="{{ route('laporan.kemampuan.index') }}" class="btn btn-default btn-sm">
+                        <a href="{{ route('admin.laporan.kemampuan.index') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Kembali
                         </a>
                     </div>
@@ -48,7 +48,7 @@
                                                 </div>
                                             </div>
                                             
-                                            <form action="{{ route('laporan.kemampuan.generate-paket-lengkap') }}" method="POST" class="mt-3">
+                                            <form action="{{ route('admin.laporan.kemampuan.generate-paket-lengkap') }}" method="POST" class="mt-3">
                                                 @csrf
                                                 <input type="hidden" name="user_id" value="{{ $user->id }}">
                                                 <button type="submit" class="btn btn-primary btn-block">

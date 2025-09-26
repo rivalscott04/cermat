@@ -42,7 +42,7 @@
                                             <li><i class="fa fa-check text-success"></i> Grafik progress</li>
                                         </ul>
                                     </div>
-                                    <a href="{{ route('laporan.kemampuan.paket-lengkap') }}" class="btn btn-primary btn-lg btn-block">
+                                    <a href="{{ route('admin.laporan.kemampuan.paket-lengkap') }}" class="btn btn-primary btn-lg btn-block">
                                         <i class="fa fa-chart-bar"></i> Lihat Laporan Paket Lengkap
                                     </a>
                                 </div>
@@ -70,7 +70,7 @@
                                             <li><i class="fa fa-check text-success"></i> Fokus perbaikan</li>
                                         </ul>
                                     </div>
-                                    <a href="{{ route('laporan.kemampuan.per-paket') }}" class="btn btn-info btn-lg btn-block">
+                                    <a href="{{ route('admin.laporan.kemampuan.per-paket') }}" class="btn btn-info btn-lg btn-block">
                                         <i class="fa fa-chart-pie"></i> Lihat Laporan Per Paket
                                     </a>
                                 </div>

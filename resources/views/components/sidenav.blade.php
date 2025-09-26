@@ -67,7 +67,7 @@
 
                 <!-- Laporan -->
                 <li>
-                    <a href="{{ route('laporan.kemampuan.index') }}">
+                    <a href="{{ route('admin.laporan.kemampuan.index') }}">
                         <i class="fa fa-chart-line"></i>
                         <span class="nav-label">Laporan Kemampuan</span>
                     </a>

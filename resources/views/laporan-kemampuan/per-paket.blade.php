@@ -10,7 +10,7 @@
                 <div class="ibox-title">
                     <h5><i class="fa fa-layer-group"></i> Laporan Per Paket</h5>
                     <div class="ibox-tools">
-                        <a href="{{ route('laporan.kemampuan.index') }}" class="btn btn-default btn-sm">
+                        <a href="{{ route('admin.laporan.kemampuan.index') }}" class="btn btn-default btn-sm">
                             <i class="fa fa-arrow-left"></i> Kembali
                         </a>
                     </div>
@@ -43,8 +43,8 @@
                                                 </p>
                                             </div>
                                             
-                                            <a href="{{ route('laporan.kemampuan.per-paket-detail', ['package' => $package->package_name]) }}" 
-                                               class="btn btn-info btn-block">
+                            <a href="{{ route('admin.laporan.kemampuan.per-paket-detail', ['package' => $package->package_name]) }}" 
+                               class="btn btn-info btn-block">
                                                 <i class="fa fa-chart-pie"></i> Lihat Laporan {{ $package->package_name }}
                                             </a>
                                         </div>
