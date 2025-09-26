@@ -97,7 +97,7 @@
                                 @foreach($analisis as $item)
                                     <div class="kategori-card">
                                         <div class="kategori-header">
-                                            <h5>{{ $item['kategori']->nama }}</h5>
+                                            <h5>{{ ucfirst($item['jenis_tes']) }}</h5>
                                             <div class="kategori-stats">
                                                 <span class="stat-badge {{ $item['selisih_skor'] >= 0 ? 'success' : 'danger' }}">
                                                     {{ $item['selisih_skor'] >= 0 ? '+' : '' }}{{ $item['selisih_skor'] }} poin
@@ -142,11 +142,11 @@
                                                 <h6><i class="fa fa-lightbulb"></i> Rekomendasi untuk Paket {{ $packageType }}:</h6>
                                                 <p class="rekomendasi-text">
                                                     @if($item['selisih_skor'] > 0)
-                                                        <span class="text-success">✓ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageType }} menunjukkan peningkatan yang baik. Pertahankan konsistensi latihan untuk mempertahankan performa.</span>
+                                                        <span class="text-success">✓ Jenis Tes {{ ucfirst($item['jenis_tes']) }} dalam paket {{ $packageType }} menunjukkan peningkatan yang baik. Pertahankan konsistensi latihan untuk mempertahankan performa.</span>
                                                     @elseif($item['selisih_skor'] < 0)
-                                                        <span class="text-danger">⚠ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageType }} mengalami penurunan. Perbanyak latihan dan fokus pada area yang lemah dalam paket ini.</span>
+                                                        <span class="text-danger">⚠ Jenis Tes {{ ucfirst($item['jenis_tes']) }} dalam paket {{ $packageType }} mengalami penurunan. Perbanyak latihan dan fokus pada area yang lemah dalam paket ini.</span>
                                                     @else
-                                                        <span class="text-warning">→ Kategori {{ $item['kategori']->nama }} dalam paket {{ $packageType }} stagnan. Coba variasi metode belajar untuk meningkatkan performa dalam paket ini.</span>
+                                                        <span class="text-warning">→ Jenis Tes {{ ucfirst($item['jenis_tes']) }} dalam paket {{ $packageType }} stagnan. Coba variasi metode belajar untuk meningkatkan performa dalam paket ini.</span>
                                                     @endif
                                                 </p>
                                             </div>
