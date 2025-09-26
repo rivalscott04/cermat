@@ -207,16 +207,12 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-    // Form submission handler
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
+    function navigateToSoal() {
         if (!validateForm()) return;
 
-        // Get all inputs in the correct order
         const inputs = form.querySelectorAll(".karakter-input");
         const orderedInputs = Array.from(inputs).map((input) => input.value);
 
-        // Create query string
         const queryString = orderedInputs
             .map((value) => `questions[]=${encodeURIComponent(value)}`)
             .join("&");
@@ -227,8 +223,6 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log('[kecermatan] Filled inputs:', orderedInputs.length);
         }
         const fullQueryString = `jenis=${selectedType}&${queryString}`;
-
-        // Redirect to the URL with query parameters
         const targetUrl = `${form.action}?${fullQueryString}`;
         if (window.DEBUG_KECERMATAN) {
             console.log('[kecermatan] Redirect URL:', targetUrl);
@@ -241,13 +235,29 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             window.location.href = targetUrl;
         }
-        // Last-resort fallback in case other handlers block immediate navigation
         setTimeout(function(){
             if (window.location.href.indexOf(targetUrl) === -1) {
                 window.location.href = targetUrl;
             }
         }, 0);
-    });
+    }
+
+    // Form submission handler (capture to outrank other listeners)
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        navigateToSoal();
+    }, true);
+
+    // Direct click handler on the submit button as a backup
+    const submitBtn = document.querySelector('#kecermatanForm .btn-mulai-tes');
+    if (submitBtn) {
+        submitBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            navigateToSoal();
+        }, true);
+    }
 
     // Individual character buttons handler
     karakterBtns.forEach((btn) => {
