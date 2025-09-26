@@ -99,26 +99,21 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Helper to get selected type from dropdown text with safe fallback
-    function getSelectedType() {
-        const text = (dropdownButton.textContent || '').trim().toLowerCase();
-        const allowed = ['huruf', 'angka', 'simbol', 'acak'];
-        return allowed.includes(text) ? text : 'huruf';
-    }
-
-    // Ensure form completeness: auto-generate missing inputs instead of blocking
-    function ensureCompleteForm() {
-        const type = getSelectedType();
-        let changed = false;
-        Array.from(inputs).forEach((input) => {
-            if (!(input.value || '').trim()) {
-                input.value = generateRandomString(type);
-                changed = true;
-            }
-            if (input.value.length > 5) {
-                input.value = input.value.slice(0, 5);
-            }
-        });
+    // Validate form only on submission
+    function validateForm() {
+        const emptyInputs = Array.from(inputs).filter(
+            (input) => !input.value.trim()
+        );
+        if (emptyInputs.length > 0) {
+            Swal.fire({
+                title: "Terjadi Kesalahan",
+                text: "Harap isi semua kolom soal terlebih dahulu",
+                icon: "warning",
+                confirmButtonText: "OK",
+            });
+            emptyInputs[0].focus();
+            return false;
+        }
         return true;
     }
 
@@ -205,8 +200,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Form submission handler
     form.addEventListener("submit", function (e) {
         e.preventDefault();
-        // Auto-complete missing values and proceed
-        ensureCompleteForm();
+        if (!validateForm()) return;
 
         // Get all inputs in the correct order
         const inputs = form.querySelectorAll(".karakter-input");
@@ -216,7 +210,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const queryString = orderedInputs
             .map((value) => `questions[]=${encodeURIComponent(value)}`)
             .join("&");
-        const selectedType = getSelectedType();
+        const selectedType = dropdownButton.textContent.toLowerCase();
         const fullQueryString = `jenis=${selectedType}&${queryString}`;
 
         // Redirect to the URL with query parameters
