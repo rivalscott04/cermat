@@ -84,9 +84,15 @@ class LaporanKemampuanController extends Controller
         $kategoriIds = PackageCategoryMapping::where('package_type', $packageType)
             ->pluck('kategori_id');
 
-        // Get siswa yang pernah tes dengan kategori tersebut
-        $users = User::whereHas('hasilTes', function($query) use ($kategoriIds) {
-            $query->whereIn('kategori_soal_id', $kategoriIds);
+        // Get siswa yang pernah tes dengan kategori dalam paket tersebut
+        $users = User::whereHas('hasilTes', function($query) use ($kategoriIds, $kategoriId) {
+            if ($kategoriId) {
+                // Filter berdasarkan kategori tertentu
+                $query->where('kategori_soal_id', $kategoriId);
+            } else {
+                // Ambil semua kategori dalam paket
+                $query->whereIn('kategori_soal_id', $kategoriIds);
+            }
         })->get();
 
         return response()->json($users);

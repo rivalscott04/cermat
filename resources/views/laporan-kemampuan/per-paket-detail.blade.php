@@ -79,18 +79,39 @@ $(document).ready(function() {
             });
         });
     
-    // Load siswa berdasarkan paket dan kategori
+    // Load siswa berdasarkan paket (semua siswa yang pernah tes di paket ini)
+    $.get('{{ route("admin.laporan.kemampuan.siswa-by-paket") }}', {
+        package_type: packageName
+    }).done(function(data) {
+        const siswaSelect = $('#siswa-select');
+        data.forEach(function(siswa) {
+            siswaSelect.append(`<option value="${siswa.id}">${siswa.name}</option>`);
+        });
+    });
+    
+    // Load siswa berdasarkan paket dan kategori (untuk filtering)
     $('#kategori-select').change(function() {
         const kategoriId = $(this).val();
         const siswaSelect = $('#siswa-select');
         
+        // Clear existing options
         siswaSelect.empty().append('<option value="">Pilih Siswa...</option>');
         $('#generate-laporan').prop('disabled', true);
         
         if (kategoriId) {
+            // Load siswa yang pernah tes dengan kategori tertentu
             $.get('{{ route("admin.laporan.kemampuan.siswa-by-paket") }}', {
                 package_type: packageName,
                 kategori_id: kategoriId
+            }).done(function(data) {
+                data.forEach(function(siswa) {
+                    siswaSelect.append(`<option value="${siswa.id}">${siswa.name}</option>`);
+                });
+            });
+        } else {
+            // Load semua siswa yang pernah tes di paket ini
+            $.get('{{ route("admin.laporan.kemampuan.siswa-by-paket") }}', {
+                package_type: packageName
             }).done(function(data) {
                 data.forEach(function(siswa) {
                     siswaSelect.append(`<option value="${siswa.id}">${siswa.name}</option>`);
