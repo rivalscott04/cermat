@@ -94,14 +94,15 @@ class LaporanKemampuanController extends Controller
                 return response()->json(['error' => 'No categories found for this package'], 404);
             }
 
-            // Get siswa yang pernah tes dengan kategori dalam paket tersebut
-            $users = User::whereHas('hasilTes', function($query) use ($kategoriIds, $kategoriId) {
-                if ($kategoriId) {
-                    // Filter berdasarkan kategori tertentu
-                    $query->where('kategori_soal_id', $kategoriId);
-                } else {
-                    // Ambil semua kategori dalam paket
-                    $query->whereIn('kategori_soal_id', $kategoriIds);
+            // Get siswa yang pernah tes dengan jenis tes yang sesuai paket
+            $users = User::whereHas('hasilTes', function($query) use ($packageType) {
+                // Filter berdasarkan jenis tes yang sesuai dengan paket
+                if ($packageType === 'kecerdasan') {
+                    $query->where('jenis_tes', 'kecerdasan');
+                } elseif ($packageType === 'kepribadian') {
+                    $query->where('jenis_tes', 'kepribadian');
+                } elseif ($packageType === 'lengkap') {
+                    $query->whereIn('jenis_tes', ['kecerdasan', 'kepribadian']);
                 }
             })->select('id', 'name', 'email')->get();
 
