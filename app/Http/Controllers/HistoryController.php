@@ -87,7 +87,12 @@ class HistoryController extends Controller
             ->get()
             ->map(function ($hasil) {
                 $totalQuestions = $hasil->skor_benar + $hasil->skor_salah;
-                $percentage = $totalQuestions > 0 ? round(($hasil->skor_benar / $totalQuestions) * 100, 2) : 0;
+                
+                // Use skor_akhir if available (calculated with complex algorithm), 
+                // otherwise fallback to simple percentage calculation
+                $percentage = $hasil->skor_akhir !== null 
+                    ? round($hasil->skor_akhir, 2) 
+                    : ($totalQuestions > 0 ? round(($hasil->skor_benar / $totalQuestions) * 100, 2) : 0);
 
                 return [
                     'id' => $hasil->id,
@@ -100,7 +105,7 @@ class HistoryController extends Controller
                     'wrong_answers' => $hasil->skor_salah,
                     'percentage' => $percentage,
                     'duration' => $hasil->waktu_total ?? 0,
-                    'status' => $this->getKecermatanStatus($hasil->skor_benar, $totalQuestions)
+                    'status' => $this->getKecermatanStatus($percentage, 100) // Use percentage directly for status
                 ];
             });
 
@@ -146,11 +151,9 @@ class HistoryController extends Controller
         return 'poor';                                  // Rendah
     }
 
-    private function getKecermatanStatus($correct, $total)
+    private function getKecermatanStatus($percentage, $maxScore = 100)
     {
-        if ($total == 0) return 'unknown';
-
-        $percentage = ($correct / $total) * 100;
+        if ($maxScore == 0) return 'unknown';
 
         if ($percentage >= 90) return 'excellent';
         if ($percentage >= 80) return 'good';

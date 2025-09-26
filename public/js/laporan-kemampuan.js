@@ -25,8 +25,8 @@ $(document).ready(function() {
         }, 3000);
     });
     
-    // Form validation
-    $('form').on('submit', function(e) {
+    // Form validation (exclude laporan forms)
+    $('form:not([action*="laporan-kemampuan"])').on('submit', function(e) {
         const form = $(this);
         const requiredFields = form.find('[required]');
         let isValid = true;
