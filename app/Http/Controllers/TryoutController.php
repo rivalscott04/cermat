@@ -40,7 +40,7 @@ class TryoutController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'durasi_menit' => 'required|integer|min:1',
-            'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
+            'jenis_paket' => 'required|string',
             'blueprint' => 'required|array'
         ]);
 
@@ -218,7 +218,7 @@ class TryoutController extends Controller
                 'judul' => 'required|string|max:255',
                 'deskripsi' => 'nullable|string',
                 'durasi_menit' => 'required|integer|min:1',
-                'jenis_paket' => 'required|in:free,kecerdasan,kepribadian,lengkap',
+                'jenis_paket' => 'required|string',
                 'blueprint' => 'required|array',
                 'blueprint.*' => 'required|array',
                 'blueprint.*.mudah' => 'nullable|integer|min:0',
@@ -361,12 +361,16 @@ class TryoutController extends Controller
             $query->byJenisPaket($type);
         }
 
-        // Enforce FREE user quota: max 1 tryout per jenis (kecerdasan, kepribadian, lengkap)
+        // Enforce FREE user quota: max 1 tryout per jenis (dynamic from database)
         if ($user->paket_akses === 'free') {
             $all = $query->get();
             $grouped = $all->groupBy('jenis_paket');
             $limited = collect();
-            foreach (['kecerdasan', 'kepribadian', 'lengkap'] as $jenis) {
+            
+            // Get all available jenis_paket from database (dynamic)
+            $availableJenis = $all->pluck('jenis_paket')->unique()->filter()->toArray();
+            
+            foreach ($availableJenis as $jenis) {
                 if ($grouped->has($jenis)) {
                     $limited->push($grouped[$jenis]->first());
                 }

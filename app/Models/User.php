@@ -98,11 +98,19 @@ class User extends Authenticatable
     }
 
     /**
-     * Get allowed categories for current user
+     * Get allowed categories for current user (fully dynamic from database)
      */
     public function getAllowedCategories()
     {
-        return $this->getPackageLimits()['allowed_categories'];
+        $userPackage = $this->paket_akses;
+        
+        if ($userPackage === 'free') {
+            // Untuk FREE, ambil semua kategori yang ada
+            return \App\Models\KategoriSoal::active()->pluck('kode')->toArray();
+        }
+        
+        // Untuk paket berbayar, ambil dari PackageCategoryMapping
+        return \App\Models\PackageCategoryMapping::getCategoriesForPackage($userPackage);
     }
 
     /**
@@ -167,19 +175,23 @@ class User extends Authenticatable
     }
 
     /**
-     * Get allowed package types for user (dynamic from database)
+     * Get allowed package types for user (fully dynamic from database)
      */
     private function getAllowedPackageTypes($userPackage)
     {
-        // Get dynamic mapping from database
-        $dynamicMapping = \App\Models\PackageCategoryMapping::getAllMappings();
-        
-        // For FREE users: allow all main types; quota per type is enforced elsewhere
+        // For FREE users: ambil semua jenis paket yang ada di database
         if ($userPackage === 'free') {
-            return ['kecerdasan', 'kepribadian', 'lengkap'];
+            return \App\Models\Tryout::active()
+                ->distinct()
+                ->pluck('jenis_paket')
+                ->filter()
+                ->toArray();
         }
         
-        // For other packages, use the standard mapping
+        // For other packages, use dynamic mapping from database
+        $dynamicMapping = \App\Models\PackageCategoryMapping::getAllMappings();
+        
+        // Standard mapping untuk paket berbayar
         $mapping = [
             'kecerdasan' => ['kecerdasan'],
             'kepribadian' => ['kepribadian'],
