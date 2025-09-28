@@ -155,6 +155,7 @@
 
 @section('content')
     <div class="container">
+        <input type="hidden" id="cardId" value="{{ request('card_id') }}">
         <div class="timer" id="timer">60</div>
 
         <div class="question-container">
@@ -199,12 +200,23 @@
     <!-- Initialize the game -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // FIX: Properly get cardId from hidden input or URL parameter
+            const cardIdElement = document.getElementById('cardId');
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardId = cardIdElement ? cardIdElement.value : urlParams.get('card_id');
+
+            // Debug log to verify cardId
+            console.log('CardId from element:', cardIdElement ? cardIdElement.value : 'not found');
+            console.log('CardId from URL:', urlParams.get('card_id'));
+            console.log('Final cardId:', cardId);
+
             const config = {
                 routes: {
                     nextSoal: "{{ route('kecermatan.nextSoal') }}",
                     simpanHasil: "{{ route('kecermatan.simpanHasil') }}"
                 },
                 userId: "{{ auth()->id() }}",
+                cardId: cardId, // ✅ Now properly defined
                 csrfToken: document.querySelector('meta[name="csrf-token"]').content
             };
 

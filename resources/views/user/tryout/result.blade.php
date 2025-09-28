@@ -128,12 +128,14 @@
                 </div>
 
                 <!-- Actions -->
+                <!-- Actions -->
                 <div class="card">
                     <div class="card-body">
                         <a href="{{ route('user.tryout.index') }}" class="btn btn-primary btn-block mb-2">
                             <i class="fa fa-list"></i> Daftar Tryout
                         </a>
-                        <a href="{{ route('user.tryout.start', $tryout->id) }}" class="btn btn-success btn-block mb-2">
+                        <a href="{{ route('user.tryout.start', $tryout->id) }}?card_id={{ request('card_id') }}"
+                            class="btn btn-success btn-block mb-2">
                             <i class="fa fa-redo"></i> Coba Lagi
                         </a>
                         <button onclick="window.print()" class="btn btn-info btn-block">

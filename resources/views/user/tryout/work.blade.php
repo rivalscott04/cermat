@@ -17,6 +17,7 @@
                                         id="kategoriFilterForm" class="form-inline">
                                         <input type="hidden" name="question"
                                             value="{{ request('question', $currentQuestion->urutan) }}">
+                                        <input type="hidden" name="card_id" value="{{ request('card_id') }}">
                                         <select name="kategori_id" class="form-control form-control-sm"
                                             onchange="document.getElementById('kategoriFilterForm').submit()">
                                             <option value="">Semua Kategori</option>
@@ -62,7 +63,7 @@
                                     }
                                 @endphp
 
-                                <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $i, 'kategori_id' => request('kategori_id')]) }}"
+                                <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $i, 'kategori_id' => request('kategori_id'), 'card_id' => request('card_id')]) }}"
                                     class="question-number {{ $statusClass }} {{ $questionStatus && $questionStatus->is_marked ? 'marked' : '' }}"
                                     title="{{ $statusText }}" onclick="allowTryoutNavigation()">
                                     {{ $i }}
@@ -304,7 +305,7 @@
                             <div class="row">
                                 <div class="col">
                                     @if ($currentQuestion->urutan > 1)
-                                        <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $currentQuestion->urutan - 1]) }}"
+                                        <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $currentQuestion->urutan - 1, 'card_id' => request('card_id')]) }}"
                                             class="btn btn-secondary" onclick="allowTryoutNavigation()">
                                             <i class="fa fa-arrow-left"></i> Sebelumnya
                                         </a>
@@ -312,13 +313,13 @@
                                 </div>
                                 <div class="col text-right">
                                     @if ($currentQuestion->urutan < $totalQuestions)
-                                        <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $currentQuestion->urutan + 1]) }}"
+                                        <a href="{{ route('user.tryout.work', ['tryout' => $tryout->id, 'question' => $currentQuestion->urutan + 1, 'card_id' => request('card_id')]) }}"
                                             class="btn btn-primary" onclick="allowTryoutNavigation()">
                                             Selanjutnya <i class="fa fa-arrow-right"></i>
                                         </a>
                                     @else
-                                        <a href="{{ route('user.tryout.finish', $tryout->id) }}" class="btn btn-success"
-                                            onclick="allowTryoutNavigation()">
+                                        <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'card_id' => request('card_id')]) }}"
+                                            class="btn btn-success" onclick="allowTryoutNavigation()">
                                             <i class="fa fa-check"></i> Selesai
                                         </a>
                                     @endif
@@ -402,8 +403,8 @@
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">
                         <i class="fa fa-times"></i> Batal
                     </button>
-                    <a href="{{ route('user.tryout.finish', $tryout->id) }}" class="btn btn-success"
-                        onclick="allowTryoutNavigation()">
+                    <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'card_id' => request('card_id')]) }}"
+                        class="btn btn-success" onclick="allowTryoutNavigation()">
                         <i class="fa fa-check"></i> Ya, Selesaikan
                     </a>
                 </div>
@@ -463,7 +464,8 @@
                     <p>Waktu tryout telah habis. Anda akan diarahkan ke halaman hasil.</p>
                 </div>
                 <div class="modal-footer">
-                    <a href="{{ route('user.tryout.finish', $tryout->id) }}" class="btn btn-primary">
+                    <a href="{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'card_id' => request('card_id')]) }}"
+                        class="btn btn-primary">
                         Lihat Hasil
                     </a>
                 </div>
@@ -889,6 +891,10 @@
 @push('scripts')
     <script src="{{ asset('js/tryout-timer.js') }}"></script>
     <script>
+        function getCardId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('card_id');
+        }
         // Initialize tryout functionality when page loads
         document.addEventListener('DOMContentLoaded', function() {
             // Pass actual remaining time instead of full duration
@@ -918,9 +924,10 @@
                 pgPilih2Options.forEach(input => {
                     input.addEventListener('change', function() {
                         handlePgPilih2Selection();
-                        
+
                         // Auto save setelah handling, tapi hanya jika sudah ada 2 pilihan
-                        const checkedCount = document.querySelectorAll('.pg-pilih-2-option:checked').length;
+                        const checkedCount = document.querySelectorAll('.pg-pilih-2-option:checked')
+                            .length;
                         if (checkedCount === 2) {
                             setTimeout(saveAnswer, 100);
                         }
@@ -1038,10 +1045,14 @@
                     // Jika belum 2 jawaban, jangan kirim
                     return;
                 }
-                
+
                 // Urutkan jawaban berdasarkan urutan checkbox untuk konsistensi
                 jawaban.sort();
             }
+
+            // PERBAIKAN: Ambil card_id dari URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            const cardId = urlParams.get('card_id');
 
             // AJAX call to save answer
             fetch('{{ route('user.tryout.submit-answer', $tryout->id) }}', {
@@ -1052,13 +1063,22 @@
                     },
                     body: JSON.stringify({
                         soal_id: {{ $currentQuestion->soal_id }},
-                        jawaban: jawaban
+                        jawaban: jawaban,
+                        card_id: cardId // TAMBAHAN: Kirim card_id
                     })
                 })
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
                         showNotification('Jawaban berhasil disimpan!', 'success');
+
+                        // TAMBAHAN: Update card_id di URL jika dikembalikan dari server
+                        if (data.card_id && data.card_id !== cardId) {
+                            const url = new URL(window.location);
+                            url.searchParams.set('card_id', data.card_id);
+                            window.history.replaceState({}, '', url);
+                        }
+
                         // Update question status in sidebar
                         updateQuestionStatus({{ $currentQuestion->urutan }}, 'answered');
                         // Show reset button
@@ -1088,6 +1108,9 @@
             resetBtn.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Mereset...';
             resetBtn.disabled = true;
 
+            // Ambil card_id
+            const cardId = getCardId();
+
             // Send AJAX request to remove answer from database
             fetch('{{ route('user.tryout.reset-answer', $tryout->id) }}', {
                     method: 'POST',
@@ -1097,7 +1120,8 @@
                         'Accept': 'application/json'
                     },
                     body: JSON.stringify({
-                        soal_id: {{ $currentQuestion->soal_id }}
+                        soal_id: {{ $currentQuestion->soal_id }},
+                        card_id: cardId // TAMBAHAN: Kirim card_id
                     })
                 })
                 .then(response => {
@@ -1119,6 +1143,13 @@
                         @if ($currentQuestion->soal->tipe == 'pg_pilih_2')
                             handlePgPilih2Selection();
                         @endif
+
+                        // Update card_id di URL jika dikembalikan dari server
+                        if (data.card_id && data.card_id !== cardId) {
+                            const url = new URL(window.location);
+                            url.searchParams.set('card_id', data.card_id);
+                            window.history.replaceState({}, '', url);
+                        }
 
                         showNotification('Jawaban berhasil direset!', 'warning');
                         // Update question status in sidebar
@@ -1143,6 +1174,18 @@
                     resetBtn.innerHTML = originalText;
                     resetBtn.disabled = false;
                 });
+        }
+
+        function navigateWithCardId(baseUrl) {
+            const cardId = new URLSearchParams(window.location.search).get('card_id');
+            let url = baseUrl;
+
+            if (cardId) {
+                const separator = url.includes('?') ? '&' : '?';
+                url += separator + 'card_id=' + cardId;
+            }
+
+            window.location.href = url;
         }
 
         // Function to show image in modal
@@ -1202,9 +1245,16 @@
             $('#finishConfirmModal').modal('show');
         }
 
-        // TAMBAHAN: Fungsi untuk menampilkan modal restart confirmation
+        // Function untuk restart dengan card_id
         function showRestartConfirmation() {
-            $('#restartConfirmModal').modal('show');
+            if (confirm('Apakah Anda yakin ingin memulai ulang tryout ini? Semua jawaban akan hilang.')) {
+                const cardId = new URLSearchParams(window.location.search).get('card_id');
+                let restartUrl = '{{ route('user.tryout.start', $tryout->id) }}?restart=1';
+                if (cardId) {
+                    restartUrl += '&card_id=' + cardId;
+                }
+                window.location.href = restartUrl;
+            }
         }
 
         function updateResetButtonVisibility() {
@@ -1329,7 +1379,8 @@
 
             // Auto redirect after 5 seconds
             setTimeout(() => {
-                window.location.href = '{{ route('user.tryout.finish', $tryout->id) }}';
+                window.location.href =
+                    '{{ route('user.tryout.finish', ['tryout' => $tryout->id, 'card_id' => request('card_id')]) }}';
             }, 5000);
         }
 

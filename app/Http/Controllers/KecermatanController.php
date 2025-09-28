@@ -13,12 +13,11 @@ class KecermatanController extends Controller
     /**
      * Menampilkan halaman tes kecermatan
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Middleware sudah menghandle validasi, tapi Anda bisa menambah validasi extra jika diperlukan
         $user = Auth::user();
+        $cardId = $request->get('card_id'); // Get card_id from request
 
-        // Optional: Double check di controller level
         if (!$user->canAccessKecermatan()) {
             return redirect()->route('user.profile', ['userId' => $user->id])
                 ->with('error', 'Anda tidak memiliki akses ke Tes Kecermatan.');
@@ -26,6 +25,7 @@ class KecermatanController extends Controller
 
         return view('kecermatan.index', [
             'user' => $user,
+            'cardId' => $cardId, // Pass to view
             'packageInfo' => $this->getPackageInfo($user->package)
         ]);
     }
@@ -71,7 +71,9 @@ class KecermatanController extends Controller
         }
 
         $jenis = $request->jenis;
+        $cardId = $request->card_id; // Get card_id
         $hasil = [];
+
 
         // Karakter yang tersedia
         $huruf = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -100,6 +102,9 @@ class KecermatanController extends Controller
             $hasil[] = $karakterSet;
         }
 
+        // Store card_id in session for later use
+        session(['kecermatan_card_id' => $cardId]);
+
         return response()->json([
             'success' => true,
             'data' => $hasil
@@ -119,70 +124,6 @@ class KecermatanController extends Controller
         }
 
         return $result;
-    }
-
-    /**
-     * Menyimpan hasil tes kecermatan
-     */
-    public function simpanHasil(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
-            'jenis_tes' => 'required|in:huruf,angka,simbol,acak',
-            'jawaban' => 'required|array|size:9',
-            'jawaban.*' => 'required|string|size:5',
-            'waktu_pengerjaan' => 'required|integer',
-            'skor_benar' => 'required|integer|min:0|max:9',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Data tidak valid',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        try {
-            // Use updateOrCreate to prevent duplicates based on user, test type, and answers
-            $hasilTes = HasilTes::updateOrCreate(
-                [
-                    'user_id' => $request->user_id,
-                    'jenis_tes' => $request->jenis_tes,
-                    'detail_jawaban' => json_encode($request->jawaban),
-                    'tanggal_tes' => now()->format('Y-m-d H:i:s') // Same day and hour
-                ],
-                [
-                    'waktu_total' => $request->waktu_pengerjaan,
-                    'skor_benar' => $request->skor_benar,
-                    'skor_salah' => 9 - $request->skor_benar,
-                ]
-            );
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Hasil tes berhasil disimpan',
-                'data' => $hasilTes
-            ]);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan saat menyimpan hasil',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    /**
-     * Menampilkan hasil tes user
-     */
-    public function hasilTes($userId)
-    {
-        $hasil = HasilTes::where('user_id', $userId)
-            ->orderBy('tanggal_tes', 'desc')
-            ->get();
-
-        return view('kecermatan.hasil', compact('hasil'));
     }
 
     /**

@@ -1,6 +1,8 @@
 class KecermatanSoal {
     constructor(config) {
         this.config = config;
+        // FIX: Handle cardId properly - convert invalid values to null
+        this.cardId = this.validateCardId(config.cardId);
         this.currentSet = 0;
         this.kolomMerah = [];
         this.kolomBiru = [];
@@ -14,7 +16,22 @@ class KecermatanSoal {
         this.allQuestions = [];
     }
 
+    // FIX: Validate cardId to handle invalid values
+    validateCardId(cardId) {
+        if (
+            !cardId ||
+            cardId === "?" ||
+            cardId === "" ||
+            cardId === "undefined" ||
+            cardId === "null"
+        ) {
+            return null;
+        }
+        return cardId;
+    }
+
     init() {
+        console.log("Initializing KecermatanSoal with cardId:", this.cardId);
         this.getQuestionsFromURL();
         this.initializeButtons();
         this.getNextSoal().then(() => {
@@ -169,19 +186,25 @@ class KecermatanSoal {
 
         const baseUrl = window.location.origin;
 
+        // FIX: Prepare data with validated cardId
+        const dataToSend = {
+            user_id: this.config.userId,
+            skor_benar: this.skorBenar,
+            skor_salah: this.skorSalah,
+            waktu_total: this.totalSets * 60 - this.waktuTersisa,
+            detail_jawaban: this.detailJawaban,
+            card_id: this.cardId, // This will be null if invalid
+        };
+
+        console.log("Data being sent to server:", dataToSend);
+
         fetch(this.config.routes.simpanHasil, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 "X-CSRF-TOKEN": this.config.csrfToken,
             },
-            body: JSON.stringify({
-                user_id: this.config.userId,
-                skor_benar: this.skorBenar,
-                skor_salah: this.skorSalah,
-                waktu_total: this.totalSets * 60 - this.waktuTersisa,
-                detail_jawaban: this.detailJawaban,
-            }),
+            body: JSON.stringify(dataToSend),
         })
             .then((response) => {
                 if (!response.ok) {
@@ -218,16 +241,21 @@ class KecermatanSoal {
                         width: "600px",
                         allowOutsideClick: false,
                     }).then(() => {
-                        // Redirect to riwayat page with userId
-                        window.location.href = `${baseUrl}/tes-kecermatan/riwayat/${this.config.userId}`;
+                        if (this.cardId) {
+                            window.location.href = `${baseUrl}/tryout?type=lengkap`;
+                        } else {
+                            window.location.href = `${baseUrl}/tes-kecermatan/riwayat/${this.config.userId}`;
+                        }
                     });
+                } else {
+                    throw new Error(result.message || "Failed to save results");
                 }
             })
             .catch((error) => {
                 console.error("Error saving results:", error);
                 Swal.fire({
                     title: "Error!",
-                    text: "Gagal menyimpan hasil tes",
+                    text: "Gagal menyimpan hasil tes: " + error.message,
                     icon: "error",
                     confirmButtonText: "OK",
                 });

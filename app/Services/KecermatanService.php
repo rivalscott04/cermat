@@ -19,6 +19,19 @@ class KecermatanService
             $detailJawaban = $data['detail_jawaban'] ?? [];
             $waktuTotal = $data['waktu_total'] ?? 0;
 
+            // FIX: Handle card_id properly - convert "?" or empty string to null
+            $cardId = $data['card_id'] ?? null;
+            if ($cardId === '?' || $cardId === '' || $cardId === 'undefined') {
+                $cardId = null;
+            }
+
+            \Log::info('Extracted values:', [
+                'detailJawaban_count' => count($detailJawaban),
+                'waktuTotal' => $waktuTotal,
+                'cardId' => $cardId,
+                'cardId_original' => $data['card_id'] ?? 'not_set'
+            ]);
+
             // Jika diberikan, gunakan total_questions. Kalau tidak, coba infer.
             $totalQuestions = $data['total_questions'] ?? null;
             if ($totalQuestions === null) {
@@ -39,6 +52,7 @@ class KecermatanService
 
             // Hitung indikator (mengembalikan PANKER, TIANKER, JANKER, HANKER)
             $indikator = $this->hitungIndikator($detailJawaban, $totalQuestions);
+            \Log::info('Calculated indikator:', $indikator);
 
             // Check if similar result already exists within last 5 minutes to prevent duplicates
             $existingResult = HasilTes::where('user_id', $data['user_id'])
@@ -54,9 +68,10 @@ class KecermatanService
             }
 
             // Simpan hasil
-            $hasil = HasilTes::create([
+            $hasilData = [
                 'user_id' => $data['user_id'],
                 'jenis_tes' => 'kecermatan',
+                'card_id' => $cardId, // Now properly handled
                 'skor_benar' => $data['skor_benar'],
                 'skor_salah' => $data['skor_salah'],
                 'waktu_total' => $waktuTotal,
@@ -69,11 +84,20 @@ class KecermatanService
                 'hanker' => $indikator['HANKER'],
                 'skor_akhir' => $indikator['SKOR_AKHIR'],
                 'kategori_skor' => $indikator['KATEGORI_SKOR'],
-            ]);
+            ];
+
+            \Log::info('Data to be saved:', $hasilData);
+
+            $hasil = HasilTes::create($hasilData);
 
             DB::commit();
             return $hasil;
         } catch (\Exception $e) {
+            \Log::error('Error in KecermatanService:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'data' => $data
+            ]);
             DB::rollBack();
             throw $e;
         }
@@ -154,7 +178,7 @@ class KecermatanService
 
         // 5) SKOR AKHIR: rata-rata dari 4 indikator
         $skorAkhir = ($PANKER + $TIANKER + $JANKER + $HANKER) / 4;
-        
+
         // 6) KATEGORI SKOR AKHIR
         $kategoriSkor = $this->tentukanKategoriSkor($skorAkhir);
 

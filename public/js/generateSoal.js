@@ -245,20 +245,35 @@ document.addEventListener("DOMContentLoaded", function () {
         const inputs = form.querySelectorAll(".karakter-input");
         const orderedInputs = Array.from(inputs).map((input) => input.value);
 
+        // Get card_id from hidden input
+        const cardIdInput = form.querySelector('input[name="card_id"]');
+        const cardId = cardIdInput ? cardIdInput.value : "";
+
         const queryString = orderedInputs
             .map((value) => `questions[]=${encodeURIComponent(value)}`)
             .join("&");
+
         const selectedType = getSelectedType();
+
         if (window.DEBUG_KECERMATAN) {
             console.log("[kecermatan] Submit clicked");
             console.log("[kecermatan] Selected type:", selectedType);
+            console.log("[kecermatan] Card ID:", cardId); // Add this debug line
             console.log("[kecermatan] Filled inputs:", orderedInputs.length);
         }
-        const fullQueryString = `jenis=${selectedType}&${queryString}`;
+
+        // Include card_id in the query string if it exists
+        let fullQueryString = `jenis=${selectedType}&${queryString}`;
+        if (cardId) {
+            fullQueryString += `&card_id=${encodeURIComponent(cardId)}`;
+        }
+
         const targetUrl = `${form.action}?${fullQueryString}`;
+
         if (window.DEBUG_KECERMATAN) {
             console.log("[kecermatan] Redirect URL:", targetUrl);
         }
+
         try {
             window.location.assign(targetUrl);
         } catch (err) {
@@ -270,6 +285,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             window.location.href = targetUrl;
         }
+
         setTimeout(function () {
             if (window.location.href.indexOf(targetUrl) === -1) {
                 window.location.href = targetUrl;

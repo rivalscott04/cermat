@@ -167,7 +167,9 @@
                 </div>
                 <div class="ibox-content">
                     <form id="kecermatanForm" action="{{ route('kecermatan.soal') }}" method="GET">
-                        <p class="instructions">Inputkan Huruf, Angka, atau Simbol dengan maksimal 5 karakter (karakter dapat
+                        <input type="hidden" name="card_id" value="{{ request('card_id') }}">
+                        <p class="instructions">Inputkan Huruf, Angka, atau Simbol dengan maksimal 5 karakter (karakter
+                            dapat
                             digabung)
                         </p>
 
@@ -391,6 +393,7 @@
     <!-- Inisialisasi game -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            window.kecermatanCardId = '{{ request('card_id') }}';
             // Wait for other scripts to initialize first
             setTimeout(() => {
                 const config = {
@@ -399,6 +402,7 @@
                         simpanHasil: "{{ route('kecermatan.simpanHasil') }}"
                     },
                     userId: "{{ auth()->id() }}",
+                    cardId: window.kecermatanCardId,
                     csrfToken: document.querySelector('meta[name="csrf-token"]').content
                 };
 

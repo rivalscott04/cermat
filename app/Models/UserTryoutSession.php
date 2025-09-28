@@ -17,7 +17,8 @@ class UserTryoutSession extends Model
         'finished_at',
         'shuffle_seed',
         'status',
-        'tkp_final_score'
+        'tkp_final_score',
+        'card_id'
     ];
 
     protected $casts = [

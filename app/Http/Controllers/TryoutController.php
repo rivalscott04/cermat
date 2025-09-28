@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
+use App\Models\Soal;
 use App\Models\Tryout;
 use App\Models\KategoriSoal;
-use App\Models\Soal;
-use App\Models\UserTryoutSoal;
-use App\Models\UserTryoutSession; // Tambahkan model ini untuk tracking session
-use App\Models\TryoutBlueprint;
-use App\Models\PackageCategoryMapping;
-use App\Services\QuestionSelector;
 use Illuminate\Http\Request;
+use App\Models\UserTryoutSoal;
+use App\Models\TryoutBlueprint;
+use App\Services\ScoringService;
+use App\Services\QuestionSelector;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
+use App\Models\PackageCategoryMapping;
+use App\Models\UserTryoutSession; // Tambahkan model ini untuk tracking session
 
 class TryoutController extends Controller
 {
@@ -336,7 +337,6 @@ class TryoutController extends Controller
         return redirect()->route('admin.tryout.index')->with('success', 'Tryout berhasil dihapus');
     }
 
-    // User-facing methods
     public function userIndex(Request $request)
     {
         // Clear auto fullscreen session if requested
@@ -361,16 +361,12 @@ class TryoutController extends Controller
             $query->byJenisPaket($type);
         }
 
-        // Enforce FREE user quota: max 1 tryout per jenis (dynamic from database)
+        // Enforce FREE user quota: max 1 tryout per jenis (kecerdasan, kepribadian, lengkap)
         if ($user->paket_akses === 'free') {
             $all = $query->get();
             $grouped = $all->groupBy('jenis_paket');
             $limited = collect();
-            
-            // Get all available jenis_paket from database (dynamic)
-            $availableJenis = $all->pluck('jenis_paket')->unique()->filter()->toArray();
-            
-            foreach ($availableJenis as $jenis) {
+            foreach (['kecerdasan', 'kepribadian', 'lengkap'] as $jenis) {
                 if ($grouped->has($jenis)) {
                     $limited->push($grouped[$jenis]->first());
                 }
@@ -385,10 +381,113 @@ class TryoutController extends Controller
             $tryouts = $query->limit($user->getMaxTryouts())->get();
         }
 
+        // For lengkap package users, create unique tryout mapping for each lengkap card
+        $tryoutMappings = [];
+
+        if ($user->paket_akses === 'lengkap') {
+            // Get all available tryouts by type
+            $availableKecerdasan = Tryout::active()->where('jenis_paket', 'kecerdasan')->get();
+            $availableKepribadian = Tryout::active()->where('jenis_paket', 'kepribadian')->get();
+
+            // Track which tryouts are already used as main cards
+            $usedKecerdasanIds = [];
+            $usedKepribadianIds = [];
+
+            foreach ($tryouts as $tryout) {
+                if ($tryout->jenis_paket === 'kecerdasan') {
+                    $usedKecerdasanIds[] = $tryout->id;
+                }
+                if ($tryout->jenis_paket === 'kepribadian') {
+                    $usedKepribadianIds[] = $tryout->id;
+                }
+            }
+
+            // Filter out tryouts that are already shown as main cards
+            $availableKecerdasan = $availableKecerdasan->whereNotIn('id', $usedKecerdasanIds);
+            $availableKepribadian = $availableKepribadian->whereNotIn('id', $usedKepribadianIds);
+
+            // Create unique mappings for each lengkap card
+            $kecerdasanIndex = 0;
+            $kepribadianIndex = 0;
+
+            foreach ($tryouts as $index => $tryout) {
+                if ($tryout->jenis_paket === 'lengkap') {
+                    $tryoutMappings[$tryout->id] = [
+                        'kecerdasan' => $kecerdasanIndex < $availableKecerdasan->count() ?
+                            $availableKecerdasan->values()[$kecerdasanIndex] : null,
+                        'kepribadian' => $kepribadianIndex < $availableKepribadian->count() ?
+                            $availableKepribadian->values()[$kepribadianIndex] : null,
+                    ];
+
+                    // Move to next available tryouts
+                    if ($kecerdasanIndex < $availableKecerdasan->count()) $kecerdasanIndex++;
+                    if ($kepribadianIndex < $availableKepribadian->count()) $kepribadianIndex++;
+                }
+            }
+        }
+
+        $userId = auth()->id();
+        $latestScores = [];
+        $finalScores = [];
+
+        foreach ($tryouts as $tryout) {
+            $cardId = $tryout->id;
+
+            $kecerdasan = \App\Models\HasilTes::where('user_id', $userId)
+                ->where('jenis_tes', 'kecerdasan')
+                ->where('card_id', $cardId)
+                ->orderBy('tanggal_tes', 'desc') // Add this to get latest
+                ->value('skor_akhir');
+
+            $kepribadian = \App\Models\HasilTes::where('user_id', $userId)
+                ->where('jenis_tes', 'kepribadian')
+                ->where('card_id', $cardId)
+                ->orderBy('tanggal_tes', 'desc') // Add this to get latest
+                ->value('tkp_final_score');
+
+            // Debug what we're getting
+            \Log::info("Scores for card {$cardId}:", [
+                'kecerdasan' => $kecerdasan,
+                'kepribadian' => $kepribadian
+            ]);
+
+            $kecermatanRecords = \App\Models\HasilTes::where('user_id', $userId)
+                ->where('jenis_tes', 'kecermatan')
+                ->where('card_id', $cardId)
+                ->get();
+
+            $kecermatan = null;
+            if ($kecermatanRecords->isNotEmpty()) {
+                $totalBenar = $kecermatanRecords->sum('skor_benar');
+                $totalSoal  = ($kecermatanRecords->sum('skor_benar') + $kecermatanRecords->sum('skor_salah'));
+                $kecermatan = $totalSoal > 0 ? round(($totalBenar / $totalSoal) * 100, 2) : 0;
+            }
+
+            $latestScores[$cardId] = [
+                'kecerdasan' => $kecerdasan,
+                'kepribadian' => $kepribadian,
+                'kecermatan' => $kecermatan,
+            ];
+
+            if ($kecerdasan !== null && $kepribadian !== null && $kecermatan !== null) {
+                $scoringService = app(\App\Services\ScoringService::class);
+                $finalScores[$cardId] = $scoringService->calculateFinalScore(
+                    (float) $kecermatan,
+                    (float) $kecerdasan,
+                    (float) $kepribadian
+                );
+            } else {
+                $finalScores[$cardId] = null;
+            }
+        }
+
         return view('user.tryout.index', [
             'user' => $user,
             'tryouts' => $tryouts,
-            'availableMenus' => $user->getAvailableMenus()
+            'availableMenus' => $user->getAvailableMenus(),
+            'tryoutMappings' => $tryoutMappings,
+            'latestScores' => $latestScores,
+            'finalScores' => $finalScores,
         ]);
     }
 
@@ -401,6 +500,18 @@ class TryoutController extends Controller
             return redirect()->route('user.tryout.index')
                 ->with('error', 'Tryout "' . $tryout->judul . '" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
         }
+
+        $cardId = $session->card_id
+            ?? request('card_id')
+            ?? $tryout->id;
+
+        // Debug to see what we're getting
+        \Log::info('CardId sources:', [
+            'session_card_id' => $session->card_id ?? 'null',
+            'request_card_id' => request('card_id') ?? 'null',
+            'tryout_id' => $tryout->id,
+            'final_cardId' => $cardId
+        ]);
 
         // Optional guard: enforce type from query if provided
         $requestedType = $request->get('type');
@@ -435,10 +546,13 @@ class TryoutController extends Controller
             $newSession = UserTryoutSession::create([
                 'user_id' => $user->id,
                 'tryout_id' => $tryout->id,
+                'card_id' => $request->get('card_id'),
                 'started_at' => now(),
                 'status' => 'active',
                 'shuffle_seed' => rand(1, 999999)
             ]);
+
+            \Log::info('Session created with card_id: ' . $newSession->card_id);
 
             // Generate questions untuk session baru
             $this->generateQuestionsForUser($user, $tryout, $newSession->shuffle_seed, $newSession->id);
@@ -447,7 +561,10 @@ class TryoutController extends Controller
         // Set session flag untuk auto fullscreen
         session(['auto_fullscreen_tryout' => $tryout->id]);
 
-        return redirect()->route('user.tryout.work', $tryout);
+        return redirect()->route('user.tryout.work', [
+            'tryout' => $tryout,
+            'card_id' => $request->get('card_id')
+        ]);
     }
 
     public function getRemainingTime(Tryout $tryout)
@@ -579,8 +696,10 @@ class TryoutController extends Controller
                 'finished_at' => now()
             ]);
 
-            return redirect()->route('user.tryout.finish', $tryout)
-                ->with('warning', 'Waktu tryout telah habis.');
+            return redirect()->route('user.tryout.finish', [
+                'tryout' => $tryout->id,
+                'card_id' => $request->get('card_id') // ambil lagi dari query
+            ]);
         }
 
         return view('user.tryout.work', compact(
@@ -633,6 +752,9 @@ class TryoutController extends Controller
 
         $user = auth()->user();
 
+        // Ambil card_id dari request
+        $cardId = $request->get('card_id');
+
         // Check if tryout is active
         if (!$tryout->is_active) {
             return response()->json([
@@ -652,6 +774,11 @@ class TryoutController extends Controller
                 'success' => false,
                 'message' => 'Sesi tryout tidak aktif. Silakan refresh halaman dan coba lagi.'
             ]);
+        }
+
+        // Update session card_id if provided and different
+        if ($cardId && $session->card_id != $cardId) {
+            $session->update(['card_id' => $cardId]);
         }
 
         // Check if time is still available
@@ -772,7 +899,8 @@ class TryoutController extends Controller
 
         return response()->json([
             'success' => true,
-            'skor' => $skor
+            'skor' => $skor,
+            'card_id' => $session->card_id
         ]);
     }
 
@@ -1070,6 +1198,7 @@ class TryoutController extends Controller
 
     public function finish(Tryout $tryout)
     {
+
         $user = auth()->user();
 
         // Check if tryout is active
@@ -1187,6 +1316,8 @@ class TryoutController extends Controller
         $categoryScores = [];
         $categoryGroups = $userAnswers->groupBy('soal.kategori_id');
 
+        $cardId = $session->card_id ?? $tryout->id;
+
         foreach ($categoryGroups as $kategoriId => $answers) {
             $kategori = $answers->first()->soal->kategori;
             $categoryScore = $answers->sum('skor');
@@ -1217,6 +1348,7 @@ class TryoutController extends Controller
                     [
                         'user_id' => $user->id,
                         'jenis_tes' => 'kepribadian',
+                        'card_id' => $cardId,
                         'detail_jawaban' => json_encode([
                             'N' => $tkpCount,
                             'T' => (int) round($tkpQuestions->sum('skor')),
@@ -1258,6 +1390,7 @@ class TryoutController extends Controller
                     [
                         'user_id' => $user->id,
                         'jenis_tes' => 'kecerdasan',
+                        'card_id' => $cardId,
                         'detail_jawaban' => json_encode([
                             'total_questions' => $totalQuestions,
                             'correct_answers' => $correctAnswers,
@@ -1304,7 +1437,8 @@ class TryoutController extends Controller
             'tkpFinalScore',
             'tkpN',
             'tkpT',
-            'isTkp'
+            'isTkp',
+            'cardId'
         ));
     }
 
