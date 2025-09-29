@@ -445,23 +445,18 @@ class TryoutController extends Controller
                 ->orderBy('tanggal_tes', 'desc') // Add this to get latest
                 ->value('tkp_final_score');
 
+            $kecermatan = \App\Models\HasilTes::where('user_id', $userId)
+                ->where('jenis_tes', 'kecermatan')
+                ->where('card_id', $cardId)
+                ->orderBy('tanggal_tes', 'desc') // Add this to get latest
+                ->value('skor_akhir');
+
             // Debug what we're getting
             \Log::info("Scores for card {$cardId}:", [
                 'kecerdasan' => $kecerdasan,
-                'kepribadian' => $kepribadian
+                'kepribadian' => $kepribadian,
+                'kecermatan' => $kecermatan
             ]);
-
-            $kecermatanRecords = \App\Models\HasilTes::where('user_id', $userId)
-                ->where('jenis_tes', 'kecermatan')
-                ->where('card_id', $cardId)
-                ->get();
-
-            $kecermatan = null;
-            if ($kecermatanRecords->isNotEmpty()) {
-                $totalBenar = $kecermatanRecords->sum('skor_benar');
-                $totalSoal  = ($kecermatanRecords->sum('skor_benar') + $kecermatanRecords->sum('skor_salah'));
-                $kecermatan = $totalSoal > 0 ? round(($totalBenar / $totalSoal) * 100, 2) : 0;
-            }
 
             $latestScores[$cardId] = [
                 'kecerdasan' => $kecerdasan,
