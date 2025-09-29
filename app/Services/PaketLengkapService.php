@@ -58,9 +58,8 @@ class PaketLengkapService
             ];
         }
 
-        // Parse skor akhir dari detail_jawaban
-        $detailJawaban = json_decode($kecermatanResult->detail_jawaban, true);
-        $skorAkhir = $detailJawaban['SKOR_AKHIR'] ?? null;
+        // Ambil skor akhir langsung dari kolom skor_akhir
+        $skorAkhir = $kecermatanResult->skor_akhir;
 
         return [
             'completed' => true,
