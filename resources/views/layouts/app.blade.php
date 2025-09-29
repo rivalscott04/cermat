@@ -125,7 +125,7 @@
             position: relative;
             min-height: 100vh;
         }
-        
+
         .footer {
             position: absolute !important;
             bottom: 0 !important;
@@ -136,7 +136,7 @@
             background: #f8f9fa;
             padding: 15px 20px;
         }
-        
+
         .container-fluid {
             margin-bottom: 20px;
         }
@@ -276,7 +276,7 @@
     <script src="{{ asset('js/plugins/metisMenu/jquery.metisMenu.js') }}"></script>
     <script src="{{ asset('js/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
     <script src="{{ asset('js/inspinia.js') }}"></script>
-    <script src="{{ asset('js/laporan-kemampuan.js') }}"></script>
+
     @stack('scripts')
 </body>
 
