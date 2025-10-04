@@ -942,6 +942,11 @@
 
             // Initialize mark button state
             updateMarkButtonState({{ (int) ($currentQuestion->is_marked ?? 0) }} === 1);
+
+            // Initialize marked questions status for navigation
+            if (typeof window.updateMarkedQuestionsStatus === 'function') {
+                window.updateMarkedQuestionsStatus();
+            }
         });
 
         // Enhanced PG Pilih 2 handling function
@@ -1064,6 +1069,10 @@
 
                         // Update question status in sidebar
                         updateQuestionStatus({{ $currentQuestion->urutan }}, 'answered');
+                        // Update marked questions status for navigation
+                        if (typeof window.updateMarkedQuestionsStatus === 'function') {
+                            window.updateMarkedQuestionsStatus();
+                        }
                         // Show reset button
                         updateResetButtonVisibility();
                     } else {
@@ -1130,6 +1139,10 @@
                         showNotification('Jawaban berhasil direset!', 'warning');
                         // Update question status in sidebar
                         updateQuestionStatus({{ $currentQuestion->urutan }}, 'unanswered');
+                        // Update marked questions status for navigation
+                        if (typeof window.updateMarkedQuestionsStatus === 'function') {
+                            window.updateMarkedQuestionsStatus();
+                        }
                         // Hide reset button
                         updateResetButtonVisibility();
                     } else {
@@ -1206,12 +1219,36 @@
             document.getElementById('answered-count').textContent = answeredCount;
             document.getElementById('unanswered-count').textContent = unansweredCount;
 
+            // Check for marked but unanswered questions
+            let markedUnansweredInfo = '';
+            if (typeof window.checkMarkedUnansweredQuestions === 'function') {
+                const markedInfo = window.checkMarkedUnansweredQuestions();
+                if (markedInfo.hasMarkedUnanswered) {
+                    markedUnansweredInfo = `
+                        <div class="alert alert-warning mt-3">
+                            <i class="fa fa-exclamation-triangle"></i>
+                            <strong>Perhatian:</strong> Ada <strong>${markedInfo.markedUnanswered}</strong> soal yang ditandai tapi belum dijawab. 
+                            Apakah Anda yakin ingin menyelesaikan tryout?
+                        </div>
+                    `;
+                }
+            }
+
             // Show warning if there are unanswered questions
             const warningDiv = document.getElementById('unanswered-warning');
             if (unansweredCount > 0) {
                 warningDiv.style.display = 'block';
+                // Add marked unanswered info if exists
+                if (markedUnansweredInfo) {
+                    warningDiv.innerHTML = markedUnansweredInfo;
+                }
             } else {
                 warningDiv.style.display = 'none';
+                // Still show marked unanswered warning even if all questions are answered
+                if (markedUnansweredInfo) {
+                    warningDiv.innerHTML = markedUnansweredInfo;
+                    warningDiv.style.display = 'block';
+                }
             }
 
             // Show modal
@@ -1276,6 +1313,10 @@
                     if (currentLink) {
                         currentLink.classList.toggle('marked', data.is_marked === true);
                     }
+                    // Update marked questions status for navigation
+                    if (typeof window.updateMarkedQuestionsStatus === 'function') {
+                        window.updateMarkedQuestionsStatus();
+                    }
                 } else {
                     showNotification('Gagal mengubah tanda: ' + (data.message || 'Unknown error'), 'error');
                 }
@@ -1327,7 +1368,12 @@
         function updateQuestionStatus(questionNumber, status) {
             const questionLink = document.querySelector(`.question-number[href*="question=${questionNumber}"]`);
             if (questionLink) {
+                // Preserve marked class if it exists
+                const isMarked = questionLink.classList.contains('marked');
                 questionLink.className = `question-number ${status}`;
+                if (isMarked) {
+                    questionLink.classList.add('marked');
+                }
 
                 // Update tooltip
                 const statusText = status === 'answered' ? 'Sudah dijawab' :

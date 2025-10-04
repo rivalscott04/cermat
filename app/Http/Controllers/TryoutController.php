@@ -339,10 +339,6 @@ class TryoutController extends Controller
 
     public function userIndex(Request $request)
     {
-        // Clear auto fullscreen session if requested
-        if ($request->has('clear_auto_fullscreen') || $request->isMethod('post')) {
-            session()->forget('auto_fullscreen_tryout');
-        }
 
         $user = auth()->user();
         if (!$user->canAccessTryout()) {
@@ -528,8 +524,6 @@ class TryoutController extends Controller
             $this->generateQuestionsForUser($user, $tryout, $newSession->shuffle_seed, $newSession->id);
         }
 
-        // Set session flag untuk auto fullscreen
-        session(['auto_fullscreen_tryout' => $tryout->id]);
 
         return redirect()->route('user.tryout.work', [
             'tryout' => $tryout

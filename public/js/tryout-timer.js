@@ -278,6 +278,7 @@ setInterval(saveTimerState, 10000);
 // Handle beforeunload to warn user
 let allowNavigation = false;
 let isInternalNavigation = false;
+let hasMarkedQuestions = false;
 
 window.addEventListener("beforeunload", function (e) {
     // Save timer state sebelum leave
@@ -288,7 +289,12 @@ window.addEventListener("beforeunload", function (e) {
         return;
     }
 
-    // Only show warning for external navigation
+    // Check if there are marked questions - if yes, allow navigation without warning
+    if (hasMarkedQuestions) {
+        return;
+    }
+
+    // Only show warning for external navigation when no marked questions
     const message =
         "Tryout sedang berlangsung. Apakah Anda yakin ingin meninggalkan halaman?";
     e.returnValue = message;
@@ -324,6 +330,32 @@ function isInternalTryoutNavigation(url) {
     );
 }
 
+// Function to update marked questions status
+function updateMarkedQuestionsStatus() {
+    const markedQuestions = document.querySelectorAll('.question-number.marked');
+    hasMarkedQuestions = markedQuestions.length > 0;
+    console.log('Marked questions status updated:', hasMarkedQuestions);
+}
+
+// Function to check if there are marked but unanswered questions
+function checkMarkedUnansweredQuestions() {
+    const markedQuestions = document.querySelectorAll('.question-number.marked');
+    const unansweredQuestions = document.querySelectorAll('.question-number.unanswered');
+    
+    let markedUnanswered = 0;
+    markedQuestions.forEach(marked => {
+        if (marked.classList.contains('unanswered')) {
+            markedUnanswered++;
+        }
+    });
+    
+    return {
+        totalMarked: markedQuestions.length,
+        markedUnanswered: markedUnanswered,
+        hasMarkedUnanswered: markedUnanswered > 0
+    };
+}
+
 // Expose functions globally
 window.initTryout = initTryout;
 window.pauseTimer = pauseTimer;
@@ -334,3 +366,5 @@ window.setRemainingTime = setRemainingTime;
 window.allowTryoutNavigation = allowTryoutNavigation;
 window.isInternalTryoutNavigation = isInternalTryoutNavigation;
 window.syncTimeWithServer = syncTimeWithServer;
+window.updateMarkedQuestionsStatus = updateMarkedQuestionsStatus;
+window.checkMarkedUnansweredQuestions = checkMarkedUnansweredQuestions;
