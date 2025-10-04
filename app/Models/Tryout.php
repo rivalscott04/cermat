@@ -86,8 +86,13 @@ class Tryout extends Model
 
     public function getTotalSoalAttribute()
     {
-        // Jika ada blueprints, hitung dari blueprints
-        if ($this->relationLoaded('blueprints') || $this->blueprints()->exists()) {
+        // Jika ada blueprints yang sudah dimuat, hitung dari blueprints
+        if ($this->relationLoaded('blueprints')) {
+            return $this->blueprints->sum('jumlah');
+        }
+        
+        // Jika belum dimuat, hitung dari database
+        if ($this->blueprints()->exists()) {
             return $this->blueprints()->sum('jumlah');
         }
         

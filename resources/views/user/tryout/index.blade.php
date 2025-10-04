@@ -52,7 +52,7 @@
                                             <div class="mb-3 p-2 border rounded bg-light">
                                                 <div class="d-flex justify-content-between mb-2">
                                                     <span class="text-muted"><i class="fa fa-question-circle"></i> Jumlah Soal:</span>
-                                                    <strong>{{ $tryout->blueprints->sum('jumlah_soal') }} soal</strong>
+                                                    <strong>{{ $tryout->total_soal ?? $tryout->blueprints->sum('jumlah') ?? 0 }} soal</strong>
                                                 </div>
                                                 <div class="d-flex justify-content-between">
                                                     <span class="text-muted"><i class="fa fa-clock-o"></i> Waktu Tersedia:</span>
