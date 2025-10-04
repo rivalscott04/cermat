@@ -49,45 +49,16 @@
                                         <div class="card-body">
                                             <p class="card-text">{{ Str::limit($tryout->deskripsi, 100) }}</p>
 
-                                            @if (auth()->user()->paket_akses === 'lengkap')
-                                                <div class="mb-3 p-2 border rounded bg-light">
-                                                    <small class="text-muted d-block mb-1"><strong>Progress
-                                                            Nilai:</strong></small>
-                                                    @php
-                                                        $cardScores = $latestScores[$tryout->id] ?? [];
-                                                        $finalScore = $finalScores[$tryout->id] ?? null;
-                                                    @endphp
-
-                                                    <div class="d-flex justify-content-between">
-                                                        <span>Kecerdasan:</span>
-                                                        <strong>{{ $cardScores['kecerdasan'] ?? '-' }}</strong>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between">
-                                                        <span>Kepribadian:</span>
-                                                        <strong>{{ $cardScores['kepribadian'] ?? '-' }}</strong>
-                                                    </div>
-                                                    <div class="d-flex justify-content-between">
-                                                        <span>Kecermatan:</span>
-                                                        <strong>{{ $cardScores['kecermatan'] ?? '-' }}</strong>
-                                                    </div>
-
-                                                    @if ($finalScore)
-                                                        <div class="d-flex justify-content-between mt-2 pt-2 border-top">
-                                                            <span><strong>Total Nilai Akhir:</strong></span>
-                                                            <strong
-                                                                class="text-primary">{{ $finalScore['score'] ?? $finalScore }}</strong>
-                                                        </div>
-                                                        @if (isset($finalScore['passed']))
-                                                            <div class="text-center mt-1">
-                                                                <span
-                                                                    class="badge {{ $finalScore['passed'] ? 'badge-success' : 'badge-danger' }}">
-                                                                    {{ $finalScore['passed'] ? 'LULUS' : 'TIDAK LULUS' }}
-                                                                </span>
-                                                            </div>
-                                                        @endif
-                                                    @endif
+                                            <div class="mb-3 p-2 border rounded bg-light">
+                                                <div class="d-flex justify-content-between mb-2">
+                                                    <span class="text-muted"><i class="fa fa-question-circle"></i> Jumlah Soal:</span>
+                                                    <strong>{{ $tryout->blueprints->sum('jumlah_soal') }} soal</strong>
                                                 </div>
-                                            @endif
+                                                <div class="d-flex justify-content-between">
+                                                    <span class="text-muted"><i class="fa fa-clock-o"></i> Waktu Tersedia:</span>
+                                                    <strong>{{ $tryout->durasi_menit }} menit</strong>
+                                                </div>
+                                            </div>
 
                                             {{-- <div class="text-center">
                                                 <span
