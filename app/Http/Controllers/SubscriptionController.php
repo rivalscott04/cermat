@@ -35,15 +35,28 @@ class SubscriptionController extends Controller
             return view('subscription.packages');
         }
         
-        // Jika user, tampilkan status paket dan informasi
+        // OPTIMASI: Cache package limits untuk menghindari multiple config calls
+        $packageLimits = $user->getPackageLimits();
+        $maxTryouts = $packageLimits['max_tryouts'];
+        
+        // OPTIMASI: Load subscription dengan eager loading
+        $subscription = $user->subscriptions;
+        
+        // OPTIMASI: Cache allowed categories (bisa di-cache lebih lama karena jarang berubah)
+        $allowedCategories = $user->getAllowedCategories();
+        
+        // OPTIMASI: Cache package features (static data)
+        $packageFeatures = $user->getPackageFeaturesDescription();
+        $packageDisplayName = $user->getPackageDisplayName();
+        
         return view('subscription.user-package-status', [
             'user' => $user,
-            'packageLimits' => $user->getPackageLimits(),
-            'subscription' => $user->subscriptions,
-            'allowedCategories' => $user->getAllowedCategories(),
-            'maxTryouts' => $user->getMaxTryouts(),
-            'packageFeatures' => $user->getPackageFeaturesDescription(),
-            'packageDisplayName' => $user->getPackageDisplayName()
+            'packageLimits' => $packageLimits,
+            'subscription' => $subscription,
+            'allowedCategories' => $allowedCategories,
+            'maxTryouts' => $maxTryouts,
+            'packageFeatures' => $packageFeatures,
+            'packageDisplayName' => $packageDisplayName
         ]);
     }
 

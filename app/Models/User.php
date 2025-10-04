@@ -105,12 +105,16 @@ class User extends Authenticatable
         $userPackage = $this->paket_akses;
         
         if ($userPackage === 'free') {
-            // Untuk FREE, ambil semua kategori yang ada
-            return \App\Models\KategoriSoal::active()->pluck('kode')->toArray();
+            // OPTIMASI: Cache kategori untuk free users (jarang berubah)
+            return cache()->remember('kategori_soal_active_codes', 60 * 24, function () {
+                return \App\Models\KategoriSoal::active()->pluck('kode')->toArray();
+            });
         }
         
-        // Untuk paket berbayar, ambil dari PackageCategoryMapping
-        return \App\Models\PackageCategoryMapping::getCategoriesForPackage($userPackage);
+        // OPTIMASI: Cache package categories (jarang berubah)
+        return cache()->remember("package_categories_{$userPackage}", 60 * 24, function () use ($userPackage) {
+            return \App\Models\PackageCategoryMapping::getCategoriesForPackage($userPackage);
+        });
     }
 
     /**
@@ -181,15 +185,20 @@ class User extends Authenticatable
     {
         // For FREE users: ambil semua jenis paket yang ada di database
         if ($userPackage === 'free') {
-            return \App\Models\Tryout::active()
-                ->distinct()
-                ->pluck('jenis_paket')
-                ->filter()
-                ->toArray();
+            // OPTIMASI: Cache tryout types untuk free users
+            return cache()->remember('tryout_active_types', 60 * 24, function () {
+                return \App\Models\Tryout::active()
+                    ->distinct()
+                    ->pluck('jenis_paket')
+                    ->filter()
+                    ->toArray();
+            });
         }
         
-        // For other packages, use dynamic mapping from database
-        $dynamicMapping = \App\Models\PackageCategoryMapping::getAllMappings();
+        // OPTIMASI: Cache dynamic mapping
+        $dynamicMapping = cache()->remember('package_category_mappings', 60 * 24, function () {
+            return \App\Models\PackageCategoryMapping::getAllMappings();
+        });
         
         // Standard mapping untuk paket berbayar
         $mapping = [

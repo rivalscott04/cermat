@@ -21,10 +21,11 @@ class PackageCategoryMapping extends Model
      */
     public static function getCategoriesForPackage($packageType)
     {
-        return self::where('package_type', $packageType)
-            ->with('kategori')
-            ->get()
-            ->pluck('kategori.kode')
+        // OPTIMASI: Gunakan join untuk menghindari N+1 query
+        return self::join('kategori_soal', 'package_category_mappings.kategori_id', '=', 'kategori_soal.id')
+            ->where('package_category_mappings.package_type', $packageType)
+            ->where('kategori_soal.is_active', true)
+            ->pluck('kategori_soal.kode')
             ->toArray();
     }
 
@@ -33,14 +34,17 @@ class PackageCategoryMapping extends Model
      */
     public static function getAllMappings()
     {
-        $mappings = [];
-        $packageTypes = ['kecerdasan', 'kepribadian', 'lengkap'];
-        
-        foreach ($packageTypes as $packageType) {
-            $mappings[$packageType] = self::getCategoriesForPackage($packageType);
-        }
-        
-        return $mappings;
+        // OPTIMASI: Cache semua mappings karena jarang berubah
+        return cache()->remember('all_package_category_mappings', 60 * 24, function () {
+            $mappings = [];
+            $packageTypes = ['kecerdasan', 'kepribadian', 'lengkap'];
+            
+            foreach ($packageTypes as $packageType) {
+                $mappings[$packageType] = self::getCategoriesForPackage($packageType);
+            }
+            
+            return $mappings;
+        });
     }
 
     /**
@@ -64,6 +68,24 @@ class PackageCategoryMapping extends Model
         
         if (!empty($mappings)) {
             self::insert($mappings);
+        }
+        
+        // OPTIMASI: Clear cache setelah update
+        self::clearCache();
+    }
+    
+    /**
+     * Clear all package mapping caches
+     */
+    public static function clearCache()
+    {
+        cache()->forget('all_package_category_mappings');
+        cache()->forget('package_category_mappings');
+        
+        // Clear individual package caches
+        $packageTypes = ['kecerdasan', 'kepribadian', 'lengkap'];
+        foreach ($packageTypes as $packageType) {
+            cache()->forget("package_categories_{$packageType}");
         }
     }
 }
