@@ -35,6 +35,10 @@ class ClearPackageCache extends Command
         cache()->forget('kategori_soal_active_codes');
         cache()->forget('tryout_active_types');
         
+        // Clear paket lengkap caches
+        $service = app(\App\Services\PaketLengkapService::class);
+        $service->clearAllCache();
+        
         $this->info('Package caches cleared successfully!');
         
         return 0;

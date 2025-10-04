@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Midtrans\Snap;
 use Midtrans\Config;
 use App\Models\Subscription;
+use App\Models\Package;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -28,6 +29,7 @@ class SubscriptionController extends Controller
 
     public function packages()
     {
+        $startTime = microtime(true);
         $user = Auth::user();
         
         // Jika admin, tampilkan halaman pembelian paket
@@ -49,6 +51,24 @@ class SubscriptionController extends Controller
         $packageFeatures = $user->getPackageFeaturesDescription();
         $packageDisplayName = $user->getPackageDisplayName();
         
+        // OPTIMASI: Cache method calls yang dipanggil berulang di view
+        $hasActiveSubscription = $user->hasActiveSubscription();
+        $canAccessTryout = $user->canAccessTryout();
+        $canAccessKecermatan = $user->canAccessKecermatan();
+        $userPackage = $user->package;
+        
+        // OPTIMASI: Cache paket lengkap status (jika diperlukan)
+        $paketLengkapStatus = null;
+        $paketLengkapProgress = 0;
+        if ($userPackage === 'lengkap') {
+            $paketLengkapStatus = $user->getPaketLengkapStatus();
+            $paketLengkapProgress = $user->getPaketLengkapProgress();
+        }
+        
+        // Log execution time untuk debugging
+        $executionTime = round((microtime(true) - $startTime) * 1000, 2);
+        Log::info("Subscription packages page loaded in {$executionTime}ms for user {$user->id}");
+        
         return view('subscription.user-package-status', [
             'user' => $user,
             'packageLimits' => $packageLimits,
@@ -56,7 +76,13 @@ class SubscriptionController extends Controller
             'allowedCategories' => $allowedCategories,
             'maxTryouts' => $maxTryouts,
             'packageFeatures' => $packageFeatures,
-            'packageDisplayName' => $packageDisplayName
+            'packageDisplayName' => $packageDisplayName,
+            'hasActiveSubscription' => $hasActiveSubscription,
+            'canAccessTryout' => $canAccessTryout,
+            'canAccessKecermatan' => $canAccessKecermatan,
+            'userPackage' => $userPackage,
+            'paketLengkapStatus' => $paketLengkapStatus,
+            'paketLengkapProgress' => $paketLengkapProgress
         ]);
     }
 
@@ -85,18 +111,20 @@ class SubscriptionController extends Controller
     public function processSubscription(Request $request, $package)
     {
         try {
-            // Validasi package yang dipilih
-            $allowedPackages = ['kecermatan', 'psikologi', 'lengkap'];
-
-            if (!in_array($package, $allowedPackages)) {
-                return redirect()->back()->with('error', 'Paket yang dipilih tidak valid.');
-            }
-
             // Get authenticated user
             $user = Auth::user();
 
             if (!$user) {
                 return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
+            }
+
+            // Validasi package yang dipilih dari database
+            $packageExists = Package::where('name', 'like', '%' . $package . '%')
+                ->active()
+                ->exists();
+
+            if (!$packageExists) {
+                return redirect()->back()->with('error', 'Paket yang dipilih tidak tersedia.');
             }
 
             // Redirect ke halaman checkout dengan parameter package
@@ -112,13 +140,6 @@ class SubscriptionController extends Controller
     public function showCheckout($package)
     {
         try {
-            // Validasi package yang dipilih
-            $allowedPackages = ['kecermatan', 'kecerdasan', 'kepribadian', 'lengkap'];
-
-            if (!in_array($package, $allowedPackages)) {
-                return redirect()->route('subscription.packages')->with('error', 'Paket yang dipilih tidak valid.');
-            }
-
             // Get authenticated user
             $user = Auth::user();
 
@@ -126,68 +147,29 @@ class SubscriptionController extends Controller
                 return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
             }
 
-            // Data paket berlangganan
-            $packageDetails = [
-                'kecermatan' => [
-                    'name' => 'Paket Kecermatan',
-                    'description' => 'Fokus Tes Kecermatan',
-                    'price' => 75000,
-                    'duration' => 30,
-                    'features' => [
-                        'Bank soal kecermatan lengkap',
-                        'Latihan soal unlimited',
-                        'Analisis kecepatan & akurasi',
-                        'Timer simulasi ujian',
-                        'Riwayat progress harian'
-                    ]
-                ],
-                'kecerdasan' => [
-                    'name' => 'Paket Kecerdasan',
-                    'description' => 'Fokus Tes Kecerdasan',
-                    'price' => 75000,
-                    'duration' => 30,
-                    'features' => [
-                        'Bank soal TIU, TWK, TKD lengkap',
-                        'Tes intelejensi umum',
-                        'Tes wawasan kebangsaan',
-                        'Tes kemampuan dasar',
-                        'Analisis kemampuan kognitif'
-                    ]
-                ],
-                'kepribadian' => [
-                    'name' => 'Paket Kepribadian',
-                    'description' => 'Fokus Tes Kepribadian',
-                    'price' => 75000,
-                    'duration' => 30,
-                    'features' => [
-                        'Bank soal TKP, PSIKOTES lengkap',
-                        'Tes karakteristik pribadi',
-                        'Tes psikotes komprehensif',
-                        'Analisis kepribadian',
-                        'Tips & strategi psikotes'
-                    ]
-                ],
-                'lengkap' => [
-                    'name' => 'Paket Lengkap',
-                    'description' => 'Semua Jenis Tes',
-                    'price' => 120000,
-                    'duration' => 45,
-                    'features' => [
-                        'Semua fitur Kecermatan',
-                        'Semua fitur Kecerdasan',
-                        'Semua fitur Kepribadian',
-                        'Try out gabungan berkala',
-                        'Laporan progress lengkap',
-                        'Sertifikat penyelesaian'
-                    ]
-                ]
+            // Get package from database
+            $selectedPackage = Package::where('name', 'like', '%' . $package . '%')
+                ->active()
+                ->first();
+
+            if (!$selectedPackage) {
+                return redirect()->route('subscription.packages')->with('error', 'Paket yang dipilih tidak tersedia.');
+            }
+
+            // Convert package to array format expected by view
+            $packageData = [
+                'key' => $package,
+                'name' => $selectedPackage->name,
+                'description' => $selectedPackage->description,
+                'price' => $selectedPackage->price,
+                'old_price' => $selectedPackage->old_price,
+                'label' => $selectedPackage->label,
+                'features' => $selectedPackage->features,
+                'duration' => 30 // Default duration, bisa disesuaikan jika ada field di database
             ];
 
-            $selectedPackage = $packageDetails[$package];
-            $selectedPackage['key'] = $package;
-
             return view('subscription.checkout', [
-                'package' => $selectedPackage,
+                'package' => $packageData,
                 'user' => $user
             ]);
         } catch (\Exception $e) {

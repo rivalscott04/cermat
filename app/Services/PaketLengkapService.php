@@ -22,22 +22,25 @@ class PaketLengkapService
             ];
         }
 
-        $kecermatanStatus = $this->getKecermatanStatus($user);
-        $kecerdasanStatus = $this->getKecerdasanStatus($user);
-        $kepribadianStatus = $this->getKepribadianStatus($user);
+        // OPTIMASI: Cache hasil untuk user ini (cache 1 jam karena jarang berubah)
+        return cache()->remember("paket_lengkap_status_{$user->id}", 60 * 60, function () use ($user) {
+            $kecermatanStatus = $this->getKecermatanStatus($user);
+            $kecerdasanStatus = $this->getKecerdasanStatus($user);
+            $kepribadianStatus = $this->getKepribadianStatus($user);
 
-        // Kecermatan wajib + minimal 1 tryout CBT yang berisi kategori yang dibutuhkan
-        $isComplete = $kecermatanStatus['completed'] && 
-                     ($kecerdasanStatus['completed'] || $kepribadianStatus['completed']);
+            // Kecermatan wajib + minimal 1 tryout CBT yang berisi kategori yang dibutuhkan
+            $isComplete = $kecermatanStatus['completed'] && 
+                         ($kecerdasanStatus['completed'] || $kepribadianStatus['completed']);
 
-        return [
-            'is_eligible' => true,
-            'is_complete' => $isComplete,
-            'kecermatan' => $kecermatanStatus,
-            'kecerdasan' => $kecerdasanStatus,
-            'kepribadian' => $kepribadianStatus,
-            'final_score' => $isComplete ? $this->calculateFinalScore($user) : null
-        ];
+            return [
+                'is_eligible' => true,
+                'is_complete' => $isComplete,
+                'kecermatan' => $kecermatanStatus,
+                'kecerdasan' => $kecerdasanStatus,
+                'kepribadian' => $kepribadianStatus,
+                'final_score' => $isComplete ? $this->calculateFinalScore($user) : null
+            ];
+        });
     }
 
     /**
@@ -277,19 +280,22 @@ class PaketLengkapService
             return 0;
         }
 
-        $status = $this->getCompletionStatus($user);
-        $completedCount = 0;
+        // OPTIMASI: Cache progress percentage (cache 1 jam)
+        return cache()->remember("paket_lengkap_progress_{$user->id}", 60 * 60, function () use ($user) {
+            $status = $this->getCompletionStatus($user);
+            $completedCount = 0;
 
-        // Kecermatan wajib (1 poin)
-        if ($status['kecermatan']['completed']) $completedCount++;
-        
-        // Tryout CBT (1 poin jika ada kecerdasan atau kepribadian)
-        if ($status['kecerdasan']['completed'] || $status['kepribadian']['completed']) {
-            $completedCount++;
-        }
+            // Kecermatan wajib (1 poin)
+            if ($status['kecermatan']['completed']) $completedCount++;
+            
+            // Tryout CBT (1 poin jika ada kecerdasan atau kepribadian)
+            if ($status['kecerdasan']['completed'] || $status['kepribadian']['completed']) {
+                $completedCount++;
+            }
 
-        // Total maksimal 2 poin (kecermatan + tryout CBT)
-        return round(($completedCount / 2) * 100);
+            // Total maksimal 2 poin (kecermatan + tryout CBT)
+            return round(($completedCount / 2) * 100);
+        });
     }
 
     /**
@@ -342,5 +348,26 @@ class PaketLengkapService
                 'kepribadian' => $status['kepribadian']
             ]
         ];
+    }
+
+    /**
+     * Clear cache for a specific user
+     */
+    public function clearUserCache(User $user): void
+    {
+        cache()->forget("paket_lengkap_status_{$user->id}");
+        cache()->forget("paket_lengkap_progress_{$user->id}");
+    }
+
+    /**
+     * Clear all paket lengkap caches
+     */
+    public function clearAllCache(): void
+    {
+        // Note: This is a simple approach. For production, consider using cache tags
+        $users = User::where('package', 'lengkap')->get();
+        foreach ($users as $user) {
+            $this->clearUserCache($user);
+        }
     }
 }

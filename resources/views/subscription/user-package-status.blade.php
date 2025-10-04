@@ -32,15 +32,15 @@
                 <div class="row mb-4">
                     {{-- Kolom 1: Status Paket --}}
                     <div class="col-md-6 mb-3">
-                        <div class="card border-left-{{ $user->hasActiveSubscription() ? 'success' : 'warning' }} shadow h-100">
+                        <div class="card border-left-{{ $hasActiveSubscription ? 'success' : 'warning' }} shadow h-100">
                             <div class="card-body">
                                 <div class="row no-gutters align-items-center">
                                     <div class="col mr-2">
-                                        <div class="text-xs font-weight-bold text-{{ $user->hasActiveSubscription() ? 'success' : 'warning' }} text-uppercase mb-1">
+                                        <div class="text-xs font-weight-bold text-{{ $hasActiveSubscription ? 'success' : 'warning' }} text-uppercase mb-1">
                                             Status Langganan
                                         </div>
                                         <div class="h5 mb-0 font-weight-bold text-gray-800">
-                                            @if ($user->hasActiveSubscription())
+                                            @if ($hasActiveSubscription)
                                                 <i class="fa fa-check-circle mr-2 text-success"></i>
                                                 {{ $packageDisplayName }}
                                             @else
@@ -48,7 +48,7 @@
                                                 Belum Berlangganan
                                             @endif
                                         </div>
-                                        @if ($user->hasActiveSubscription() && $subscription && $subscription->end_date)
+                                        @if ($hasActiveSubscription && $subscription && $subscription->end_date)
                                             <div class="text-xs text-muted mt-1">
                                                 Berakhir: {{ $subscription->end_date->format('d M Y') }}
                                                 <br><small>({{ $subscription->end_date->diffForHumans() }})</small>
@@ -56,7 +56,7 @@
                                         @endif
                                     </div>
                                     <div class="col-auto">
-                                        @if ($user->hasActiveSubscription())
+                                        @if ($hasActiveSubscription)
                                             <i class="fa fa-check-circle fa-2x text-success"></i>
                                         @else
                                             <i class="fa fa-exclamation-triangle fa-2x text-warning"></i>
@@ -137,14 +137,14 @@
                 </div>
 
                 {{-- Saran Upgrade Paket --}}
-                @if (!$user->hasActiveSubscription() || $user->package !== 'lengkap')
+                @if (!$hasActiveSubscription || $userPackage !== 'lengkap')
                     <div class="row mb-4">
                         <div class="col-12">
                             <div class="card border-left-info shadow">
                                 <div class="card-header py-3 bg-info text-white">
                                     <h6 class="m-0 font-weight-bold">
                                         <i class="fa fa-rocket mr-2"></i>
-                                        @if (!$user->hasActiveSubscription())
+                                        @if (!$hasActiveSubscription)
                                             Mulai Berlangganan
                                         @else
                                             Saran Upgrade Paket
@@ -155,25 +155,25 @@
                                     <div class="row">
                                         <div class="col-md-8">
                                             <h6 class="font-weight-bold text-dark mb-2">
-                                                @if (!$user->hasActiveSubscription())
+                                                @if (!$hasActiveSubscription)
                                                     Akses Semua Fitur dengan Berlangganan!
                                                 @else
                                                     Akses Lebih Banyak Fitur!
                                                 @endif
                                             </h6>
                                             <p class="text-muted mb-3">
-                                                @if (!$user->hasActiveSubscription())
+                                                @if (!$hasActiveSubscription)
                                                     Berlangganan sekarang untuk mengakses semua jenis tes dan fitur lengkap! Mulai dari Rp 75.000 untuk 30 hari akses penuh.
-                                                @elseif ($user->package === 'kecermatan')
+                                                @elseif ($userPackage === 'kecermatan')
                                                     Upgrade ke Paket Lengkap untuk akses ke Tes Kecerdasan dan Kepribadian juga!
-                                                @elseif ($user->package === 'kecerdasan')
+                                                @elseif ($userPackage === 'kecerdasan')
                                                     Upgrade ke Paket Lengkap untuk akses ke Tes Kecermatan dan Kepribadian juga!
-                                                @elseif ($user->package === 'kepribadian')
+                                                @elseif ($userPackage === 'kepribadian')
                                                     Upgrade ke Paket Lengkap untuk akses ke Tes Kecermatan dan Kecerdasan juga!
                                                 @endif
                                             </p>
                                             
-                                            @if ($user->hasActiveSubscription() && $user->package !== 'free')
+                                            @if ($hasActiveSubscription && $userPackage !== 'free')
                                                 <div class="alert alert-info">
                                                     <i class="fa fa-lightbulb-o mr-2"></i>
                                                     <strong>Tip:</strong> Paket Lengkap memberikan akses ke semua jenis tes dengan harga yang lebih hemat!
@@ -183,15 +183,15 @@
                                         <div class="col-md-4 text-center">
                                             <a href="{{ route('subscription.packages.admin') }}" 
                                                class="btn btn-success btn-lg btn-block">
-                                                <i class="fa fa-{{ !$user->hasActiveSubscription() ? 'shopping-cart' : 'arrow-up' }} mr-2"></i>
-                                                @if (!$user->hasActiveSubscription())
+                                                <i class="fa fa-{{ !$hasActiveSubscription ? 'shopping-cart' : 'arrow-up' }} mr-2"></i>
+                                                @if (!$hasActiveSubscription)
                                                     Berlangganan Sekarang
                                                 @else
                                                     Lihat Paket Lain
                                                 @endif
                                             </a>
                                             <small class="text-muted mt-2 d-block">
-                                                @if (!$user->hasActiveSubscription())
+                                                @if (!$hasActiveSubscription)
                                                     Mulai perjalanan persiapan tes Anda
                                                 @else
                                                     Upgrade sekarang untuk pengalaman terbaik
@@ -217,7 +217,7 @@
                             </div>
                             <div class="card-body py-2">
                                 <div class="row">
-                                    @if ($user->canAccessTryout())
+                                    @if ($canAccessTryout)
                                         <div class="col-6 mb-2">
                                             <a href="{{ route('show.test') }}" class="btn btn-outline-primary btn-sm btn-block">
                                                 <i class="fa fa-check-square-o mr-1"></i>
@@ -234,7 +234,7 @@
                                         </div>
                                     @endif
                                     
-                                    @if ($user->canAccessKecermatan())
+                                    @if ($canAccessKecermatan)
                                         <div class="col-6 mb-2">
                                             <a href="{{ route('kecermatan.index') }}" class="btn btn-outline-success btn-sm btn-block">
                                                 <i class="fa fa-eye mr-1"></i>
@@ -264,7 +264,7 @@
 
                     {{-- Kolom 2: Progress Paket Lengkap (jika ada) --}}
                     <div class="col-md-4 mb-3">
-                        @if ($user->package === 'lengkap' && $user->getPaketLengkapStatus())
+                        @if ($userPackage === 'lengkap' && $paketLengkapStatus)
                             <div class="card border-left-success shadow h-100">
                                 <div class="card-header py-2 bg-success text-white">
                                     <h6 class="m-0 font-weight-bold">
@@ -274,8 +274,8 @@
                                 <div class="card-body py-2 text-center">
                                     <div class="progress mb-2" style="height: 20px;">
                                         <div class="progress-bar bg-success" role="progressbar" 
-                                             style="width: {{ $user->getPaketLengkapProgress() }}%">
-                                            {{ $user->getPaketLengkapProgress() }}%
+                                             style="width: {{ $paketLengkapProgress }}%">
+                                            {{ $paketLengkapProgress }}%
                                         </div>
                                     </div>
                                     <small class="text-muted">Penyelesaian Paket Lengkap</small>
@@ -291,7 +291,7 @@
                                 <div class="card-body py-2 text-center">
                                     <i class="fa fa-lightbulb-o fa-2x text-warning mb-2"></i>
                                     <p class="mb-0 text-sm">
-                                        @if (!$user->hasActiveSubscription())
+                                        @if (!$hasActiveSubscription)
                                             Berlangganan untuk akses penuh
                                         @else
                                             Upgrade ke Paket Lengkap untuk progress tracking
