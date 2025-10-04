@@ -56,7 +56,7 @@ class Tryout extends Model
 
     private function getAllowedPackageTypes($userPackage)
     {
-        // FREE users: always allow main types; quota handled in controller
+        // FREE users: allow kecerdasan, kepribadian, and lengkap; quota handled in controller
         if ($userPackage === 'free') {
             return ['kecerdasan', 'kepribadian', 'lengkap'];
         }
@@ -69,7 +69,7 @@ class Tryout extends Model
         $standard = [
             'kecerdasan' => ['kecerdasan'],
             'kepribadian' => ['kepribadian'],
-            // Paket lengkap boleh melihat semua jenis
+            // Paket lengkap boleh melihat SEMUA jenis: kecerdasan, kepribadian, lengkap (kecermatan akses terpisah via route kecermatan)
             'lengkap' => ['kecerdasan', 'kepribadian', 'lengkap']
         ];
 

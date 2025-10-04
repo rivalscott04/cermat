@@ -98,6 +98,36 @@ class User extends Authenticatable
     }
 
     /**
+     * Get actual number of available tryouts for current user (dynamic from database)
+     */
+    public function getAvailableTryoutsCount()
+    {
+        $userPackage = $this->paket_akses;
+        
+        // Cache the result for 5 minutes to avoid repeated database queries
+        return cache()->remember("available_tryouts_count_{$userPackage}", 5 * 60, function () use ($userPackage) {
+            $query = \App\Models\Tryout::active()->forUserPackage($userPackage);
+            
+            if ($userPackage === 'free') {
+                // For free users, get 1 tryout per type (kecerdasan, kepribadian, lengkap)
+                $all = $query->get();
+                $grouped = $all->groupBy('jenis_paket');
+                $count = 0;
+                foreach (['kecerdasan', 'kepribadian', 'lengkap'] as $jenis) {
+                    if ($grouped->has($jenis)) {
+                        $count++;
+                    }
+                }
+                return $count;
+            } else {
+                // For paid packages, get all available tryouts (up to max limit)
+                $maxLimit = $this->getMaxTryouts();
+                return min($query->count(), $maxLimit);
+            }
+        });
+    }
+
+    /**
      * Get allowed categories for current user (fully dynamic from database)
      */
     public function getAllowedCategories()

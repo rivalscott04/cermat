@@ -15,12 +15,8 @@
                                         class="badge badge-{{ auth()->user()->paket_akses === 'lengkap' ? 'danger' : (auth()->user()->paket_akses === 'kecerdasan' || auth()->user()->paket_akses === 'kepribadian' ? 'primary' : 'success') }}">
                                         {{ strtoupper(auth()->user()->paket_akses) }}
                                     </span>
-                                    @if (auth()->user()->paket_akses === 'free')
-                                        <small class="text-muted">(1 tryout tersedia)</small>
-                                    @else
-                                        <small class="text-muted">({{ auth()->user()->getMaxTryouts() }} tryout
-                                            tersedia)</small>
-                                    @endif
+                                    <small class="text-muted">({{ auth()->user()->getAvailableTryoutsCount() }} tryout
+                                        tersedia)</small>
                                 </p>
                             </div>
                             @if (auth()->user()->paket_akses === 'lengkap')
@@ -77,49 +73,11 @@
                                             </div> --}}
                                         </div>
                                         <div class="card-footer">
-                                            @if ($tryout->jenis_paket === 'lengkap' && auth()->user()->paket_akses === 'lengkap')
-                                                <!-- Multiple buttons for paket lengkap users (full width with spacing) -->
-                                                @php
-                                                    // Get unique tryouts for this specific card
-                                                    $kecerdasanTryout =
-                                                        $tryoutMappings[$tryout->id]['kecerdasan'] ?? null;
-                                                    $kepribadianTryout =
-                                                        $tryoutMappings[$tryout->id]['kepribadian'] ?? null;
-                                                @endphp
-
-                                                @if ($kecerdasanTryout)
-                                                    <a href="{{ route('user.tryout.start', $kecerdasanTryout) }}?type=kecerdasan"
-                                                        class="btn btn-primary btn-sm btn-block mb-2">
-                                                        <i class="fa fa-brain"></i> Tryout Kecerdasan
-                                                        <small class="d-block">{{ $kecerdasanTryout->judul }}</small>
-                                                    </a>
-                                                @else
-                                                    <button class="btn btn-secondary btn-sm btn-block mb-2" disabled>
-                                                        <i class="fa fa-brain"></i> Kecerdasan (Tidak Tersedia)
-                                                    </button>
-                                                @endif
-                                                @if ($kepribadianTryout)
-                                                    <a href="{{ route('user.tryout.start', $kepribadianTryout) }}?type=kepribadian"
-                                                        class="btn btn-primary btn-sm btn-block mb-2">
-                                                        <i class="fa fa-user"></i> Tryout Kepribadian
-                                                        <small class="d-block">{{ $kepribadianTryout->judul }}</small>
-                                                    </a>
-                                                @else
-                                                    <button class="btn btn-secondary btn-sm btn-block mb-2" disabled>
-                                                        <i class="fa fa-user"></i> Kepribadian (Tidak Tersedia)
-                                                    </button>
-                                                @endif
-                                                <a href="{{ route('kecermatan') }}"
-                                                    class="btn btn-warning btn-sm btn-block">
-                                                    <i class="fa fa-eye"></i> Tryout Kecermatan
-                                                </a>
-                                            @else
-                                                <!-- Single button for other packages -->
-                                                <a href="{{ route('user.tryout.start', $tryout) }}?type={{ $tryout->jenis_paket }}"
-                                                    class="btn btn-primary btn-block">
-                                                    <i class="fa fa-play"></i> Mulai Tryout
-                                                </a>
-                                            @endif
+                                            <!-- Single button for all packages -->
+                                            <a href="{{ route('user.tryout.start', $tryout) }}?type={{ $tryout->jenis_paket }}"
+                                                class="btn btn-primary btn-block">
+                                                <i class="fa fa-play"></i> Mulai Tryout
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

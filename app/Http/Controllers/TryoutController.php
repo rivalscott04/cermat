@@ -377,50 +377,6 @@ class TryoutController extends Controller
             $tryouts = $query->limit($user->getMaxTryouts())->get();
         }
 
-        // For lengkap package users, create unique tryout mapping for each lengkap card
-        $tryoutMappings = [];
-
-        if ($user->paket_akses === 'lengkap') {
-            // Get all available tryouts by type
-            $availableKecerdasan = Tryout::active()->where('jenis_paket', 'kecerdasan')->get();
-            $availableKepribadian = Tryout::active()->where('jenis_paket', 'kepribadian')->get();
-
-            // Track which tryouts are already used as main cards
-            $usedKecerdasanIds = [];
-            $usedKepribadianIds = [];
-
-            foreach ($tryouts as $tryout) {
-                if ($tryout->jenis_paket === 'kecerdasan') {
-                    $usedKecerdasanIds[] = $tryout->id;
-                }
-                if ($tryout->jenis_paket === 'kepribadian') {
-                    $usedKepribadianIds[] = $tryout->id;
-                }
-            }
-
-            // Filter out tryouts that are already shown as main cards
-            $availableKecerdasan = $availableKecerdasan->whereNotIn('id', $usedKecerdasanIds);
-            $availableKepribadian = $availableKepribadian->whereNotIn('id', $usedKepribadianIds);
-
-            // Create unique mappings for each lengkap card
-            $kecerdasanIndex = 0;
-            $kepribadianIndex = 0;
-
-            foreach ($tryouts as $index => $tryout) {
-                if ($tryout->jenis_paket === 'lengkap') {
-                    $tryoutMappings[$tryout->id] = [
-                        'kecerdasan' => $kecerdasanIndex < $availableKecerdasan->count() ?
-                            $availableKecerdasan->values()[$kecerdasanIndex] : null,
-                        'kepribadian' => $kepribadianIndex < $availableKepribadian->count() ?
-                            $availableKepribadian->values()[$kepribadianIndex] : null,
-                    ];
-
-                    // Move to next available tryouts
-                    if ($kecerdasanIndex < $availableKecerdasan->count()) $kecerdasanIndex++;
-                    if ($kepribadianIndex < $availableKepribadian->count()) $kepribadianIndex++;
-                }
-            }
-        }
 
         $userId = auth()->id();
         $latestScores = [];
@@ -464,7 +420,6 @@ class TryoutController extends Controller
             'user' => $user,
             'tryouts' => $tryouts,
             'availableMenus' => $user->getAvailableMenus(),
-            'tryoutMappings' => $tryoutMappings,
             'latestScores' => $latestScores,
             'finalScores' => $finalScores,
         ]);
