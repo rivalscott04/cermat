@@ -44,36 +44,40 @@
                     <div class="ibox">
                         <div class="ibox-content">
                             <div class="row">
-                                <div class="col-md-3 text-center">
-                                    <i class="fa fa-{{ $hasActiveSubscription ? 'check' : 'exclamation-triangle' }}-circle fa-4x text-{{ $hasActiveSubscription ? 'success' : 'warning' }}"></i>
+                                <div class="col-md-3">
+                                    <div class="status-icon-container">
+                                        <i class="fa fa-{{ $hasActiveSubscription ? 'check' : 'exclamation-triangle' }}-circle fa-4x text-{{ $hasActiveSubscription ? 'success' : 'warning' }}"></i>
+                                    </div>
                                 </div>
                                 <div class="col-md-9">
-                                    <h3 class="m-t-none m-b">{{ $packageDisplayName }}</h3>
-                                    <p class="text-{{ $hasActiveSubscription ? 'success' : 'warning' }} font-bold">
-                                        @if ($hasActiveSubscription)
-                                            <i class="fa fa-check"></i> Aktif
-                                        @else
-                                            <i class="fa fa-exclamation-triangle"></i> Belum Berlangganan
+                                    <div class="status-text-container">
+                                        <h3 class="m-t-none m-b">{{ $packageDisplayName }}</h3>
+                                        <p class="text-{{ $hasActiveSubscription ? 'success' : 'warning' }} font-bold">
+                                            @if ($hasActiveSubscription)
+                                                <i class="fa fa-check"></i> Aktif
+                                            @else
+                                                <i class="fa fa-exclamation-triangle"></i> Belum Berlangganan
+                                            @endif
+                                        </p>
+                                        
+                                        @if ($hasActiveSubscription && $subscription)
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <small class="text-muted">Mulai:</small><br>
+                                                    <strong>{{ $additionalInfo['subscription_start_date']->format('d M Y') }}</strong>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <small class="text-muted">Berakhir:</small><br>
+                                                    <strong>{{ $subscription->end_date->format('d M Y') }}</strong>
+                                                    @if($additionalInfo['days_remaining'] > 0)
+                                                        <br><span class="text-info">({{ $additionalInfo['days_remaining'] }} hari lagi)</span>
+                                                    @else
+                                                        <br><span class="text-danger">(Kadaluarsa)</span>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         @endif
-                                    </p>
-                                    
-                                    @if ($hasActiveSubscription && $subscription)
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <small class="text-muted">Mulai:</small><br>
-                                                <strong>{{ $additionalInfo['subscription_start_date']->format('d M Y') }}</strong>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <small class="text-muted">Berakhir:</small><br>
-                                                <strong>{{ $subscription->end_date->format('d M Y') }}</strong>
-                                                @if($additionalInfo['days_remaining'] > 0)
-                                                    <br><span class="text-info">({{ $additionalInfo['days_remaining'] }} hari lagi)</span>
-                                                @else
-                                                    <br><span class="text-danger">(Kadaluarsa)</span>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    @endif
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -85,38 +89,42 @@
                     <div class="ibox">
                         <div class="ibox-content">
                             <div class="row">
-                                <div class="col-md-3 text-center">
-                                    <i class="fa fa-bar-chart fa-4x text-info"></i>
+                                <div class="col-md-3">
+                                    <div class="stats-icon-container">
+                                        <i class="fa fa-bar-chart fa-4x text-info"></i>
+                                    </div>
                                 </div>
                                 <div class="col-md-9">
-                                    <h3 class="m-t-none m-b">Statistik Penggunaan</h3>
-                                    <p class="text-muted">Aktivitas dan limit paket Anda</p>
-                                    
-                                    <div class="row">
-                                        <div class="col-md-6">
-                                            <div class="m-b">
-                                                <small class="text-muted">Tryout Selesai:</small><br>
-                                                <strong class="text-primary">{{ $additionalInfo['total_tryouts_completed'] }}</strong>
-                                                @if ($maxTryouts != 999)
-                                                    / {{ $maxTryouts }}
+                                    <div class="stats-text-container">
+                                        <h3 class="m-t-none m-b">Statistik Penggunaan</h3>
+                                        <p class="text-muted">Aktivitas dan limit paket Anda</p>
+                                        
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="m-b">
+                                                    <small class="text-muted">Tryout Selesai:</small><br>
+                                                    <strong class="text-primary">{{ $additionalInfo['total_tryouts_completed'] }}</strong>
+                                                    @if ($maxTryouts != 999)
+                                                        / {{ $maxTryouts }}
+                                                    @endif
+                                                </div>
+                                                <div class="m-b">
+                                                    <small class="text-muted">Soal Dikerjakan:</small><br>
+                                                    <strong class="text-success">{{ $additionalInfo['total_questions_answered'] }}</strong>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="m-b">
+                                                    <small class="text-muted">Kategori Tersedia:</small><br>
+                                                    <strong class="text-info">{{ $allowedCategories ? count($allowedCategories) : 0 }}</strong>
+                                                </div>
+                                                @if($additionalInfo['last_activity'])
+                                                    <div class="m-b">
+                                                        <small class="text-muted">Aktivitas Terakhir:</small><br>
+                                                        <strong class="text-warning">{{ $additionalInfo['last_activity']->format('d M Y') }}</strong>
+                                                    </div>
                                                 @endif
                                             </div>
-                                            <div class="m-b">
-                                                <small class="text-muted">Soal Dikerjakan:</small><br>
-                                                <strong class="text-success">{{ $additionalInfo['total_questions_answered'] }}</strong>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6">
-                                            <div class="m-b">
-                                                <small class="text-muted">Kategori Tersedia:</small><br>
-                                                <strong class="text-info">{{ $allowedCategories ? count($allowedCategories) : 0 }}</strong>
-                                            </div>
-                                            @if($additionalInfo['last_activity'])
-                                                <div class="m-b">
-                                                    <small class="text-muted">Aktivitas Terakhir:</small><br>
-                                                    <strong class="text-warning">{{ $additionalInfo['last_activity']->format('d M Y') }}</strong>
-                                                </div>
-                                            @endif
                                         </div>
                                     </div>
                                 </div>
@@ -151,16 +159,20 @@
                         <div class="col-md-4">
                             <div class="widget style1 {{ $paketLengkapStatus['kecermatan']['completed'] ? 'navy-bg' : 'gray-bg' }}">
                                 <div class="row">
-                                    <div class="col-xs-4">
-                                        <i class="fa fa-{{ $paketLengkapStatus['kecermatan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                    <div class="col-xs-4 text-center">
+                                        <div class="progress-icon-container">
+                                            <i class="fa fa-{{ $paketLengkapStatus['kecermatan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                        </div>
                                     </div>
-                                    <div class="col-xs-8 text-right">
-                                        <span> Kecermatan</span>
-                                        @if($paketLengkapStatus['kecermatan']['completed'])
-                                            <h2 class="font-bold">{{ $paketLengkapStatus['kecermatan']['score'] }}</h2>
-                                        @else
-                                            <h2 class="font-bold">-</h2>
-                                        @endif
+                                    <div class="col-xs-8">
+                                        <div class="progress-text-container">
+                                            <span class="progress-label">Kecermatan</span>
+                                            @if($paketLengkapStatus['kecermatan']['completed'])
+                                                <h2 class="font-bold">{{ $paketLengkapStatus['kecermatan']['score'] }}</h2>
+                                            @else
+                                                <h2 class="font-bold">-</h2>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -168,16 +180,20 @@
                         <div class="col-md-4">
                             <div class="widget style1 {{ $paketLengkapStatus['kecerdasan']['completed'] ? 'navy-bg' : 'gray-bg' }}">
                                 <div class="row">
-                                    <div class="col-xs-4">
-                                        <i class="fa fa-{{ $paketLengkapStatus['kecerdasan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                    <div class="col-xs-4 text-center">
+                                        <div class="progress-icon-container">
+                                            <i class="fa fa-{{ $paketLengkapStatus['kecerdasan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                        </div>
                                     </div>
-                                    <div class="col-xs-8 text-right">
-                                        <span> Kecerdasan</span>
-                                        @if($paketLengkapStatus['kecerdasan']['completed'])
-                                            <h2 class="font-bold">{{ $paketLengkapStatus['kecerdasan']['score'] }}</h2>
-                                        @else
-                                            <h2 class="font-bold">-</h2>
-                                        @endif
+                                    <div class="col-xs-8">
+                                        <div class="progress-text-container">
+                                            <span class="progress-label">Kecerdasan</span>
+                                            @if($paketLengkapStatus['kecerdasan']['completed'])
+                                                <h2 class="font-bold">{{ $paketLengkapStatus['kecerdasan']['score'] }}</h2>
+                                            @else
+                                                <h2 class="font-bold">-</h2>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -185,16 +201,20 @@
                         <div class="col-md-4">
                             <div class="widget style1 {{ $paketLengkapStatus['kepribadian']['completed'] ? 'navy-bg' : 'gray-bg' }}">
                                 <div class="row">
-                                    <div class="col-xs-4">
-                                        <i class="fa fa-{{ $paketLengkapStatus['kepribadian']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                    <div class="col-xs-4 text-center">
+                                        <div class="progress-icon-container">
+                                            <i class="fa fa-{{ $paketLengkapStatus['kepribadian']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                        </div>
                                     </div>
-                                    <div class="col-xs-8 text-right">
-                                        <span> Kepribadian</span>
-                                        @if($paketLengkapStatus['kepribadian']['completed'])
-                                            <h2 class="font-bold">{{ $paketLengkapStatus['kepribadian']['score'] }}</h2>
-                                        @else
-                                            <h2 class="font-bold">-</h2>
-                                        @endif
+                                    <div class="col-xs-8">
+                                        <div class="progress-text-container">
+                                            <span class="progress-label">Kepribadian</span>
+                                            @if($paketLengkapStatus['kepribadian']['completed'])
+                                                <h2 class="font-bold">{{ $paketLengkapStatus['kepribadian']['score'] }}</h2>
+                                            @else
+                                                <h2 class="font-bold">-</h2>
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -320,6 +340,62 @@
 
 .text-navy {
     color: #1ab394 !important;
+}
+
+.progress-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 80px;
+}
+
+.progress-text-container {
+    padding-left: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    min-height: 80px;
+}
+
+.progress-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.widget.style1 .row {
+    min-height: 80px;
+    align-items: center;
+}
+
+.widget.style1 .col-xs-4 {
+    padding: 0 10px;
+}
+
+.widget.style1 .col-xs-8 {
+    padding: 0 10px;
+}
+
+.status-icon-container,
+.stats-icon-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 100px;
+}
+
+.status-text-container,
+.stats-text-container {
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    min-height: 100px;
 }
 </style>
 @endsection
