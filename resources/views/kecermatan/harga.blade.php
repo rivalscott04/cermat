@@ -94,116 +94,41 @@
 
   <div class="container py-5">
     <div class="row g-4">
-      <!-- SILVER -->
-      <div class="col-md-4">
-        <div class="pricing-card">
-          <h2 class="package-name">SILVER(TRYOUT)</h2>
-          <div class="old-price">Rp 99.500</div>
-          <div class="current-price">Rp 49.900,-</div>
-          <button class="register-button">DAFTAR SEKARANG</button>
+      @forelse($packages as $package)
+        <div class="col-md-4">
+          <div class="pricing-card">
+            @if($package->label)
+              <div class="package-label">{{ $package->label }}</div>
+            @endif
+            
+            <h2 class="package-name">{{ $package->name }}</h2>
+            
+            @if($package->old_price)
+              <div class="old-price">Rp {{ number_format($package->old_price, 0, ',', '.') }}</div>
+            @endif
+            
+            <div class="current-price">Rp {{ number_format($package->price, 0, ',', '.') }},-</div>
+            <button class="register-button">DAFTAR SEKARANG</button>
 
-          <p class="section-title">Akses yang didapat:</p>
-          <ul class="feature-list">
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Akses hanya untuk 1x24 jam setelah terkonfirmasi pembayaran.</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>PRE TEST (Try Out) Simulasi Tes hanya 1 kali. (Sistem CAT).</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Model soal mirip seperti Real Test dengan 1000 Bank Soal.</span>
-            </li>
-          </ul>
+            <p class="section-title">Akses yang didapat:</p>
+            <ul class="feature-list">
+              @foreach($package->features as $feature)
+                <li>
+                  <span class="feature-check">✓</span>
+                  <span>{{ $feature }}</span>
+                </li>
+              @endforeach
+            </ul>
+          </div>
         </div>
-      </div>
-
-      <!-- GOLD -->
-      <div class="col-md-4">
-        <div class="pricing-card">
-          <div class="package-label">PALING LARIS</div>
-          <h2 class="package-name">GOLD</h2>
-          <div class="current-price">Rp 999.500,-</div>
-          <button class="register-button">DAFTAR SEKARANG</button>
-
-          <p class="section-title">Akses yang didapat:</p>
-          <ul class="feature-list">
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Akses Member E-Course untuk 1 priode Seleksi Persiapan Tes POLRI 2025.</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>LATIHAN Soal per Mapel (Sistem CAT).</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>TRY OUT Simulasi Tes (Sistem CAT). Model sistem seperti Real Test dengan 1000 Bank Soal.</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Bonus Latihan Kecermatan Unlimited dengan Sistem CAT, (Angka, Simbol, Huruf, dan Kombinasi).</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Pembahasan Soal AKADEMIK dan PSIKOTES (Detail) pada menu Riwayat hasil Try Out.</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Note:Member Akses E-Course dapat digunakan 24 jam Non Stop.</span>
-            </li>
-          </ul>
+      @empty
+        <div class="col-12">
+          <div class="text-center py-5">
+            <h3>Tidak ada paket yang tersedia</h3>
+            <p>Silakan hubungi administrator untuk informasi lebih lanjut.</p>
+          </div>
         </div>
-      </div>
-
-      <!-- PLATINUM -->
-      <div class="col-md-4">
-        <div class="pricing-card">
-          <div class="package-label">DIREKOMENDASIKAN</div>
-          <h2 class="package-name">PLATINUM</h2>
-          <div class="current-price">Rp 1.199.500,-</div>
-          <button class="register-button">DAFTAR SEKARANG</button>
-
-          <p class="section-title">Akses yang didapat:</p>
-          <ul class="feature-list">
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Akses Member E-Course dengan materi lengkap, untuk 1 priode Seleksi Persiapan Tes POLRI 2025.</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Video Pembelajaran AKADEMIK meliputi: (Wawasan Kebangsaan, Pengetahuan Umum, Tes Penalaran Numerik,
-                B. Inggris) dan PSIKOTEST Secara Singkat, Jelas dan Mudah Dipahami.</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Modul Pembelajaran bisa diDOWNLOAD (Soft Copy).</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>LATIHAN Soal per Mapel (Sistem CAT).</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>TRY OUT Simulasi Tes (Sistem CAT). Model sistem seperti Real Test dengan 1000 Bank Soal.</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Bonus Latihan Kecermatan Unlimited dengan Sistem CAT, (Angka, Simbol, Huruf, dan Kombinasi).</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Pembahasan Soal AKADEMIK dan PSIKOTES (Detail) pada menu Riwayat hasil Try Out.</span>
-            </li>
-            <li>
-              <span class="feature-check">✓</span>
-              <span>Note:Member Akses E-Course dapat digunakan 24 jam Non Stop.</span>
-            </li>
-          </ul>
-        </div>
-      </div>
+      @endforelse
     </div>
   </div>
 

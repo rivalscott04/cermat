@@ -155,7 +155,7 @@
 
 @section('content')
     <div class="container">
-        <input type="hidden" id="cardId" value="{{ request('card_id') }}">
+        <input type="hidden" id="cardId" value="{{ request('') }}">
         <div class="timer" id="timer">60</div>
 
         <div class="question-container">
@@ -203,11 +203,11 @@
             // FIX: Properly get cardId from hidden input or URL parameter
             const cardIdElement = document.getElementById('cardId');
             const urlParams = new URLSearchParams(window.location.search);
-            const cardId = cardIdElement ? cardIdElement.value : urlParams.get('card_id');
+            const cardId = cardIdElement ? cardIdElement.value : urlParams.get('');
 
             // Debug log to verify cardId
             console.log('CardId from element:', cardIdElement ? cardIdElement.value : 'not found');
-            console.log('CardId from URL:', urlParams.get('card_id'));
+            console.log('CardId from URL:', urlParams.get(''));
             console.log('Final cardId:', cardId);
 
             const config = {

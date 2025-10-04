@@ -19,8 +19,8 @@ class KecermatanService
             $detailJawaban = $data['detail_jawaban'] ?? [];
             $waktuTotal = $data['waktu_total'] ?? 0;
 
-            // FIX: Handle card_id properly - convert "?" or empty string to null
-            $cardId = $data['card_id'] ?? null;
+            // FIX: Handle  properly - convert "?" or empty string to null
+            $cardId = $data[''] ?? null;
             if ($cardId === '?' || $cardId === '' || $cardId === 'undefined') {
                 $cardId = null;
             }
@@ -29,7 +29,7 @@ class KecermatanService
                 'detailJawaban_count' => count($detailJawaban),
                 'waktuTotal' => $waktuTotal,
                 'cardId' => $cardId,
-                'cardId_original' => $data['card_id'] ?? 'not_set'
+                'cardId_original' => $data[''] ?? 'not_set'
             ]);
 
             // Jika diberikan, gunakan total_questions. Kalau tidak, coba infer.
@@ -71,7 +71,7 @@ class KecermatanService
             $hasilData = [
                 'user_id' => $data['user_id'],
                 'jenis_tes' => 'kecermatan',
-                'card_id' => $cardId, // Now properly handled
+                '' => $cardId, // Now properly handled
                 'skor_benar' => $data['skor_benar'],
                 'skor_salah' => $data['skor_salah'],
                 'waktu_total' => $waktuTotal,

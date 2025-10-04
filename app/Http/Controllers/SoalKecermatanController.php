@@ -17,7 +17,7 @@ class SoalKecermatanController extends Controller
     public function index(Request $request)
     {
         $questions = $request->query('questions', []);
-        $cardId = $request->query('card_id');
+        $cardId = $request->query('');
         if (empty($questions) || count($questions) !== 10) {
             return redirect()->route('kecermatan');
         }
@@ -25,7 +25,7 @@ class SoalKecermatanController extends Controller
         // Store questions in session for later use
         session([
             'kecermatan_questions' => $questions,
-            'kecermatan_card_id' => $cardId
+            'kecermatan_' => $cardId
         ]);
 
         return view('kecermatan.soal', [
@@ -123,9 +123,9 @@ class SoalKecermatanController extends Controller
         try {
             $data = $request->all();
 
-            // Handle card_id from session if not in request or invalid
-            if (!isset($data['card_id']) || $data['card_id'] === '?' || $data['card_id'] === '') {
-                $data['card_id'] = session('kecermatan_card_id');
+            // Handle  from session if not in request or invalid
+            if (!isset($data['']) || $data[''] === '?' || $data[''] === '') {
+                $data[''] = session('kecermatan_');
             }
 
             $hasil = $service->simpanHasil($data);

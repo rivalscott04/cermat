@@ -152,10 +152,11 @@
                         </div>
                     </div>
 
-                    {{-- Card Tes Lengkap --}}
+                    {{-- Card Tes Lengkap - Hanya tampil untuk user yang bukan paket lengkap --}}
+                    @if (Auth::user()->paket_akses !== 'lengkap')
                     <div class="col-md-3 mb-4">
                         @php
-                            $canAccessLengkap = Auth::user()->canAccessTryout() && in_array(Auth::user()->paket_akses, ['free', 'lengkap']);
+                            $canAccessLengkap = Auth::user()->canAccessTryout() && Auth::user()->paket_akses === 'free';
                         @endphp
                         <div class="test-card h-100 {{ !$canAccessLengkap ? 'disabled-card' : '' }}">
                             @if (!$canAccessLengkap)
@@ -197,6 +198,7 @@
                             </div>
                         </div>
                     </div>
+                    @endif
                 </div>
 
                 {{-- Info paket berlangganan jika ada yang terkunci --}}

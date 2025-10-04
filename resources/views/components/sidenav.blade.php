@@ -73,6 +73,14 @@
                     </a>
                 </li>
 
+                <!-- Manajemen Paket -->
+                <li>
+                    <a href="{{ route('admin.packages.index') }}">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="nav-label">Kelola Paket</span>
+                    </a>
+                </li>
+
                 <!-- Pengaturan -->
                 <li>
                     <a href="#"><i class="fa fa-cogs"></i> <span class="nav-label">Pengaturan</span> <span class="fa arrow"></span></a>

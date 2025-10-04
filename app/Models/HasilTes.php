@@ -22,7 +22,6 @@ class HasilTes extends Model
         'hanker',
         'skor_akhir',
         'kategori_skor',
-        'card_id'
     ];
 
     protected $casts = [

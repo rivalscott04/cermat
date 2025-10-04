@@ -193,7 +193,6 @@ class KecermatanSoal {
             skor_salah: this.skorSalah,
             waktu_total: this.totalSets * 60 - this.waktuTersisa,
             detail_jawaban: this.detailJawaban,
-            card_id: this.cardId, // This will be null if invalid
         };
 
         console.log("Data being sent to server:", dataToSend);

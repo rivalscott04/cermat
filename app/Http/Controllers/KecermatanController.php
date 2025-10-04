@@ -16,7 +16,7 @@ class KecermatanController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        $cardId = $request->get('card_id'); // Get card_id from request
+        $cardId = $request->get(''); // Get  from request
 
         if (!$user->canAccessKecermatan()) {
             return redirect()->route('user.profile', ['userId' => $user->id])
@@ -71,8 +71,7 @@ class KecermatanController extends Controller
         }
 
         $jenis = $request->jenis;
-        $cardId = $request->card_id; // Get card_id
-        $hasil = [];
+        $cardId = $request->; // Get         $hasil = [];
 
 
         // Karakter yang tersedia
@@ -102,8 +101,8 @@ class KecermatanController extends Controller
             $hasil[] = $karakterSet;
         }
 
-        // Store card_id in session for later use
-        session(['kecermatan_card_id' => $cardId]);
+        // Store  in session for later use
+        session(['kecermatan_' => $cardId]);
 
         return response()->json([
             'success' => true,

@@ -245,8 +245,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const inputs = form.querySelectorAll(".karakter-input");
         const orderedInputs = Array.from(inputs).map((input) => input.value);
 
-        // Get card_id from hidden input
-        const cardIdInput = form.querySelector('input[name="card_id"]');
+        // Get  from hidden input
+        const cardIdInput = form.querySelector('input[name=""]');
         const cardId = cardIdInput ? cardIdInput.value : "";
 
         const queryString = orderedInputs
@@ -262,10 +262,10 @@ document.addEventListener("DOMContentLoaded", function () {
             console.log("[kecermatan] Filled inputs:", orderedInputs.length);
         }
 
-        // Include card_id in the query string if it exists
+        // Include  in the query string if it exists
         let fullQueryString = `jenis=${selectedType}&${queryString}`;
         if (cardId) {
-            fullQueryString += `&card_id=${encodeURIComponent(cardId)}`;
+            fullQueryString += `&=${encodeURIComponent(cardId)}`;
         }
 
         const targetUrl = `${form.action}?${fullQueryString}`;

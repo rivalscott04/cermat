@@ -134,7 +134,7 @@
                         <a href="{{ route('user.tryout.index') }}" class="btn btn-primary btn-block mb-2">
                             <i class="fa fa-list"></i> Daftar Tryout
                         </a>
-                        <a href="{{ route('user.tryout.start', $tryout->id) }}?card_id={{ request('card_id') }}"
+                        <a href="{{ route('user.tryout.start', $tryout->id) }}?={{ request('') }}"
                             class="btn btn-success btn-block mb-2">
                             <i class="fa fa-redo"></i> Coba Lagi
                         </a>

@@ -165,6 +165,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // YouTube Video Routes
     Route::resource('youtube-videos', App\Http\Controllers\Admin\YoutubeVideoController::class);
 
+    // Package Management Routes
+    Route::resource('packages', App\Http\Controllers\Admin\PackageController::class);
+    Route::post('packages/{package}/toggle-status', [App\Http\Controllers\Admin\PackageController::class, 'toggleStatus'])->name('packages.toggle-status');
+
     // Laporan Kemampuan Siswa (Admin Only)
     Route::get('/laporan-kemampuan', [LaporanKemampuanController::class, 'index'])->name('laporan.kemampuan.index');
     Route::get('/laporan-kemampuan/paket-lengkap', [LaporanKemampuanController::class, 'paketLengkap'])->name('laporan.kemampuan.paket-lengkap');

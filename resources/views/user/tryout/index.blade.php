@@ -117,7 +117,7 @@
                                                 @endphp
 
                                                 @if ($kecerdasanTryout)
-                                                    <a href="{{ route('user.tryout.start', $kecerdasanTryout) }}?type=kecerdasan&card_id={{ $tryout->id }}"
+                                                    <a href="{{ route('user.tryout.start', $kecerdasanTryout) }}?type=kecerdasan"
                                                         class="btn btn-primary btn-sm btn-block mb-2">
                                                         <i class="fa fa-brain"></i> Tryout Kecerdasan
                                                         <small class="d-block">{{ $kecerdasanTryout->judul }}</small>
@@ -128,7 +128,7 @@
                                                     </button>
                                                 @endif
                                                 @if ($kepribadianTryout)
-                                                    <a href="{{ route('user.tryout.start', $kepribadianTryout) }}?type=kepribadian&card_id={{ $tryout->id }}"
+                                                    <a href="{{ route('user.tryout.start', $kepribadianTryout) }}?type=kepribadian"
                                                         class="btn btn-primary btn-sm btn-block mb-2">
                                                         <i class="fa fa-user"></i> Tryout Kepribadian
                                                         <small class="d-block">{{ $kepribadianTryout->judul }}</small>
@@ -138,7 +138,7 @@
                                                         <i class="fa fa-user"></i> Kepribadian (Tidak Tersedia)
                                                     </button>
                                                 @endif
-                                                <a href="{{ route('kecermatan') }}?card_id={{ $tryout->id }}"
+                                                <a href="{{ route('kecermatan') }}"
                                                     class="btn btn-warning btn-sm btn-block">
                                                     <i class="fa fa-eye"></i> Tryout Kecermatan
                                                 </a>

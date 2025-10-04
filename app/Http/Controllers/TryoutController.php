@@ -431,34 +431,22 @@ class TryoutController extends Controller
         $finalScores = [];
 
         foreach ($tryouts as $tryout) {
-            $cardId = $tryout->id;
-
             $kecerdasan = \App\Models\HasilTes::where('user_id', $userId)
                 ->where('jenis_tes', 'kecerdasan')
-                ->where('card_id', $cardId)
-                ->orderBy('tanggal_tes', 'desc') // Add this to get latest
+                ->orderBy('tanggal_tes', 'desc')
                 ->value('skor_akhir');
 
             $kepribadian = \App\Models\HasilTes::where('user_id', $userId)
                 ->where('jenis_tes', 'kepribadian')
-                ->where('card_id', $cardId)
-                ->orderBy('tanggal_tes', 'desc') // Add this to get latest
+                ->orderBy('tanggal_tes', 'desc')
                 ->value('tkp_final_score');
 
             $kecermatan = \App\Models\HasilTes::where('user_id', $userId)
                 ->where('jenis_tes', 'kecermatan')
-                ->where('card_id', $cardId)
-                ->orderBy('tanggal_tes', 'desc') // Add this to get latest
+                ->orderBy('tanggal_tes', 'desc')
                 ->value('skor_akhir');
 
-            // Debug what we're getting
-            \Log::info("Scores for card {$cardId}:", [
-                'kecerdasan' => $kecerdasan,
-                'kepribadian' => $kepribadian,
-                'kecermatan' => $kecermatan
-            ]);
-
-            $latestScores[$cardId] = [
+            $latestScores[$tryout->id] = [
                 'kecerdasan' => $kecerdasan,
                 'kepribadian' => $kepribadian,
                 'kecermatan' => $kecermatan,
@@ -466,13 +454,13 @@ class TryoutController extends Controller
 
             if ($kecerdasan !== null && $kepribadian !== null && $kecermatan !== null) {
                 $scoringService = app(\App\Services\ScoringService::class);
-                $finalScores[$cardId] = $scoringService->calculateFinalScore(
+                $finalScores[$tryout->id] = $scoringService->calculateFinalScore(
                     (float) $kecermatan,
                     (float) $kecerdasan,
                     (float) $kepribadian
                 );
             } else {
-                $finalScores[$cardId] = null;
+                $finalScores[$tryout->id] = null;
             }
         }
 
@@ -496,17 +484,7 @@ class TryoutController extends Controller
                 ->with('error', 'Tryout "' . $tryout->judul . '" sedang tidak tersedia saat ini. Silakan coba lagi nanti.');
         }
 
-        $cardId = $session->card_id
-            ?? request('card_id')
-            ?? $tryout->id;
-
-        // Debug to see what we're getting
-        \Log::info('CardId sources:', [
-            'session_card_id' => $session->card_id ?? 'null',
-            'request_card_id' => request('card_id') ?? 'null',
-            'tryout_id' => $tryout->id,
-            'final_cardId' => $cardId
-        ]);
+        // Card ID functionality removed
 
         // Optional guard: enforce type from query if provided
         $requestedType = $request->get('type');
@@ -541,13 +519,10 @@ class TryoutController extends Controller
             $newSession = UserTryoutSession::create([
                 'user_id' => $user->id,
                 'tryout_id' => $tryout->id,
-                'card_id' => $request->get('card_id'),
                 'started_at' => now(),
                 'status' => 'active',
                 'shuffle_seed' => rand(1, 999999)
             ]);
-
-            \Log::info('Session created with card_id: ' . $newSession->card_id);
 
             // Generate questions untuk session baru
             $this->generateQuestionsForUser($user, $tryout, $newSession->shuffle_seed, $newSession->id);
@@ -557,8 +532,7 @@ class TryoutController extends Controller
         session(['auto_fullscreen_tryout' => $tryout->id]);
 
         return redirect()->route('user.tryout.work', [
-            'tryout' => $tryout,
-            'card_id' => $request->get('card_id')
+            'tryout' => $tryout
         ]);
     }
 
@@ -692,8 +666,7 @@ class TryoutController extends Controller
             ]);
 
             return redirect()->route('user.tryout.finish', [
-                'tryout' => $tryout->id,
-                'card_id' => $request->get('card_id') // ambil lagi dari query
+                'tryout' => $tryout->id
             ]);
         }
 
@@ -747,8 +720,7 @@ class TryoutController extends Controller
 
         $user = auth()->user();
 
-        // Ambil card_id dari request
-        $cardId = $request->get('card_id');
+        // Card ID functionality removed
 
         // Check if tryout is active
         if (!$tryout->is_active) {
@@ -771,10 +743,7 @@ class TryoutController extends Controller
             ]);
         }
 
-        // Update session card_id if provided and different
-        if ($cardId && $session->card_id != $cardId) {
-            $session->update(['card_id' => $cardId]);
-        }
+        // Card ID functionality removed
 
         // Check if time is still available
         $startTime = Carbon::parse($session->started_at);
@@ -894,8 +863,7 @@ class TryoutController extends Controller
 
         return response()->json([
             'success' => true,
-            'skor' => $skor,
-            'card_id' => $session->card_id
+            'skor' => $skor
         ]);
     }
 
@@ -1311,7 +1279,7 @@ class TryoutController extends Controller
         $categoryScores = [];
         $categoryGroups = $userAnswers->groupBy('soal.kategori_id');
 
-        $cardId = $session->card_id ?? $tryout->id;
+        // Card ID functionality removed
 
         foreach ($categoryGroups as $kategoriId => $answers) {
             $kategori = $answers->first()->soal->kategori;
@@ -1343,7 +1311,6 @@ class TryoutController extends Controller
                     [
                         'user_id' => $user->id,
                         'jenis_tes' => 'kepribadian',
-                        'card_id' => $cardId,
                         'detail_jawaban' => json_encode([
                             'N' => $tkpCount,
                             'T' => (int) round($tkpQuestions->sum('skor')),
@@ -1385,7 +1352,6 @@ class TryoutController extends Controller
                     [
                         'user_id' => $user->id,
                         'jenis_tes' => 'kecerdasan',
-                        'card_id' => $cardId,
                         'detail_jawaban' => json_encode([
                             'total_questions' => $totalQuestions,
                             'correct_answers' => $correctAnswers,
