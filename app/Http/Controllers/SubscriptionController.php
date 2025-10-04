@@ -68,6 +68,16 @@ class SubscriptionController extends Controller
         // OPTIMASI: Cache user statistics
         $userStatistics = $user->getUserStatistics();
         
+        // Tambahkan informasi tambahan untuk display yang lebih lengkap
+        $additionalInfo = [
+            'subscription_start_date' => $subscription ? $subscription->created_at : null,
+            'days_remaining' => $subscription && $subscription->end_date ? 
+                max(0, now()->diffInDays($subscription->end_date, false)) : null,
+            'total_questions_answered' => $userStatistics['total_questions_answered'] ?? 0,
+            'total_tryouts_completed' => $userStatistics['total_tryouts'] ?? 0,
+            'last_activity' => $userStatistics['last_activity'] ?? null
+        ];
+        
         // Log execution time untuk debugging
         $executionTime = round((microtime(true) - $startTime) * 1000, 2);
         Log::info("Subscription packages page loaded in {$executionTime}ms for user {$user->id}");
@@ -86,7 +96,8 @@ class SubscriptionController extends Controller
             'userPackage' => $userPackage,
             'paketLengkapStatus' => $paketLengkapStatus,
             'paketLengkapProgress' => $paketLengkapProgress,
-            'userStatistics' => $userStatistics
+            'userStatistics' => $userStatistics,
+            'additionalInfo' => $additionalInfo
         ]);
     }
 

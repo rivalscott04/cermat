@@ -1,112 +1,123 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="back-button-container mt-3">
-    <a href="{{ route('user.profile', ['userId' => Auth::user()->id]) }}" class="btn btn-outline-secondary">
-        <i class="fa fa-arrow-left me-2"></i> Kembali
-    </a>
-</div>
+<div class="wrapper wrapper-content animated fadeInRight">
+    <div class="row">
+        <div class="col-lg-12">
+            {{-- Back Button --}}
+            <div class="ibox">
+                <div class="ibox-content">
+                    <a href="{{ route('user.profile', ['userId' => Auth::user()->id]) }}" class="btn btn-white">
+                        <i class="fa fa-arrow-left"></i> Kembali ke Profile
+                    </a>
+                </div>
+            </div>
 
-<div class="container-fluid px-4 py-4">
-    <div class="row justify-content-center">
-        <div class="col-12 col-xl-10">
             {{-- Header Section --}}
-            <div class="header-section mb-5">
-                <div class="d-flex align-items-center">
-                    <div class="header-icon me-3">
-                        <i class="fa fa-gem fa-2x text-primary"></i>
-                    </div>
-                    <div>
-                        <h1 class="mb-2 fw-bold text-dark">Status Paket Berlangganan</h1>
-                        <p class="text-muted mb-0">Kelola dan pantau paket berlangganan Anda</p>
+            <div class="ibox">
+                <div class="ibox-content text-center">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h2 class="font-bold text-navy">Status Paket Berlangganan</h2>
+                            <p class="text-muted">Kelola dan pantau paket berlangganan Anda</p>
+                        </div>
                     </div>
                 </div>
             </div>
 
             @if (session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    <i class="fa fa-check-circle me-2"></i>{{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert alert-success">
+                    <i class="fa fa-check-circle"></i> {{ session('success') }}
                 </div>
             @endif
 
             @if (session('error'))
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fa fa-exclamation-circle me-2"></i>{{ session('error') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                <div class="alert alert-danger">
+                    <i class="fa fa-exclamation-circle"></i> {{ session('error') }}
                 </div>
             @endif
 
             {{-- Status Cards Grid --}}
-            <div class="row g-4 mb-5">
+            <div class="row">
                 {{-- Status Paket Card --}}
                 <div class="col-lg-6">
-                    <div class="card status-card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="status-icon me-3">
-                                    <i class="fa fa-{{ $hasActiveSubscription ? 'check' : 'exclamation-triangle' }}-circle fa-2x text-{{ $hasActiveSubscription ? 'success' : 'warning' }}"></i>
+                    <div class="ibox">
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <i class="fa fa-{{ $hasActiveSubscription ? 'check' : 'exclamation-triangle' }}-circle fa-4x text-{{ $hasActiveSubscription ? 'success' : 'warning' }}"></i>
                                 </div>
-                                <div>
-                                    <h6 class="mb-1 text-{{ $hasActiveSubscription ? 'success' : 'warning' }} text-uppercase fw-bold">
-                                        Status Langganan
-                                    </h6>
-                                    <h4 class="mb-0 fw-bold text-dark">
+                                <div class="col-md-9">
+                                    <h3 class="m-t-none m-b">{{ $packageDisplayName }}</h3>
+                                    <p class="text-{{ $hasActiveSubscription ? 'success' : 'warning' }} font-bold">
                                         @if ($hasActiveSubscription)
-                                            {{ $packageDisplayName }}
+                                            <i class="fa fa-check"></i> Aktif
                                         @else
-                                            Belum Berlangganan
+                                            <i class="fa fa-exclamation-triangle"></i> Belum Berlangganan
                                         @endif
-                                    </h4>
+                                    </p>
+                                    
+                                    @if ($hasActiveSubscription && $subscription)
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <small class="text-muted">Mulai:</small><br>
+                                                <strong>{{ $additionalInfo['subscription_start_date']->format('d M Y') }}</strong>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <small class="text-muted">Berakhir:</small><br>
+                                                <strong>{{ $subscription->end_date->format('d M Y') }}</strong>
+                                                @if($additionalInfo['days_remaining'] > 0)
+                                                    <br><span class="text-info">({{ $additionalInfo['days_remaining'] }} hari lagi)</span>
+                                                @else
+                                                    <br><span class="text-danger">(Kadaluarsa)</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
-                            @if ($hasActiveSubscription && $subscription && $subscription->end_date)
-                                <div class="subscription-info">
-                                    <div class="d-flex align-items-center text-muted">
-                                        <i class="fa fa-calendar me-2"></i>
-                                        <div>
-                                            <small>Berakhir: {{ $subscription->end_date->format('d M Y') }}</small>
-                                            <br><small class="text-muted">({{ $subscription->end_date->diffForHumans() }})</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
                         </div>
                     </div>
                 </div>
 
-                {{-- Limit & Kuota Card --}}
+                {{-- Statistik Penggunaan Card --}}
                 <div class="col-lg-6">
-                    <div class="card stats-card border-0 shadow-sm h-100">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="stats-icon me-3">
-                                    <i class="fa fa-bar-chart fa-2x text-primary"></i>
+                    <div class="ibox">
+                        <div class="ibox-content">
+                            <div class="row">
+                                <div class="col-md-3 text-center">
+                                    <i class="fa fa-bar-chart fa-4x text-info"></i>
                                 </div>
-                                <div>
-                                    <h6 class="mb-1 text-primary text-uppercase fw-bold">
-                                        Limit & Kuota
-                                    </h6>
-                                    <p class="mb-0 text-muted">Penggunaan paket Anda</p>
-                                </div>
-                            </div>
-                            <div class="row g-3">
-                                <div class="col-6">
-                                    <div class="stat-item text-center">
-                                        <div class="stat-number h4 mb-1 fw-bold text-primary">
-                                            @if ($maxTryouts == 999)
-                                                ∞
-                                            @else
-                                                {{ $maxTryouts }}
+                                <div class="col-md-9">
+                                    <h3 class="m-t-none m-b">Statistik Penggunaan</h3>
+                                    <p class="text-muted">Aktivitas dan limit paket Anda</p>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="m-b">
+                                                <small class="text-muted">Tryout Selesai:</small><br>
+                                                <strong class="text-primary">{{ $additionalInfo['total_tryouts_completed'] }}</strong>
+                                                @if ($maxTryouts != 999)
+                                                    / {{ $maxTryouts }}
+                                                @endif
+                                            </div>
+                                            <div class="m-b">
+                                                <small class="text-muted">Soal Dikerjakan:</small><br>
+                                                <strong class="text-success">{{ $additionalInfo['total_questions_answered'] }}</strong>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="m-b">
+                                                <small class="text-muted">Kategori Tersedia:</small><br>
+                                                <strong class="text-info">{{ $allowedCategories ? count($allowedCategories) : 0 }}</strong>
+                                            </div>
+                                            @if($additionalInfo['last_activity'])
+                                                <div class="m-b">
+                                                    <small class="text-muted">Aktivitas Terakhir:</small><br>
+                                                    <strong class="text-warning">{{ $additionalInfo['last_activity']->format('d M Y') }}</strong>
+                                                </div>
                                             @endif
                                         </div>
-                                        <small class="text-muted">Max Tryout</small>
-                                    </div>
-                                </div>
-                                <div class="col-6">
-                                    <div class="stat-item text-center">
-                                        <div class="stat-number h4 mb-1 fw-bold text-success">{{ $allowedCategories ? count($allowedCategories) : 0 }}</div>
-                                        <small class="text-muted">Kategori</small>
                                     </div>
                                 </div>
                             </div>
@@ -117,55 +128,72 @@
 
             {{-- Progress Section --}}
             @if ($userPackage === 'lengkap' && $paketLengkapStatus)
-            <div class="row mb-5">
-                <div class="col-12">
-                    <div class="card progress-card border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <div class="d-flex align-items-center justify-content-between mb-3">
-                                <div>
-                                    <h5 class="mb-1 fw-bold text-dark">Progress Paket Lengkap</h5>
-                                    <p class="mb-0 text-muted">Lacak penyelesaian tes Anda</p>
-                                </div>
-                                <div class="progress-percentage">
-                                    <span class="h3 mb-0 fw-bold text-success">{{ $paketLengkapProgress }}%</span>
-                                </div>
-                            </div>
-                            <div class="progress mb-3" style="height: 12px;">
-                                <div class="progress-bar bg-success" role="progressbar" 
-                                     style="width: {{ $paketLengkapProgress }}%">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5><i class="fa fa-trophy"></i> Progress Paket Lengkap</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="progress progress-large">
+                                <div class="progress-bar progress-bar-success" style="width: {{ $paketLengkapProgress }}%">
+                                    <span class="sr-only">{{ $paketLengkapProgress }}% Complete</span>
                                 </div>
                             </div>
-                            <div class="row g-3">
-                                <div class="col-md-4">
-                                    <div class="progress-item">
-                                        <div class="d-flex align-items-center">
-                                            <i class="fa fa-{{ $paketLengkapStatus['kecermatan']['completed'] ? 'check' : 'times' }}-circle me-2 text-{{ $paketLengkapStatus['kecermatan']['completed'] ? 'success' : 'danger' }}"></i>
-                                            <span class="fw-medium">Kecermatan</span>
-                                        </div>
+                            <p class="text-muted">Penyelesaian: {{ $paketLengkapProgress }}%</p>
+                        </div>
+                        <div class="col-md-4 text-right">
+                            <h2 class="text-success">{{ $paketLengkapProgress }}%</h2>
+                        </div>
+                    </div>
+                    
+                    <div class="row m-t-md">
+                        <div class="col-md-4">
+                            <div class="widget style1 {{ $paketLengkapStatus['kecermatan']['completed'] ? 'navy-bg' : 'gray-bg' }}">
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <i class="fa fa-{{ $paketLengkapStatus['kecermatan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                    </div>
+                                    <div class="col-xs-8 text-right">
+                                        <span> Kecermatan</span>
                                         @if($paketLengkapStatus['kecermatan']['completed'])
-                                            <small class="text-muted">Skor: {{ $paketLengkapStatus['kecermatan']['score'] }}</small>
+                                            <h2 class="font-bold">{{ $paketLengkapStatus['kecermatan']['score'] }}</h2>
+                                        @else
+                                            <h2 class="font-bold">-</h2>
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="progress-item">
-                                        <div class="d-flex align-items-center">
-                                            <i class="fa fa-{{ $paketLengkapStatus['kecerdasan']['completed'] ? 'check' : 'times' }}-circle me-2 text-{{ $paketLengkapStatus['kecerdasan']['completed'] ? 'success' : 'danger' }}"></i>
-                                            <span class="fw-medium">Kecerdasan</span>
-                                        </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="widget style1 {{ $paketLengkapStatus['kecerdasan']['completed'] ? 'navy-bg' : 'gray-bg' }}">
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <i class="fa fa-{{ $paketLengkapStatus['kecerdasan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                    </div>
+                                    <div class="col-xs-8 text-right">
+                                        <span> Kecerdasan</span>
                                         @if($paketLengkapStatus['kecerdasan']['completed'])
-                                            <small class="text-muted">Skor: {{ $paketLengkapStatus['kecerdasan']['score'] }}</small>
+                                            <h2 class="font-bold">{{ $paketLengkapStatus['kecerdasan']['score'] }}</h2>
+                                        @else
+                                            <h2 class="font-bold">-</h2>
                                         @endif
                                     </div>
                                 </div>
-                                <div class="col-md-4">
-                                    <div class="progress-item">
-                                        <div class="d-flex align-items-center">
-                                            <i class="fa fa-{{ $paketLengkapStatus['kepribadian']['completed'] ? 'check' : 'times' }}-circle me-2 text-{{ $paketLengkapStatus['kepribadian']['completed'] ? 'success' : 'danger' }}"></i>
-                                            <span class="fw-medium">Kepribadian</span>
-                                        </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="widget style1 {{ $paketLengkapStatus['kepribadian']['completed'] ? 'navy-bg' : 'gray-bg' }}">
+                                <div class="row">
+                                    <div class="col-xs-4">
+                                        <i class="fa fa-{{ $paketLengkapStatus['kepribadian']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                    </div>
+                                    <div class="col-xs-8 text-right">
+                                        <span> Kepribadian</span>
                                         @if($paketLengkapStatus['kepribadian']['completed'])
-                                            <small class="text-muted">Skor: {{ $paketLengkapStatus['kepribadian']['score'] }}</small>
+                                            <h2 class="font-bold">{{ $paketLengkapStatus['kepribadian']['score'] }}</h2>
+                                        @else
+                                            <h2 class="font-bold">-</h2>
                                         @endif
                                     </div>
                                 </div>
@@ -177,55 +205,56 @@
             @endif
 
             {{-- Features Section --}}
-            <div class="row mb-5">
-                <div class="col-12">
-                    <div class="card features-card border-0 shadow-sm">
-                        <div class="card-body p-4">
-                            <h5 class="mb-4 fw-bold text-dark">
-                                <i class="fa fa-star me-2 text-warning"></i>
-                                Fitur Paket {{ $packageDisplayName }}
-                            </h5>
-                            <div class="row g-3">
-                                @foreach($packageFeatures['features'] as $feature)
-                                <div class="col-md-6">
-                                    <div class="feature-item d-flex align-items-center">
-                                        <i class="fa fa-check-circle me-2 text-success"></i>
-                                        <span>{{ $feature }}</span>
-                                    </div>
-                                </div>
-                                @endforeach
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5><i class="fa fa-star text-warning"></i> Fitur Paket {{ $packageDisplayName }}</h5>
+                </div>
+                <div class="ibox-content">
+                    <div class="row">
+                        @foreach($packageFeatures['features'] as $feature)
+                        <div class="col-md-6">
+                            <div class="feature-item">
+                                <i class="fa fa-check text-success"></i> {{ $feature }}
                             </div>
                         </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
 
             {{-- Action Buttons --}}
-            <div class="row">
-                <div class="col-12">
-                    <div class="d-flex gap-3 justify-content-center">
-                        @if (!$hasActiveSubscription)
-                            <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-lg px-4">
-                                <i class="fa fa-gem me-2"></i>Berlangganan Sekarang
-                            </a>
-                        @else
+            <div class="ibox">
+                <div class="ibox-content text-center">
+                    @if (!$hasActiveSubscription)
+                        <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-lg">
+                            <i class="fa fa-gem"></i> Berlangganan Sekarang
+                        </a>
+                        <p class="text-muted m-t-md">Mulai perjalanan persiapan tes Anda</p>
+                    @else
+                        <div class="row">
                             @if ($userPackage !== 'lengkap')
-                                <a href="{{ route('subscription.packages') }}" class="btn btn-success btn-lg px-4">
-                                    <i class="fa fa-arrow-up me-2"></i>Upgrade Paket
-                                </a>
+                                <div class="col-md-4">
+                                    <a href="{{ route('subscription.packages') }}" class="btn btn-success btn-block">
+                                        <i class="fa fa-arrow-up"></i> Upgrade Paket
+                                    </a>
+                                </div>
                             @endif
                             @if ($canAccessTryout)
-                                <a href="{{ route('user.tryout.index') }}" class="btn btn-info btn-lg px-4">
-                                    <i class="fa fa-play me-2"></i>Mulai Tryout
-                                </a>
+                                <div class="col-md-4">
+                                    <a href="{{ route('user.tryout.index') }}" class="btn btn-info btn-block">
+                                        <i class="fa fa-play"></i> Mulai Tryout
+                                    </a>
+                                </div>
                             @endif
                             @if ($canAccessKecermatan)
-                                <a href="{{ route('kecermatan.index') }}" class="btn btn-warning btn-lg px-4">
-                                    <i class="fa fa-tachometer me-2"></i>Tes Kecermatan
-                                </a>
+                                <div class="col-md-4">
+                                    <a href="{{ route('kecermatan.index') }}" class="btn btn-warning btn-block">
+                                        <i class="fa fa-tachometer"></i> Tes Kecermatan
+                                    </a>
+                                </div>
                             @endif
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -233,67 +262,65 @@
 </div>
 
 <style>
-.status-card, .stats-card, .progress-card, .features-card {
-    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.status-card:hover, .stats-card:hover, .progress-card:hover, .features-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1) !important;
-}
-
-.status-icon, .stats-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,123,255,0.1);
-}
-
-.stats-icon {
-    background: rgba(40,167,69,0.1);
-}
-
-.header-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: rgba(0,123,255,0.1);
-}
-
-.stat-number {
-    font-size: 1.5rem;
-}
-
-.progress-item {
-    padding: 12px;
-    border-radius: 8px;
-    background: rgba(0,0,0,0.02);
-}
-
 .feature-item {
     padding: 8px 0;
+    margin-bottom: 5px;
 }
 
-@media (max-width: 768px) {
-    .container-fluid {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-    
-    .header-section h1 {
-        font-size: 1.5rem;
-    }
-    
-    .btn-lg {
-        font-size: 1rem;
-        padding: 0.75rem 1.5rem;
-    }
+.progress-large {
+    height: 20px;
+}
+
+.widget.style1 {
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+}
+
+.widget.style1.navy-bg {
+    background-color: #1ab394;
+    color: white;
+}
+
+.widget.style1.gray-bg {
+    background-color: #f3f3f4;
+    color: #676a6c;
+}
+
+.widget.style1 .font-bold {
+    font-weight: 600;
+}
+
+.ibox {
+    margin-bottom: 20px;
+}
+
+.ibox-title {
+    border-bottom: 1px solid #e7eaec;
+    padding: 15px 20px;
+    background-color: #f8f9fa;
+}
+
+.ibox-content {
+    padding: 20px;
+}
+
+.btn-block {
+    display: block;
+    width: 100%;
+}
+
+.m-t-md {
+    margin-top: 20px;
+}
+
+.m-b {
+    margin-bottom: 15px;
+}
+
+.text-navy {
+    color: #1ab394 !important;
 }
 </style>
 @endsection
+
