@@ -102,6 +102,17 @@
                                 </div>
                             @endforelse
                         </div>
+                        
+                        {{-- Pagination --}}
+                        @if($tryouts->hasPages())
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="d-flex justify-content-center">
+                                        {{ $tryouts->links() }}
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

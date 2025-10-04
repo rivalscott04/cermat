@@ -372,9 +372,28 @@ class TryoutController extends Controller
             if (!empty($type)) {
                 $tryouts = $tryouts->where('jenis_paket', $type)->values();
             }
+            // Convert to paginated collection for FREE users
+            $perPage = 9;
+            $currentPage = $request->get('page', 1);
+            $offset = ($currentPage - 1) * $perPage;
+            $items = $tryouts->slice($offset, $perPage)->values();
+            $total = $tryouts->count();
+            
+            $tryouts = new \Illuminate\Pagination\LengthAwarePaginator(
+                $items,
+                $total,
+                $perPage,
+                $currentPage,
+                [
+                    'path' => $request->url(),
+                    'pageName' => 'page',
+                ]
+            );
+            $tryouts->appends($request->query());
         } else {
-            // For paid packages, keep existing max tryouts limit
-            $tryouts = $query->limit($user->getMaxTryouts())->get();
+            // For paid packages, use pagination with 9 items per page
+            $tryouts = $query->paginate(9);
+            $tryouts->appends($request->query());
         }
 
 
