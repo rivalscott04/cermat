@@ -64,6 +64,9 @@ class SubscriptionController extends Controller
             $paketLengkapStatus = $user->getPaketLengkapStatus();
             $paketLengkapProgress = $user->getPaketLengkapProgress();
         }
+
+        // OPTIMASI: Cache user statistics
+        $userStatistics = $user->getUserStatistics();
         
         // Log execution time untuk debugging
         $executionTime = round((microtime(true) - $startTime) * 1000, 2);
@@ -82,7 +85,8 @@ class SubscriptionController extends Controller
             'canAccessKecermatan' => $canAccessKecermatan,
             'userPackage' => $userPackage,
             'paketLengkapStatus' => $paketLengkapStatus,
-            'paketLengkapProgress' => $paketLengkapProgress
+            'paketLengkapProgress' => $paketLengkapProgress,
+            'userStatistics' => $userStatistics
         ]);
     }
 

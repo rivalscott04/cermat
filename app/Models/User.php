@@ -355,4 +355,26 @@ class User extends Authenticatable
         $userPackage = $this->paket_akses; // Use the mapped package
         return $features[$userPackage] ?? $features['free'];
     }
+
+    /**
+     * OPTIMASI: Get user statistics with caching
+     */
+    public function getUserStatistics(): array
+    {
+        return cache()->remember("user_statistics_{$this->id}", 15 * 60, function () {
+            return [
+                'total_tryouts' => \App\Models\UserTryoutSession::where('user_id', $this->id)
+                    ->where('status', 'completed')
+                    ->count(),
+                'total_questions_answered' => \App\Models\UserTryoutSoal::where('user_id', $this->id)
+                    ->count(),
+                'total_kecermatan_tests' => \App\Models\HasilTes::where('user_id', $this->id)
+                    ->where('jenis_tes', 'kecermatan')
+                    ->count(),
+                'last_activity' => \App\Models\UserTryoutSession::where('user_id', $this->id)
+                    ->latest('finished_at')
+                    ->value('finished_at')
+            ];
+        });
+    }
 }

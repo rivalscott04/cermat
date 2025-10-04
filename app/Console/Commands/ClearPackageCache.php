@@ -39,6 +39,12 @@ class ClearPackageCache extends Command
         $service = app(\App\Services\PaketLengkapService::class);
         $service->clearAllCache();
         
+        // Clear user statistics caches
+        $users = \App\Models\User::all();
+        foreach ($users as $user) {
+            cache()->forget("user_statistics_{$user->id}");
+        }
+        
         $this->info('Package caches cleared successfully!');
         
         return 0;
