@@ -392,6 +392,29 @@ class User extends Authenticatable
     public function getUserStatistics(): array
     {
         return cache()->remember("user_statistics_{$this->id}", 15 * 60, function () {
+            // Get latest test date from HasilTes (includes time)
+            $latestHasilTes = \App\Models\HasilTes::where('user_id', $this->id)
+                ->latest('tanggal_tes')
+                ->latest('created_at')
+                ->first();
+            
+            // Get latest tryout activity
+            $latestTryout = \App\Models\UserTryoutSession::where('user_id', $this->id)
+                ->latest('finished_at')
+                ->first();
+            
+            // Determine the most recent activity between HasilTes and Tryout
+            $lastActivity = null;
+            if ($latestHasilTes && $latestTryout) {
+                $lastActivity = $latestHasilTes->tanggal_tes > $latestTryout->finished_at 
+                    ? $latestHasilTes->tanggal_tes 
+                    : $latestTryout->finished_at;
+            } elseif ($latestHasilTes) {
+                $lastActivity = $latestHasilTes->tanggal_tes;
+            } elseif ($latestTryout) {
+                $lastActivity = $latestTryout->finished_at;
+            }
+            
             return [
                 'total_tryouts' => \App\Models\UserTryoutSession::where('user_id', $this->id)
                     ->where('status', 'completed')
@@ -401,9 +424,8 @@ class User extends Authenticatable
                 'total_kecermatan_tests' => \App\Models\HasilTes::where('user_id', $this->id)
                     ->where('jenis_tes', 'kecermatan')
                     ->count(),
-                'last_activity' => \App\Models\UserTryoutSession::where('user_id', $this->id)
-                    ->latest('finished_at')
-                    ->value('finished_at')
+                'last_activity' => $lastActivity,
+                'last_test_date' => $latestHasilTes ? $latestHasilTes->tanggal_tes : null
             ];
         });
     }
