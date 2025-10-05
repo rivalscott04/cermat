@@ -732,26 +732,39 @@
                         return;
                     }
                     const s = data.data;
+                    const isCompleted = s.status === 'completed';
+                    const isPassed = s.passed === true;
+                    const borderColor = isCompleted ? (isPassed ? 'success' : 'warning') : 'danger';
+                    const textColor = isCompleted ? (isPassed ? 'success' : 'warning') : 'danger';
+                    const iconColor = isCompleted ? (isPassed ? 'success' : 'warning') : 'danger';
+                    const buttonClass = isCompleted ? (isPassed ? 'outline-success' : 'outline-warning') : 'outline-danger';
+                    
                     container.innerHTML = `
                         <div class="col-12">
-                            <div class="card border-left-danger">
+                            <div class="card border-left-${borderColor}">
                                 <div class="card-body">
                                     <div class="row no-gutters align-items-center">
                                         <div class="col mr-2">
-                                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">${s.title || 'Paket Lengkap'}</div>
+                                            <div class="text-xs font-weight-bold text-${textColor} text-uppercase mb-1">${s.title || 'Paket Lengkap'}</div>
                                             <div class="h6 mb-1 font-weight-bold text-gray-800">${s.message || ''}</div>
-                                            ${s.final_score ? `<div class=\"h4 mb-0 font-weight-bold text-danger\">Skor Akhir: ${s.final_score}</div>` : ''}
+                                            ${s.final_score ? `<div class=\"h4 mb-0 font-weight-bold text-${textColor}\">Skor Akhir: ${s.final_score}</div>` : ''}
+                                            ${isCompleted && s.passed !== undefined ? `
+                                                <div class="mt-2">
+                                                    <span class="badge badge-${isPassed ? 'success' : 'danger'} badge-lg">${isPassed ? 'LULUS' : 'TIDAK LULUS'}</span>
+                                                    <small class="text-muted ml-2">Standar: ${s.passing_grade || 'N/A'}</small>
+                                                </div>
+                                            ` : ''}
                                             <div class="progress mt-2" style="height: 8px;">
-                                                <div class="progress-bar bg-danger" role="progressbar" style="width: ${(s.progress || 0)}%"></div>
+                                                <div class="progress-bar bg-${borderColor}" role="progressbar" style="width: ${(s.progress || 0)}%"></div>
                                             </div>
                                             <small class="text-muted">${s.progress || 0}% selesai</small>
                                         </div>
                                         <div class="col-auto">
-                                            <i class="fa fa-trophy fa-2x text-danger"></i>
+                                            <i class="fa fa-trophy fa-2x text-${iconColor}"></i>
                                         </div>
                                     </div>
                                     <div class="mt-2">
-                                        <a href="${`{{ route('user.tryout.paket-lengkap.status') }}`}" class="btn btn-sm btn-outline-danger">
+                                        <a href="${`{{ route('user.tryout.paket-lengkap.status') }}`}" class="btn btn-sm btn-${buttonClass}">
                                             <i class="fa fa-eye"></i> Lihat Detail
                                         </a>
                                     </div>

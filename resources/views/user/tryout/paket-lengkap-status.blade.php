@@ -13,10 +13,22 @@
                 <div class="ibox-content">
                     @if($status['is_complete'])
                         <!-- Paket Lengkap Selesai -->
-                        <div class="alert alert-success">
-                            <h4><i class="fa fa-check-circle"></i> Selamat! Paket Lengkap Anda Sudah Selesai</h4>
+                        <div class="alert {{ $status['scoring_info']['passed'] ? 'alert-success' : 'alert-warning' }}">
+                            <h4><i class="fa {{ $status['scoring_info']['passed'] ? 'fa-check-circle' : 'fa-exclamation-triangle' }}"></i> 
+                                {{ $status['scoring_info']['passed'] ? 'Selamat! Paket Lengkap Anda Sudah Selesai' : 'Paket Lengkap Anda Sudah Selesai' }}
+                            </h4>
                             <p>Anda telah menyelesaikan semua komponen paket lengkap dengan skor akhir:</p>
-                            <h2 class="text-center text-success">{{ $status['final_score'] }}</h2>
+                            <h2 class="text-center {{ $status['scoring_info']['passed'] ? 'text-success' : 'text-warning' }}">{{ $status['scoring_info']['final_score'] }}</h2>
+                            
+                            <!-- Status Kelulusan -->
+                            <div class="text-center mt-3">
+                                <span class="label label-{{ $status['scoring_info']['passed'] ? 'success' : 'danger' }} label-lg">
+                                    {{ $status['scoring_info']['passed'] ? 'LULUS' : 'TIDAK LULUS' }}
+                                </span>
+                                <p class="mt-2 text-muted">
+                                    <small>Standar kelulusan: {{ $status['scoring_info']['passing_grade'] }}</small>
+                                </p>
+                            </div>
                         </div>
 
                         <div class="row">
@@ -38,7 +50,9 @@
                                     </div>
                                     <div class="panel-body text-center">
                                         <h3 class="text-success">{{ $status['kecerdasan']['score'] }}</h3>
-                                        <p><small>{{ $status['kecerdasan']['tryout_title'] }}</small></p>
+                                        @if(isset($status['kecerdasan']['tryout_title']))
+                                            <p><small>{{ $status['kecerdasan']['tryout_title'] }}</small></p>
+                                        @endif
                                         <p><small>Tanggal: {{ \Carbon\Carbon::parse($status['kecerdasan']['tanggal'])->format('d/m/Y H:i') }}</small></p>
                                     </div>
                                 </div>
@@ -50,7 +64,9 @@
                                     </div>
                                     <div class="panel-body text-center">
                                         <h3 class="text-success">{{ $status['kepribadian']['score'] }}</h3>
-                                        <p><small>{{ $status['kepribadian']['tryout_title'] }}</small></p>
+                                        @if(isset($status['kepribadian']['tryout_title']))
+                                            <p><small>{{ $status['kepribadian']['tryout_title'] }}</small></p>
+                                        @endif
                                         <p><small>Tanggal: {{ \Carbon\Carbon::parse($status['kepribadian']['tanggal'])->format('d/m/Y H:i') }}</small></p>
                                     </div>
                                 </div>
@@ -103,7 +119,9 @@
                                     <div class="panel-body text-center">
                                         @if($status['kecerdasan']['completed'])
                                             <h3 class="text-success">{{ $status['kecerdasan']['score'] }}</h3>
-                                            <p><small>{{ $status['kecerdasan']['tryout_title'] }}</small></p>
+                                            @if(isset($status['kecerdasan']['tryout_title']))
+                                                <p><small>{{ $status['kecerdasan']['tryout_title'] }}</small></p>
+                                            @endif
                                             <p><small>Tanggal: {{ \Carbon\Carbon::parse($status['kecerdasan']['tanggal'])->format('d/m/Y H:i') }}</small></p>
                                         @else
                                             <p class="text-muted">{{ $status['kecerdasan']['message'] }}</p>
@@ -125,7 +143,9 @@
                                     <div class="panel-body text-center">
                                         @if($status['kepribadian']['completed'])
                                             <h3 class="text-success">{{ $status['kepribadian']['score'] }}</h3>
-                                            <p><small>{{ $status['kepribadian']['tryout_title'] }}</small></p>
+                                            @if(isset($status['kepribadian']['tryout_title']))
+                                                <p><small>{{ $status['kepribadian']['tryout_title'] }}</small></p>
+                                            @endif
                                             <p><small>Tanggal: {{ \Carbon\Carbon::parse($status['kepribadian']['tanggal'])->format('d/m/Y H:i') }}</small></p>
                                         @else
                                             <p class="text-muted">{{ $status['kepribadian']['message'] }}</p>

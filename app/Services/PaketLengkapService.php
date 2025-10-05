@@ -6,6 +6,8 @@ use App\Models\User;
 use App\Models\HasilTes;
 use App\Models\UserTryoutSession;
 use App\Models\PackageCategoryMapping;
+use App\Models\ScoringSetting;
+use App\Services\ScoringService;
 use Illuminate\Support\Collection;
 
 class PaketLengkapService
@@ -41,7 +43,8 @@ class PaketLengkapService
                 'kecermatan' => $kecermatanStatus,
                 'kecerdasan' => $kecerdasanStatus,
                 'kepribadian' => $kepribadianStatus,
-                'final_score' => $isComplete ? $this->calculateFinalScoreFromData($allData) : null
+                'final_score' => $isComplete ? $this->calculateFinalScoreFromData($allData) : null,
+                'scoring_info' => $isComplete ? $this->getScoringInfo($allData) : null
             ];
         });
     }
@@ -325,7 +328,9 @@ class PaketLengkapService
                 'progress' => 100,
                 'status' => 'completed',
                 'message' => 'Paket lengkap sudah selesai!',
-                'final_score' => $status['final_score'],
+                'final_score' => $status['scoring_info']['final_score'],
+                'passed' => $status['scoring_info']['passed'],
+                'passing_grade' => $status['scoring_info']['passing_grade'],
                 'details' => [
                     'kecermatan' => $status['kecermatan'],
                     'kecerdasan' => $status['kecerdasan'],
@@ -549,5 +554,30 @@ class PaketLengkapService
         $finalScore = array_sum($scores) / $count;
         
         return round($finalScore, 2);
+    }
+
+    /**
+     * Get scoring information including pass/fail status
+     */
+    private function getScoringInfo(array $allData): array
+    {
+        $kecermatanScore = $allData['kecermatan']['score'];
+        $kecerdasanScore = $allData['kecerdasan']['score'];
+        $kepribadianScore = $allData['kepribadian']['score'];
+
+        // Use ScoringService to calculate with proper weights and passing grade
+        $scoringService = app(ScoringService::class);
+        $result = $scoringService->calculateFinalScore(
+            (float) $kecermatanScore,
+            (float) ($kecerdasanScore ?? 0),
+            (float) ($kepribadianScore ?? 0)
+        );
+
+        return [
+            'final_score' => $result['score'],
+            'passed' => $result['passed'],
+            'passing_grade' => $result['passing_grade'],
+            'weights' => $result['weights']
+        ];
     }
 }
