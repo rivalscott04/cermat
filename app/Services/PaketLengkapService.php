@@ -416,10 +416,10 @@ class PaketLengkapService
         $answersBySession = $allUserAnswers->groupBy('user_tryout_session_id');
 
         // 6. Process kecerdasan status
-        $kecerdasanStatus = $this->processKecerdasanStatus($completedTryouts, $answersBySession, $kecerdasanKategoriCodes);
+        $kecerdasanStatus = $this->processKecerdasanStatus($completedTryouts, $answersBySession, $kecerdasanKategoriCodes, $user->id);
 
         // 7. Process kepribadian status  
-        $kepribadianStatus = $this->processKepribadianStatus($completedTryouts, $answersBySession, $kepribadianKategoriCodes);
+        $kepribadianStatus = $this->processKepribadianStatus($completedTryouts, $answersBySession, $kepribadianKategoriCodes, $user->id);
 
         return [
             'kecermatan' => $kecermatanStatus,
@@ -431,138 +431,56 @@ class PaketLengkapService
     /**
      * Process kecerdasan status dari data yang sudah di-load
      */
-    private function processKecerdasanStatus($completedTryouts, $answersBySession, $kecerdasanKategoriCodes): array
+    private function processKecerdasanStatus($completedTryouts, $answersBySession, $kecerdasanKategoriCodes, $userId): array
     {
-        if (empty($kecerdasanKategoriCodes)) {
+        // Ambil hasil tes kecerdasan terbaru dari tabel hasil_tes
+        $kecerdasanResult = HasilTes::where('user_id', $userId)
+            ->where('jenis_tes', 'kecerdasan')
+            ->orderBy('tanggal_tes', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$kecerdasanResult) {
             return [
                 'completed' => false,
                 'score' => null,
-                'message' => 'Tidak ada kategori kecerdasan yang dikonfigurasi'
+                'message' => 'Belum mengerjakan tes kecerdasan'
             ];
         }
-
-        // Filter tryouts yang mengandung kategori kecerdasan
-        $kecerdasanTryouts = $completedTryouts->filter(function ($session) use ($kecerdasanKategoriCodes) {
-            return $session->tryout->blueprints->pluck('kategori')->flatten()
-                ->pluck('kode')
-                ->intersect($kecerdasanKategoriCodes)
-                ->isNotEmpty();
-        });
-
-        if ($kecerdasanTryouts->isEmpty()) {
-            return [
-                'completed' => false,
-                'score' => null,
-                'message' => 'Belum menyelesaikan tryout yang berisi kategori kecerdasan'
-            ];
-        }
-
-        $totalScore = 0;
-        $totalQuestions = 0;
-        $tryoutTitles = [];
-
-        foreach ($kecerdasanTryouts as $session) {
-            $tryoutTitles[] = $session->tryout->judul;
-            
-            // Get answers for this session
-            $userAnswers = $answersBySession->get($session->id, collect());
-            
-            // Filter answers that belong to kecerdasan categories
-            $kecerdasanAnswers = $userAnswers->filter(function ($answer) use ($kecerdasanKategoriCodes) {
-                $kategori = $answer->soal->kategori ?? null;
-                return $kategori && in_array($kategori->kode, $kecerdasanKategoriCodes);
-            });
-
-            $totalScore += $kecerdasanAnswers->sum('skor');
-            $totalQuestions += $kecerdasanAnswers->count();
-        }
-
-        if ($totalQuestions === 0) {
-            return [
-                'completed' => false,
-                'score' => null,
-                'message' => 'Tidak ada soal kecerdasan yang ditemukan'
-            ];
-        }
-
-        $score = round(($totalScore / $totalQuestions) * 100, 2);
 
         return [
             'completed' => true,
-            'score' => $score,
-            'tryout_title' => implode(', ', array_unique($tryoutTitles)),
-            'tanggal' => $kecerdasanTryouts->first()->finished_at,
-            'message' => 'Tryout kecerdasan sudah selesai'
+            'score' => $kecerdasanResult->skor_akhir,
+            'tanggal' => $kecerdasanResult->tanggal_tes,
+            'message' => 'Tes kecerdasan sudah selesai'
         ];
     }
 
     /**
      * Process kepribadian status dari data yang sudah di-load
      */
-    private function processKepribadianStatus($completedTryouts, $answersBySession, $kepribadianKategoriCodes): array
+    private function processKepribadianStatus($completedTryouts, $answersBySession, $kepribadianKategoriCodes, $userId): array
     {
-        if (empty($kepribadianKategoriCodes)) {
+        // Ambil hasil tes kepribadian terbaru dari tabel hasil_tes
+        $kepribadianResult = HasilTes::where('user_id', $userId)
+            ->where('jenis_tes', 'kepribadian')
+            ->orderBy('tanggal_tes', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if (!$kepribadianResult) {
             return [
                 'completed' => false,
                 'score' => null,
-                'message' => 'Tidak ada kategori kepribadian yang dikonfigurasi'
+                'message' => 'Belum mengerjakan tes kepribadian'
             ];
         }
-
-        // Filter tryouts yang mengandung kategori kepribadian
-        $kepribadianTryouts = $completedTryouts->filter(function ($session) use ($kepribadianKategoriCodes) {
-            return $session->tryout->blueprints->pluck('kategori')->flatten()
-                ->pluck('kode')
-                ->intersect($kepribadianKategoriCodes)
-                ->isNotEmpty();
-        });
-
-        if ($kepribadianTryouts->isEmpty()) {
-            return [
-                'completed' => false,
-                'score' => null,
-                'message' => 'Belum menyelesaikan tryout yang berisi kategori kepribadian'
-            ];
-        }
-
-        $totalScore = 0;
-        $totalQuestions = 0;
-        $tryoutTitles = [];
-
-        foreach ($kepribadianTryouts as $session) {
-            $tryoutTitles[] = $session->tryout->judul;
-            
-            // Get answers for this session
-            $userAnswers = $answersBySession->get($session->id, collect());
-            
-            // Filter answers that belong to kepribadian categories
-            $kepribadianAnswers = $userAnswers->filter(function ($answer) use ($kepribadianKategoriCodes) {
-                $kategori = $answer->soal->kategori ?? null;
-                return $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
-            });
-
-            $totalScore += $kepribadianAnswers->sum('skor');
-            $totalQuestions += $kepribadianAnswers->count();
-        }
-
-        if ($totalQuestions === 0) {
-            return [
-                'completed' => false,
-                'score' => null,
-                'message' => 'Tidak ada soal kepribadian yang ditemukan'
-            ];
-        }
-
-        // For kepribadian, calculate TKP final score using the service
-        $scorer = app(\App\Services\TkpScoringService::class);
-        $tkpFinalScore = $scorer->calculateFinalScore($totalQuestions, $totalScore);
 
         return [
             'completed' => true,
-            'score' => $tkpFinalScore,
-            'tryout_title' => implode(', ', array_unique($tryoutTitles)),
-            'tanggal' => $kepribadianTryouts->first()->finished_at,
-            'message' => 'Tryout kepribadian sudah selesai'
+            'score' => $kepribadianResult->skor_akhir,
+            'tanggal' => $kepribadianResult->tanggal_tes,
+            'message' => 'Tes kepribadian sudah selesai'
         ];
     }
 
