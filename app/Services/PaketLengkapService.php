@@ -448,9 +448,25 @@ class PaketLengkapService
             ];
         }
 
+        // Get tryout title from the related tryout session
+        $tryoutTitle = 'Tryout Kecerdasan';
+        $kecerdasanSession = UserTryoutSession::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->whereHas('tryout.blueprints.kategori', function ($query) use ($kecerdasanKategoriCodes) {
+                $query->whereIn('kode', $kecerdasanKategoriCodes);
+            })
+            ->with('tryout:id,judul')
+            ->orderBy('finished_at', 'desc')
+            ->first();
+        
+        if ($kecerdasanSession && $kecerdasanSession->tryout) {
+            $tryoutTitle = $kecerdasanSession->tryout->judul;
+        }
+
         return [
             'completed' => true,
             'score' => $kecerdasanResult->skor_akhir,
+            'tryout_title' => $tryoutTitle,
             'tanggal' => $kecerdasanResult->tanggal_tes,
             'message' => 'Tes kecerdasan sudah selesai'
         ];
@@ -476,9 +492,25 @@ class PaketLengkapService
             ];
         }
 
+        // Get tryout title from the related tryout session
+        $tryoutTitle = 'Tryout Kepribadian';
+        $kepribadianSession = UserTryoutSession::where('user_id', $userId)
+            ->where('status', 'completed')
+            ->whereHas('tryout.blueprints.kategori', function ($query) use ($kepribadianKategoriCodes) {
+                $query->whereIn('kode', $kepribadianKategoriCodes);
+            })
+            ->with('tryout:id,judul')
+            ->orderBy('finished_at', 'desc')
+            ->first();
+        
+        if ($kepribadianSession && $kepribadianSession->tryout) {
+            $tryoutTitle = $kepribadianSession->tryout->judul;
+        }
+
         return [
             'completed' => true,
             'score' => $kepribadianResult->skor_akhir,
+            'tryout_title' => $tryoutTitle,
             'tanggal' => $kepribadianResult->tanggal_tes,
             'message' => 'Tes kepribadian sudah selesai'
         ];
