@@ -1366,8 +1366,7 @@ class TryoutController extends Controller
             'tkpFinalScore',
             'tkpN',
             'tkpT',
-            'isTkp',
-            'cardId'
+            'isTkp'
         ));
     }
 
