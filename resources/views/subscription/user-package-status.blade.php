@@ -169,6 +169,7 @@
                                             <span class="progress-label">Kecermatan</span>
                                             @if($paketLengkapStatus['kecermatan']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kecermatan']['score'] }}</h2>
+                                                <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kecermatan']['tanggal'])->format('d M Y H:i') }}</small>
                                             @else
                                                 <h2 class="font-bold">-</h2>
                                             @endif
@@ -190,6 +191,7 @@
                                             <span class="progress-label">Kecerdasan</span>
                                             @if($paketLengkapStatus['kecerdasan']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kecerdasan']['score'] }}</h2>
+                                                <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kecerdasan']['tanggal'])->format('d M Y H:i') }}</small>
                                             @else
                                                 <h2 class="font-bold">-</h2>
                                             @endif
@@ -211,6 +213,7 @@
                                             <span class="progress-label">Kepribadian</span>
                                             @if($paketLengkapStatus['kepribadian']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kepribadian']['score'] }}</h2>
+                                                <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kepribadian']['tanggal'])->format('d M Y H:i') }}</small>
                                             @else
                                                 <h2 class="font-bold">-</h2>
                                             @endif
