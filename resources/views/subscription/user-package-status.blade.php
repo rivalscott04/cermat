@@ -121,7 +121,7 @@
                                                 @if($additionalInfo['last_activity'])
                                                     <div class="m-b">
                                                         <small class="text-muted">Aktivitas Terakhir:</small><br>
-                                                        <strong class="text-warning">{{ $additionalInfo['last_activity']->format('d M Y') }}</strong>
+                                                        <strong class="text-warning">{{ \Carbon\Carbon::parse($additionalInfo['last_activity'])->format('d M Y H:i') }}</strong>
                                                     </div>
                                                 @endif
                                             </div>
