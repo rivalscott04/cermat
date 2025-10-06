@@ -26,6 +26,21 @@
 
                                 <div class="col-md-6">
                                     <div class="form-group">
+                                        <label for="access_tier_id">Tipe Akses <span class="text-danger">*</span></label>
+                                        <select class="form-control @error('access_tier_id') is-invalid @enderror" id="access_tier_id" name="access_tier_id" required>
+                                            <option value="">-- Pilih Tipe Akses --</option>
+                                            @foreach($accessTiers as $tier)
+                                                <option value="{{ $tier->id }}" {{ old('access_tier_id') == $tier->id ? 'selected' : '' }}>{{ $tier->name }} ({{ $tier->key }})</option>
+                                            @endforeach
+                                        </select>
+                                        @error('access_tier_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="form-group">
                                         <label for="label">Label (opsional)</label>
                                         <input type="text" class="form-control @error('label') is-invalid @enderror" 
                                                id="label" name="label" value="{{ old('label') }}" 

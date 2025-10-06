@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Package;
+use App\Models\AccessTier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -23,7 +24,8 @@ class PackageController extends Controller
      */
     public function create()
     {
-        return view('admin.packages.create');
+        $accessTiers = AccessTier::orderBy('name')->get();
+        return view('admin.packages.create', compact('accessTiers'));
     }
 
     /**
@@ -40,7 +42,8 @@ class PackageController extends Controller
             'features' => 'required|array|min:1',
             'features.*' => 'required|string',
             'is_active' => 'boolean',
-            'sort_order' => 'integer|min:0'
+            'sort_order' => 'integer|min:0',
+            'access_tier_id' => 'required|exists:access_tiers,id'
         ]);
 
         if ($validator->fails()) {
@@ -68,7 +71,8 @@ class PackageController extends Controller
      */
     public function edit(Package $package)
     {
-        return view('admin.packages.edit', compact('package'));
+        $accessTiers = AccessTier::orderBy('name')->get();
+        return view('admin.packages.edit', compact('package', 'accessTiers'));
     }
 
     /**
@@ -85,7 +89,8 @@ class PackageController extends Controller
             'features' => 'required|array|min:1',
             'features.*' => 'required|string',
             'is_active' => 'boolean',
-            'sort_order' => 'integer|min:0'
+            'sort_order' => 'integer|min:0',
+            'access_tier_id' => 'required|exists:access_tiers,id'
         ]);
 
         if ($validator->fails()) {

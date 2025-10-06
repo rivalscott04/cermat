@@ -17,7 +17,8 @@ class Package extends Model
         'label',
         'features',
         'is_active',
-        'sort_order'
+        'sort_order',
+        'access_tier_id'
     ];
 
     protected $casts = [
@@ -35,5 +36,10 @@ class Package extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order');
+    }
+
+    public function accessTier()
+    {
+        return $this->belongsTo(AccessTier::class);
     }
 }
