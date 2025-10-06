@@ -761,174 +761,44 @@
             </div>
 
             <div class="row d-flex align-items-stretch">
-                <!-- Paket Tes Kecermatan -->
-                <div class="col-md-3 mb-4">
-                    <div class="package-card h-100">
-                        <div class="package-header">
-                            <h3>Paket Kecermatan</h3>
-                            <p>Fokus Tes Kecermatan</p>
-                        </div>
-
-                        <div class="package-features">
-                            <div class="text-center mb-2 package-pricing">
-                                <div class="package-price">Rp 75.000</div>
-                                <p class="price-period">Berlaku 30 hari</p>
+                @foreach(($packages ?? []) as $index => $package)
+                    <div class="col-md-3 mb-4">
+                        <div class="package-card h-100 {{ strtolower($package->label) === 'paling populer' ? 'popular-package' : '' }}">
+                            <div class="package-header">
+                                <h3>{{ $package->name }}</h3>
+                                @if($package->description)
+                                    <p>{{ $package->description }}</p>
+                                @endif
                             </div>
 
-                            <div class="features-list">
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Bank soal kecermatan lengkap
+                            <div class="package-features">
+                                <div class="text-center mb-2 package-pricing">
+                                    <div class="package-price">Rp {{ number_format($package->price, 0, ',', '.') }}</div>
+                                    @if($package->old_price && $package->old_price > 0)
+                                        <div><small class="text-muted" style="text-decoration:line-through;">Rp {{ number_format($package->old_price, 0, ',', '.') }}</small></div>
+                                    @endif
+                                    @if($package->label)
+                                        <p class="price-period">{{ $package->label }}</p>
+                                    @endif
                                 </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Latihan soal unlimited
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Analisis kecepatan & akurasi
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Timer simulasi ujian
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Riwayat progress harian
-                                </div>
-                            </div>
 
-                            <div class="button-container">
-                                <a href="{{ route('subscription.packages') }}"
-                                    class="btn btn-package btn-outline-primary">
-                                    Pilih Paket
-                                </a>
+                                <div class="features-list">
+                                    @foreach(($package->features ?? []) as $feature)
+                                        <div class="feature-item available">
+                                            <i class="fas fa-check"></i> {{ $feature }}
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <div class="button-container">
+                                    <a href="{{ route('pricing.index') }}" class="btn btn-success btn-package">
+                                        Pilih Paket
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <!-- Paket Akademik -->
-                <div class="col-md-3 mb-4">
-                    <div class="package-card h-100">
-                        <div class="package-header">
-                            <h3>Paket Kecerdasan</h3>
-                            <p>Fokus Tes Kecerdasan</p>
-                        </div>
-
-                        <div class="package-features">
-                            <div class="text-center mb-2 package-pricing">
-                                <div class="package-price">Rp 75.000</div>
-                                <p class="price-period">Berlaku 30 hari</p>
-                            </div>
-
-                            <div class="features-list">
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Bank soal kecerdasan lengkap
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Matematika, Bahasa Indonesia, PKN
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Pembahasan soal detail
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Simulasi ujian kecerdasan
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Analisis kemampuan per mata pelajaran
-                                </div>
-                            </div>
-
-                            <div class="button-container">
-                                <a href="{{ route('subscription.packages') }}"
-                                    class="btn btn-package btn-outline-warning">
-                                    Pilih Paket
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Paket Psikologi -->
-                <div class="col-md-3 mb-4">
-                    <div class="package-card h-100">
-                        <div class="package-header">
-                            <h3>Paket Kepribadian</h3>
-                            <p>Fokus Tes Kepribadian</p>
-                        </div>
-
-                        <div class="package-features">
-                            <div class="text-center mb-2 package-pricing">
-                                <div class="package-price">Rp 75.000</div>
-                                <p class="price-period">Berlaku 30 hari</p>
-                            </div>
-
-                            <div class="features-list">
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Bank soal kepribadian lengkap
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Tes kepribadian & karakter
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Simulasi wawancara kepribadian
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Tips & strategi psikotes
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Analisis profil kepribadian
-                                </div>
-                            </div>
-
-                            <div class="button-container">
-                                <a href="{{ route('subscription.packages') }}"
-                                    class="btn btn-package btn-outline-info">
-                                    Pilih Paket
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Paket Lengkap -->
-                <div class="col-md-3 mb-4">
-                    <div class="package-card h-100 popular-package">
-                        <div class="package-header">
-                            <h3>Paket Lengkap</h3>
-                            <p>Kecermatan + Kepribadian + Kecerdasan</p>
-                        </div>
-
-                        <div class="package-features">
-                            <div class="text-center mb-2 package-pricing">
-                                <div class="package-price">Rp 120.000</div>
-                                <p class="price-period">Berlaku 45 hari</p>
-                            </div>
-
-                            <div class="features-list">
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Semua fitur Kecermatan
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Semua fitur Kepribadian
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Semua fitur Kecerdasan
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Try out gabungan berkala
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Laporan progress lengkap
-                                </div>
-                                <div class="feature-item available">
-                                    <i class="fas fa-check"></i> Sertifikat penyelesaian
-                                </div>
-                            </div>
-
-                            <div class="button-container">
-                                <a href="{{ route('subscription.packages') }}" class="btn btn-success btn-package">
-                                    Pilih Paket
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                @endforeach
             </div>
 
             <div class="text-center mt-5">
