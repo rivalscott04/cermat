@@ -7,9 +7,27 @@ use Illuminate\Http\Request;
 
 class KategoriSoalController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $kategoris = KategoriSoal::withCount('soals')->paginate(20);
+        $query = KategoriSoal::query()->withCount('soals');
+
+        if ($request->filled('status')) {
+            $query->byStatus($request->get('status'));
+        }
+
+        if ($request->filled('q')) {
+            $query->search($request->get('q'));
+        }
+
+        if ($request->filled('min_soal')) {
+            $query->having('soals_count', '>=', (int) $request->get('min_soal'));
+        }
+
+        if ($request->filled('max_soal')) {
+            $query->having('soals_count', '<=', (int) $request->get('max_soal'));
+        }
+
+        $kategoris = $query->paginate(20)->withQueryString();
         return view('admin.kategori.index', compact('kategoris'));
     }
 

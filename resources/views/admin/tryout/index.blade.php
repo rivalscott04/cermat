@@ -12,6 +12,61 @@
                     </a>
                 </div>
                 <div class="card-body">
+                    
+                    <!-- Filter -->
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <select class="form-control" id="filterJenis">
+                                <option value="">Semua Jenis</option>
+                                <option value="kecerdasan" {{ request('jenis') == 'kecerdasan' ? 'selected' : '' }}>Kecerdasan</option>
+                                <option value="kepribadian" {{ request('jenis') == 'kepribadian' ? 'selected' : '' }}>Kepribadian</option>
+                                <option value="lengkap" {{ request('jenis') == 'lengkap' ? 'selected' : '' }}>Lengkap</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="filterAkses">
+                                <option value="">Semua Akses</option>
+                                <option value="free" {{ request('akses') == 'free' ? 'selected' : '' }}>Free</option>
+                                <option value="premium" {{ request('akses') == 'premium' ? 'selected' : '' }}>Premium</option>
+                                <option value="vip" {{ request('akses') == 'vip' ? 'selected' : '' }}>VIP</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-control" id="filterStatus">
+                                <option value="">Semua Status</option>
+                                <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="input-group">
+                                <input type="text" class="form-control" id="filterQ" placeholder="Cari judul..." value="{{ request('q') }}">
+                                <div class="input-group-append">
+                                    <button class="btn btn-secondary" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Filter Info -->
+                    @if (request('jenis') || request('akses') || request('status') || request('q'))
+                        <div class="alert alert-info mb-3">
+                            <strong>Filter Aktif:</strong>
+                            @php $first = true; @endphp
+                            @if (request('jenis'))
+                                Jenis: {{ ucfirst(request('jenis')) }} @php $first = false; @endphp
+                            @endif
+                            @if (request('akses'))
+                                @if(!$first) | @endif Akses: {{ ucfirst(request('akses')) }} @php $first = false; @endphp
+                            @endif
+                            @if (request('status'))
+                                @if(!$first) | @endif Status: {{ request('status') == 'aktif' ? 'Aktif' : 'Nonaktif' }} @php $first = false; @endphp
+                            @endif
+                            @if (request('q'))
+                                @if(!$first) | @endif Cari: "{{ request('q') }}"
+                            @endif
+                        </div>
+                    @endif
                     @if(session('success'))
                         <div class="alert alert-success">
                             {{ session('success') }}
@@ -219,6 +274,31 @@
 
 @push('scripts')
 <script>
+$(document).ready(function() {
+    function applyFilters() {
+        var jenis = $('#filterJenis').val();
+        var akses = $('#filterAkses').val();
+        var status = $('#filterStatus').val();
+        var q = $('#filterQ').val();
+
+        var params = new URLSearchParams();
+        if (jenis) params.append('jenis', jenis);
+        if (akses) params.append('akses', akses);
+        if (status) params.append('status', status);
+        if (q) params.append('q', q);
+
+        var url = window.location.pathname;
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+        window.location.href = url;
+    }
+
+    $('#filterJenis, #filterAkses, #filterStatus').change(applyFilters);
+    $('#btnSearch').click(applyFilters);
+    $('#filterQ').keypress(function(e) { if (e.which === 13) applyFilters(); });
+});
+
 function showDeleteModal(tryoutId, tryoutTitle) {
     $('#tryoutTitle').text(tryoutTitle);
     $('#deleteForm').attr('action', `/admin/tryout/${tryoutId}`);

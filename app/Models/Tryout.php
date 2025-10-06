@@ -48,6 +48,30 @@ class Tryout extends Model
         return $query->where('jenis_paket', $jenisPaket);
     }
 
+    public function scopeByStatus($query, $status)
+    {
+        // $status can be 'aktif' or 'nonaktif' or boolean
+        if (is_bool($status)) {
+            return $query->where('is_active', $status);
+        }
+        if ($status === 'aktif') {
+            return $query->where('is_active', true);
+        }
+        if ($status === 'nonaktif') {
+            return $query->where('is_active', false);
+        }
+        return $query;
+    }
+
+    public function scopeSearchTitle($query, $term)
+    {
+        $trimmed = trim((string) $term);
+        if ($trimmed === '') {
+            return $query;
+        }
+        return $query->where('judul', 'like', '%' . str_replace('%', '\\%', $trimmed) . '%');
+    }
+
     public function scopeForUserPackage($query, $userPackage)
     {
         $allowedTypes = $this->getAllowedPackageTypes($userPackage);

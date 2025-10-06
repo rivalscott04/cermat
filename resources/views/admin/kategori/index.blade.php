@@ -24,6 +24,51 @@
                             </div>
                         @endif
 
+                        <!-- Filter -->
+                        <div class="row mb-3">
+                            <div class="col-md-3">
+                                <select class="form-control" id="filterStatus">
+                                    <option value="">Semua Status</option>
+                                    <option value="aktif" {{ request('status') == 'aktif' ? 'selected' : '' }}>Aktif</option>
+                                    <option value="nonaktif" {{ request('status') == 'nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="filterQ" placeholder="Cari nama/kode..." value="{{ request('q') }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-secondary" type="button" id="btnSearch"><i class="fa fa-search"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" min="0" class="form-control" id="filterMinSoal" placeholder="Min soal" value="{{ request('min_soal') }}">
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" min="0" class="form-control" id="filterMaxSoal" placeholder="Max soal" value="{{ request('max_soal') }}">
+                            </div>
+                        </div>
+
+                        <!-- Filter Info -->
+                        @if (request('status') || request('q') || request('min_soal') || request('max_soal'))
+                            <div class="alert alert-info mb-3">
+                                <strong>Filter Aktif:</strong>
+                                @php $first = true; @endphp
+                                @if (request('status'))
+                                    Status: {{ request('status') == 'aktif' ? 'Aktif' : 'Nonaktif' }} @php $first = false; @endphp
+                                @endif
+                                @if (request('q'))
+                                    @if(!$first) | @endif Cari: "{{ request('q') }}" @php $first = false; @endphp
+                                @endif
+                                @if (request('min_soal'))
+                                    @if(!$first) | @endif Min Soal: {{ request('min_soal') }} @php $first = false; @endphp
+                                @endif
+                                @if (request('max_soal'))
+                                    @if(!$first) | @endif Max Soal: {{ request('max_soal') }}
+                                @endif
+                            </div>
+                        @endif
+
                         <div class="table-responsive">
                             <table class="table table-bordered table-striped">
                                 <thead>
@@ -101,3 +146,32 @@
         </div>
     </div>
 @endsection
+@push('scripts')
+<script>
+$(document).ready(function() {
+    function applyFilters() {
+        var status = $('#filterStatus').val();
+        var q = $('#filterQ').val();
+        var minSoal = $('#filterMinSoal').val();
+        var maxSoal = $('#filterMaxSoal').val();
+
+        var params = new URLSearchParams();
+        if (status) params.append('status', status);
+        if (q) params.append('q', q);
+        if (minSoal) params.append('min_soal', minSoal);
+        if (maxSoal) params.append('max_soal', maxSoal);
+
+        var url = window.location.pathname;
+        if (params.toString()) {
+            url += '?' + params.toString();
+        }
+        window.location.href = url;
+    }
+
+    $('#filterStatus').change(applyFilters);
+    $('#btnSearch').click(applyFilters);
+    $('#filterQ').keypress(function(e) { if (e.which === 13) applyFilters(); });
+    $('#filterMinSoal, #filterMaxSoal').change(applyFilters);
+});
+</script>
+@endpush

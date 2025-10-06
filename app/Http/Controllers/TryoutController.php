@@ -17,9 +17,33 @@ use App\Models\UserTryoutSession; // Tambahkan model ini untuk tracking session
 
 class TryoutController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tryouts = Tryout::with('blueprints')->paginate(20);
+        $query = Tryout::query()
+            // Avoid N+1 for blueprint usage in view
+            ->with(['blueprints' => function ($q) {
+                $q->select('tryout_id', 'kategori_id', 'jumlah');
+            }, 'blueprints.kategori:id,kode,nama']);
+
+        // Apply filters mirroring Soal index, adapted to Tryout fields
+        if ($request->filled('jenis')) {
+            $query->byJenisPaket($request->get('jenis'));
+        }
+
+        if ($request->filled('akses')) {
+            $query->byPaket($request->get('akses'));
+        }
+
+        if ($request->filled('status')) {
+            $query->byStatus($request->get('status'));
+        }
+
+        if ($request->filled('q')) {
+            $query->searchTitle($request->get('q'));
+        }
+
+        $tryouts = $query->paginate(20)->withQueryString();
+
         return view('admin.tryout.index', compact('tryouts'));
     }
     public function create()
