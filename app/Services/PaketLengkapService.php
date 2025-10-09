@@ -189,7 +189,7 @@ class PaketLengkapService
             ];
         }
 
-        // Calculate total score from all kepribadian categories across all completed tryouts
+        // Calculate total score from all kepribadian weighted categories across all completed tryouts
         $totalScore = 0;
         $totalQuestions = 0;
         $tryoutTitles = [];
@@ -204,10 +204,14 @@ class PaketLengkapService
                 ->with(['soal.kategori'])
                 ->get();
 
-            // Filter answers that belong to kepribadian categories
+            // Filter answers that belong to kepribadian categories AND are weighted (NULL treated as weighted) and from pg_bobot
             $kepribadianAnswers = $userAnswers->filter(function ($answer) use ($kepribadianKategoriCodes) {
                 $kategori = $answer->soal->kategori ?? null;
-                return $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
+                if (!$kategori) return false;
+                $inKepribadian = in_array($kategori->kode, $kepribadianKategoriCodes);
+                $isWeighted = ($kategori->scoring_mode === null) || ($kategori->scoring_mode === 'weighted');
+                $isWeightedType = $answer->soal && $answer->soal->tipe === 'pg_bobot';
+                return $inKepribadian && $isWeighted && $isWeightedType;
             });
 
             $totalScore += $kepribadianAnswers->sum('skor');

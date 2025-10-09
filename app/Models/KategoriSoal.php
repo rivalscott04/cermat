@@ -12,6 +12,7 @@ class KategoriSoal extends Model
         'nama',
         'kode',
         'deskripsi',
+        'scoring_mode',
         'is_active'
     ];
 
@@ -53,5 +54,28 @@ class KategoriSoal extends Model
             $q->where('nama', 'like', '%' . str_replace('%', '\\%', $trimmed) . '%')
               ->orWhere('kode', 'like', '%' . str_replace('%', '\\%', strtoupper($trimmed)) . '%');
         });
+    }
+
+    /**
+     * Determine if this category uses weighted scoring (1..5 like TKP).
+     * Backward-compat: NULL is treated as 'weighted'.
+     */
+    public function isWeighted(): bool
+    {
+        $mode = $this->scoring_mode;
+        return $mode === null || $mode === 'weighted';
+    }
+
+    /**
+     * Scope categories by scoring_mode. If $mode is 'weighted', include NULL for backward compat.
+     */
+    public function scopeByScoringMode($query, string $mode)
+    {
+        if ($mode === 'weighted') {
+            return $query->where(function ($q) {
+                $q->whereNull('scoring_mode')->orWhere('scoring_mode', 'weighted');
+            });
+        }
+        return $query->where('scoring_mode', $mode);
     }
 } 
