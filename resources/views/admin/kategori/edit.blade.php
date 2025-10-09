@@ -33,24 +33,24 @@
                             @enderror
                         </div>
 
-                        <div class="form-group">
-                            <label for="deskripsi">Deskripsi</label>
-                            <textarea class="form-control @error('deskripsi') is-invalid @enderror" 
-                                      id="deskripsi" name="deskripsi" rows="3">{{ old('deskripsi', $kategori->deskripsi) }}</textarea>
-                            @error('deskripsi')
+                         <div class="form-group">
+                            <label for="scoring_mode">Mode Skor</label>
+                            <select class="form-control @error('scoring_mode') is-invalid @enderror" id="scoring_mode" name="scoring_mode">
+                                <option value="" {{ old('scoring_mode', $kategori->scoring_mode) === null ? 'selected' : '' }}>Default (Bobot 1–5)</option>
+                                <option value="weighted" {{ old('scoring_mode', $kategori->scoring_mode) === 'weighted' ? 'selected' : '' }}>Bobot 1–5</option>
+                                <option value="binary" {{ old('scoring_mode', $kategori->scoring_mode) === 'binary' ? 'selected' : '' }}>Benar/Salah (0/1)</option>
+                            </select>
+                            <small class="form-text text-muted">Kosongkan untuk mengikuti default TKP (bobot 1–5).</small>
+                            @error('scoring_mode')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <div class="form-group">
-                            <label for="scoring_mode">Mode Skor</label>
-                            <select class="form-control @error('scoring_mode') is-invalid @enderror" id="scoring_mode" name="scoring_mode">
-                                <option value="" {{ old('scoring_mode', $kategori->scoring_mode) === null ? 'selected' : '' }}>Default (Weighted)</option>
-                                <option value="weighted" {{ old('scoring_mode', $kategori->scoring_mode) === 'weighted' ? 'selected' : '' }}>Weighted (1–5, TKP)</option>
-                                <option value="binary" {{ old('scoring_mode', $kategori->scoring_mode) === 'binary' ? 'selected' : '' }}>Binary (0/1, EPPS)</option>
-                            </select>
-                            <small class="form-text text-muted">Kosongkan untuk mengikuti default TKP (weighted 1–5).</small>
-                            @error('scoring_mode')
+                            <label for="deskripsi">Deskripsi</label>
+                            <textarea class="form-control @error('deskripsi') is-invalid @enderror" 
+                                      id="deskripsi" name="deskripsi" rows="3">{{ old('deskripsi', $kategori->deskripsi) }}</textarea>
+                            @error('deskripsi')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>
