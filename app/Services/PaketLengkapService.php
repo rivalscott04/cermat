@@ -24,8 +24,8 @@ class PaketLengkapService
             ];
         }
 
-        // OPTIMASI: Cache hasil untuk user ini (cache 30 menit karena data bisa berubah)
-        return cache()->remember("paket_lengkap_status_{$user->id}", 30 * 60, function () use ($user) {
+        // OPTIMASI: Cache hasil untuk user ini (cache 2 menit, dibust saat ada data baru)
+        return cache()->remember("paket_lengkap_status_{$user->id}", 2 * 60, function () use ($user) {
             // OPTIMASI: Load semua data dalam 1 query besar
             $allData = $this->getAllCompletionDataInOneQuery($user);
             

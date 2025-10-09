@@ -50,7 +50,7 @@
                                             <td>
                                                 @if ($hasilTes->skor_akhir)
                                                     <span class="font-weight-bold text-primary" style="font-size: 1.2em;">
-                                                        {{ $hasilTes->skor_akhir }}
+                                                        {{ number_format($hasilTes->skor_akhir, 2) }}
                                                         @if($hasilTes->jenis_tes === 'kecerdasan')
                                                             %
                                                         @endif
@@ -114,13 +114,13 @@
                                             <div class="row">
                                                 <div class="col-6">
                                                     <div class="text-center">
-                                                        <h4 class="text-primary">{{ $hasilTes->panker }}</h4>
+                                                        <h4 class="text-primary">{{ number_format($hasilTes->panker, 2) }}</h4>
                                                         <small class="text-muted">PANKER</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="text-center">
-                                                        <h4 class="text-info">{{ $hasilTes->tianker }}</h4>
+                                                        <h4 class="text-info">{{ number_format($hasilTes->tianker, 2) }}</h4>
                                                         <small class="text-muted">TIANKER</small>
                                                     </div>
                                                 </div>
@@ -128,13 +128,13 @@
                                             <div class="row mt-3">
                                                 <div class="col-6">
                                                     <div class="text-center">
-                                                        <h4 class="text-warning">{{ $hasilTes->janker }}</h4>
+                                                        <h4 class="text-warning">{{ number_format($hasilTes->janker, 2) }}</h4>
                                                         <small class="text-muted">JANKER</small>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="text-center">
-                                                        <h4 class="text-success">{{ $hasilTes->hanker }}</h4>
+                                                        <h4 class="text-success">{{ number_format($hasilTes->hanker, 2) }}</h4>
                                                         <small class="text-muted">HANKER</small>
                                                     </div>
                                                 </div>
@@ -614,8 +614,15 @@
         `;
         
         document.getElementById('detailModalBody').innerHTML = modalContent;
-        $('#detailModal').modal('show');
+        // Ensure modal initialized with closable options
+        $('#detailModal').modal({ backdrop: true, keyboard: true, show: true });
     }
+    
+    // Defensive close handlers for Bootstrap 4/5 variants
+    $(document).on('click', '#detailModal .close, #detailModal [data-dismiss="modal"], #detailModal [data-bs-dismiss="modal"], #detailModal .btn-close', function(e) {
+        e.preventDefault();
+        $('#detailModal').modal('hide');
+    });
     
     // Auto-collapse detail jawaban section on page load
     $(document).ready(function() {
