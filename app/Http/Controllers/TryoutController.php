@@ -1239,13 +1239,7 @@ class TryoutController extends Controller
                 $kepribadianKategoriCodes = \App\Models\PackageCategoryMapping::getCategoriesForPackage('kepribadian');
                 $tkpQuestions = $userAnswers->filter(function ($ans) use ($kepribadianKategoriCodes) {
                     $kategori = $ans->soal->kategori ?? null;
-                    if (!$kategori) return false;
-                    $inKepribadian = in_array($kategori->kode, $kepribadianKategoriCodes);
-                    // Only weighted categories should be included in TKP aggregate; NULL treated as weighted
-                    $isWeighted = ($kategori->scoring_mode === null) || ($kategori->scoring_mode === 'weighted');
-                    // Additionally, ensure the soal type is weighted-style to avoid mis-scaling
-                    $isWeightedType = $ans->soal && $ans->soal->tipe === 'pg_bobot';
-                    return $inKepribadian && $isWeighted && $isWeightedType;
+                    return $kategori && in_array($kategori->kode, $kepribadianKategoriCodes);
                 });
 
                 if ($tkpQuestions->count() > 0) {

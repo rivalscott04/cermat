@@ -41,15 +41,13 @@ class KategoriSoalController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'kode' => 'required|string|max:10|unique:kategori_soal,kode',
-            'deskripsi' => 'nullable|string',
-            'scoring_mode' => 'nullable|in:weighted,binary'
+            'deskripsi' => 'nullable|string'
         ]);
 
         KategoriSoal::create([
             'nama' => $request->nama,
             'kode' => strtoupper($request->kode),
-            'deskripsi' => $request->deskripsi,
-            'scoring_mode' => $request->scoring_mode // nullable, NULL treated as weighted
+            'deskripsi' => $request->deskripsi
         ]);
 
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil ditambahkan');
@@ -65,15 +63,13 @@ class KategoriSoalController extends Controller
         $request->validate([
             'nama' => 'required|string|max:255',
             'kode' => 'required|string|max:10|unique:kategori_soal,kode,' . $kategori->id,
-            'deskripsi' => 'nullable|string',
-            'scoring_mode' => 'nullable|in:weighted,binary'
+            'deskripsi' => 'nullable|string'
         ]);
 
         $kategori->update([
             'nama' => $request->nama,
             'kode' => strtoupper($request->kode),
-            'deskripsi' => $request->deskripsi,
-            'scoring_mode' => $request->scoring_mode // nullable, NULL treated as weighted
+            'deskripsi' => $request->deskripsi
         ]);
 
         return redirect()->route('admin.kategori.index')->with('success', 'Kategori berhasil diperbarui');
