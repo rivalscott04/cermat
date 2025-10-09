@@ -614,8 +614,29 @@
         `;
         
         document.getElementById('detailModalBody').innerHTML = modalContent;
-        // Ensure modal initialized with closable options
-        $('#detailModal').modal({ backdrop: true, keyboard: true, show: true });
+        const modalEl = document.getElementById('detailModal');
+        // Support Bootstrap 4 (jQuery plugin) and Bootstrap 5 (native)
+        try {
+            if (window.jQuery && typeof jQuery.fn.modal === 'function') {
+                // Reset and show using jQuery plugin
+                jQuery('#detailModal').modal('hide');
+                jQuery('#detailModal').modal({ backdrop: true, keyboard: true });
+                jQuery('#detailModal').modal('show');
+            } else if (window.bootstrap && modalEl) {
+                const instance = bootstrap.Modal.getOrCreateInstance(modalEl, { backdrop: true, keyboard: true });
+                instance.show();
+            } else {
+                // Fallback: toggle class for visibility
+                modalEl.classList.add('show');
+                modalEl.style.display = 'block';
+            }
+        } catch (e) {
+            // Last-resort fallback if any error occurs
+            if (modalEl) {
+                modalEl.classList.add('show');
+                modalEl.style.display = 'block';
+            }
+        }
     }
     
     // Defensive close handlers for Bootstrap 4/5 variants
