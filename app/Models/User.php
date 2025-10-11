@@ -391,7 +391,7 @@ class User extends Authenticatable
      */
     public function getUserStatistics(): array
     {
-        return cache()->remember("user_statistics_{$this->id}", 15 * 60, function () {
+        return cache()->remember("user_statistics_{$this->id}", 10, function () {
             // Get latest test date from HasilTes (includes time)
             $latestHasilTes = \App\Models\HasilTes::where('user_id', $this->id)
                 ->latest('tanggal_tes')

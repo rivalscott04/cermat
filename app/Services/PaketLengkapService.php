@@ -24,8 +24,8 @@ class PaketLengkapService
             ];
         }
 
-        // OPTIMASI: Cache hasil untuk user ini (cache 2 menit, dibust saat ada data baru)
-        return cache()->remember("paket_lengkap_status_{$user->id}", 2 * 60, function () use ($user) {
+        // OPTIMASI: Cache hasil untuk user ini (cache 10 detik untuk hasil instant)
+        return cache()->remember("paket_lengkap_status_{$user->id}", 10, function () use ($user) {
             // OPTIMASI: Load semua data dalam 1 query besar
             $allData = $this->getAllCompletionDataInOneQuery($user);
             
@@ -286,8 +286,8 @@ class PaketLengkapService
             return 0;
         }
 
-        // OPTIMASI: Cache progress percentage (cache 1 jam)
-        return cache()->remember("paket_lengkap_progress_{$user->id}", 60 * 60, function () use ($user) {
+        // OPTIMASI: Cache progress percentage (cache 10 detik untuk hasil instant)
+        return cache()->remember("paket_lengkap_progress_{$user->id}", 10, function () use ($user) {
             $status = $this->getCompletionStatus($user);
             $completedCount = 0;
 
