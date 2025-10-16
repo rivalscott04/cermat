@@ -1,0 +1,49 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        // Update existing data first - map old levels to new levels
+        DB::statement("UPDATE tryout_blueprints SET level = 'dasar' WHERE level = 'mudah'");
+        
+        // Drop the old enum and create new one
+        Schema::table('tryout_blueprints', function (Blueprint $table) {
+            $table->dropColumn('level');
+        });
+        
+        Schema::table('tryout_blueprints', function (Blueprint $table) {
+            $table->enum('level', ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem']);
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        // Map new levels back to old levels
+        DB::statement("UPDATE tryout_blueprints SET level = 'mudah' WHERE level = 'dasar'");
+        DB::statement("UPDATE tryout_blueprints SET level = 'mudah' WHERE level = 'mudah'");
+        DB::statement("UPDATE tryout_blueprints SET level = 'sedang' WHERE level = 'sedang'");
+        DB::statement("UPDATE tryout_blueprints SET level = 'sulit' WHERE level = 'sulit'");
+        DB::statement("UPDATE tryout_blueprints SET level = 'sulit' WHERE level = 'tersulit'");
+        DB::statement("UPDATE tryout_blueprints SET level = 'sulit' WHERE level = 'ekstrem'");
+        
+        Schema::table('tryout_blueprints', function (Blueprint $table) {
+            $table->dropColumn('level');
+        });
+        
+        Schema::table('tryout_blueprints', function (Blueprint $table) {
+            $table->enum('level', ['mudah', 'sedang', 'sulit']);
+        });
+    }
+};
