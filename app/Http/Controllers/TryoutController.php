@@ -83,7 +83,7 @@ class TryoutController extends Controller
 
         $rows = [];
         foreach ($request->blueprint as $kategoriId => $levels) {
-            foreach (['mudah', 'sedang', 'sulit'] as $level) {
+            foreach (['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'] as $level) {
                 $jumlah = intval($levels[$level] ?? 0);
                 if ($jumlah > 0) {
                     $soals = Soal::where('kategori_id', $kategoriId)
@@ -284,7 +284,7 @@ class TryoutController extends Controller
             // Create new blueprints
             $blueprintRows = [];
             foreach ($request->blueprint as $kategoriId => $levels) {
-                foreach (['mudah', 'sedang', 'sulit'] as $level) {
+                foreach (['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'] as $level) {
                     $jumlah = intval($levels[$level] ?? 0);
                     if ($jumlah > 0) {
                         // Ambil soal yang belum dipakai dan tandai sebagai dipakai

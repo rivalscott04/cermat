@@ -40,12 +40,12 @@ class TryoutSeeder extends Seeder
 
         // Blueprint untuk Tryout 1
         $this->createBlueprints($tryout1, [
+            ['kategori' => 'TWK', 'level' => 'dasar', 'jumlah' => 2],
             ['kategori' => 'TWK', 'level' => 'mudah', 'jumlah' => 2],
-            ['kategori' => 'TWK', 'level' => 'sedang', 'jumlah' => 2],
-            ['kategori' => 'TIU', 'level' => 'mudah', 'jumlah' => 2],
-            ['kategori' => 'TIU', 'level' => 'sedang', 'jumlah' => 1],
-            ['kategori' => 'TKP', 'level' => 'mudah', 'jumlah' => 2],
-            ['kategori' => 'TKP', 'level' => 'sedang', 'jumlah' => 1],
+            ['kategori' => 'TIU', 'level' => 'dasar', 'jumlah' => 2],
+            ['kategori' => 'TIU', 'level' => 'mudah', 'jumlah' => 1],
+            ['kategori' => 'TKP', 'level' => 'dasar', 'jumlah' => 2],
+            ['kategori' => 'TKP', 'level' => 'mudah', 'jumlah' => 1],
         ]);
 
         // Tryout 2: Tryout Lanjutan
@@ -66,12 +66,12 @@ class TryoutSeeder extends Seeder
 
         // Blueprint untuk Tryout 2
         $this->createBlueprints($tryout2, [
-            ['kategori' => 'TWK', 'level' => 'sedang', 'jumlah' => 2],
-            ['kategori' => 'TWK', 'level' => 'sulit', 'jumlah' => 1],
+            ['kategori' => 'TWK', 'level' => 'mudah', 'jumlah' => 2],
+            ['kategori' => 'TWK', 'level' => 'sedang', 'jumlah' => 1],
+            ['kategori' => 'TIU', 'level' => 'mudah', 'jumlah' => 2],
             ['kategori' => 'TIU', 'level' => 'sedang', 'jumlah' => 2],
-            ['kategori' => 'TIU', 'level' => 'sulit', 'jumlah' => 2],
-            ['kategori' => 'TKP', 'level' => 'sedang', 'jumlah' => 2],
-            ['kategori' => 'TKP', 'level' => 'sulit', 'jumlah' => 1],
+            ['kategori' => 'TKP', 'level' => 'mudah', 'jumlah' => 2],
+            ['kategori' => 'TKP', 'level' => 'sedang', 'jumlah' => 1],
         ]);
 
         $this->command->info('TryoutSeeder berhasil dijalankan!');

@@ -116,11 +116,17 @@
                                         <select class="form-control @error('level') is-invalid @enderror" id="level"
                                             name="level" required>
                                             <option value="">Pilih Level</option>
+                                            <option value="dasar" {{ old('level') == 'dasar' ? 'selected' : '' }}>Dasar
+                                            </option>
                                             <option value="mudah" {{ old('level') == 'mudah' ? 'selected' : '' }}>Mudah
                                             </option>
                                             <option value="sedang" {{ old('level') == 'sedang' ? 'selected' : '' }}>Sedang
                                             </option>
                                             <option value="sulit" {{ old('level') == 'sulit' ? 'selected' : '' }}>Sulit
+                                            </option>
+                                            <option value="tersulit" {{ old('level') == 'tersulit' ? 'selected' : '' }}>Tersulit
+                                            </option>
+                                            <option value="ekstrem" {{ old('level') == 'ekstrem' ? 'selected' : '' }}>Ekstrem
                                             </option>
                                         </select>
                                         @error('level')

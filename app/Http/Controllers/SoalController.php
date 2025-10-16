@@ -97,7 +97,7 @@ class SoalController extends Controller
         $rules = [
             'pertanyaan' => 'required|string',
             'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2,gambar',
-            'level' => 'required|in:mudah,sedang,sulit',
+            'level' => 'required|in:dasar,mudah,sedang,sulit,tersulit,ekstrem',
             'kategori_id' => 'required|exists:kategori_soal,id',
             'pembahasan' => 'nullable|string',
             'pembahasan_type' => 'nullable|in:text,image,both',
@@ -353,7 +353,7 @@ class SoalController extends Controller
         $rules = [
             'pertanyaan' => 'required|string',
             'tipe' => 'required|in:benar_salah,pg_satu,pg_bobot,pg_pilih_2,gambar',
-            'level' => 'required|in:mudah,sedang,sulit',
+            'level' => 'required|in:dasar,mudah,sedang,sulit,tersulit,ekstrem',
             'kategori_id' => 'required|exists:kategori_soal,id',
             'pembahasan' => 'nullable|string',
             'pembahasan_type' => 'nullable|in:text,image,both',

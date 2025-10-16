@@ -81,6 +81,9 @@
                                         <select class="form-control @error('level') is-invalid @enderror" id="level"
                                             name="level" required>
                                             <option value="">Pilih Level</option>
+                                            <option value="dasar"
+                                                {{ (old('level') ?? $soal->level) == 'dasar' ? 'selected' : '' }}>Dasar
+                                            </option>
                                             <option value="mudah"
                                                 {{ (old('level') ?? $soal->level) == 'mudah' ? 'selected' : '' }}>Mudah
                                             </option>
@@ -89,6 +92,12 @@
                                             </option>
                                             <option value="sulit"
                                                 {{ (old('level') ?? $soal->level) == 'sulit' ? 'selected' : '' }}>Sulit
+                                            </option>
+                                            <option value="tersulit"
+                                                {{ (old('level') ?? $soal->level) == 'tersulit' ? 'selected' : '' }}>Tersulit
+                                            </option>
+                                            <option value="ekstrem"
+                                                {{ (old('level') ?? $soal->level) == 'ekstrem' ? 'selected' : '' }}>Ekstrem
                                             </option>
                                         </select>
                                         @error('level')

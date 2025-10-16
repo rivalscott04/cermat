@@ -69,11 +69,17 @@
                             <div class="col-md-3">
                                 <select class="form-control" id="filterLevel">
                                     <option value="">Semua Level</option>
+                                    <option value="dasar" {{ request('level') == 'dasar' ? 'selected' : '' }}>Dasar
+                                    </option>
                                     <option value="mudah" {{ request('level') == 'mudah' ? 'selected' : '' }}>Mudah
                                     </option>
                                     <option value="sedang" {{ request('level') == 'sedang' ? 'selected' : '' }}>Sedang
                                     </option>
                                     <option value="sulit" {{ request('level') == 'sulit' ? 'selected' : '' }}>Sulit
+                                    </option>
+                                    <option value="tersulit" {{ request('level') == 'tersulit' ? 'selected' : '' }}>Tersulit
+                                    </option>
+                                    <option value="ekstrem" {{ request('level') == 'ekstrem' ? 'selected' : '' }}>Ekstrem
                                     </option>
                                 </select>
                             </div>

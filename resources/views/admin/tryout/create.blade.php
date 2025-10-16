@@ -130,9 +130,12 @@
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>Kategori</th>
+                                                <th class="text-center">Dasar</th>
                                                 <th class="text-center">Mudah</th>
                                                 <th class="text-center">Sedang</th>
                                                 <th class="text-center">Sulit</th>
+                                                <th class="text-center">Tersulit</th>
+                                                <th class="text-center">Ekstrem</th>
                                                 <th>Tersedia</th>
                                             </tr>
                                         </thead>
@@ -143,37 +146,56 @@
                                                     <td>
                                                         {{ $kategori->nama }} ({{ $kategori->kode }})
                                                     </td>
-                                                    <td width="140">
+                                                    <td width="120">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][dasar]"
+                                                            value="{{ old("blueprint.{$kategori->id}.dasar", 0) }}"
+                                                            data-kategori="{{ $kategori->nama }}" data-level="dasar">
+                                                    </td>
+                                                    <td width="120">
                                                         <input type="number" class="form-control blueprint-input"
                                                             min="0" max="100"
                                                             name="blueprint[{{ $kategori->id }}][mudah]"
                                                             value="{{ old("blueprint.{$kategori->id}.mudah", 0) }}"
                                                             data-kategori="{{ $kategori->nama }}" data-level="mudah">
                                                     </td>
-                                                    <td width="140">
+                                                    <td width="120">
                                                         <input type="number" class="form-control blueprint-input"
                                                             min="0" max="100"
                                                             name="blueprint[{{ $kategori->id }}][sedang]"
                                                             value="{{ old("blueprint.{$kategori->id}.sedang", 0) }}"
                                                             data-kategori="{{ $kategori->nama }}" data-level="sedang">
                                                     </td>
-                                                    <td width="140">
+                                                    <td width="120">
                                                         <input type="number" class="form-control blueprint-input"
                                                             min="0" max="100"
                                                             name="blueprint[{{ $kategori->id }}][sulit]"
                                                             value="{{ old("blueprint.{$kategori->id}.sulit", 0) }}"
                                                             data-kategori="{{ $kategori->nama }}" data-level="sulit">
                                                     </td>
+                                                    <td width="120">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][tersulit]"
+                                                            value="{{ old("blueprint.{$kategori->id}.tersulit", 0) }}"
+                                                            data-kategori="{{ $kategori->nama }}" data-level="tersulit">
+                                                    </td>
+                                                    <td width="120">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][ekstrem]"
+                                                            value="{{ old("blueprint.{$kategori->id}.ekstrem", 0) }}"
+                                                            data-kategori="{{ $kategori->nama }}" data-level="ekstrem">
+                                                    </td>
                                                     <td>
                                                         <small class="text-muted">
-                                                            Mudah:
-                                                            {{ $kategori->soals()->where('level', 'mudah')->where('is_used', false)->count() }}
-                                                            |
-                                                            Sedang:
-                                                            {{ $kategori->soals()->where('level', 'sedang')->where('is_used', false)->count() }}
-                                                            |
-                                                            Sulit:
-                                                            {{ $kategori->soals()->where('level', 'sulit')->where('is_used', false)->count() }}
+                                                            Dasar: {{ $kategori->soals()->where('level', 'dasar')->where('is_used', false)->count() }} |
+                                                            Mudah: {{ $kategori->soals()->where('level', 'mudah')->where('is_used', false)->count() }} |
+                                                            Sedang: {{ $kategori->soals()->where('level', 'sedang')->where('is_used', false)->count() }} |
+                                                            Sulit: {{ $kategori->soals()->where('level', 'sulit')->where('is_used', false)->count() }} |
+                                                            Tersulit: {{ $kategori->soals()->where('level', 'tersulit')->where('is_used', false)->count() }} |
+                                                            Ekstrem: {{ $kategori->soals()->where('level', 'ekstrem')->where('is_used', false)->count() }}
                                                         </small>
                                                     </td>
 
@@ -259,9 +281,12 @@
                         const detail = detailSummary[kategori];
                         const levelDetails = [];
 
+                        if (detail.dasar > 0) levelDetails.push(`Dasar: ${detail.dasar}`);
                         if (detail.mudah > 0) levelDetails.push(`Mudah: ${detail.mudah}`);
                         if (detail.sedang > 0) levelDetails.push(`Sedang: ${detail.sedang}`);
                         if (detail.sulit > 0) levelDetails.push(`Sulit: ${detail.sulit}`);
+                        if (detail.tersulit > 0) levelDetails.push(`Tersulit: ${detail.tersulit}`);
+                        if (detail.ekstrem > 0) levelDetails.push(`Ekstrem: ${detail.ekstrem}`);
 
                         if (levelDetails.length > 0) {
                             detailHtml += `
@@ -355,8 +380,11 @@
 
                 // Extract available count from text like "Mudah: 10 | Sedang: 10 | Sulit: 10"
                 const inputName = input.attr('name');
-                const level = inputName.includes('mudah') ? 'Mudah' :
-                    inputName.includes('sedang') ? 'Sedang' : 'Sulit';
+                const level = inputName.includes('dasar') ? 'Dasar' :
+                    inputName.includes('mudah') ? 'Mudah' :
+                    inputName.includes('sedang') ? 'Sedang' :
+                    inputName.includes('sulit') ? 'Sulit' :
+                    inputName.includes('tersulit') ? 'Tersulit' : 'Ekstrem';
                 const match = tersediaText.match(new RegExp(level + ':\\s*(\\d+)'));
                 const available = match ? parseInt(match[1]) : 0;
 

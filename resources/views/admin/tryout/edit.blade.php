@@ -111,9 +111,12 @@
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>Kategori</th>
+                                                <th class="text-center">Dasar</th>
                                                 <th class="text-center">Mudah</th>
                                                 <th class="text-center">Sedang</th>
                                                 <th class="text-center">Sulit</th>
+                                                <th class="text-center">Tersulit</th>
+                                                <th class="text-center">Ekstrem</th>
                                                 <th>Tersedia</th>
                                             </tr>
                                         </thead>
@@ -123,6 +126,9 @@
                                                     ->groupBy('kategori_id')
                                                     ->map(function ($rows) {
                                                         return [
+                                                            'dasar' =>
+                                                                optional($rows->firstWhere('level', 'dasar'))->jumlah ??
+                                                                0,
                                                             'mudah' =>
                                                                 optional($rows->firstWhere('level', 'mudah'))->jumlah ??
                                                                 0,
@@ -132,51 +138,78 @@
                                                             'sulit' =>
                                                                 optional($rows->firstWhere('level', 'sulit'))->jumlah ??
                                                                 0,
+                                                            'tersulit' =>
+                                                                optional($rows->firstWhere('level', 'tersulit'))->jumlah ??
+                                                                0,
+                                                            'ekstrem' =>
+                                                                optional($rows->firstWhere('level', 'ekstrem'))->jumlah ??
+                                                                0,
                                                         ];
                                                     });
                                             @endphp
                                             @foreach ($kategoris as $kategori)
                                                 @php
                                                     $row = $bp[$kategori->id] ?? [
+                                                        'dasar' => 0,
                                                         'mudah' => 0,
                                                         'sedang' => 0,
                                                         'sulit' => 0,
+                                                        'tersulit' => 0,
+                                                        'ekstrem' => 0,
                                                     ];
                                                 @endphp
                                                 <tr class="kategori-row" data-kode="{{ $kategori->kode }}">
                                                     <td>{{ $kategori->nama }} ({{ $kategori->kode }})</td>
-                                                    <td width="140">
+                                                    <td width="120">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][dasar]"
+                                                            value="{{ old("blueprint.{$kategori->id}.dasar", $row['dasar']) }}"
+                                                            data-original="{{ $row['dasar'] }}">
+                                                    </td>
+                                                    <td width="120">
                                                         <input type="number" class="form-control blueprint-input"
                                                             min="0" max="100"
                                                             name="blueprint[{{ $kategori->id }}][mudah]"
                                                             value="{{ old("blueprint.{$kategori->id}.mudah", $row['mudah']) }}"
                                                             data-original="{{ $row['mudah'] }}">
-
                                                     </td>
-                                                    <td width="140">
+                                                    <td width="120">
                                                         <input type="number" class="form-control blueprint-input"
                                                             min="0" max="100"
                                                             name="blueprint[{{ $kategori->id }}][sedang]"
                                                             value="{{ old("blueprint.{$kategori->id}.sedang", $row['sedang']) }}"
                                                             data-original="{{ $row['sedang'] }}">
                                                     </td>
-                                                    <td width="140">
+                                                    <td width="120">
                                                         <input type="number" class="form-control blueprint-input"
                                                             min="0" max="100"
                                                             name="blueprint[{{ $kategori->id }}][sulit]"
                                                             value="{{ old("blueprint.{$kategori->id}.sulit", $row['sulit']) }}"
                                                             data-original="{{ $row['sulit'] }}">
                                                     </td>
+                                                    <td width="120">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][tersulit]"
+                                                            value="{{ old("blueprint.{$kategori->id}.tersulit", $row['tersulit']) }}"
+                                                            data-original="{{ $row['tersulit'] }}">
+                                                    </td>
+                                                    <td width="120">
+                                                        <input type="number" class="form-control blueprint-input"
+                                                            min="0" max="100"
+                                                            name="blueprint[{{ $kategori->id }}][ekstrem]"
+                                                            value="{{ old("blueprint.{$kategori->id}.ekstrem", $row['ekstrem']) }}"
+                                                            data-original="{{ $row['ekstrem'] }}">
+                                                    </td>
                                                     <td>
                                                         <small class="text-muted">
-                                                            Mudah:
-                                                            {{ $kategori->soals()->where('level', 'mudah')->where('is_used', false)->count() }}
-                                                            |
-                                                            Sedang:
-                                                            {{ $kategori->soals()->where('level', 'sedang')->where('is_used', false)->count() }}
-                                                            |
-                                                            Sulit:
-                                                            {{ $kategori->soals()->where('level', 'sulit')->where('is_used', false)->count() }}
+                                                            Dasar: {{ $kategori->soals()->where('level', 'dasar')->where('is_used', false)->count() }} |
+                                                            Mudah: {{ $kategori->soals()->where('level', 'mudah')->where('is_used', false)->count() }} |
+                                                            Sedang: {{ $kategori->soals()->where('level', 'sedang')->where('is_used', false)->count() }} |
+                                                            Sulit: {{ $kategori->soals()->where('level', 'sulit')->where('is_used', false)->count() }} |
+                                                            Tersulit: {{ $kategori->soals()->where('level', 'tersulit')->where('is_used', false)->count() }} |
+                                                            Ekstrem: {{ $kategori->soals()->where('level', 'ekstrem')->where('is_used', false)->count() }}
                                                         </small>
                                                     </td>
                                                 </tr>
@@ -345,7 +378,10 @@
                 // Get level from input name - perbaiki deteksi level
                 let level = '';
                 let levelKey = '';
-                if (input.attr('name').includes('[mudah]')) {
+                if (input.attr('name').includes('[dasar]')) {
+                    level = 'Dasar';
+                    levelKey = 'dasar';
+                } else if (input.attr('name').includes('[mudah]')) {
                     level = 'Mudah';
                     levelKey = 'mudah';
                 } else if (input.attr('name').includes('[sedang]')) {
@@ -354,10 +390,16 @@
                 } else if (input.attr('name').includes('[sulit]')) {
                     level = 'Sulit';
                     levelKey = 'sulit';
+                } else if (input.attr('name').includes('[tersulit]')) {
+                    level = 'Tersulit';
+                    levelKey = 'tersulit';
+                } else if (input.attr('name').includes('[ekstrem]')) {
+                    level = 'Ekstrem';
+                    levelKey = 'ekstrem';
                 }
 
                 // Extract available count - perbaiki regex parsing
-                // Format text: "Mudah: 0 | Sedang: 0 | Sulit: 0"
+                // Format text: "Dasar: 0 | Mudah: 0 | Sedang: 0 | Sulit: 0 | Tersulit: 0 | Ekstrem: 0"
                 let availableInDatabase = 0;
                 const patterns = [
                     new RegExp(level + ':\\s*(\\d+)', 'i'), // "Mudah: 0"

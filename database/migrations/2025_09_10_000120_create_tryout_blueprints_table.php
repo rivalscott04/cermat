@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('tryout_id')->constrained()->onDelete('cascade');
             $table->foreignId('kategori_id')->constrained('kategori_soal')->onDelete('cascade');
-            $table->enum('level', ['mudah', 'sedang', 'sulit']);
+            $table->enum('level', ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem']);
             $table->unsignedInteger('jumlah');
             $table->timestamps();
 

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('user_tryout_soal', function (Blueprint $table) {
             if (!Schema::hasColumn('user_tryout_soal', 'level')) {
-                $table->enum('level', ['mudah', 'sedang', 'sulit'])->nullable()->after('soal_id');
+                $table->enum('level', ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'])->nullable()->after('soal_id');
             }
             $table->index(['tryout_id', 'level']);
         });
