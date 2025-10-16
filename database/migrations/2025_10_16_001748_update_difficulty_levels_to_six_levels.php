@@ -22,7 +22,6 @@ return new class extends Migration
         
         Schema::table('soals', function (Blueprint $table) {
             $table->enum('level', ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'])->default('dasar')->after('tipe');
-            $table->index(['kategori_id', 'level', 'is_active']);
         });
     }
 
@@ -45,7 +44,6 @@ return new class extends Migration
         
         Schema::table('soals', function (Blueprint $table) {
             $table->enum('level', ['mudah', 'sedang', 'sulit'])->default('mudah')->after('tipe');
-            $table->index(['kategori_id', 'level', 'is_active']);
         });
     }
 };
