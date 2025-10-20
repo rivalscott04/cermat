@@ -111,16 +111,11 @@ class TryoutController extends Controller
         }
 
         if (!empty($rows)) {
-            foreach ($rows as $row) {
-                TryoutBlueprint::updateOrCreate(
-                    [
-                        'tryout_id' => $row['tryout_id'],
-                        'kategori_id' => $row['kategori_id'],
-                        'level' => $row['level']
-                    ],
-                    $row
-                );
-            }
+            // Clear any existing blueprints for this tryout first
+            TryoutBlueprint::where('tryout_id', $tryout->id)->delete();
+            
+            // Insert new blueprints
+            TryoutBlueprint::insert($rows);
         }
 
         return redirect()->route('admin.tryout.index')
@@ -255,9 +250,12 @@ class TryoutController extends Controller
                 'jenis_paket' => 'required|string',
                 'blueprint' => 'required|array',
                 'blueprint.*' => 'required|array',
+                'blueprint.*.dasar' => 'nullable|integer|min:0',
                 'blueprint.*.mudah' => 'nullable|integer|min:0',
                 'blueprint.*.sedang' => 'nullable|integer|min:0',
                 'blueprint.*.sulit' => 'nullable|integer|min:0',
+                'blueprint.*.tersulit' => 'nullable|integer|min:0',
+                'blueprint.*.ekstrem' => 'nullable|integer|min:0',
             ]);
 
             // Validasi jumlah soal tidak melebihi yang tersedia
@@ -325,7 +323,7 @@ class TryoutController extends Controller
             }
 
             if (!empty($blueprintRows)) {
-                \DB::table('tryout_blueprints')->insert($blueprintRows);
+                TryoutBlueprint::insert($blueprintRows);
             }
 
             // Delete user answers (as warned in your blade template)
