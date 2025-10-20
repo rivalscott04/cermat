@@ -1491,7 +1491,7 @@ class TryoutController extends Controller
                 $totalSoal += $jumlah;
 
                 // Get available questions
-                $available = $kategori->soals()->where('level', $level)->where('is_used', false)->count();
+                $available = $kategori->soals()->where('level', $level)->where('is_used', false)->where('is_active', true)->count();
 
                 // If this is an update operation, add back the current blueprint questions
                 if ($tryout) {

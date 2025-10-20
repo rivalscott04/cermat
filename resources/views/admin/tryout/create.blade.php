@@ -157,7 +157,11 @@
                                                             @php
                                                                 $availableCounts = [];
                                                                 foreach ($difficultyLevels as $level) {
-                                                                    $count = $kategori->soals()->where('level', $level)->where('is_used', false)->count();
+                                                                    $count = \App\Models\Soal::where('kategori_id', $kategori->id)
+                                                                        ->where('level', $level)
+                                                                        ->where('is_used', false)
+                                                                        ->where('is_active', true)
+                                                                        ->count();
                                                                     $availableCounts[] = ucfirst($level) . ': ' . $count;
                                                                 }
                                                             @endphp
