@@ -128,6 +128,15 @@
                                             Total: {{ $tryout->total_soal }} soal
                                             @if($tryout->blueprints && $tryout->blueprints->count() > 0)
                                                 ({{ $tryout->blueprints->count() }} blueprint)
+                                                @php
+                                                    $debugTotal = 0;
+                                                    foreach($tryout->blueprints as $bp) {
+                                                        $debugTotal += $bp->jumlah;
+                                                    }
+                                                @endphp
+                                                [Debug: {{ $debugTotal }}]
+                                            @else
+                                                [No blueprints]
                                             @endif
                                         </small>
                                     </td>
