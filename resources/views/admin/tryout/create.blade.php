@@ -157,12 +157,23 @@
                                                             @php
                                                                 $availableCounts = [];
                                                                 foreach ($difficultyLevels as $level) {
+                                                                    // Debug: cek total soal per level tanpa filter is_used
+                                                                    $totalSoal = \App\Models\Soal::where('kategori_id', $kategori->id)
+                                                                        ->where('level', $level)
+                                                                        ->count();
+                                                                    
                                                                     $count = \App\Models\Soal::where('kategori_id', $kategori->id)
                                                                         ->where('level', $level)
                                                                         ->where('is_used', false)
                                                                         ->where('is_active', true)
                                                                         ->count();
-                                                                    $availableCounts[] = ucfirst($level) . ': ' . $count;
+                                                                    
+                                                                    // Tampilkan total dan tersedia untuk debug
+                                                                    if ($totalSoal > 0) {
+                                                                        $availableCounts[] = ucfirst($level) . ': ' . $count . '/' . $totalSoal;
+                                                                    } else {
+                                                                        $availableCounts[] = ucfirst($level) . ': ' . $count;
+                                                                    }
                                                                 }
                                                             @endphp
                                                             {{ implode(' | ', $availableCounts) }}
