@@ -130,12 +130,9 @@
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>Kategori</th>
-                                                <th class="text-center">Dasar</th>
-                                                <th class="text-center">Mudah</th>
-                                                <th class="text-center">Sedang</th>
-                                                <th class="text-center">Sulit</th>
-                                                <th class="text-center">Tersulit</th>
-                                                <th class="text-center">Ekstrem</th>
+                                                @foreach ($difficultyLevels as $level)
+                                                    <th class="text-center">{{ ucfirst($level) }}</th>
+                                                @endforeach
                                                 <th>Tersedia</th>
                                             </tr>
                                         </thead>
@@ -146,56 +143,25 @@
                                                     <td>
                                                         {{ $kategori->nama }} ({{ $kategori->kode }})
                                                     </td>
-                                                    <td width="120">
-                                                        <input type="number" class="form-control blueprint-input"
-                                                            min="0" max="100"
-                                                            name="blueprint[{{ $kategori->id }}][dasar]"
-                                                            value="{{ old("blueprint.{$kategori->id}.dasar", 0) }}"
-                                                            data-kategori="{{ $kategori->nama }}" data-level="dasar">
-                                                    </td>
-                                                    <td width="120">
-                                                        <input type="number" class="form-control blueprint-input"
-                                                            min="0" max="100"
-                                                            name="blueprint[{{ $kategori->id }}][mudah]"
-                                                            value="{{ old("blueprint.{$kategori->id}.mudah", 0) }}"
-                                                            data-kategori="{{ $kategori->nama }}" data-level="mudah">
-                                                    </td>
-                                                    <td width="120">
-                                                        <input type="number" class="form-control blueprint-input"
-                                                            min="0" max="100"
-                                                            name="blueprint[{{ $kategori->id }}][sedang]"
-                                                            value="{{ old("blueprint.{$kategori->id}.sedang", 0) }}"
-                                                            data-kategori="{{ $kategori->nama }}" data-level="sedang">
-                                                    </td>
-                                                    <td width="120">
-                                                        <input type="number" class="form-control blueprint-input"
-                                                            min="0" max="100"
-                                                            name="blueprint[{{ $kategori->id }}][sulit]"
-                                                            value="{{ old("blueprint.{$kategori->id}.sulit", 0) }}"
-                                                            data-kategori="{{ $kategori->nama }}" data-level="sulit">
-                                                    </td>
-                                                    <td width="120">
-                                                        <input type="number" class="form-control blueprint-input"
-                                                            min="0" max="100"
-                                                            name="blueprint[{{ $kategori->id }}][tersulit]"
-                                                            value="{{ old("blueprint.{$kategori->id}.tersulit", 0) }}"
-                                                            data-kategori="{{ $kategori->nama }}" data-level="tersulit">
-                                                    </td>
-                                                    <td width="120">
-                                                        <input type="number" class="form-control blueprint-input"
-                                                            min="0" max="100"
-                                                            name="blueprint[{{ $kategori->id }}][ekstrem]"
-                                                            value="{{ old("blueprint.{$kategori->id}.ekstrem", 0) }}"
-                                                            data-kategori="{{ $kategori->nama }}" data-level="ekstrem">
-                                                    </td>
+                                                    @foreach ($difficultyLevels as $level)
+                                                        <td width="120">
+                                                            <input type="number" class="form-control blueprint-input"
+                                                                min="0" max="100"
+                                                                name="blueprint[{{ $kategori->id }}][{{ $level }}]"
+                                                                value="{{ old("blueprint.{$kategori->id}.{$level}", 0) }}"
+                                                                data-kategori="{{ $kategori->nama }}" data-level="{{ $level }}">
+                                                        </td>
+                                                    @endforeach
                                                     <td>
                                                         <small class="text-muted">
-                                                            Dasar: {{ $kategori->soals()->where('level', 'dasar')->where('is_used', false)->count() }} |
-                                                            Mudah: {{ $kategori->soals()->where('level', 'mudah')->where('is_used', false)->count() }} |
-                                                            Sedang: {{ $kategori->soals()->where('level', 'sedang')->where('is_used', false)->count() }} |
-                                                            Sulit: {{ $kategori->soals()->where('level', 'sulit')->where('is_used', false)->count() }} |
-                                                            Tersulit: {{ $kategori->soals()->where('level', 'tersulit')->where('is_used', false)->count() }} |
-                                                            Ekstrem: {{ $kategori->soals()->where('level', 'ekstrem')->where('is_used', false)->count() }}
+                                                            @php
+                                                                $availableCounts = [];
+                                                                foreach ($difficultyLevels as $level) {
+                                                                    $count = $kategori->soals()->where('level', $level)->where('is_used', false)->count();
+                                                                    $availableCounts[] = ucfirst($level) . ': ' . $count;
+                                                                }
+                                                            @endphp
+                                                            {{ implode(' | ', $availableCounts) }}
                                                         </small>
                                                     </td>
 
@@ -247,13 +213,13 @@
 
                         if (!detailSummary[kategori]) {
                             detailSummary[kategori] = {
-                                mudah: 0,
-                                sedang: 0,
-                                sulit: 0,
                                 total: 0
                             };
                         }
 
+                        if (!detailSummary[kategori][level]) {
+                            detailSummary[kategori][level] = 0;
+                        }
                         detailSummary[kategori][level] = value;
                         detailSummary[kategori].total += value;
                     }
@@ -280,13 +246,13 @@
                     Object.keys(detailSummary).forEach(kategori => {
                         const detail = detailSummary[kategori];
                         const levelDetails = [];
+                        const difficultyLevels = @json($difficultyLevels);
 
-                        if (detail.dasar > 0) levelDetails.push(`Dasar: ${detail.dasar}`);
-                        if (detail.mudah > 0) levelDetails.push(`Mudah: ${detail.mudah}`);
-                        if (detail.sedang > 0) levelDetails.push(`Sedang: ${detail.sedang}`);
-                        if (detail.sulit > 0) levelDetails.push(`Sulit: ${detail.sulit}`);
-                        if (detail.tersulit > 0) levelDetails.push(`Tersulit: ${detail.tersulit}`);
-                        if (detail.ekstrem > 0) levelDetails.push(`Ekstrem: ${detail.ekstrem}`);
+                        difficultyLevels.forEach(level => {
+                            if (detail[level] > 0) {
+                                levelDetails.push(`${level.charAt(0).toUpperCase() + level.slice(1)}: ${detail[level]}`);
+                            }
+                        });
 
                         if (levelDetails.length > 0) {
                             detailHtml += `
@@ -380,11 +346,8 @@
 
                 // Extract available count from text like "Mudah: 10 | Sedang: 10 | Sulit: 10"
                 const inputName = input.attr('name');
-                const level = inputName.includes('dasar') ? 'Dasar' :
-                    inputName.includes('mudah') ? 'Mudah' :
-                    inputName.includes('sedang') ? 'Sedang' :
-                    inputName.includes('sulit') ? 'Sulit' :
-                    inputName.includes('tersulit') ? 'Tersulit' : 'Ekstrem';
+                const levelData = input.data('level');
+                const level = levelData.charAt(0).toUpperCase() + levelData.slice(1);
                 const match = tersediaText.match(new RegExp(level + ':\\s*(\\d+)'));
                 const available = match ? parseInt(match[1]) : 0;
 

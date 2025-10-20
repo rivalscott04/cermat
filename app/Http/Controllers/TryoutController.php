@@ -56,7 +56,8 @@ class TryoutController extends Controller
         }
 
         $packageMappings = PackageCategoryMapping::getAllMappings();
-        return view('admin.tryout.create', compact('kategoris', 'packageMappings'));
+        $difficultyLevels = $this->getDifficultyLevels();
+        return view('admin.tryout.create', compact('kategoris', 'packageMappings', 'difficultyLevels'));
     }
 
 
