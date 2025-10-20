@@ -129,16 +129,16 @@ class TryoutController extends Controller
                 // Delete existing blueprints using raw SQL to avoid foreign key issues
                 \DB::statement('DELETE FROM tryout_blueprints WHERE tryout_id = ?', [$tryout->id]);
                 
-                // Insert new blueprints using raw SQL
+                // Insert new blueprints using updateOrInsert to handle any duplicates gracefully
                 foreach ($rows as $row) {
-                    \DB::table('tryout_blueprints')->insert([
-                        'tryout_id' => $row['tryout_id'],
-                        'kategori_id' => $row['kategori_id'],
-                        'level' => $row['level'],
-                        'jumlah' => $row['jumlah'],
-                        'created_at' => $row['created_at'],
-                        'updated_at' => $row['updated_at']
-                    ]);
+                    \DB::table('tryout_blueprints')->updateOrInsert(
+                        [
+                            'tryout_id' => $row['tryout_id'],
+                            'kategori_id' => $row['kategori_id'],
+                            'level' => $row['level']
+                        ],
+                        $row
+                    );
                 }
             });
         }
@@ -350,7 +350,17 @@ class TryoutController extends Controller
             }
 
             if (!empty($blueprintRows)) {
-                \DB::table('tryout_blueprints')->insert($blueprintRows);
+                // Insert new blueprints using updateOrInsert to handle any duplicates gracefully
+                foreach ($blueprintRows as $row) {
+                    \DB::table('tryout_blueprints')->updateOrInsert(
+                        [
+                            'tryout_id' => $row['tryout_id'],
+                            'kategori_id' => $row['kategori_id'],
+                            'level' => $row['level']
+                        ],
+                        $row
+                    );
+                }
             }
 
             // Delete user answers (as warned in your blade template)
