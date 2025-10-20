@@ -111,7 +111,16 @@ class TryoutController extends Controller
         }
 
         if (!empty($rows)) {
-            TryoutBlueprint::insert($rows);
+            foreach ($rows as $row) {
+                TryoutBlueprint::updateOrCreate(
+                    [
+                        'tryout_id' => $row['tryout_id'],
+                        'kategori_id' => $row['kategori_id'],
+                        'level' => $row['level']
+                    ],
+                    $row
+                );
+            }
         }
 
         return redirect()->route('admin.tryout.index')
