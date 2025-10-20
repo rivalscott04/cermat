@@ -126,6 +126,9 @@
                                         <br>
                                         <small class="text-muted">
                                             Total: {{ $tryout->total_soal }} soal
+                                            @if($tryout->blueprints && $tryout->blueprints->count() > 0)
+                                                ({{ $tryout->blueprints->count() }} blueprint)
+                                            @endif
                                         </small>
                                     </td>
                                     <td>
