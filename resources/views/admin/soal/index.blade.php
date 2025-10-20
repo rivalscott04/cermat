@@ -126,6 +126,10 @@
                                 @if (request('level'))
                                     Level:
                                     @switch(request('level'))
+                                        @case('dasar')
+                                            Dasar
+                                        @break
+
                                         @case('mudah')
                                             Mudah
                                         @break
@@ -136,6 +140,14 @@
 
                                         @case('sulit')
                                             Sulit
+                                        @break
+
+                                        @case('tersulit')
+                                            Tersulit
+                                        @break
+
+                                        @case('ekstrem')
+                                            Ekstrem
                                         @break
                                     @endswitch
                                 @endif
@@ -196,6 +208,10 @@
                                             </td>
                                             <td>
                                                 @switch($soal->level)
+                                                    @case('dasar')
+                                                        <span class="badge badge-info">Dasar</span>
+                                                    @break
+
                                                     @case('mudah')
                                                         <span class="badge badge-success">Mudah</span>
                                                     @break
@@ -208,8 +224,16 @@
                                                         <span class="badge badge-danger">Sulit</span>
                                                     @break
 
+                                                    @case('tersulit')
+                                                        <span class="badge badge-warning" style="background-color: #ff6b35 !important;">Tersulit</span>
+                                                    @break
+
+                                                    @case('ekstrem')
+                                                        <span class="badge badge-danger" style="background-color: #8b0000 !important; color: white !important; font-weight: bold !important;">EKSTREM</span>
+                                                    @break
+
                                                     @default
-                                                        <span class="badge badge-secondary">Mudah</span>
+                                                        <span class="badge badge-secondary">Dasar</span>
                                                     @break
                                                 @endswitch
                                             </td>
