@@ -62,12 +62,21 @@ class TryoutController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        // Build dynamic validation rules for difficulty levels
+        $validationRules = [
             'judul' => 'required|string|max:255',
             'durasi_menit' => 'required|integer|min:1',
             'jenis_paket' => 'required|string',
-            'blueprint' => 'required|array'
-        ]);
+            'blueprint' => 'required|array',
+            'blueprint.*' => 'required|array',
+        ];
+        
+        // Add validation rules for each difficulty level
+        foreach ($this->getDifficultyLevels() as $level) {
+            $validationRules["blueprint.*.{$level}"] = 'nullable|integer|min:0';
+        }
+        
+        $request->validate($validationRules);
 
         $this->validateBlueprint($request->blueprint);
 
@@ -83,7 +92,7 @@ class TryoutController extends Controller
 
         $rows = [];
         foreach ($request->blueprint as $kategoriId => $levels) {
-            foreach (['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'] as $level) {
+            foreach ($this->getDifficultyLevels() as $level) {
                 $jumlah = intval($levels[$level] ?? 0);
                 if ($jumlah > 0) {
                     $soals = Soal::where('kategori_id', $kategoriId)
@@ -243,20 +252,22 @@ class TryoutController extends Controller
     public function update(Request $request, Tryout $tryout)
     {
         try {
-            $request->validate([
+            // Build dynamic validation rules for difficulty levels
+            $validationRules = [
                 'judul' => 'required|string|max:255',
                 'deskripsi' => 'nullable|string',
                 'durasi_menit' => 'required|integer|min:1',
                 'jenis_paket' => 'required|string',
                 'blueprint' => 'required|array',
                 'blueprint.*' => 'required|array',
-                'blueprint.*.dasar' => 'nullable|integer|min:0',
-                'blueprint.*.mudah' => 'nullable|integer|min:0',
-                'blueprint.*.sedang' => 'nullable|integer|min:0',
-                'blueprint.*.sulit' => 'nullable|integer|min:0',
-                'blueprint.*.tersulit' => 'nullable|integer|min:0',
-                'blueprint.*.ekstrem' => 'nullable|integer|min:0',
-            ]);
+            ];
+            
+            // Add validation rules for each difficulty level
+            foreach ($this->getDifficultyLevels() as $level) {
+                $validationRules["blueprint.*.{$level}"] = 'nullable|integer|min:0';
+            }
+            
+            $request->validate($validationRules);
 
             // Validasi jumlah soal tidak melebihi yang tersedia
             $this->validateBlueprint($request->blueprint, $tryout);
@@ -291,7 +302,7 @@ class TryoutController extends Controller
             // Create new blueprints
             $blueprintRows = [];
             foreach ($request->blueprint as $kategoriId => $levels) {
-                foreach (['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'] as $level) {
+                foreach ($this->getDifficultyLevels() as $level) {
                     $jumlah = intval($levels[$level] ?? 0);
                     if ($jumlah > 0) {
                         // Ambil soal yang belum dipakai dan tandai sebagai dipakai
@@ -1434,6 +1445,24 @@ class TryoutController extends Controller
     {
         // Use new package system
         return $user->canAccessSpecificTryout($tryout);
+    }
+
+    /**
+     * Get available difficulty levels from database schema
+     */
+    private function getDifficultyLevels()
+    {
+        // Get difficulty levels from database schema
+        $levels = \DB::select("SHOW COLUMNS FROM soals LIKE 'level'");
+        if (!empty($levels)) {
+            $enumValues = $levels[0]->Type;
+            // Extract enum values from string like "enum('dasar','mudah','sedang','sulit','tersulit','ekstrem')"
+            preg_match_all("/'([^']+)'/", $enumValues, $matches);
+            return $matches[1] ?? [];
+        }
+        
+        // Fallback to default levels if schema query fails
+        return ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'];
     }
 
     /**

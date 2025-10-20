@@ -34,8 +34,9 @@ class SoalController extends Controller
 
         $soals = $query->paginate(20)->withQueryString();
         $kategoris = KategoriSoal::active()->get();
+        $difficultyLevels = $this->getDifficultyLevels();
 
-        return view('admin.soal.index', compact('soals', 'kategoris'));
+        return view('admin.soal.index', compact('soals', 'kategoris', 'difficultyLevels'));
     }
 
     public function create()
@@ -472,5 +473,38 @@ class SoalController extends Controller
 
         $soal->delete();
         return redirect()->route('admin.soal.index')->with('success', 'Soal berhasil dihapus');
+    }
+
+    /**
+     * Get available difficulty levels from database schema
+     */
+    private function getDifficultyLevels()
+    {
+        // Get difficulty levels from database schema
+        $levels = \DB::select("SHOW COLUMNS FROM soals LIKE 'level'");
+        if (!empty($levels)) {
+            $enumValues = $levels[0]->Type;
+            // Extract enum values from string like "enum('dasar','mudah','sedang','sulit','tersulit','ekstrem')"
+            preg_match_all("/'([^']+)'/", $enumValues, $matches);
+            return $matches[1] ?? [];
+        }
+        
+        // Fallback to default levels if schema query fails
+        return ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'];
+    }
+
+    /**
+     * Get difficulty level labels for display
+     */
+    public function getDifficultyLabels()
+    {
+        $levels = $this->getDifficultyLevels();
+        $labels = [];
+        
+        foreach ($levels as $level) {
+            $labels[$level] = ucfirst($level);
+        }
+        
+        return $labels;
     }
 }
