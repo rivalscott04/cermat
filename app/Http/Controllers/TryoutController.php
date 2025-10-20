@@ -121,11 +121,48 @@ class TryoutController extends Controller
         }
 
         if (!empty($rows)) {
-            // Clear any existing blueprints for this tryout first
-            TryoutBlueprint::where('tryout_id', $tryout->id)->delete();
-            
-            // Insert new blueprints
-            TryoutBlueprint::insert($rows);
+            try {
+                // Use transaction to ensure atomicity
+                \DB::transaction(function () use ($tryout, $rows) {
+                    // Clear any existing blueprints for this tryout first
+                    TryoutBlueprint::where('tryout_id', $tryout->id)->delete();
+                    
+                    // Insert new blueprints one by one to avoid any conflicts
+                    foreach ($rows as $row) {
+                        TryoutBlueprint::updateOrCreate(
+                            [
+                                'tryout_id' => $row['tryout_id'],
+                                'kategori_id' => $row['kategori_id'],
+                                'level' => $row['level']
+                            ],
+                            $row
+                        );
+                    }
+                });
+            } catch (\Exception $e) {
+                // If there's still an error, try individual inserts with error handling
+                \DB::transaction(function () use ($tryout, $rows) {
+                    // Clear any existing blueprints for this tryout first
+                    TryoutBlueprint::where('tryout_id', $tryout->id)->delete();
+                    
+                    // Insert new blueprints one by one
+                    foreach ($rows as $row) {
+                        try {
+                            TryoutBlueprint::create($row);
+                        } catch (\Exception $e) {
+                            // If individual create fails, try updateOrCreate
+                            TryoutBlueprint::updateOrCreate(
+                                [
+                                    'tryout_id' => $row['tryout_id'],
+                                    'kategori_id' => $row['kategori_id'],
+                                    'level' => $row['level']
+                                ],
+                                $row
+                            );
+                        }
+                    }
+                });
+            }
         }
 
         return redirect()->route('admin.tryout.index')
