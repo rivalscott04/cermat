@@ -121,6 +121,9 @@ class TryoutController extends Controller
         }
 
         if (!empty($rows)) {
+            // Debug: log isi rows sebelum insert
+            \Log::info('Rows to insert:', $rows);
+            
             try {
                 // Use transaction to ensure atomicity
                 \DB::transaction(function () use ($tryout, $rows) {
@@ -129,7 +132,7 @@ class TryoutController extends Controller
                     
                     // Insert new blueprints one by one to avoid any conflicts
                     foreach ($rows as $row) {
-                        TryoutBlueprint::updateOrCreate(
+                        $blueprint = TryoutBlueprint::updateOrCreate(
                             [
                                 'tryout_id' => $row['tryout_id'],
                                 'kategori_id' => $row['kategori_id'],
@@ -137,6 +140,14 @@ class TryoutController extends Controller
                             ],
                             $row
                         );
+                        
+                        // Log untuk debug
+                        \Log::info('Blueprint created/updated', [
+                            'tryout_id' => $blueprint->tryout_id,
+                            'kategori_id' => $blueprint->kategori_id,
+                            'level' => $blueprint->level,
+                            'jumlah' => $blueprint->jumlah
+                        ]);
                     }
                 });
             } catch (\Exception $e) {
