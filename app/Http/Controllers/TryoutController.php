@@ -124,56 +124,23 @@ class TryoutController extends Controller
             // Debug: log isi rows sebelum insert
             \Log::info('Rows to insert:', $rows);
             
-            try {
-                // Use transaction to ensure atomicity
-                \DB::transaction(function () use ($tryout, $rows) {
-                    // Clear any existing blueprints for this tryout first
-                    TryoutBlueprint::where('tryout_id', $tryout->id)->delete();
-                    
-                    // Insert new blueprints one by one to avoid any conflicts
-                    foreach ($rows as $row) {
-                        $blueprint = TryoutBlueprint::updateOrCreate(
-                            [
-                                'tryout_id' => $row['tryout_id'],
-                                'kategori_id' => $row['kategori_id'],
-                                'level' => $row['level']
-                            ],
-                            $row
-                        );
-                        
-                        // Log untuk debug
-                        \Log::info('Blueprint created/updated', [
-                            'tryout_id' => $blueprint->tryout_id,
-                            'kategori_id' => $blueprint->kategori_id,
-                            'level' => $blueprint->level,
-                            'jumlah' => $blueprint->jumlah
-                        ]);
-                    }
-                });
-            } catch (\Exception $e) {
-                // If there's still an error, try individual inserts with error handling
-                \DB::transaction(function () use ($tryout, $rows) {
-                    // Clear any existing blueprints for this tryout first
-                    TryoutBlueprint::where('tryout_id', $tryout->id)->delete();
-                    
-                    // Insert new blueprints one by one
-                    foreach ($rows as $row) {
-                        try {
-                            TryoutBlueprint::create($row);
-                        } catch (\Exception $e) {
-                            // If individual create fails, try updateOrCreate
-                            TryoutBlueprint::updateOrCreate(
-                                [
-                                    'tryout_id' => $row['tryout_id'],
-                                    'kategori_id' => $row['kategori_id'],
-                                    'level' => $row['level']
-                                ],
-                                $row
-                            );
-                        }
-                    }
-                });
-            }
+            // Use raw SQL to avoid any ORM issues
+            \DB::transaction(function () use ($tryout, $rows) {
+                // Delete existing blueprints using raw SQL to avoid foreign key issues
+                \DB::statement('DELETE FROM tryout_blueprints WHERE tryout_id = ?', [$tryout->id]);
+                
+                // Insert new blueprints using raw SQL
+                foreach ($rows as $row) {
+                    \DB::table('tryout_blueprints')->insert([
+                        'tryout_id' => $row['tryout_id'],
+                        'kategori_id' => $row['kategori_id'],
+                        'level' => $row['level'],
+                        'jumlah' => $row['jumlah'],
+                        'created_at' => $row['created_at'],
+                        'updated_at' => $row['updated_at']
+                    ]);
+                }
+            });
         }
 
         return redirect()->route('admin.tryout.index')
@@ -345,9 +312,9 @@ class TryoutController extends Controller
                 'jenis_paket' => $request->jenis_paket
             ]);
 
-            // Delete old blueprints
-            $tryout->blueprints()->delete();
-
+            // Delete old blueprints and create new ones in same transaction
+            \DB::statement('DELETE FROM tryout_blueprints WHERE tryout_id = ?', [$tryout->id]);
+            
             // Create new blueprints
             $blueprintRows = [];
             foreach ($request->blueprint as $kategoriId => $levels) {
@@ -383,7 +350,7 @@ class TryoutController extends Controller
             }
 
             if (!empty($blueprintRows)) {
-                TryoutBlueprint::insert($blueprintRows);
+                \DB::table('tryout_blueprints')->insert($blueprintRows);
             }
 
             // Delete user answers (as warned in your blade template)
