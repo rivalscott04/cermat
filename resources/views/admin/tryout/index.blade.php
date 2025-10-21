@@ -67,11 +67,6 @@
                             @endif
                         </div>
                     @endif
-                    @if(session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                    @endif
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
@@ -126,18 +121,6 @@
                                         <br>
                                         <small class="text-muted">
                                             Total: {{ $tryout->total_soal }} soal
-                                            @if($tryout->blueprints && $tryout->blueprints->count() > 0)
-                                                ({{ $tryout->blueprints->count() }} blueprint)
-                                                @php
-                                                    $debugTotal = 0;
-                                                    foreach($tryout->blueprints as $bp) {
-                                                        $debugTotal += $bp->jumlah;
-                                                    }
-                                                @endphp
-                                                [Debug: {{ $debugTotal }}]
-                                            @else
-                                                [No blueprints]
-                                            @endif
                                         </small>
                                     </td>
                                     <td>
@@ -309,6 +292,25 @@ $(document).ready(function() {
     $('#filterJenis, #filterAkses, #filterStatus').change(applyFilters);
     $('#btnSearch').click(applyFilters);
     $('#filterQ').keypress(function(e) { if (e.which === 13) applyFilters(); });
+
+    // Fix modal close functionality
+    $('.modal .close, .modal [data-dismiss="modal"]').on('click', function() {
+        $(this).closest('.modal').modal('hide');
+    });
+
+    // Close modal on escape key
+    $(document).on('keydown', function(e) {
+        if (e.keyCode === 27) { // Escape key
+            $('.modal.show').modal('hide');
+        }
+    });
+
+    // Close modal when clicking outside
+    $('.modal').on('click', function(e) {
+        if (e.target === this) {
+            $(this).modal('hide');
+        }
+    });
 });
 
 function showDeleteModal(tryoutId, tryoutTitle) {
