@@ -34,14 +34,16 @@ return new class extends Migration
             }
         }
         
-        // Step 2: Drop all unique indexes
+        // Step 2: Drop all unique indexes (avoid duplicates)
         $indexes = DB::select("SHOW INDEX FROM tryout_blueprints WHERE Key_name != 'PRIMARY'");
+        $droppedIndexes = [];
         
         foreach ($indexes as $index) {
-            if ($index->Non_unique == 0) { // 0 means UNIQUE constraint
+            if ($index->Non_unique == 0 && !in_array($index->Key_name, $droppedIndexes)) { // 0 means UNIQUE constraint
                 try {
                     DB::statement("ALTER TABLE tryout_blueprints DROP INDEX `{$index->Key_name}`");
                     echo "Dropped index: {$index->Key_name}\n";
+                    $droppedIndexes[] = $index->Key_name;
                 } catch (\Exception $e) {
                     echo "Could not drop index {$index->Key_name}: {$e->getMessage()}\n";
                 }
