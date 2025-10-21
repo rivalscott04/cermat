@@ -110,7 +110,6 @@ class TryoutController extends Controller
                         $soal->update(['is_used' => true]);
                     }
 
-                    // Insert hanya sekali per kategori-level
                     $rows[] = [
                         'tryout_id' => $tryout->id,
                         'kategori_id' => $kategoriId,
@@ -124,18 +123,12 @@ class TryoutController extends Controller
         }
 
         if (!empty($rows)) {
-            // Debug: log isi rows sebelum insert
-            \Log::info('Rows to insert:', $rows);
-            
-            // Use raw SQL to avoid any ORM issues
             \DB::transaction(function () use ($tryout, $rows) {
-                // Delete existing blueprints using raw SQL to avoid foreign key issues
+                // Delete existing blueprints
                 \DB::statement('DELETE FROM tryout_blueprints WHERE tryout_id = ?', [$tryout->id]);
                 
-                // Insert new blueprints in bulk to avoid race conditions
-                if (!empty($rows)) {
-                    \DB::table('tryout_blueprints')->insert($rows);
-                }
+                // Insert new blueprints in bulk
+                \DB::table('tryout_blueprints')->insert($rows);
             });
         }
 
@@ -350,17 +343,8 @@ class TryoutController extends Controller
             }
 
             if (!empty($blueprintRows)) {
-                // Insert new blueprints using updateOrInsert to handle any duplicates gracefully
-                foreach ($blueprintRows as $row) {
-                    \DB::table('tryout_blueprints')->updateOrInsert(
-                        [
-                            'tryout_id' => $row['tryout_id'],
-                            'kategori_id' => $row['kategori_id'],
-                            'level' => $row['level']
-                        ],
-                        $row
-                    );
-                }
+                // Insert new blueprints in bulk
+                \DB::table('tryout_blueprints')->insert($blueprintRows);
             }
 
             // Delete user answers (as warned in your blade template)
