@@ -80,7 +80,7 @@ class Tryout extends Model
 
     private function getAllowedPackageTypes($userPackage)
     {
-        // FREE users: allow kecerdasan, kepribadian, and lengkap; quota handled in controller
+        // FREE users: allow kecerdasan, kepribadian, dan lengkap (quota handled in controller)
         if ($userPackage === 'free') {
             return ['kecerdasan', 'kepribadian', 'lengkap'];
         }

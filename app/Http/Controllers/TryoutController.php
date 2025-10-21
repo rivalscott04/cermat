@@ -81,13 +81,16 @@ class TryoutController extends Controller
 
         $this->validateBlueprint($request->blueprint);
 
+        // Derive akses_paket from jenis_paket dynamically using AccessTier mapping
+        $derivedAccess = $this->getMinimumAccessForJenis($request->jenis_paket);
+
         $tryout = Tryout::create([
             'judul' => $request->judul,
             'deskripsi' => $request->deskripsi,
             'struktur' => [],
             'shuffle_questions' => (bool) $request->get('shuffle_questions', false),
             'durasi_menit' => $request->durasi_menit,
-            'akses_paket' => 'free',
+            'akses_paket' => $derivedAccess,
             'jenis_paket' => $request->jenis_paket,
         ]);
 
@@ -129,16 +132,9 @@ class TryoutController extends Controller
                 // Delete existing blueprints using raw SQL to avoid foreign key issues
                 \DB::statement('DELETE FROM tryout_blueprints WHERE tryout_id = ?', [$tryout->id]);
                 
-                // Insert new blueprints using updateOrInsert to handle any duplicates gracefully
-                foreach ($rows as $row) {
-                    \DB::table('tryout_blueprints')->updateOrInsert(
-                        [
-                            'tryout_id' => $row['tryout_id'],
-                            'kategori_id' => $row['kategori_id'],
-                            'level' => $row['level']
-                        ],
-                        $row
-                    );
+                // Insert new blueprints in bulk to avoid race conditions
+                if (!empty($rows)) {
+                    \DB::table('tryout_blueprints')->insert($rows);
                 }
             });
         }
@@ -302,6 +298,9 @@ class TryoutController extends Controller
                     ->update(['is_used' => false]);
             }
 
+            // Derive akses_paket from jenis_paket dynamically
+            $derivedAccess = $this->getMinimumAccessForJenis($request->jenis_paket);
+
             // Update tryout data
             $tryout->update([
                 'judul' => $request->judul,
@@ -309,6 +308,7 @@ class TryoutController extends Controller
                 'struktur' => [],
                 'shuffle_questions' => $request->boolean('shuffle_questions', false),
                 'durasi_menit' => $request->durasi_menit,
+                'akses_paket' => $derivedAccess,
                 'jenis_paket' => $request->jenis_paket
             ]);
 
@@ -1489,6 +1489,25 @@ class TryoutController extends Controller
         
         // Fallback to default levels if schema query fails
         return ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'];
+    }
+
+    /**
+     * Get minimum akses_paket required for a given jenis_paket
+     * Uses dynamic mapping from access_tiers table
+     */
+    private function getMinimumAccessForJenis($jenisPaket)
+    {
+        // Check if this jenis_paket exists as an AccessTier
+        $accessTier = \App\Models\AccessTier::where('key', $jenisPaket)->first();
+        
+        if ($accessTier) {
+            // Return the key directly from access_tiers table
+            return $accessTier->key;
+        }
+        
+        // Fallback: semua jenis (kecerdasan, kepribadian, lengkap) bisa diakses sesuai jenis_paket nya
+        // User free tetap bisa akses dengan quota limit di controller
+        return $jenisPaket;
     }
 
     /**
