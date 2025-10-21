@@ -1497,17 +1497,15 @@ class TryoutController extends Controller
      */
     private function getMinimumAccessForJenis($jenisPaket)
     {
-        // Check if this jenis_paket exists as an AccessTier
-        $accessTier = \App\Models\AccessTier::where('key', $jenisPaket)->first();
-        
-        if ($accessTier) {
-            // Return the key directly from access_tiers table
-            return $accessTier->key;
+        // Map jenis_paket to akses_paket sesuai dengan enum yang ada di database
+        switch ($jenisPaket) {
+            case 'free':
+                return 'free';
+            case 'lengkap':
+                return 'vip';
+            default:
+                return 'premium';
         }
-        
-        // Fallback: semua jenis (kecerdasan, kepribadian, lengkap) bisa diakses sesuai jenis_paket nya
-        // User free tetap bisa akses dengan quota limit di controller
-        return $jenisPaket;
     }
 
     /**
