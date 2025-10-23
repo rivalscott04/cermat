@@ -673,10 +673,6 @@
                     const isPackageForm = form.action.includes('/package') || form.action.includes('updatePackage');
                     const isStatusForm = form.action.includes('update') && !form.action.includes('/package') && !form.action.includes('updatePackage');
                     
-                    console.log('Form action:', form.action); // Debug log
-                    console.log('Is package form:', isPackageForm); // Debug log
-                    console.log('Is status form:', isStatusForm); // Debug log
-                    
                     let hidden, dataValue;
                     
                     if (isPackageForm) {
@@ -686,21 +682,11 @@
                         hidden = form.querySelector('input[name="is_active"]');
                         dataValue = item.getAttribute('data-value');
                     } else {
-                        console.error('Unknown form type');
                         return;
                     }
                     
-                    console.log('Selected value:', dataValue); // Debug log
-                    console.log('Form found:', form); // Debug log
-                    console.log('Hidden input found:', hidden); // Debug log
                     if (hidden) {
-                        console.log('Before update - hidden.value:', hidden.value); // Debug log
                         hidden.value = dataValue;
-                        console.log('After update - hidden.value:', hidden.value); // Debug log
-                        console.log('Hidden input name:', hidden.name); // Debug log
-                    } else {
-                        console.error('Hidden input not found!');
-                        console.log('All hidden inputs in form:', form.querySelectorAll('input[type="hidden"]')); // Debug log
                     }
                     
                     // Show loading state
@@ -717,12 +703,9 @@
                                 csrfInput.value = newToken;
                             }
                         }
-                        console.log('Submitting form with package:', hidden.value); // Debug log
                         form.submit();
                     }).catch(error => {
-                        console.error('Error refreshing CSRF token:', error);
                         // Still submit the form even if token refresh fails
-                        console.log('Submitting form with package (fallback):', hidden.value); // Debug log
                         form.submit();
                     });
                 });
@@ -767,11 +750,10 @@
                         const newToken = doc.querySelector('meta[name="csrf-token"]');
                         if (newToken && newToken.getAttribute('content') !== csrfToken.getAttribute('content')) {
                             csrfToken.setAttribute('content', newToken.getAttribute('content'));
-                            console.log('CSRF token refreshed automatically');
                         }
                     })
                     .catch(error => {
-                        console.error('Error refreshing CSRF token:', error);
+                        // Silent error handling
                     });
                 }
             }, 300000); // Refresh every 5 minutes
@@ -805,7 +787,6 @@
                 return null;
             })
             .catch(error => {
-                console.error('Error refreshing CSRF token:', error);
                 return null;
             });
         }

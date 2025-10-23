@@ -105,12 +105,8 @@
                         
                         {{-- Pagination --}}
                         @if($tryouts->hasPages())
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <div class="d-flex justify-content-center">
-                                        {{ $tryouts->links() }}
-                                    </div>
-                                </div>
+                            <div class="d-flex justify-content-center mt-4">
+                                {{ $tryouts->appends(request()->query())->links('pagination::bootstrap-4') }}
                             </div>
                         @endif
                     </div>
@@ -119,3 +115,45 @@
         </div>
     </div>
 @endsection
+
+@push('styles')
+<style>
+    .pagination {
+        margin: 20px 0;
+        justify-content: center;
+    }
+
+    .pagination .page-link {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.9rem;
+        border: 1px solid #dee2e6;
+        color: #007bff;
+        background-color: #fff;
+        margin: 0 2px;
+        border-radius: 4px;
+    }
+
+    .pagination .page-link:hover {
+        color: #0056b3;
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+        text-decoration: none;
+    }
+
+    .pagination .page-item.active .page-link {
+        color: #fff;
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+
+    .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        background-color: #fff;
+        border-color: #dee2e6;
+    }
+
+    .pagination .page-link i {
+        font-size: 0.8rem;
+    }
+</style>
+@endpush
