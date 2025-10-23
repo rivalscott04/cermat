@@ -457,12 +457,12 @@
                                                                     @csrf
                                                                     @method('PUT')
                                                                     <input type="hidden" name="package" value="">
-                                                                    <button class="pill-item" data-value="lengkap">Lengkap</button>
-                                                                    <button class="pill-item" data-value="kecermatan">Kecermatan</button>
-                                                                    <button class="pill-item" data-value="kecerdasan">Kecerdasan</button>
-                                                                    <button class="pill-item" data-value="kepribadian">Kepribadian</button>
-                                                                    <button class="pill-item" data-value="free">Free</button>
-                                                                    <button class="pill-item" data-value="">No Package</button>
+                                                                    <button type="button" class="pill-item" data-value="lengkap">Lengkap</button>
+                                                                    <button type="button" class="pill-item" data-value="kecermatan">Kecermatan</button>
+                                                                    <button type="button" class="pill-item" data-value="kecerdasan">Kecerdasan</button>
+                                                                    <button type="button" class="pill-item" data-value="kepribadian">Kepribadian</button>
+                                                                    <button type="button" class="pill-item" data-value="free">Free</button>
+                                                                    <button type="button" class="pill-item" data-value="">No Package</button>
                                                                 </form>
                                                             </div>
                                                         </div>
@@ -484,8 +484,8 @@
                                                                     @csrf
                                                                     @method('PUT')
                                                                     <input type="hidden" name="is_active" value="">
-                                                                    <button class="pill-item" data-value="1">Active</button>
-                                                                    <button class="pill-item" data-value="0">Inactive</button>
+                                                                    <button type="button" class="pill-item" data-value="1">Active</button>
+                                                                    <button type="button" class="pill-item" data-value="0">Inactive</button>
                                                                 </form>
                                                             </div>
                                                         </div>
@@ -669,7 +669,11 @@
                     e.preventDefault();
                     const form = item.closest('form');
                     const hidden = form.querySelector('input[type="hidden"]');
-                    hidden.value = item.getAttribute('data-value');
+                    const dataValue = item.getAttribute('data-value');
+                    
+                    console.log('Selected package:', dataValue); // Debug log
+                    hidden.value = dataValue;
+                    console.log('Hidden input value set to:', hidden.value); // Debug log
                     
                     // Show loading state
                     const submitBtn = form.querySelector('button[type="submit"]') || item;
@@ -685,10 +689,12 @@
                                 csrfInput.value = newToken;
                             }
                         }
+                        console.log('Submitting form with package:', hidden.value); // Debug log
                         form.submit();
                     }).catch(error => {
                         console.error('Error refreshing CSRF token:', error);
                         // Still submit the form even if token refresh fails
+                        console.log('Submitting form with package (fallback):', hidden.value); // Debug log
                         form.submit();
                     });
                 });

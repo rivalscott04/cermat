@@ -127,10 +127,17 @@ class AdminController extends Controller
         $user = User::findOrFail($userId);
 
         $request->validate([
-            'package' => 'nullable|in:,free,kecermatan,psikologi,lengkap'
+            'package' => 'nullable|in:,free,kecermatan,kecerdasan,kepribadian,lengkap'
         ]);
 
         $package = $request->input('package');
+        
+        // Debug log
+        \Log::info('Package update request', [
+            'user_id' => $userId,
+            'package' => $package,
+            'request_data' => $request->all()
+        ]);
 
         try {
             // Update package field directly in users table
@@ -138,9 +145,20 @@ class AdminController extends Controller
                 'package' => $package === '' ? null : $package
             ]);
 
+            \Log::info('Package updated successfully', [
+                'user_id' => $userId,
+                'new_package' => $package
+            ]);
+
             return redirect()->route('admin.users.index')
                 ->with('success', 'Package pengguna berhasil diperbarui.');
         } catch (\Exception $e) {
+            \Log::error('Package update failed', [
+                'user_id' => $userId,
+                'package' => $package,
+                'error' => $e->getMessage()
+            ]);
+            
             return redirect()->route('admin.users.index')
                 ->with('error', 'Gagal memperbarui package pengguna: ' . $e->getMessage());
         }
