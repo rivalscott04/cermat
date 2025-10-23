@@ -670,11 +670,111 @@
                     const form = item.closest('form');
                     const hidden = form.querySelector('input[type="hidden"]');
                     hidden.value = item.getAttribute('data-value');
-                    form.submit();
+                    
+                    // Show loading state
+                    const submitBtn = form.querySelector('button[type="submit"]') || item;
+                    const originalText = submitBtn.textContent;
+                    submitBtn.textContent = 'Updating...';
+                    submitBtn.disabled = true;
+                    
+                    // Refresh CSRF token before submitting
+                    refreshCsrfToken().then(newToken => {
+                        if (newToken) {
+                            const csrfInput = form.querySelector('input[name="_token"]');
+                            if (csrfInput) {
+                                csrfInput.value = newToken;
+                            }
+                        }
+                        form.submit();
+                    }).catch(error => {
+                        console.error('Error refreshing CSRF token:', error);
+                        // Still submit the form even if token refresh fails
+                        form.submit();
+                    });
                 });
 
             }, 100); // 100ms delay to ensure DOM is ready
         });
+
+        // Global error handler for 419 errors
+        document.addEventListener('DOMContentLoaded', function() {
+            // Intercept fetch requests to handle 419 errors globally
+            const originalFetch = window.fetch;
+            window.fetch = function(...args) {
+                return originalFetch.apply(this, args).then(response => {
+                    if (response.status === 419) {
+                        Swal.fire({
+                            title: 'Session Expired',
+                            text: 'Your session has expired. Please refresh the page and try again.',
+                            icon: 'warning',
+                            confirmButtonText: 'Refresh Page'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    }
+                    return response;
+                });
+            };
+
+            // Periodically refresh CSRF token to prevent expiration
+            setInterval(function() {
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    fetch('{{ route("admin.users.index") }}', {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(html, 'text/html');
+                        const newToken = doc.querySelector('meta[name="csrf-token"]');
+                        if (newToken && newToken.getAttribute('content') !== csrfToken.getAttribute('content')) {
+                            csrfToken.setAttribute('content', newToken.getAttribute('content'));
+                            console.log('CSRF token refreshed automatically');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error refreshing CSRF token:', error);
+                    });
+                }
+            }, 300000); // Refresh every 5 minutes
+        });
+
+        // Function to refresh CSRF token
+        function refreshCsrfToken() {
+            return fetch('{{ route("admin.users.index") }}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => {
+                if (response.status === 419) {
+                    // CSRF token mismatch - redirect to login
+                    window.location.href = '{{ route("login") }}';
+                    return null;
+                }
+                return response.text();
+            })
+            .then(html => {
+                if (!html) return null;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newToken = doc.querySelector('meta[name="csrf-token"]');
+                if (newToken) {
+                    document.querySelector('meta[name="csrf-token"]').setAttribute('content', newToken.getAttribute('content'));
+                    return newToken.getAttribute('content');
+                }
+                return null;
+            })
+            .catch(error => {
+                console.error('Error refreshing CSRF token:', error);
+                return null;
+            });
+        }
 
         // Impersonate confirmation function
         function confirmImpersonate(userId, userName, userEmail) {
