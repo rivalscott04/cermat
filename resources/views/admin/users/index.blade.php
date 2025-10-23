@@ -670,8 +670,8 @@
                     const form = item.closest('form');
                     
                     // Check if this is a package form or status form
-                    const isPackageForm = form.action.includes('updatePackage');
-                    const isStatusForm = form.action.includes('update') && !form.action.includes('updatePackage');
+                    const isPackageForm = form.action.includes('/package') || form.action.includes('updatePackage');
+                    const isStatusForm = form.action.includes('update') && !form.action.includes('/package') && !form.action.includes('updatePackage');
                     
                     console.log('Form action:', form.action); // Debug log
                     console.log('Is package form:', isPackageForm); // Debug log
