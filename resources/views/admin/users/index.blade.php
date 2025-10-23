@@ -668,12 +668,40 @@
                     if (!item) return;
                     e.preventDefault();
                     const form = item.closest('form');
-                    const hidden = form.querySelector('input[type="hidden"]');
-                    const dataValue = item.getAttribute('data-value');
                     
-                    console.log('Selected package:', dataValue); // Debug log
-                    hidden.value = dataValue;
-                    console.log('Hidden input value set to:', hidden.value); // Debug log
+                    // Check if this is a package form or status form
+                    const isPackageForm = form.action.includes('updatePackage');
+                    const isStatusForm = form.action.includes('update') && !form.action.includes('updatePackage');
+                    
+                    console.log('Form action:', form.action); // Debug log
+                    console.log('Is package form:', isPackageForm); // Debug log
+                    console.log('Is status form:', isStatusForm); // Debug log
+                    
+                    let hidden, dataValue;
+                    
+                    if (isPackageForm) {
+                        hidden = form.querySelector('input[name="package"]');
+                        dataValue = item.getAttribute('data-value');
+                    } else if (isStatusForm) {
+                        hidden = form.querySelector('input[name="is_active"]');
+                        dataValue = item.getAttribute('data-value');
+                    } else {
+                        console.error('Unknown form type');
+                        return;
+                    }
+                    
+                    console.log('Selected value:', dataValue); // Debug log
+                    console.log('Form found:', form); // Debug log
+                    console.log('Hidden input found:', hidden); // Debug log
+                    if (hidden) {
+                        console.log('Before update - hidden.value:', hidden.value); // Debug log
+                        hidden.value = dataValue;
+                        console.log('After update - hidden.value:', hidden.value); // Debug log
+                        console.log('Hidden input name:', hidden.name); // Debug log
+                    } else {
+                        console.error('Hidden input not found!');
+                        console.log('All hidden inputs in form:', form.querySelectorAll('input[type="hidden"]')); // Debug log
+                    }
                     
                     // Show loading state
                     const submitBtn = form.querySelector('button[type="submit"]') || item;
