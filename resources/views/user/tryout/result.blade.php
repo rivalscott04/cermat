@@ -57,7 +57,7 @@
                             @if ($tryout->jenis_paket === 'kepribadian' || $tryout->jenis_paket === 'lengkap')
                                 @isset($tkpFinalScore)
                                     <div class="stat-row">
-                                        <span>Skor TKP (1–100):</span>
+                                        <span>Skor (1–100):</span>
                                         <strong>{{ number_format($tkpFinalScore, 2) }}</strong>
                                     </div>
                                 @endisset
@@ -161,7 +161,7 @@
                                     <div class="score-circle">
                                         @if (!empty($isTkp) && $isTkp && ($tryout->jenis_paket === 'kepribadian' || $tryout->jenis_paket === 'lengkap'))
                                             <div class="score-number">{{ number_format($tkpFinalScore, 2) }}</div>
-                                            <div class="score-label">Skor TKP (1–100)</div>
+                                            <div class="score-label">Skor (1–100)</div>
                                         @else
                                             <div class="score-number">{{ number_format($totalScore, 1) }}</div>
                                             <div class="score-label">Total Skor</div>

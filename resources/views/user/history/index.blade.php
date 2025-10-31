@@ -57,7 +57,7 @@
                                                                     <div class="score-percentage">
                                                                         {{ number_format($history['tkp_final'] ?? 0, 2) }}%
                                                                     </div>
-                                                                    <div class="score-label">Skor TKP</div>
+                                                                    <div class="score-label">Skor</div>
                                                                 @else
                                                                     <div class="score-percentage">{{ number_format($history['percentage'] ?? 0, 2) }}%
                                                                     </div>

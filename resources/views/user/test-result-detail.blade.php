@@ -164,7 +164,7 @@
                                             @if(isset($detail['N']))
                                             <div class="text-center">
                                                 <h4 class="text-primary">{{ $detail['N'] }}</h4>
-                                                <small class="text-muted">Total Soal TKP</small>
+                                                <small class="text-muted">Total Soal</small>
                                             </div>
                                             @endif
                                         @endif
@@ -406,7 +406,7 @@
                                                         <div class="card text-center">
                                                             <div class="card-body">
                                                                 <h3 class="text-primary">{{ $detailJawaban['N'] }}</h3>
-                                                                <p class="card-text">Total Soal TKP</p>
+                                                                <p class="card-text">Total Soal</p>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -422,7 +422,7 @@
                                                         <div class="card text-center">
                                                             <div class="card-body">
                                                                 <h3 class="text-warning">{{ number_format($detailJawaban['skor_tkp'] ?? 0, 2) }}</h3>
-                                                                <p class="card-text">Skor Final TKP</p>
+                                                                <p class="card-text">Skor Final</p>
                                                             </div>
                                                         </div>
                                                     </div>
