@@ -122,34 +122,37 @@
 <style>
     .info-cards-container {
         display: flex;
-        gap: 12px;
-        margin-top: 16px;
+        gap: 8px;
+        margin-top: 12px;
     }
 
     .info-card {
         flex: 1;
         background-color: #f5f5f5;
         border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 16px;
+        border-radius: 6px;
+        padding: 8px 10px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         text-align: center;
+        min-height: 60px;
     }
 
     .info-card-label {
-        font-size: 0.85rem;
+        font-size: 0.75rem;
         color: #9e9e9e;
-        margin-bottom: 8px;
+        margin-bottom: 4px;
         font-weight: 400;
+        line-height: 1.2;
     }
 
     .info-card-value {
-        font-size: 1.5rem;
+        font-size: 1.1rem;
         color: #424242;
         font-weight: 600;
+        line-height: 1.2;
     }
 
     .pagination {
