@@ -45,14 +45,16 @@
                                         <div class="card-body">
                                             <p class="card-text">{{ Str::limit($tryout->deskripsi, 100) }}</p>
 
-                                            <div class="mb-3 p-2 border rounded bg-light">
-                                                <div class="d-flex justify-content-between mb-2">
-                                                    <span class="text-muted"><i class="fa fa-question-circle"></i> Jumlah Soal:</span>
-                                                    <strong>{{ $tryout->total_soal ?? $tryout->blueprints->sum('jumlah') ?? 0 }} soal</strong>
-                                                </div>
-                                                <div class="d-flex justify-content-between">
-                                                    <span class="text-muted"><i class="fa fa-clock-o"></i> Waktu Tersedia:</span>
-                                                    <strong>{{ $tryout->durasi_menit }} menit</strong>
+                                            <div class="mb-3">
+                                                <div class="info-cards-container">
+                                                    <div class="info-card">
+                                                        <div class="info-card-label">Total Soal</div>
+                                                        <div class="info-card-value">{{ $tryout->total_soal ?? $tryout->blueprints->sum('jumlah') ?? 0 }}</div>
+                                                    </div>
+                                                    <div class="info-card">
+                                                        <div class="info-card-label">Durasi</div>
+                                                        <div class="info-card-value">{{ $tryout->durasi_menit }} menit</div>
+                                                    </div>
                                                 </div>
                                             </div>
 
@@ -118,6 +120,38 @@
 
 @push('styles')
 <style>
+    .info-cards-container {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .info-card {
+        flex: 1;
+        background-color: #f5f5f5;
+        border: 1px solid #e0e0e0;
+        border-radius: 8px;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .info-card-label {
+        font-size: 0.85rem;
+        color: #9e9e9e;
+        margin-bottom: 8px;
+        font-weight: 400;
+    }
+
+    .info-card-value {
+        font-size: 1.5rem;
+        color: #424242;
+        font-weight: 600;
+    }
+
     .pagination {
         margin: 20px 0;
         justify-content: center;
