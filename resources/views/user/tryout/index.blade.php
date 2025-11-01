@@ -79,12 +79,43 @@
                                                 </div>
                                             </div>
 
-                                            @if($tryout->jenis_paket === 'free')
+                                            @php
+                                                $badgeClass = '';
+                                                $badgeText = '';
+                                                $labelText = '';
+                                                
+                                                switch($tryout->jenis_paket) {
+                                                    case 'free':
+                                                        $badgeClass = 'badge-free';
+                                                        $badgeText = 'FREE';
+                                                        $labelText = 'Gratis untuk semua user';
+                                                        break;
+                                                    case 'kecerdasan':
+                                                        $badgeClass = 'badge-kecerdasan';
+                                                        $badgeText = 'KECERDASAN';
+                                                        $labelText = 'Paket Kecerdasan';
+                                                        break;
+                                                    case 'kepribadian':
+                                                        $badgeClass = 'badge-kepribadian';
+                                                        $badgeText = 'KEPRIBADIAN';
+                                                        $labelText = 'Paket Kepribadian';
+                                                        break;
+                                                    case 'lengkap':
+                                                        $badgeClass = 'badge-lengkap';
+                                                        $badgeText = 'LENGKAP';
+                                                        $labelText = 'Paket Lengkap';
+                                                        break;
+                                                    default:
+                                                        $badgeClass = 'badge-default';
+                                                        $badgeText = strtoupper($tryout->jenis_paket ?? '');
+                                                        $labelText = 'Paket ' . ucfirst($tryout->jenis_paket ?? '');
+                                                }
+                                            @endphp
+                                            
                                             <div class="text-center mb-2">
-                                                <span class="badge badge-free">FREE</span>
-                                                <div class="free-label">Gratis untuk semua user</div>
+                                                <span class="badge {{ $badgeClass }}">{{ $badgeText }}</span>
+                                                <div class="paket-label">{{ $labelText }}</div>
                                             </div>
-                                            @endif
 
                                             {{-- <div class="text-center">
                                                 <span
@@ -176,7 +207,51 @@
         margin-bottom: 4px;
     }
 
-    .free-label {
+    .badge-kecerdasan {
+        background-color: #1c84c6;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+
+    .badge-kepribadian {
+        background-color: #1c84c6;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+
+    .badge-lengkap {
+        background-color: #ed5565;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+
+    .badge-default {
+        background-color: #23c6c8;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+
+    .paket-label {
         font-size: 0.75rem;
         color: #9e9e9e;
         margin-top: 4px;
