@@ -45,27 +45,6 @@
                                         <div class="card-body">
                                             <p class="card-text">{{ Str::limit($tryout->deskripsi, 100) }}</p>
 
-                                            @php
-                                                $strukturKode = '';
-                                                if ($tryout->blueprints && $tryout->blueprints->count() > 0) {
-                                                    $firstBlueprint = $tryout->blueprints->load('kategori')->first();
-                                                    if ($firstBlueprint && $firstBlueprint->kategori) {
-                                                        $strukturKode = $firstBlueprint->kategori->kode;
-                                                    }
-                                                } elseif ($tryout->struktur && count($tryout->struktur) > 0) {
-                                                    $firstKategoriId = array_key_first($tryout->struktur);
-                                                    $kategori = \App\Models\KategoriSoal::find($firstKategoriId);
-                                                    $strukturKode = $kategori ? $kategori->kode : '';
-                                                }
-                                            @endphp
-
-                                            <div class="mb-2">
-                                                <span class="struktur-soal-label">Struktur Soal:</span>
-                                                @if($strukturKode)
-                                                    <span class="badge badge-struktur">{{ $strukturKode }}</span>
-                                                @endif
-                                            </div>
-
                                             <div class="mb-3">
                                                 <div class="info-cards-container">
                                                     <div class="info-card">
@@ -179,23 +158,6 @@
 
 @push('styles')
 <style>
-    .struktur-soal-label {
-        font-size: 0.875rem;
-        color: #424242;
-        margin-right: 8px;
-        font-weight: 400;
-    }
-
-    .badge-struktur {
-        background-color: #1ab394;
-        color: white;
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        display: inline-block;
-    }
-
     .badge-free {
         background-color: #1c84c6;
         color: white;
