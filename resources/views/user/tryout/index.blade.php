@@ -165,7 +165,7 @@
                         </div>
                         
                         {{-- Pagination --}}
-                        @if($tryouts->hasPages())
+                        @if ($tryouts->hasPages())
                             <div class="d-flex justify-content-center mt-4">
                                 {{ $tryouts->appends(request()->query())->links('pagination::bootstrap-4') }}
                             </div>
@@ -328,6 +328,15 @@
 
     .pagination .page-link i {
         font-size: 0.8rem;
+    }
+
+    /* Ensure proper spacing from footer */
+    .card {
+        margin-bottom: 30px;
+    }
+
+    .table-responsive {
+        margin-bottom: 20px;
     }
 </style>
 @endpush
