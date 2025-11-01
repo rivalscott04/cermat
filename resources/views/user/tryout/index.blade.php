@@ -45,6 +45,27 @@
                                         <div class="card-body">
                                             <p class="card-text">{{ Str::limit($tryout->deskripsi, 100) }}</p>
 
+                                            @php
+                                                $strukturKode = '';
+                                                if ($tryout->blueprints && $tryout->blueprints->count() > 0) {
+                                                    $firstBlueprint = $tryout->blueprints->load('kategori')->first();
+                                                    if ($firstBlueprint && $firstBlueprint->kategori) {
+                                                        $strukturKode = $firstBlueprint->kategori->kode;
+                                                    }
+                                                } elseif ($tryout->struktur && count($tryout->struktur) > 0) {
+                                                    $firstKategoriId = array_key_first($tryout->struktur);
+                                                    $kategori = \App\Models\KategoriSoal::find($firstKategoriId);
+                                                    $strukturKode = $kategori ? $kategori->kode : '';
+                                                }
+                                            @endphp
+
+                                            <div class="mb-2">
+                                                <span class="struktur-soal-label">Struktur Soal:</span>
+                                                @if($strukturKode)
+                                                    <span class="badge badge-struktur">{{ $strukturKode }}</span>
+                                                @endif
+                                            </div>
+
                                             <div class="mb-3">
                                                 <div class="info-cards-container">
                                                     <div class="info-card">
@@ -57,6 +78,13 @@
                                                     </div>
                                                 </div>
                                             </div>
+
+                                            @if($tryout->jenis_paket === 'free')
+                                            <div class="text-center mb-2">
+                                                <span class="badge badge-free">FREE</span>
+                                                <div class="free-label">Gratis untuk semua user</div>
+                                            </div>
+                                            @endif
 
                                             {{-- <div class="text-center">
                                                 <span
@@ -120,6 +148,40 @@
 
 @push('styles')
 <style>
+    .struktur-soal-label {
+        font-size: 0.875rem;
+        color: #424242;
+        margin-right: 8px;
+        font-weight: 400;
+    }
+
+    .badge-struktur {
+        background-color: #1ab394;
+        color: white;
+        padding: 4px 10px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .badge-free {
+        background-color: #1c84c6;
+        color: white;
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        display: inline-block;
+        margin-bottom: 4px;
+    }
+
+    .free-label {
+        font-size: 0.75rem;
+        color: #9e9e9e;
+        margin-top: 4px;
+    }
+
     .info-cards-container {
         display: flex;
         gap: 8px;
@@ -141,15 +203,15 @@
     }
 
     .info-card-label {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         color: #9e9e9e;
-        margin-bottom: 4px;
+        margin-bottom: 2px;
         font-weight: 400;
         line-height: 1.2;
     }
 
     .info-card-value {
-        font-size: 1.1rem;
+        font-size: 0.95rem;
         color: #424242;
         font-weight: 600;
         line-height: 1.2;
