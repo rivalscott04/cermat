@@ -260,6 +260,10 @@
     </div>
 
     @push('scripts')
+        <!-- SweetAlert2 CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <!-- SweetAlert2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
             $(document).ready(function() {
                 let opsiCount = 0;
@@ -420,8 +424,12 @@
                         // Check file size (1MB = 1024 * 1024 bytes)
                         const maxSize = 1024 * 1024; // 1MB in bytes
                         if (file.size > maxSize) {
-                            alert('Ukuran file gambar pembahasan maksimal 1MB. File yang dipilih: ' + (file
-                                .size / (1024 * 1024)).toFixed(2) + 'MB');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Ukuran File Terlalu Besar',
+                                text: 'Ukuran file gambar pembahasan maksimal 1MB. File yang dipilih: ' + (file
+                                    .size / (1024 * 1024)).toFixed(2) + 'MB'
+                            });
                             $(this).val('');
                             $('.custom-file-label[for="pembahasan_image"]').text('Pilih gambar...');
                             $('#pembahasan-image-preview').hide();
@@ -669,14 +677,22 @@
                         if (checkedBoxes.length > 1) {
                             // Untuk pg_satu dan gambar, hanya boleh 1 jawaban
                             checkedBoxes.not(':last').prop('checked', false);
-                            alert('Hanya boleh memilih 1 jawaban benar untuk tipe ini');
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Peringatan',
+                                text: 'Hanya boleh memilih 1 jawaban benar untuk tipe ini'
+                            });
                             return;
                         }
                     } else if (tipe === 'pg_pilih_2') {
                         if (checkedBoxes.length > 2) {
                             // Uncheck the last checked if more than 2
                             checkedBoxes.last().prop('checked', false);
-                            alert('Maksimal pilih 2 jawaban benar');
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Peringatan',
+                                text: 'Maksimal pilih 2 jawaban benar'
+                            });
                             return;
                         }
                     } else if (tipe === 'benar_salah') {
@@ -764,7 +780,11 @@
                         });
 
                         if (filledOpsi < 2) {
-                            alert('Minimal harus ada 2 opsi jawaban yang diisi');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validasi Gagal',
+                                text: 'Minimal harus ada 2 opsi jawaban yang diisi'
+                            });
                             valid = false;
                         }
                     }
@@ -773,7 +793,11 @@
                     if (tipe === 'pg_satu' || tipe === 'gambar') {
                         const checkedCount = $('.jawaban-checkbox:checked').length;
                         if (checkedCount !== 1) {
-                            alert('Harus memilih tepat 1 jawaban benar untuk tipe ini');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validasi Gagal',
+                                text: 'Harus memilih tepat 1 jawaban benar untuk tipe ini'
+                            });
                             valid = false;
                         }
                     }
@@ -782,7 +806,11 @@
                     if (tipe === 'pg_pilih_2') {
                         const checkedCount = $('.jawaban-checkbox:checked').length;
                         if (checkedCount !== 2) {
-                            alert('Harus memilih tepat 2 jawaban benar untuk tipe Pilihan Ganda (Pilih 2)');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validasi Gagal',
+                                text: 'Harus memilih tepat 2 jawaban benar untuk tipe Pilihan Ganda (Pilih 2)'
+                            });
                             valid = false;
                         }
                     }
@@ -791,7 +819,11 @@
                     if (tipe === 'benar_salah') {
                         const checkedCount = $('.jawaban-checkbox:checked').length;
                         if (checkedCount !== 1) {
-                            alert('Harus memilih 1 jawaban benar untuk tipe Benar/Salah');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validasi Gagal',
+                                text: 'Harus memilih 1 jawaban benar untuk tipe Benar/Salah'
+                            });
                             valid = false;
                         }
                     }
@@ -816,20 +848,30 @@
                             });
 
                             if (hasInvalidBobot) {
-                                alert(
-                                    'Bobot untuk kategori dalam paket kepribadian harus berupa bilangan bulat antara 1-5');
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    text: 'Bobot untuk kategori dalam paket kepribadian harus berupa bilangan bulat antara 1-5'
+                                });
                                 valid = false;
                             }
                         } else {
-                            // For categories not in kepribadian package, validate total bobot = 1
-                            let totalBobot = 0;
+                            // For categories not in kepribadian package, just validate that bobot values are valid numbers
+                            let hasInvalidBobot = false;
                             $('input[name*="[bobot]"]').each(function() {
-                                const bobot = parseFloat($(this).val()) || 0;
-                                totalBobot += bobot;
+                                const bobot = parseFloat($(this).val());
+                                if (isNaN(bobot) || bobot <= 0) {
+                                    hasInvalidBobot = true;
+                                    return false; // break loop
+                                }
                             });
 
-                            if (Math.abs(totalBobot - 1) > 0.01) {
-                                alert('Total bobot harus sama dengan 1.0 untuk tipe Pilihan Ganda (Berbobot)');
+                            if (hasInvalidBobot) {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Validasi Gagal',
+                                    text: 'Semua bobot harus berupa angka positif yang valid'
+                                });
                                 valid = false;
                             }
                         }
@@ -843,7 +885,11 @@
                     if (pembType === 'image' || pembType === 'both') {
                         if (!$('#pembahasan_image')[0].files.length && !
                             {{ $soal->pembahasan_image ? 'true' : 'false' }}) {
-                            alert('Gambar pembahasan harus diupload untuk tipe pembahasan ini');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Validasi Gagal',
+                                text: 'Gambar pembahasan harus diupload untuk tipe pembahasan ini'
+                            });
                             e.preventDefault();
                         }
                     }
@@ -859,8 +905,12 @@
                         // Check file size (2MB = 2 * 1024 * 1024 bytes)
                         const maxSize = 2 * 1024 * 1024; // 2MB in bytes
                         if (file.size > maxSize) {
-                            alert('Ukuran file gambar maksimal 2MB. File yang dipilih: ' + (file.size / (1024 *
-                                1024)).toFixed(2) + 'MB');
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Ukuran File Terlalu Besar',
+                                text: 'Ukuran file gambar maksimal 2MB. File yang dipilih: ' + (file.size / (1024 *
+                                    1024)).toFixed(2) + 'MB'
+                            });
                             $(this).val('');
                             $('.custom-file-label[for="gambar"]').text('Pilih gambar...');
                             $('#image-preview').hide();
