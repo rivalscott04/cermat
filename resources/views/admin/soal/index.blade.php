@@ -21,7 +21,7 @@
                         <!-- Filter -->
                         <div class="row mb-3">
                             <div class="col-md-3">
-                                <select class="form-control" id="filterKategori">
+                                <select class="form-control select2-searchable" id="filterKategori" data-placeholder="Semua Kategori">
                                     <option value="">Semua Kategori</option>
                                     @foreach ($kategoris as $kategori)
                                         <option value="{{ $kategori->id }}"
@@ -425,10 +425,27 @@
     @endsection
 
     @push('styles')
+        <!-- Select2 CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/select2-bootstrap4-theme@1.3.0/dist/select2-bootstrap4.min.css" rel="stylesheet" />
         <style>
             .pagination {
                 margin: 20px 0;
                 justify-content: center;
+            }
+            
+            .select2-container--bootstrap4 .select2-selection {
+                border: 1px solid #ced4da;
+                border-radius: 0.25rem;
+                height: calc(2.25rem + 2px);
+            }
+            
+            .select2-container--bootstrap4 .select2-selection__rendered {
+                line-height: calc(2.25rem + 2px);
+            }
+            
+            .select2-container--bootstrap4 .select2-selection__arrow {
+                height: calc(2.25rem + 2px);
             }
 
             .pagination .page-link {
@@ -476,8 +493,18 @@
     @endpush
 
     @push('scripts')
+        <!-- Select2 JS -->
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
             $(document).ready(function() {
+                // Initialize Select2 for filterKategori with searchable
+                $('#filterKategori').select2({
+                    theme: 'bootstrap4',
+                    placeholder: 'Semua Kategori',
+                    allowClear: true,
+                    width: '100%'
+                });
+                
                 // Filter functionality
                 $('#filterKategori, #filterTipe, #filterLevel').change(function() {
                     var kategori = $('#filterKategori').val();
