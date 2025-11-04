@@ -447,6 +447,17 @@
             .select2-container--bootstrap4 .select2-selection__arrow {
                 height: calc(2.25rem + 2px);
             }
+            
+            /* Select2 dropdown hover styling */
+            .select2-container--bootstrap4 .select2-results__option--highlighted {
+                background-color: #6c757d !important;
+                color: white !important;
+            }
+            
+            .select2-container--bootstrap4 .select2-results__option:hover {
+                background-color: #6c757d !important;
+                color: white !important;
+            }
 
             .pagination .page-link {
                 padding: 0.5rem 0.75rem;
