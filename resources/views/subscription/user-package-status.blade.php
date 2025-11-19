@@ -264,7 +264,7 @@
                             @endif
                             @if ($canAccessTryout)
                                 <div class="col-md-4">
-                                    <a href="{{ route('user.tryout.index') }}" class="btn btn-info btn-block">
+                                    <a href="{{ route('show.test') }}" class="btn btn-info btn-block">
                                         <i class="fa fa-play"></i> Mulai Tryout
                                     </a>
                                 </div>

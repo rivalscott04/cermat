@@ -215,7 +215,7 @@
                                 </a>
                             @endif
                             @if ($canAccessTryout)
-                                <a href="{{ route('user.tryout.index') }}" class="btn btn-info btn-lg px-4">
+                                <a href="{{ route('show.test') }}" class="btn btn-info btn-lg px-4">
                                     <i class="fa fa-play me-2"></i>Mulai Tryout
                                 </a>
                             @endif
