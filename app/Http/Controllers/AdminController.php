@@ -44,7 +44,7 @@ class AdminController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('email', 'like', '%' . $searchTerm . '%');
+                    ->orWhere('email', 'like', '%' . $searchTerm . '%');
             });
         }
 
@@ -87,8 +87,11 @@ class AdminController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Cek apakah request hanya untuk update status
+        // 1. Logika untuk Update Status Saja (is_active)
+        // Kondisi ini dijalankan jika hanya is_active yang dikirim (tidak ada name).
         if ($request->has('is_active') && !$request->has('name')) {
+
+            // Pastikan hanya is_active yang tervalidasi di sini
             $request->validate([
                 'is_active' => 'required|in:0,1'
             ]);
@@ -97,21 +100,26 @@ class AdminController extends Controller
                 'is_active' => (bool) $request->is_active
             ]);
 
+            // Cek jika rute redirect Anda benar
             return redirect()->route('admin.users.index')
                 ->with('success', 'Status pengguna berhasil diperbarui.');
         }
 
-        // Untuk update data lengkap
+        // 2. Logika untuk Update Data Lengkap
+        // Jika ada 'name' dalam request, asumsikan ini adalah full update
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
             'role' => 'required|in:user,admin',
-            'is_active' => 'sometimes|in:0,1' // sometimes untuk optional
+
+            // is_active bersifat opsional di sini (bisa dikirim atau tidak)
+            'is_active' => 'sometimes|in:0,1'
         ]);
 
+        // Ambil data inti untuk update
         $updateData = $request->only(['name', 'email', 'role']);
 
-        // Tambahkan is_active jika ada di request
+        // Tambahkan is_active ke data update jika field tersebut ada di request
         if ($request->has('is_active')) {
             $updateData['is_active'] = (bool) $request->is_active;
         }
@@ -120,6 +128,28 @@ class AdminController extends Controller
 
         return redirect()->route('admin.users.index')
             ->with('success', 'Data pengguna berhasil diperbarui.');
+    }
+
+    // Di dalam UserController.php
+
+    // Rute ini hanya menangani perubahan is_active
+    public function updateStatus(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        // Pastikan hanya is_active yang tervalidasi
+        $request->validate([
+            'is_active' => 'required|in:0,1'
+        ]);
+
+        // Update is_active
+        $user->update([
+            'is_active' => (bool) $request->is_active
+        ]);
+
+        // Tampilkan notifikasi
+        return redirect()->route('admin.users.index')
+            ->with('success', 'Status pengguna berhasil diperbarui.');
     }
 
     public function updatePackage(Request $request, $userId)
@@ -131,7 +161,7 @@ class AdminController extends Controller
         ]);
 
         $package = $request->input('package');
-        
+
         // Debug log
         \Log::info('Package update request', [
             'user_id' => $userId,
@@ -158,7 +188,7 @@ class AdminController extends Controller
                 'package' => $package,
                 'error' => $e->getMessage()
             ]);
-            
+
             return redirect()->route('admin.users.index')
                 ->with('error', 'Gagal memperbarui package pengguna: ' . $e->getMessage());
         }
@@ -184,7 +214,7 @@ class AdminController extends Controller
             $searchTerm = $request->search;
             $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('email', 'like', '%' . $searchTerm . '%');
+                    ->orWhere('email', 'like', '%' . $searchTerm . '%');
             });
         }
 
@@ -194,8 +224,8 @@ class AdminController extends Controller
         }
 
         $users = $query->orderBy('total_tests', 'desc')
-                      ->orderBy('name', 'asc')
-                      ->paginate(20);
+            ->orderBy('name', 'asc')
+            ->paginate(20);
 
         // Get statistics for overview cards
         $totalUsers = User::where('role', 'user')->count();
@@ -211,11 +241,11 @@ class AdminController extends Controller
             ->get();
 
         return view('admin.riwayat-tes', compact(
-            'users', 
+            'users',
             'totalUsers',
-            'totalTests', 
-            'todayTests', 
-            'thisWeekTests', 
+            'totalTests',
+            'todayTests',
+            'thisWeekTests',
             'thisMonthTests',
             'packageStats'
         ));
@@ -224,7 +254,7 @@ class AdminController extends Controller
     public function riwayatTesUser($userId, Request $request)
     {
         $user = User::findOrFail($userId);
-        
+
         $query = DB::table('hasil_tes')
             ->where('user_id', $userId)
             ->select('hasil_tes.*');
@@ -262,7 +292,7 @@ class AdminController extends Controller
 
         return view('admin.riwayat-tes-user', compact(
             'user',
-            'hasilTes', 
+            'hasilTes',
             'userStats',
             'testTypeStats'
         ));
@@ -291,7 +321,7 @@ class AdminController extends Controller
     {
         try {
             $test = DB::table('hasil_tes')->where('id', $testId)->first();
-            
+
             if (!$test) {
                 return response()->json([
                     'success' => false,
@@ -315,7 +345,7 @@ class AdminController extends Controller
     {
         try {
             $test = DB::table('hasil_tes')->where('id', $testId)->first();
-            
+
             if (!$test) {
                 return response()->json([
                     'success' => false,
@@ -325,18 +355,18 @@ class AdminController extends Controller
 
             // Get user data
             $user = DB::table('users')->where('id', $test->user_id)->first();
-            
+
             // Calculate additional data
             $totalQuestions = $test->skor_benar + $test->skor_salah;
             $unansweredQuestions = ($test->total_soal ?? $totalQuestions) - $totalQuestions;
             $scorePercentage = $totalQuestions > 0 ? round(($test->skor_benar / $totalQuestions) * 100) : 0;
-            
+
             // Calculate percentile (mock calculation)
             $percentile = $this->calculatePercentile($scorePercentage);
-            
+
             // Generate recommendations
             $recommendations = $this->generateRecommendations($scorePercentage, $test->kategori_skor ?? 'fair', $test->jenis_tes ?? 'tes');
-            
+
             // Prepare data for PDF
             $pdfData = [
                 'test' => $test,
@@ -353,7 +383,7 @@ class AdminController extends Controller
 
             // Generate PDF using DomPDF
             $html = $this->generatePDFHTML($pdfData);
-            
+
             // Create PDF with proper settings for color printing
             $pdf = Pdf::loadHTML($html);
             $pdf->setPaper('A4', 'portrait');
@@ -375,9 +405,8 @@ class AdminController extends Controller
                 'defaultMediaType' => 'print',
                 'isFontSubsettingEnabled' => true,
             ]);
-            
+
             return $pdf->stream('hasil_tes_' . $testId . '.pdf');
-                
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
@@ -399,7 +428,7 @@ class AdminController extends Controller
     private function generateRecommendations($score, $category, $testType)
     {
         $recommendations = [];
-        
+
         if ($score >= 80) {
             $recommendations[] = 'Performa sangat baik! Pertahankan konsistensi dan terus berlatih.';
         } else if ($score >= 60) {
@@ -407,7 +436,7 @@ class AdminController extends Controller
         } else {
             $recommendations[] = 'Perlu peningkatan. Disarankan untuk latihan lebih intensif dan konsisten.';
         }
-        
+
         // Test type specific recommendations
         if ($testType === 'kecermatan') {
             $recommendations[] = 'Latih kecepatan dan ketelitian dalam mengamati detail untuk meningkatkan performa.';
@@ -416,10 +445,10 @@ class AdminController extends Controller
         } else if ($testType === 'kepribadian') {
             $recommendations[] = 'Evaluasi jawaban untuk memahami karakteristik diri dan area pengembangan.';
         }
-        
+
         $recommendations[] = 'Manajemen waktu yang lebih baik dapat meningkatkan hasil tes.';
         $recommendations[] = 'Lakukan latihan rutin untuk meningkatkan kemampuan dan kepercayaan diri.';
-        
+
         return $recommendations;
     }
 
@@ -427,7 +456,7 @@ class AdminController extends Controller
     {
         $test = $data['test'];
         $user = $data['user'];
-        
+
         return '
         <!DOCTYPE html>
         <html>
@@ -467,18 +496,18 @@ class AdminController extends Controller
                 .badge-success { background: #1ab394 !important; color: white !important; }
                 .badge-warning { background: #f8ac59 !important; color: white !important; }
                 .badge-danger { background: #ed5565 !important; color: white !important; }
-                @media print { 
-                    body { background: white !important; } 
-                    .container { box-shadow: none !important; } 
-                    * { 
-                        -webkit-print-color-adjust: exact !important; 
-                        color-adjust: exact !important; 
+                @media print {
+                    body { background: white !important; }
+                    .container { box-shadow: none !important; }
+                    * {
+                        -webkit-print-color-adjust: exact !important;
+                        color-adjust: exact !important;
                         print-color-adjust: exact !important;
                     }
                 }
-                @page { 
-                    margin: 0.5in; 
-                    size: A4; 
+                @page {
+                    margin: 0.5in;
+                    size: A4;
                 }
                 /* Force colors for all elements */
                 .score-circle, .breakdown-correct, .breakdown-wrong, .breakdown-unanswered, .breakdown-total, .badge-primary, .badge-success, .badge-warning, .badge-danger {
@@ -579,7 +608,9 @@ class AdminController extends Controller
                     <h2>Rekomendasi</h2>
                     <div class="recommendations">
                         <ul>
-                            ' . implode('', array_map(function($rec) { return '<li>' . $rec . '</li>'; }, $data['recommendations'])) . '
+                            ' . implode('', array_map(function ($rec) {
+            return '<li>' . $rec . '</li>';
+        }, $data['recommendations'])) . '
                         </ul>
                     </div>
                 </div>

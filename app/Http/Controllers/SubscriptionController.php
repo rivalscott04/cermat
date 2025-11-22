@@ -31,75 +31,68 @@ class SubscriptionController extends Controller
     {
         $startTime = microtime(true);
         $user = Auth::user();
-        
-        // Jika admin, tampilkan halaman pembelian paket
-        if ($user->role === 'admin') {
-            return view('subscription.packages');
-        }
-        
-        // OPTIMASI: Cache package limits untuk menghindari multiple config calls
-        $packageLimits = $user->getPackageLimits();
-        $maxTryouts = $packageLimits['max_tryouts'];
-        
-        // OPTIMASI: Load subscription dengan eager loading
-        $subscription = $user->subscriptions;
-        
-        // OPTIMASI: Cache allowed categories (bisa di-cache lebih lama karena jarang berubah)
-        $allowedCategories = $user->getAllowedCategories();
-        
-        // OPTIMASI: Cache package features (static data)
-        $packageFeatures = $user->getPackageFeaturesDescription();
-        $packageDisplayName = $user->getPackageDisplayName();
-        
-        // OPTIMASI: Cache method calls yang dipanggil berulang di view
-        $hasActiveSubscription = $user->hasActiveSubscription();
-        $canAccessTryout = $user->canAccessTryout();
-        $canAccessKecermatan = $user->canAccessKecermatan();
-        $userPackage = $user->package;
-        
-        // OPTIMASI: Cache paket lengkap status (jika diperlukan)
-        $paketLengkapStatus = null;
-        $paketLengkapProgress = 0;
-        if ($userPackage === 'lengkap') {
+        $packages = Package::active()->ordered()->get();
+
+        if ($user->package === 'lengkap') {
+
+            // Tetap pakai logic optimasi untuk halaman status paket
+            $packageLimits = $user->getPackageLimits();
+            $maxTryouts = $packageLimits['max_tryouts'];
+
+            $subscription = $user->subscriptions;
+            $allowedCategories = $user->getAllowedCategories();
+            $packageFeatures = $user->getPackageFeaturesDescription();
+            $packageDisplayName = $user->getPackageDisplayName();
+
+            $hasActiveSubscription = $user->hasActiveSubscription();
+            $canAccessTryout = $user->canAccessTryout();
+            $canAccessKecermatan = $user->canAccessKecermatan();
+            $userPackage = $user->package;
+
+            // Paket lengkap pasti punya status dan progress
             $paketLengkapStatus = $user->getPaketLengkapStatus();
             $paketLengkapProgress = $user->getPaketLengkapProgress();
+
+            // Statistik user
+            $userStatistics = $user->getUserStatistics();
+
+            // Additional info
+            $additionalInfo = [
+                'subscription_start_date' => $subscription ? $subscription->created_at : null,
+                'days_remaining' => $subscription && $subscription->end_date
+                    ? max(0, now()->diffInDays($subscription->end_date, false))
+                    : null,
+                'total_questions_answered' => $userStatistics['total_questions_answered'] ?? 0,
+                'total_tryouts_completed' => $userStatistics['total_tryouts'] ?? 0,
+                'last_activity' => $userStatistics['last_activity'] ?? null
+            ];
+
+            // Logging waktu eksekusi
+            $executionTime = round((microtime(true) - $startTime) * 1000, 2);
+            Log::info("User with paket lengkap redirected to status page in {$executionTime}ms (user {$user->id})");
+
+            return view('subscription.user-package-status', [
+                'user' => $user,
+                'packageLimits' => $packageLimits,
+                'subscription' => $subscription,
+                'allowedCategories' => $allowedCategories,
+                'maxTryouts' => $maxTryouts,
+                'packageFeatures' => $packageFeatures,
+                'packageDisplayName' => $packageDisplayName,
+                'hasActiveSubscription' => $hasActiveSubscription,
+                'canAccessTryout' => $canAccessTryout,
+                'canAccessKecermatan' => $canAccessKecermatan,
+                'userPackage' => $userPackage,
+                'paketLengkapStatus' => $paketLengkapStatus,
+                'paketLengkapProgress' => $paketLengkapProgress,
+                'userStatistics' => $userStatistics,
+                'additionalInfo' => $additionalInfo
+            ]);
         }
 
-        // OPTIMASI: Cache user statistics
-        $userStatistics = $user->getUserStatistics();
-        
-        // Tambahkan informasi tambahan untuk display yang lebih lengkap
-        $additionalInfo = [
-            'subscription_start_date' => $subscription ? $subscription->created_at : null,
-            'days_remaining' => $subscription && $subscription->end_date ? 
-                max(0, now()->diffInDays($subscription->end_date, false)) : null,
-            'total_questions_answered' => $userStatistics['total_questions_answered'] ?? 0,
-            'total_tryouts_completed' => $userStatistics['total_tryouts'] ?? 0,
-            'last_activity' => $userStatistics['last_activity'] ?? null
-        ];
-        
-        // Log execution time untuk debugging
-        $executionTime = round((microtime(true) - $startTime) * 1000, 2);
-        Log::info("Subscription packages page loaded in {$executionTime}ms for user {$user->id}");
-        
-        return view('subscription.user-package-status', [
-            'user' => $user,
-            'packageLimits' => $packageLimits,
-            'subscription' => $subscription,
-            'allowedCategories' => $allowedCategories,
-            'maxTryouts' => $maxTryouts,
-            'packageFeatures' => $packageFeatures,
-            'packageDisplayName' => $packageDisplayName,
-            'hasActiveSubscription' => $hasActiveSubscription,
-            'canAccessTryout' => $canAccessTryout,
-            'canAccessKecermatan' => $canAccessKecermatan,
-            'userPackage' => $userPackage,
-            'paketLengkapStatus' => $paketLengkapStatus,
-            'paketLengkapProgress' => $paketLengkapProgress,
-            'userStatistics' => $userStatistics,
-            'additionalInfo' => $additionalInfo
-        ]);
+        return view('subscription.packages', ['packages' => $packages]);
     }
+
 
     public function packagesAdmin()
     {
@@ -155,7 +148,6 @@ class SubscriptionController extends Controller
     public function showCheckout($package)
     {
         try {
-            // Get authenticated user
             $user = Auth::user();
 
             if (!$user) {
@@ -180,7 +172,7 @@ class SubscriptionController extends Controller
                 'old_price' => $selectedPackage->old_price,
                 'label' => $selectedPackage->label,
                 'features' => $selectedPackage->features,
-                'duration' => 30 // Default duration, bisa disesuaikan jika ada field di database
+                'duration' => $selectedPackage->duration ?? 30, // Ambil dari DB atau default 30
             ];
 
             return view('subscription.checkout', [
@@ -193,7 +185,7 @@ class SubscriptionController extends Controller
         }
     }
 
-    public function process()
+    public function process(Request $request)
     {
         try {
             $user = auth()->user();
@@ -202,86 +194,80 @@ class SubscriptionController extends Controller
                 throw new \Exception('User tidak ditemukan');
             }
 
-            // Cek apakah user sudah memiliki transaksi yang belum selesai
-            $subscription = Subscription::where('user_id', $user->id)
-                ->whereIn('payment_status', ['pending', 'failed'])
-                ->latest()
+            $packageName = $request->input('package');
+            if (!$packageName) {
+                throw new \Exception('Paket tidak dipilih');
+            }
+
+            $package = Package::where('name', 'like', '%' . $packageName . '%')
+                ->active()
                 ->first();
 
-            if (!$subscription) {
-                // Jika tidak ada transaksi sebelumnya, buat yang baru
-                $transaction_id = 'ORD-' . time() . '-' . $user->id;
-                $subscription = Subscription::create([
-                    'transaction_id' => $transaction_id,
-                    'user_id' => $user->id,
-                    'amount_paid' => 105000,
-                    'payment_status' => 'pending',
-                    'start_date' => now(),
-                    'end_date' => now()->addDays(30),
-                ]);
-            } else {
-                // Jika ada transaksi pending, generate transaction_id baru
-                $subscription->update([
-                    'transaction_id' => 'ORD-' . time() . '-' . $user->id,
-                ]);
+            if (!$package) {
+                throw new \Exception('Paket tidak ditemukan');
             }
 
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $subscription->transaction_id,
-                    'gross_amount' => $subscription->amount_paid,
+            // Buat subscription baru atau update pending
+            $subscription = Subscription::updateOrCreate(
+                [
+                    'user_id' => $user->id,
+                    'payment_status' => 'pending'
                 ],
-                'customer_details' => [
-                    'first_name' => $user->name,
-                    'email' => $user->email,
-                    'phone' => $user->phone_number ?? '',
-                ],
-                'item_details' => [
+                [
+                    'transaction_id' => 'ORD-' . time() . '-' . $user->id,
+                    'package_id' => $package->id,
+                    'amount_paid' => $package->price,
+                    'start_date' => now(),
+                    'end_date' => now()->addDays($package->duration ?? 30),
+                ]
+            );
+
+            // ==== TRIPAY REQUEST ====
+            $merchantRef = $subscription->transaction_id;
+
+            $payload = [
+                'method' => 'QRIS', // ganti sesuai kebutuhan
+                'merchant_ref' => $merchantRef,
+                'amount' => $subscription->amount_paid,
+                'customer_name' => $user->name,
+                'customer_email' => $user->email,
+                'customer_phone' => $user->phone_number,
+                'callback_url' => env('TRIPAY_CALLBACK_URL'),
+                'return_url' => route('subscription.finish'),
+                'order_items' => [
                     [
-                        'id' => 'PAKET_CERMAT',
+                        'sku' => $this->generatePackageId($package->name),
+                        'name' => $package->name,
                         'price' => $subscription->amount_paid,
-                        'quantity' => 1,
-                        'name' => 'Paket Cermat - Persiapan Tes BINTARA POLRI',
-                    ],
-                ],
-                'enabled_payments' => [
-                    'credit_card',
-                    'bca_va',
-                    'bni_va',
-                    'bri_va',
-                    'mandiri_va',
-                    'permata_va',
-                    'gopay',
-                    'shopeepay',
-                    'qris'
-                ],
+                        'quantity' => 1
+                    ]
+                ]
             ];
 
-            // Generate Snap Token baru
-            try {
-                $snapToken = Snap::getSnapToken($params);
+            $privateKey = env('TRIPAY_PRIVATE_KEY');
+            $payload['signature'] = hash_hmac('sha256', $merchantRef . $subscription->amount_paid, $privateKey);
 
-                // Update payment details dengan token baru
-                $subscription->update([
-                    'payment_details' => json_encode([
-                        'snap_token' => $snapToken,
-                        'package' => 'PAKET_CERMAT',
-                        'package_type' => 'PAKET_CERMAT'
-                    ])
-                ]);
+            // Kirim ke Tripay
+            $response = \Http::withHeaders([
+                'Authorization' => 'Bearer ' . env('TRIPAY_API_KEY')
+            ])->post('https://tripay.co.id/api-sandbox/transaction/create', $payload);
 
-                return view('subscription.payment', [
-                    'subscription' => $subscription,
-                    'snap_token' => $snapToken
-                ]);
-            } catch (\Exception $e) {
-                Log::error('Midtrans Error for user ' . $user->id . ': ' . $e->getMessage());
-                Log::error('Params: ' . json_encode($params));
 
-                throw new \Exception('Gagal membuat token pembayaran. Silakan coba beberapa saat lagi.');
+            $result = $response->json();
+
+            if (!$result || ($result['success'] ?? false) === false) {
+                Log::error('Tripay Error: ' . json_encode($result));
+                throw new \Exception('Gagal membuat transaksi Tripay.');
             }
+
+            // Simpan checkout URL & reference
+            $subscription->update([
+                'payment_details' => json_encode($result['data']),
+            ]);
+
+            return redirect($result['data']['checkout_url']);
         } catch (\Exception $e) {
-            Log::error('Subscription Process Error: ' . $e->getMessage());
+            Log::error('Tripay Process Error: ' . $e->getMessage());
 
             return redirect()->route('subscription.checkout')
                 ->with('error', $e->getMessage());
@@ -289,124 +275,84 @@ class SubscriptionController extends Controller
     }
 
 
+    /**
+     * Generate package ID dari nama package
+     */
+    private function generatePackageId($packageName)
+    {
+        return 'PKG_' . strtoupper(str_replace(' ', '_', $packageName));
+    }
+
+    /**
+     * Get enabled payment methods berdasarkan package
+     * Bisa dikustomisasi sesuai package tertentu
+     */
+    private function getEnabledPaymentMethods($package)
+    {
+        $defaultMethods = [
+            'credit_card',
+            'bca_va',
+            'bni_va',
+            'bri_va',
+            'mandiri_va',
+            'permata_va',
+            'gopay',
+            'shopeepay',
+            'qris'
+        ];
+
+        // Contoh: Jika package memiliki kolom payment_methods, gunakan itu
+        if ($package->payment_methods) {
+            return json_decode($package->payment_methods, true) ?: $defaultMethods;
+        }
+
+        return $defaultMethods;
+    }
+
     public function notification(Request $request)
     {
-        try {
-            // Log raw request untuk debugging
-            \Log::info('Raw notification received:', [
-                'headers' => $request->headers->all(),
-                'body' => $request->all()
-            ]);
+        $data = $request->all();
+        Log::info('Tripay Callback:', $data);
 
-            // Ambil data dari request langsung
-            $order_id = $request->input('order_id');
-            $transaction_status = $request->input('transaction_status');
-            $payment_type = $request->input('payment_type');
-            $transaction_id = $request->input('transaction_id');
+        $signature = hash_hmac(
+            'sha256',
+            $data['merchant_ref'] . $data['status'] . $data['reference'],
+            env('TRIPAY_PRIVATE_KEY')
+        );
 
-            // Log notification data
-            \Log::info('Parsed Notification Data:', [
-                'order_id' => $order_id,
-                'transaction_status' => $transaction_status,
-                'payment_type' => $payment_type,
-                'transaction_id' => $transaction_id
-            ]);
-
-            // Validate required fields
-            if (empty($order_id)) {
-                throw new \Exception('Order ID tidak ditemukan dalam notifikasi');
-            }
-
-            // Find subscription
-            $subscription = Subscription::where('transaction_id', $order_id)->first();
-            if (!$subscription) {
-                \Log::error('Subscription not found:', ['order_id' => $order_id]);
-                throw new \Exception('Subscription dengan order ID ' . $order_id . ' tidak ditemukan');
-            }
-
-            // Build payment details
-            $paymentDetails = [
-                'payment_type' => $payment_type,
-                'transaction_status' => $transaction_status,
-                'transaction_time' => $request->input('transaction_time'),
-                'package' => 'PAKET_CERMAT',
-                'gross_amount' => $request->input('gross_amount'),
-                'transaction_id' => $transaction_id,
-            ];
-
-            if ($payment_type === 'qris') {
-                $paymentDetails['platform'] = 'QRIS';
-                $paymentDetails['acquirer'] = $request->input('acquirer');
-            }
-
-            \Log::info('Processing transaction:', [
-                'order_id' => $order_id,
-                'status' => $transaction_status,
-                'payment_type' => $payment_type
-            ]);
-
-            try {
-                \DB::beginTransaction();
-
-                switch ($transaction_status) {
-                    case 'capture':
-                    case 'settlement':
-                        $subscription->update([
-                            'payment_status' => 'paid',
-                            'payment_method' => $payment_type,
-                            'payment_details' => json_encode($paymentDetails)
-                        ]);
-
-                        // Update user status
-                        $subscription->user()->update(['is_active' => true]);
-                        \Log::info('Payment completed successfully:', ['order_id' => $order_id]);
-                        break;
-
-                    case 'pending':
-                        $subscription->update([
-                            'payment_status' => 'pending',
-                            'payment_method' => $payment_type,
-                            'payment_details' => json_encode($paymentDetails)
-                        ]);
-                        \Log::info('Payment pending:', ['order_id' => $order_id]);
-                        break;
-
-                    case 'deny':
-                    case 'expire':
-                    case 'cancel':
-                        $subscription->update([
-                            'payment_status' => 'failed',
-                            'payment_method' => $payment_type,
-                            'payment_details' => json_encode($paymentDetails)
-                        ]);
-                        \Log::info('Payment failed:', ['order_id' => $order_id]);
-                        break;
-                }
-
-                \DB::commit();
-                return response()->json(['success' => true]);
-            } catch (\Exception $e) {
-                \DB::rollBack();
-                \Log::error('Database transaction failed:', [
-                    'message' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString()
-                ]);
-                throw $e;
-            }
-        } catch (\Exception $e) {
-            \Log::error('Notification Error:', [
-                'message' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-                'request_data' => $request->all()
-            ]);
-
-            // Return 200 status untuk mencegah Midtrans melakukan retry
-            return response()->json([
-                'status' => 'error',
-                'message' => $e->getMessage()
-            ], 200);
+        if ($signature !== $data['signature']) {
+            Log::error('Invalid Tripay signature');
+            return response()->json(['success' => false], 400);
         }
+
+        $subscription = Subscription::where('transaction_id', $data['merchant_ref'])->first();
+        if (!$subscription) {
+            Log::error('Subscription not found for Tripay callback');
+            return response()->json(['success' => false], 404);
+        }
+
+        switch ($data['status']) {
+            case 'PAID':
+                $subscription->update([
+                    'payment_status' => 'paid',
+                    'payment_method' => $data['payment_method'],
+                    'payment_details' => json_encode($data)
+                ]);
+                $subscription->user()->update(['is_active' => true]);
+                break;
+
+            case 'EXPIRED':
+            case 'FAILED':
+                $subscription->update([
+                    'payment_status' => 'failed',
+                    'payment_details' => json_encode($data)
+                ]);
+                break;
+        }
+
+        return response()->json(['success' => true]);
     }
+
 
     public function finish(Request $request)
     {

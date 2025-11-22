@@ -35,181 +35,66 @@
                 @endif
 
                 <div class="row">
-                    <!-- Paket Tes Kecermatan -->
-                    <div class="col-md-3 mb-4">
-                        <div class="package-card h-100">
-                            <div class="package-header text-center">
-                                <h3 class="mb-0">Paket Kecermatan</h3>
-                                <p class="mb-0">Fokus Tes Kecermatan</p>
-                            </div>
+                    @forelse ($packages as $package)
+                        <div class="col-md-3 mb-4">
+                            <div class="package-card h-100 @if ($package->label === 'PALING LARIS') popular-package @endif">
 
-                            <div class="package-features">
-                                <div class="text-center mb-4">
-                                    <div class="package-price">Rp 75.000</div>
-                                    <p class="text-muted">Berlaku 30 hari</p>
+                                {{-- Badge jika ada label --}}
+                                @if ($package->label)
+                                    <div class="popular-badge">
+                                        <span>{{ $package->label }}</span>
+                                    </div>
+                                @endif
+
+                                <div class="package-header text-center">
+                                    <h3 class="mb-0">{{ $package->name }}</h3>
+                                    <p class="mb-0">{{ $package->description }}</p>
                                 </div>
 
-                                <div class="features-list">
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Bank soal kecermatan lengkap
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Latihan soal unlimited
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Analisis kecepatan & akurasi
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Timer simulasi ujian
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Riwayat progress harian
-                                    </div>
-                                </div>
+                                <div class="package-features">
+                                    <div class="text-center mb-4">
+                                        <div class="package-price">
+                                            Rp {{ number_format($package->price, 0, ',', '.') }}
+                                        </div>
+                                        <p class="text-muted">
+                                            Berlaku {{ $package->duration_days }} hari
+                                        </p>
 
-                                <div class="button-container">
-                                    <a href="{{ route('subscription.process.packages', ['package' => 'kecermatan']) }}"
-                                        class="btn btn-outline-primary btn-package">
-                                        Pilih Paket
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                        {{-- Tampilkan old price jika ada --}}
+                                        @if ($package->old_price)
+                                            <div class="old-price">
+                                                <del>Rp {{ number_format($package->old_price, 0, ',', '.') }}</del>
+                                            </div>
+                                        @endif
+                                    </div>
 
-                    <!-- Paket Psikologi -->
-                    <div class="col-md-3 mb-4">
-                        <div class="package-card h-100">
-                            <div class="package-header text-center">
-                                <h3 class="mb-0">Paket Kecerdasan</h3>
-                                <p class="mb-0">Fokus Tes Kecerdasan</p>
-                            </div>
+                                    <div class="features-list">
+                                        {{-- Loop features dari JSON array --}}
+                                        @if ($package->features && is_array($package->features))
+                                            @foreach ($package->features as $feature)
+                                                <div class="feature-item">
+                                                    <i class="fa fa-check text-navy"></i> {{ $feature }}
+                                                </div>
+                                            @endforeach
+                                        @endif
+                                    </div>
 
-                            <div class="package-features">
-                                <div class="text-center mb-4">
-                                    <div class="package-price">Rp 75.000</div>
-                                    <p class="text-muted">Berlaku 30 hari</p>
-                                </div>
-
-                                <div class="features-list">
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Bank soal TIU, TWK, TKD lengkap
+                                    <div class="button-container">
+                                        <a href="{{ route('subscription.process.packages', ['package' => $package->id]) }}"
+                                            class="btn btn-outline-primary btn-package">
+                                            Pilih Paket
+                                        </a>
                                     </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Tes intelejensi umum
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Tes wawasan kebangsaan
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Tes kemampuan dasar
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Analisis kemampuan kognitif
-                                    </div>
-                                </div>
-
-                                <div class="button-container">
-                                    <a href="{{ route('subscription.process.packages', ['package' => 'kecerdasan']) }}"
-                                        class="btn btn-outline-info btn-package">
-                                        Pilih Paket
-                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    
-
-                    <!-- Paket Kepribadian -->
-                    <div class="col-md-3 mb-4">
-                        <div class="package-card h-100">
-                            <div class="package-header text-center">
-                                <h3 class="mb-0">Paket Kepribadian</h3>
-                                <p class="mb-0">Fokus Tes Kepribadian</p>
-                            </div>
-
-                            <div class="package-features">
-                                <div class="text-center mb-4">
-                                    <div class="package-price">Rp 75.000</div>
-                                    <p class="text-muted">Berlaku 30 hari</p>
-                                </div>
-
-                                <div class="features-list">
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Bank soal TKP, PSIKOTES lengkap
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Tes karakteristik pribadi
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Tes psikotes komprehensif
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Analisis kepribadian
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Tips & strategi psikotes
-                                    </div>
-                                </div>
-
-                                <div class="button-container">
-                                    <a href="{{ route('subscription.process.packages', ['package' => 'kepribadian']) }}"
-                                        class="btn btn-outline-warning btn-package">
-                                        Pilih Paket
-                                    </a>
-                                </div>
+                    @empty
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                Tidak ada paket yang tersedia saat ini.
                             </div>
                         </div>
-                    </div>
-
-                    <!-- Paket Lengkap -->
-                    <div class="col-md-3 mb-4">
-                        <div class="package-card h-100 popular-package">
-                            <div class="popular-badge">
-                                <span>Terpopuler</span>
-                            </div>
-                            <div class="package-header text-center">
-                                <h3 class="mb-0">Paket Lengkap</h3>
-                                <p class="mb-0">Semua Jenis Tes</p>
-                            </div>
-
-                            <div class="package-features">
-                                <div class="text-center mb-4">
-                                    <div class="package-price">Rp 120.000</div>
-                                    <p class="text-muted">Berlaku 45 hari</p>
-                                </div>
-
-                                <div class="features-list">
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Semua fitur Kecermatan
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Semua fitur Kecerdasan
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Semua fitur Kepribadian
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Try out gabungan berkala
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Laporan progress lengkap
-                                    </div>
-                                    <div class="feature-item">
-                                        <i class="fa fa-check text-navy"></i> Sertifikat penyelesaian
-                                    </div>
-                                </div>
-
-                                <div class="button-container">
-                                    <a href="{{ route('subscription.process.packages', ['package' => 'lengkap']) }}"
-                                        class="btn btn-success btn-package">
-                                        Pilih Paket
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    @endforelse
                 </div>
 
                 <div class="text-center mt-4">
@@ -226,7 +111,7 @@
         .package-card {
             border: 2px solid #e9ecef;
             border-radius: 12px;
-            padding: 2rem;
+            padding: 2rem 1.2rem;
             transition: all 0.3s ease;
             background: white;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
@@ -253,11 +138,13 @@
             transform: translateX(-50%);
             background: linear-gradient(45deg, #18a689, #0f6e58);
             color: white;
-            padding: 8px 20px;
+            padding: 8px 15px;
             border-radius: 20px;
             font-size: 0.85rem;
             font-weight: 600;
             box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+            width: 75%;
+            text-align: center;
         }
 
         .package-header h3 {
@@ -269,6 +156,19 @@
         .package-header p {
             color: #6c757d;
             font-size: 0.9rem;
+        }
+
+        .old-price {
+            font-size: 1rem;
+            color: #333;
+            margin-top: 0.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .old-price del {
+            text-decoration: line-through;
+            opacity: 0.7;
+            background-color: transparent;
         }
 
         /* Flexbox untuk package-features */

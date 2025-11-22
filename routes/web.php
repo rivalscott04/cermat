@@ -119,7 +119,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/simulasi/nilai', [SimulasiNilaiController::class, 'calculate'])->name('simulasi.nilai.calculate');
     Route::post('/simulasi/nilai/reset', [SimulasiNilaiController::class, 'reset'])->name('simulasi.nilai.reset');
     Route::get('/simulasi/nilai/settings', [SimulasiNilaiController::class, 'getSettings'])->name('simulasi.nilai.settings');
-
 });
 
 // Admin Routes
@@ -136,6 +135,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/test-pdf/{testId}', [AdminController::class, 'downloadTestPDF'])->name('admin.test-pdf');
     Route::delete('/users/{id}', [AdminController::class, 'deleteUser'])->name('users.delete');
     Route::put('/users/{user}/package', [AdminController::class, 'updatePackage'])->name('users.updatePackage');
+    Route::put('/users/{user}/status', [AdminController::class, 'updateStatus'])->name('users.updateStatus');
 
     // Impersonate Routes (using custom controller for debugging)
     Route::get('/impersonate/take/{id}/{guardName?}', [App\Http\Controllers\ImpersonateController::class, 'take'])->name('impersonate');

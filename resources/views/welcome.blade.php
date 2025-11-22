@@ -731,11 +731,9 @@
                         <div class="laptop-frame">
                             <img src="{{ asset('img/laptop_image.png') }}" alt="Laptop Frame" class="laptop-base">
                             <div class="screen-content">
-                                @if($activeVideo && $activeVideo->embed_url)
-                                    <iframe src="{{ $activeVideo->embed_url }}" 
-                                            frameborder="0" 
-                                            allowfullscreen
-                                            style="width: 100%; height: 100%;">
+                                @if ($activeVideo && $activeVideo->embed_url)
+                                    <iframe src="{{ $activeVideo->embed_url }}" frameborder="0" allowfullscreen
+                                        style="width: 100%; height: 100%;">
                                     </iframe>
                                 @else
                                     <img src="{{ asset('img/soal_cermat.png') }}" alt="Soal Image">
@@ -761,29 +759,32 @@
             </div>
 
             <div class="row d-flex align-items-stretch">
-                @foreach(($packages ?? []) as $index => $package)
+                @foreach ($packages ?? [] as $index => $package)
                     <div class="col-md-3 mb-4">
-                        <div class="package-card h-100 {{ strtolower($package->label) === 'paling populer' ? 'popular-package' : '' }}">
+                        <div
+                            class="package-card h-100 {{ strtolower($package->label) === 'paling populer' ? 'popular-package' : '' }}">
                             <div class="package-header">
                                 <h3>{{ $package->name }}</h3>
-                                @if($package->description)
+                                @if ($package->description)
                                     <p>{{ $package->description }}</p>
                                 @endif
                             </div>
 
                             <div class="package-features">
                                 <div class="text-center mb-2 package-pricing">
-                                    <div class="package-price">Rp {{ number_format($package->price, 0, ',', '.') }}</div>
-                                    @if($package->old_price && $package->old_price > 0)
-                                        <div><small class="text-muted" style="text-decoration:line-through;">Rp {{ number_format($package->old_price, 0, ',', '.') }}</small></div>
+                                    <div class="package-price">Rp {{ number_format($package->price, 0, ',', '.') }}
+                                    </div>
+                                    @if ($package->old_price && $package->old_price > 0)
+                                        <div><small class="text-muted" style="text-decoration:line-through;">Rp
+                                                {{ number_format($package->old_price, 0, ',', '.') }}</small></div>
                                     @endif
-                                    @if($package->label)
+                                    @if ($package->label)
                                         <p class="price-period">{{ $package->label }}</p>
                                     @endif
                                 </div>
 
                                 <div class="features-list">
-                                    @foreach(($package->features ?? []) as $feature)
+                                    @foreach ($package->features ?? [] as $feature)
                                         <div class="feature-item available">
                                             <i class="fas fa-check"></i> {{ $feature }}
                                         </div>
@@ -804,7 +805,7 @@
             <div class="text-center mt-5">
                 <small class="text-muted">
                     Dengan membeli paket ini, Anda menyetujui
-                    <a href="#" style="color: #1ab394;">Syarat & Ketentuan</a> yang berlaku
+                    <a href="{{ route('privacy') }}" style="color: #1ab394;">Syarat & Ketentuan</a> yang berlaku
                 </small>
             </div>
         </div>

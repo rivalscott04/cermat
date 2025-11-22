@@ -78,8 +78,17 @@
             }
 
             /* Pill dropdown badge styles to mimic example */
-            .package-wrapper, .status-wrapper { display: inline-block; min-width: 120px; }
-            .pill-dropdown { position: relative; display: inline-block; }
+            .package-wrapper,
+            .status-wrapper {
+                display: inline-block;
+                min-width: 120px;
+            }
+
+            .pill-dropdown {
+                position: relative;
+                display: inline-block;
+            }
+
             .pill-btn {
                 display: inline-flex;
                 align-items: center;
@@ -94,16 +103,73 @@
                 cursor: pointer;
                 min-width: 120px;
             }
-            .pill-caret { margin-left: 6px; font-size: 11px; opacity: .9; }
-            .pill-primary { background-color: #1ab394; border-color: #1ab394; }
-            .pill-info { background-color: #1c84c6; border-color: #1c84c6; }
-            .pill-warning { background-color: #f8ac59; border-color: #f8ac59; }
-            .pill-danger { background-color: #ED5565; border-color: #ED5565; }
-            .pill-default { background-color: #D1DADE; border-color: #D1DADE; color: #5E5E5E; }
-            .pill-menu { position: absolute; top: 100%; left: 0; z-index: 1000; display: none; min-width: 140px; padding: 6px 0; margin-top: 4px; background: #fff; border: 1px solid #e7eaec; border-radius: 6px; box-shadow: 0 6px 18px rgba(0,0,0,.08); }
-            .pill-menu.show { display: block; }
-            .pill-item { display: block; width: 100%; text-align: left; padding: 8px 12px; font-size: 12px; color: #676a6c; background: #fff; border: 0; cursor: pointer; }
-            .pill-item:hover { background: #f5f5f5; }
+
+            .pill-caret {
+                margin-left: 6px;
+                font-size: 11px;
+                opacity: .9;
+            }
+
+            .pill-primary {
+                background-color: #1ab394;
+                border-color: #1ab394;
+            }
+
+            .pill-info {
+                background-color: #1c84c6;
+                border-color: #1c84c6;
+            }
+
+            .pill-warning {
+                background-color: #f8ac59;
+                border-color: #f8ac59;
+            }
+
+            .pill-danger {
+                background-color: #ED5565;
+                border-color: #ED5565;
+            }
+
+            .pill-default {
+                background-color: #D1DADE;
+                border-color: #D1DADE;
+                color: #5E5E5E;
+            }
+
+            .pill-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                z-index: 1000;
+                display: none;
+                min-width: 140px;
+                padding: 6px 0;
+                margin-top: 4px;
+                background: #fff;
+                border: 1px solid #e7eaec;
+                border-radius: 6px;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, .08);
+            }
+
+            .pill-menu.show {
+                display: block;
+            }
+
+            .pill-item {
+                display: block;
+                width: 100%;
+                text-align: left;
+                padding: 8px 12px;
+                font-size: 12px;
+                color: #676a6c;
+                background: #fff;
+                border: 0;
+                cursor: pointer;
+            }
+
+            .pill-item:hover {
+                background: #f5f5f5;
+            }
 
             .action-icon {
                 color: #667085;
@@ -370,7 +436,7 @@
                                                 <i class="fa fa-search"></i>
                                             </span>
                                             <input type="text" id="searchInput" name="search" class="form-control"
-                                                placeholder="Cari berdasarkan nama atau email..." 
+                                                placeholder="Cari berdasarkan nama atau email..."
                                                 value="{{ request('search') }}">
                                             <span class="input-group-btn">
                                                 <button type="button" id="clearSearch" class="btn btn-default"
@@ -395,11 +461,13 @@
                                     </div>
                                 </div>
                                 <div class="col-md-3 text-right">
-                                    @if(request('search'))
+                                    @if (request('search'))
                                         <span class="text-muted" style="font-size: 12px;">
-                                            <i class="fa fa-info-circle"></i> 
-                                            {{ $users->total() }} dari {{ $users->total() }} data ditemukan untuk "{{ request('search') }}"
-                                            <a href="{{ route('admin.users.index') }}" class="text-danger ml-2" title="Hapus pencarian">
+                                            <i class="fa fa-info-circle"></i>
+                                            {{ $users->total() }} dari {{ $users->total() }} data ditemukan untuk
+                                            "{{ request('search') }}"
+                                            <a href="{{ route('admin.users.index') }}" class="text-danger ml-2"
+                                                title="Hapus pencarian">
                                                 <i class="fa fa-times"></i>
                                             </a>
                                         </span>
@@ -439,10 +507,12 @@
                                                     <div class="package-wrapper">
                                                         @php
                                                             $currentPackage = $user->package ?? '';
-                                                            $pkgLabel = $currentPackage ? ucfirst($currentPackage) : 'No Package';
-                                                            $pkgClass = match($currentPackage){
+                                                            $pkgLabel = $currentPackage
+                                                                ? ucfirst($currentPackage)
+                                                                : 'No Package';
+                                                            $pkgClass = match ($currentPackage) {
                                                                 'lengkap' => 'pill-primary',
-                                                                'kecerdasan','kecermatan' => 'pill-info',
+                                                                'kecerdasan', 'kecermatan' => 'pill-info',
                                                                 'kepribadian' => 'pill-warning',
                                                                 'free' => 'pill-default',
                                                                 default => 'pill-default',
@@ -453,16 +523,23 @@
                                                                 {{ $pkgLabel }} <span class="pill-caret">▾</span>
                                                             </button>
                                                             <div class="pill-menu" id="pkg-{{ $user->id }}">
-                                                                <form method="POST" action="{{ route('admin.users.updatePackage', $user->id) }}">
+                                                                <form method="POST"
+                                                                    action="{{ route('admin.users.updatePackage', $user->id) }}">
                                                                     @csrf
                                                                     @method('PUT')
                                                                     <input type="hidden" name="package" value="">
-                                                                    <button type="button" class="pill-item" data-value="lengkap">Lengkap</button>
-                                                                    <button type="button" class="pill-item" data-value="kecermatan">Kecermatan</button>
-                                                                    <button type="button" class="pill-item" data-value="kecerdasan">Kecerdasan</button>
-                                                                    <button type="button" class="pill-item" data-value="kepribadian">Kepribadian</button>
-                                                                    <button type="button" class="pill-item" data-value="free">Free</button>
-                                                                    <button type="button" class="pill-item" data-value="">No Package</button>
+                                                                    <button type="button" class="pill-item"
+                                                                        data-value="lengkap">Lengkap</button>
+                                                                    <button type="button" class="pill-item"
+                                                                        data-value="kecermatan">Kecermatan</button>
+                                                                    <button type="button" class="pill-item"
+                                                                        data-value="kecerdasan">Kecerdasan</button>
+                                                                    <button type="button" class="pill-item"
+                                                                        data-value="kepribadian">Kepribadian</button>
+                                                                    <button type="button" class="pill-item"
+                                                                        data-value="free">Free</button>
+                                                                    <button type="button" class="pill-item"
+                                                                        data-value="">No Package</button>
                                                                 </form>
                                                             </div>
                                                         </div>
@@ -475,17 +552,22 @@
                                                             $statusLabel = $isActive ? 'Active' : 'Inactive';
                                                             $statusClass = $isActive ? 'pill-primary' : 'pill-danger';
                                                         @endphp
-                                                        <div class="pill-dropdown" data-dropdown="sts-{{ $user->id }}">
+                                                        <div class="pill-dropdown"
+                                                            data-dropdown="sts-{{ $user->id }}">
                                                             <button type="button" class="pill-btn {{ $statusClass }}">
                                                                 {{ $statusLabel }} <span class="pill-caret">▾</span>
                                                             </button>
                                                             <div class="pill-menu" id="sts-{{ $user->id }}">
-                                                                <form method="POST" action="{{ route('admin.users.update', $user->id) }}">
+                                                                <form method="POST"
+                                                                    action="{{ route('admin.users.updateStatus', $user->id) }}">
                                                                     @csrf
                                                                     @method('PUT')
-                                                                    <input type="hidden" name="is_active" value="">
-                                                                    <button type="button" class="pill-item" data-value="1">Active</button>
-                                                                    <button type="button" class="pill-item" data-value="0">Inactive</button>
+                                                                    <input type="hidden" name="is_active"
+                                                                        value="">
+                                                                    <button type="button" class="pill-item"
+                                                                        data-value="1">Active</button>
+                                                                    <button type="button" class="pill-item"
+                                                                        data-value="0">Inactive</button>
                                                                 </form>
                                                             </div>
                                                         </div>
@@ -594,12 +676,12 @@
                 $(document).on('keyup input paste', '#searchInput', function() {
                     var searchValue = this.value;
                     clearTimeout(searchTimeout);
-                    
+
                     // Auto-submit form after 500ms delay
                     searchTimeout = setTimeout(function() {
                         $('#searchForm').submit();
                     }, 500);
-                    
+
                     toggleClearButton(searchValue);
                 });
 
@@ -622,7 +704,8 @@
                 function updateSearchResults() {
                     var searchValue = $('#searchInput').val();
                     var totalRecords = window.userTable ? window.userTable.page.info().recordsTotal : 0;
-                    var filteredRecords = window.userTable ? window.userTable.page.info().recordsDisplay : 0;
+                    var filteredRecords = window.userTable ? window.userTable.page.info().recordsDisplay :
+                        0;
 
                     if (searchValue) {
                         $('#searchResults').html(
@@ -654,12 +737,15 @@
                         const dd = e.target.closest('.pill-dropdown');
                         const menu = dd.querySelector('.pill-menu');
                         // Close others
-                        document.querySelectorAll('.pill-menu.show').forEach(m => { if (m !== menu) m.classList.remove('show'); });
+                        document.querySelectorAll('.pill-menu.show').forEach(m => {
+                            if (m !== menu) m.classList.remove('show');
+                        });
                         menu.classList.toggle('show');
                         return;
                     }
                     // Clicked outside -> close all
-                    document.querySelectorAll('.pill-menu.show').forEach(m => m.classList.remove('show'));
+                    document.querySelectorAll('.pill-menu.show').forEach(m => m.classList.remove(
+                        'show'));
                 });
 
                 // Submit on item click
@@ -668,13 +754,12 @@
                     if (!item) return;
                     e.preventDefault();
                     const form = item.closest('form');
-                    
+
                     // Check if this is a package form or status form
-                    const isPackageForm = form.action.includes('/package') || form.action.includes('updatePackage');
-                    const isStatusForm = form.action.includes('update') && !form.action.includes('/package') && !form.action.includes('updatePackage');
-                    
+                    const isPackageForm = !!form.querySelector('input[name="package"]');
+                    const isStatusForm = !!form.querySelector('input[name="is_active"]');
                     let hidden, dataValue;
-                    
+
                     if (isPackageForm) {
                         hidden = form.querySelector('input[name="package"]');
                         dataValue = item.getAttribute('data-value');
@@ -684,17 +769,17 @@
                     } else {
                         return;
                     }
-                    
+
                     if (hidden) {
                         hidden.value = dataValue;
                     }
-                    
+
                     // Show loading state
                     const submitBtn = form.querySelector('button[type="submit"]') || item;
                     const originalText = submitBtn.textContent;
                     submitBtn.textContent = 'Updating...';
                     submitBtn.disabled = true;
-                    
+
                     // Refresh CSRF token before submitting
                     refreshCsrfToken().then(newToken => {
                         if (newToken) {
@@ -737,58 +822,60 @@
             setInterval(function() {
                 const csrfToken = document.querySelector('meta[name="csrf-token"]');
                 if (csrfToken) {
-                    fetch('{{ route("admin.users.index") }}', {
-                        method: 'GET',
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
-                        }
-                    })
-                    .then(response => response.text())
-                    .then(html => {
-                        const parser = new DOMParser();
-                        const doc = parser.parseFromString(html, 'text/html');
-                        const newToken = doc.querySelector('meta[name="csrf-token"]');
-                        if (newToken && newToken.getAttribute('content') !== csrfToken.getAttribute('content')) {
-                            csrfToken.setAttribute('content', newToken.getAttribute('content'));
-                        }
-                    })
-                    .catch(error => {
-                        // Silent error handling
-                    });
+                    fetch('{{ route('admin.users.index') }}', {
+                            method: 'GET',
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => response.text())
+                        .then(html => {
+                            const parser = new DOMParser();
+                            const doc = parser.parseFromString(html, 'text/html');
+                            const newToken = doc.querySelector('meta[name="csrf-token"]');
+                            if (newToken && newToken.getAttribute('content') !== csrfToken.getAttribute(
+                                    'content')) {
+                                csrfToken.setAttribute('content', newToken.getAttribute('content'));
+                            }
+                        })
+                        .catch(error => {
+                            // Silent error handling
+                        });
                 }
             }, 300000); // Refresh every 5 minutes
         });
 
         // Function to refresh CSRF token
         function refreshCsrfToken() {
-            return fetch('{{ route("admin.users.index") }}', {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => {
-                if (response.status === 419) {
-                    // CSRF token mismatch - redirect to login
-                    window.location.href = '{{ route("login") }}';
+            return fetch('{{ route('admin.users.index') }}', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => {
+                    if (response.status === 419) {
+                        // CSRF token mismatch - redirect to login
+                        window.location.href = '{{ route('login') }}';
+                        return null;
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    if (!html) return null;
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newToken = doc.querySelector('meta[name="csrf-token"]');
+                    if (newToken) {
+                        document.querySelector('meta[name="csrf-token"]').setAttribute('content', newToken.getAttribute(
+                            'content'));
+                        return newToken.getAttribute('content');
+                    }
                     return null;
-                }
-                return response.text();
-            })
-            .then(html => {
-                if (!html) return null;
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, 'text/html');
-                const newToken = doc.querySelector('meta[name="csrf-token"]');
-                if (newToken) {
-                    document.querySelector('meta[name="csrf-token"]').setAttribute('content', newToken.getAttribute('content'));
-                    return newToken.getAttribute('content');
-                }
-                return null;
-            })
-            .catch(error => {
-                return null;
-            });
+                })
+                .catch(error => {
+                    return null;
+                });
         }
 
         // Impersonate confirmation function
@@ -830,7 +917,7 @@
 
                     // Redirect to impersonate route
                     window.location.href = "{{ route('admin.impersonate', ':userId') }}".replace(':userId',
-                    userId);
+                        userId);
                 }
             });
         }

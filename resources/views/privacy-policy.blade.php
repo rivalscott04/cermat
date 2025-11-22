@@ -95,7 +95,7 @@
                 <a href="\" class="btn btn-info mb-5">&larr; Kembali</a>
 
                 <!-- Video Section -->
-                <div class="policy-section">
+                {{-- <div class="policy-section">
                     <h2>Video Panduan</h2>
                     <p class="lead">Tonton video panduan ini untuk memahami lebih lanjut tentang layanan kami:</p>
 
@@ -106,10 +106,10 @@
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowfullscreen></iframe>
                     </div>
-                </div>
+                </div> --}}
 
                 <!-- Privacy Policy Section -->
-                <div class="policy-section">
+                {{-- <div class="policy-section">
                     <h2>Lupa password</h2>
                     <p class="lead">Ikuti langkah ini jika anda lupa password.</p>
                     <ol class="policy-list">
@@ -122,7 +122,7 @@
                         </li>
 
                     </ol>
-                </div>
+                </div> --}}
 
                 <!-- Privacy Policy Section -->
                 <div class="policy-section">
