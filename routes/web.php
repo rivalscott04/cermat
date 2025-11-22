@@ -48,7 +48,7 @@ Route::get('/leave-impersonation', [App\Http\Controllers\ImpersonateController::
 
 // Route untuk subscription dan proses Midtrans
 // Route::get('subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
-Route::get('subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
+Route::post('subscription/process', [SubscriptionController::class, 'process'])->name('subscription.process');
 Route::get('subscription/get-fee', [SubscriptionController::class, 'getFee'])->name('subscription.get-fee');
 Route::post('subscription/notification', [SubscriptionController::class, 'notification'])->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])->name('subscription.notification');
 Route::get('subscription/finish', [SubscriptionController::class, 'finish'])->name('subscription.finish');

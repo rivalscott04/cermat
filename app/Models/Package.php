@@ -23,14 +23,14 @@ class Package extends Model
 
     protected $casts = [
         'features' => 'array',
-        'is_active' => 'boolean',
+        'is_active' => 'integer',
         'price' => 'decimal:2',
         'old_price' => 'decimal:2'
     ];
 
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('is_active', 1);
     }
 
     public function scopeOrdered($query)

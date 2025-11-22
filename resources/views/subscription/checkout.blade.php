@@ -13,7 +13,7 @@
                 <div class="text-center mb-5">
                     <img src="{{ asset('img/logo.png') }}" alt="Logo" class="img-fluid" style="max-width: 100px;">
                     <h2 class="mt-3">Checkout Paket Berlangganan</h2>
-                    <p>Silakan lakukan pembayaran manual sesuai instruksi di bawah ini</p>
+                    <p>Pilih metode pembayaran untuk melanjutkan</p>
                 </div>
 
                 @if (session('success'))
@@ -79,148 +79,127 @@
                                     <div class="info-item">
                                         <strong>Order ID:</strong>
                                         <span
-                                            class="order-id">{{ strtoupper($package['key']) }}-{{ $user->id }}-{{ date('Ymd') }}</span>
+                                            class="order-id">{{ strtoupper($package['id']) }}-{{ $user->id }}-{{ date('Ymd') }}</span>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Instruksi Pembayaran -->
+                    <!-- Metode Pembayaran -->
                     <div class="col-md-6">
                         <div class="checkout-card">
                             <div class="card-header">
                                 <h4 class="mb-0">
-                                    <i class="fa fa-credit-card text-warning"></i> Instruksi Pembayaran
+                                    <i class="fa fa-credit-card text-warning"></i> Pilih Metode Pembayaran
                                 </h4>
                             </div>
                             <div class="card-body">
-                                <!-- Nomor Rekening -->
-                                <div class="bank-accounts mb-4">
-                                    <h6 class="mb-3">
-                                        <i class="fa fa-university text-primary"></i> Transfer ke Rekening Berikut:
-                                    </h6>
+                                <form action="{{ route('subscription.process') }}" method="POST" id="paymentForm">
+                                    @csrf
 
-                                    <div class="bank-item">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="bank-info">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg"
-                                                    alt="BCA" class="bank-logo">
-                                                <div class="bank-details">
-                                                    <strong>BCA (Bank Central Asia)</strong><br>
-                                                    <span class="account-number">1234567890</span><br>
-                                                    <small class="account-name">A.n. BINTARA POLRI ACADEMY</small>
-                                                </div>
-                                            </div>
-                                            <button class="btn btn-sm btn-outline-primary copy-btn"
-                                                onclick="copyToClipboard('1234567890')">
-                                                <i class="fa fa-copy"></i> Copy
-                                            </button>
+                                    <!-- Input package (hidden) -->
+                                    <input type="hidden" name="package" value="{{ $package['name'] }}">
+
+                                    <!-- Opsi Metode Pembayaran -->
+                                    <div class="payment-methods mb-4">
+                                        <h6 class="mb-3">
+                                            <i class="fa fa-list text-info"></i> Metode Pembayaran Tersedia:
+                                        </h6>
+
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="QRIS" checked>
+                                                <span class="radio-label">
+                                                    <i class="fa fa-qrcode"></i> QRIS (Instant)
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Scan dengan aplikasi pembayaran apa
+                                                pun</small>
+                                        </div>
+
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="BCA_VA">
+                                                <span class="radio-label">
+                                                    <i class="fa fa-university"></i> BCA Virtual Account
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Transfer ke Virtual Account BCA</small>
+                                        </div>
+
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="BNI_VA">
+                                                <span class="radio-label">
+                                                    <i class="fa fa-university"></i> BNI Virtual Account
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Transfer ke Virtual Account BNI</small>
+                                        </div>
+
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="GOPAY">
+                                                <span class="radio-label">
+                                                    <i class="fa fa-mobile"></i> GoPay
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Pembayaran melalui GoPay</small>
+                                        </div>
+
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="SHOPEEPAY">
+                                                <span class="radio-label">
+                                                    <i class="fa fa-mobile"></i> ShopeePay
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Pembayaran melalui ShopeePay</small>
                                         </div>
                                     </div>
 
-                                    <div class="bank-item">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <div class="bank-info">
-                                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/BNI_logo.svg"
-                                                    alt="BNI" class="bank-logo">
-                                                <div class="bank-details">
-                                                    <strong>BNI (Bank Negara Indonesia)</strong><br>
-                                                    <span class="account-number">0987654321</span><br>
-                                                    <small class="account-name">A.n. BINTARA POLRI ACADEMY</small>
-                                                </div>
-                                            </div>
-                                            <button class="btn btn-sm btn-outline-primary copy-btn"
-                                                onclick="copyToClipboard('0987654321')">
-                                                <i class="fa fa-copy"></i> Copy
-                                            </button>
+                                    <!-- Ringkasan Harga -->
+                                    <div class="price-summary mb-4 p-3 bg-light rounded">
+                                        <div class="d-flex justify-content-between mb-2">
+                                            <span>Harga Paket:</span>
+                                            <strong>Rp {{ number_format($package['price'], 0, ',', '.') }}</strong>
                                         </div>
-                                    </div>
-                                </div>
-
-                                <!-- Langkah Pembayaran -->
-                                <div class="payment-steps mb-4">
-                                    <h6 class="mb-3">
-                                        <i class="fa fa-list-ol text-success"></i> Langkah Pembayaran:
-                                    </h6>
-                                    <ol class="steps-list">
-                                        <li>Transfer sesuai nominal <strong>Rp
-                                                {{ number_format($package['price'], 0, ',', '.') }}</strong></li>
-                                        <li>Simpan bukti transfer/struk pembayaran</li>
-                                        <li>Kirim bukti transfer via WhatsApp</li>
-                                        <li>Tunggu konfirmasi aktivasi paket (1x24 jam)</li>
-                                    </ol>
-                                </div>
-
-                                <!-- WhatsApp Konfirmasi -->
-                                <div class="whatsapp-section">
-                                    <div class="whatsapp-box">
-                                        <div class="text-center mb-3">
-                                            <i class="fab fa-whatsapp whatsapp-icon"></i>
-                                            <h6 class="mb-2">Konfirmasi Pembayaran</h6>
-                                            <p class="mb-3 text-muted">Kirim bukti transfer ke WhatsApp kami</p>
-                                        </div>
-
-                                        <a href="https://wa.me/6282339150860?text={{ urlencode(
-                                            'Halo, saya sudah melakukan pembayaran untuk:                                                                                                                                                                                                                                                                                                                                                                      Paket: ' .
-                                                $package['name'] .
-                                                '                                                                                                                                                                                                                                                                                                                               Order ID: ' .
-                                                strtoupper($package['key']) .
-                                                '-' .
-                                                $user->id .
-                                                '-' .
-                                                date('Ymd') .
-                                                '                                                                                                                                                                                                                                                                                                                  Nama: ' .
-                                                $user->name .
-                                                '                                                                                                                                                                                                                                                                                                                             Email: ' .
-                                                $user->email .
-                                                '                                                                                                                                                                                                                                                                                                                                Total: Rp ' .
-                                                number_format($package['price'], 0, ',', '.') .
-                                                '                                                                                                                                                                                                                                                                                                                                                                        Mohon diaktivasi paketnya. Terima kasih!',
-                                        ) }}"
-                                            target="_blank" class="btn btn-success btn-lg btn-block whatsapp-btn">
-                                            <i class="fab fa-whatsapp"></i> Kirim ke WhatsApp
-                                        </a>
-
-                                        <div class="text-center mt-2">
+                                        @if ($package['old_price'])
                                             <small class="text-muted">
-                                                <i class="fa fa-clock"></i> Respon dalam 1x24 jam
+                                                <del>Harga Normal: Rp
+                                                    {{ number_format($package['old_price'], 0, ',', '.') }}</del>
                                             </small>
+                                        @endif
+                                        <hr>
+                                        <div class="d-flex justify-content-between">
+                                            <span><strong>Total Pembayaran:</strong></span>
+                                            <strong class="text-danger">Rp
+                                                {{ number_format($package['price'], 0, ',', '.') }}</strong>
                                         </div>
                                     </div>
-                                </div>
 
-                                <!-- Catatan Penting -->
-                                <div class="alert alert-info mt-4">
-                                    <h6><i class="fa fa-info-circle"></i> Catatan Penting:</h6>
-                                    <ul class="mb-0">
-                                        <li>Transfer harus sesuai dengan nominal yang tertera</li>
-                                        <li>Sertakan Order ID saat konfirmasi</li>
-                                        <li>Paket akan diaktivasi setelah pembayaran dikonfirmasi</li>
-                                        <li>Simpan bukti transfer untuk keperluan klaim</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                                    <!-- Catatan Penting -->
+                                    <div class="alert alert-info mb-4">
+                                        <h6><i class="fa fa-info-circle"></i> Catatan Penting:</h6>
+                                        <ul class="mb-0 small">
+                                            <li>Pembayaran akan diproses langsung setelah Anda mengklik tombol di bawah</li>
+                                            <li>Anda akan diarahkan ke halaman pembayaran Tripay</li>
+                                            <li>Paket akan diaktivasi otomatis setelah pembayaran dikonfirmasi</li>
+                                            <li>Simpan bukti transaksi Anda</li>
+                                        </ul>
+                                    </div>
 
-                <!-- Status Aktivasi dan Button Continue -->
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <div class="activation-status-section">
-                            <div class="alert alert-warning text-center">
-                                <h5><i class="fa fa-clock text-warning"></i> Status Aktivasi Paket</h5>
-                                <p class="mb-3">
-                                    <strong>Harap menunggu aktivasi paket Anda.</strong><br>
-                                    Jika paket sudah aktif, Anda akan diberitahu melalui WhatsApp.
-                                </p>
-                            </div>
+                                    <!-- Button Pembayaran -->
+                                    <button type="submit" class="btn btn-success btn-lg btn-block" id="payBtn">
+                                        <i class="fa fa-lock"></i> Lanjut ke Pembayaran
+                                    </button>
 
-                            <div class="text-center mt-3">
-                                <a href="{{ route('user.profile', $user->id) }}" class="btn btn-primary btn-lg">
-                                    <i class="fa fa-arrow-right"></i> Continue ke Profile
-                                </a>
+                                    <a href="{{ route('subscription.packages') }}"
+                                        class="btn btn-outline-secondary btn-block mt-2">
+                                        <i class="fa fa-arrow-left"></i> Kembali
+                                    </a>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -233,7 +212,7 @@
                             <h3>Butuh Bantuan?</h3>
                             <p class="text-muted mb-3">Tim customer service kami siap membantu Anda</p>
                             <div class="contact-options">
-                                <a href="https://wa.me/6281234567890" target="_blank"
+                                <a href="https://wa.me/6282339150860" target="_blank"
                                     class="btn btn-outline-success me-2">
                                     <i class="fab fa-whatsapp"></i> WhatsApp
                                 </a>

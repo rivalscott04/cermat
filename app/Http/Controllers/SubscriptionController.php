@@ -31,7 +31,7 @@ class SubscriptionController extends Controller
     {
         $startTime = microtime(true);
         $user = Auth::user();
-        $packages = Package::active()->ordered()->get();
+        $packages = Package::ordered()->get();
 
         if ($user->package === 'lengkap') {
 
@@ -119,28 +119,37 @@ class SubscriptionController extends Controller
     public function processSubscription(Request $request, $package)
     {
         try {
-            // Get authenticated user
             $user = Auth::user();
 
             if (!$user) {
                 return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
             }
 
-            // Validasi package yang dipilih dari database
-            $packageExists = Package::where('name', 'like', '%' . $package . '%')
-                ->active()
-                ->exists();
+            // DEBUG: Log parameter yang diterima
+            \Log::info('Package parameter received:', ['package' => $package, 'type' => gettype($package)]);
+
+            // Cek apakah package ada di database
+            $packageData = Package::where('id', $package)->first();
+            \Log::info('Package data:', ['package' => $packageData ? $packageData->toArray() : 'NOT FOUND']);
+
+            // Validasi dengan detail
+            $packageExists = Package::where('id', $package)
+                ->where('is_active', 1)
+                ->first();
+
+            \Log::info('Package exists check:', ['result' => $packageExists ? 'YES' : 'NO']);
 
             if (!$packageExists) {
+                \Log::warning('Package not available:', [
+                    'searched_id' => $package,
+                    'all_active_packages' => Package::where('is_active', 1)->pluck('id', 'name')->toArray()
+                ]);
                 return redirect()->back()->with('error', 'Paket yang dipilih tidak tersedia.');
             }
 
-            // Redirect ke halaman checkout dengan parameter package
             return redirect()->route('subscription.checkout', ['package' => $package]);
         } catch (\Exception $e) {
-            // Log error jika diperlukan
-            \Log::error('Error processing subscription: ' . $e->getMessage());
-
+            \Log::error('Error processing subscription: ' . $e->getMessage(), ['exception' => $e]);
             return redirect()->back()->with('error', 'Terjadi kesalahan saat memproses paket berlangganan. Silakan coba lagi.');
         }
     }
@@ -154,9 +163,9 @@ class SubscriptionController extends Controller
                 return redirect()->route('login')->with('error', 'Silakan login terlebih dahulu.');
             }
 
-            // Get package from database
-            $selectedPackage = Package::where('name', 'like', '%' . $package . '%')
-                ->active()
+            // Get package from database berdasarkan ID
+            $selectedPackage = Package::where('id', $package)
+                ->where('is_active', 1)
                 ->first();
 
             if (!$selectedPackage) {
@@ -165,14 +174,14 @@ class SubscriptionController extends Controller
 
             // Convert package to array format expected by view
             $packageData = [
-                'key' => $package,
+                'id' => $selectedPackage->id,
                 'name' => $selectedPackage->name,
                 'description' => $selectedPackage->description,
                 'price' => $selectedPackage->price,
                 'old_price' => $selectedPackage->old_price,
                 'label' => $selectedPackage->label,
                 'features' => $selectedPackage->features,
-                'duration' => $selectedPackage->duration ?? 30, // Ambil dari DB atau default 30
+                'duration' => $selectedPackage->duration_days ?? 30,
             ];
 
             return view('subscription.checkout', [
@@ -269,7 +278,7 @@ class SubscriptionController extends Controller
         } catch (\Exception $e) {
             Log::error('Tripay Process Error: ' . $e->getMessage());
 
-            return redirect()->route('subscription.checkout')
+            return redirect()->route('subscription.packages')
                 ->with('error', $e->getMessage());
         }
     }
