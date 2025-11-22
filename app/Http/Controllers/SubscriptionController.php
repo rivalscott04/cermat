@@ -209,14 +209,27 @@ class SubscriptionController extends Controller
             }
 
             $package = Package::where('name', 'like', '%' . $packageName . '%')
-                ->active()
+                ->where('is_active', 1)
                 ->first();
 
             if (!$package) {
                 throw new \Exception('Paket tidak ditemukan');
             }
 
-            // Buat subscription baru atau update pending
+            // Ambil dari config, bukan env
+            $apiKey = config('tripay.api_key');
+            $privateKey = config('tripay.private_key');
+
+            \Log::info('Tripay Config Check Full:', [
+                'api_key' => substr($apiKey, 0, 10) . '***',
+                'private_key' => substr($privateKey, 0, 10) . '***',
+            ]);
+
+            if (!$apiKey || !$privateKey) {
+                throw new \Exception('Tripay configuration not found in config/tripay.php');
+            }
+
+            // Buat subscription
             $subscription = Subscription::updateOrCreate(
                 [
                     'user_id' => $user->id,
@@ -227,49 +240,67 @@ class SubscriptionController extends Controller
                     'package_id' => $package->id,
                     'amount_paid' => $package->price,
                     'start_date' => now(),
-                    'end_date' => now()->addDays($package->duration ?? 30),
+                    'end_date' => now()->addDays($package->duration_days ?? 30),
                 ]
             );
 
-            // ==== TRIPAY REQUEST ====
             $merchantRef = $subscription->transaction_id;
 
             $payload = [
-                'method' => 'QRIS', // ganti sesuai kebutuhan
+                'method' => $request->input('payment_method', 'BRIVA'),
                 'merchant_ref' => $merchantRef,
-                'amount' => $subscription->amount_paid,
+                'amount' => intval($subscription->amount_paid),
                 'customer_name' => $user->name,
                 'customer_email' => $user->email,
-                'customer_phone' => $user->phone_number,
-                'callback_url' => env('TRIPAY_CALLBACK_URL'),
+                'customer_phone' => $user->phone_number ?? '08123456789',
+                'callback_url' => config('tripay.callback_url'),
                 'return_url' => route('subscription.finish'),
                 'order_items' => [
                     [
                         'sku' => $this->generatePackageId($package->name),
                         'name' => $package->name,
-                        'price' => $subscription->amount_paid,
+                        'price' => intval($subscription->amount_paid),
                         'quantity' => 1
                     ]
                 ]
             ];
 
-            $privateKey = env('TRIPAY_PRIVATE_KEY');
-            $payload['signature'] = hash_hmac('sha256', $merchantRef . $subscription->amount_paid, $privateKey);
+            $merchantCode = config('tripay.merchant_code');
+            $amount = intval($subscription->amount_paid);
+
+            $data = $merchantCode . $merchantRef . $amount;
+
+            $signature = hash_hmac('sha256', $data, $privateKey);
+
+            $payload['signature'] = $signature;
+            $payload['merchant_code'] = $merchantCode;
+
+
+            \Log::info('Signature Debug:', [
+                'merchant_ref' => $merchantRef,
+                'amount' => $amount,
+                'data' => $data,
+                'signature' => $signature,
+            ]);
+
+
+            \Log::info('Sending to Tripay:', ['merchant_ref' => $merchantRef, 'amount' => intval($subscription->amount_paid)]);
 
             // Kirim ke Tripay
             $response = \Http::withHeaders([
-                'Authorization' => 'Bearer ' . env('TRIPAY_API_KEY')
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json'
             ])->post('https://tripay.co.id/api-sandbox/transaction/create', $payload);
-
 
             $result = $response->json();
 
+            \Log::info('Tripay Response:', $result);
+
             if (!$result || ($result['success'] ?? false) === false) {
                 Log::error('Tripay Error: ' . json_encode($result));
-                throw new \Exception('Gagal membuat transaksi Tripay.');
+                throw new \Exception($result['message'] ?? 'Gagal membuat transaksi Tripay');
             }
 
-            // Simpan checkout URL & reference
             $subscription->update([
                 'payment_details' => json_encode($result['data']),
             ]);
@@ -320,43 +351,47 @@ class SubscriptionController extends Controller
 
     public function notification(Request $request)
     {
-        $data = $request->all();
-        Log::info('Tripay Callback:', $data);
+        $json = $request->getContent(); // raw body
+        Log::info('Tripay Callback Raw:', ['raw' => $json]);
 
-        $signature = hash_hmac(
-            'sha256',
-            $data['merchant_ref'] . $data['status'] . $data['reference'],
-            env('TRIPAY_PRIVATE_KEY')
-        );
+        $data = json_decode($json, true);
 
-        if ($signature !== $data['signature']) {
-            Log::error('Invalid Tripay signature');
+        $callbackSignature = $request->header('X-Callback-Signature');
+        $privateKey = config('tripay.private_key');
+
+        $signature = hash_hmac('sha256', $json, $privateKey);
+
+        if ($callbackSignature !== $signature) {
+            Log::error('Invalid Tripay signature', [
+                'expected' => $signature,
+                'received' => $callbackSignature
+            ]);
             return response()->json(['success' => false], 400);
         }
 
+        // Temukan subscription
         $subscription = Subscription::where('transaction_id', $data['merchant_ref'])->first();
         if (!$subscription) {
-            Log::error('Subscription not found for Tripay callback');
+            Log::error('Subscription not found');
             return response()->json(['success' => false], 404);
         }
 
-        switch ($data['status']) {
-            case 'PAID':
-                $subscription->update([
-                    'payment_status' => 'paid',
-                    'payment_method' => $data['payment_method'],
-                    'payment_details' => json_encode($data)
-                ]);
-                $subscription->user()->update(['is_active' => true]);
-                break;
+        if ($data['status'] === 'PAID') {
+            $subscription->update([
+                'payment_status' => 'paid',
+                'payment_method' => $data['payment_method'],
+                'payment_details' => $json
+            ]);
 
-            case 'EXPIRED':
-            case 'FAILED':
-                $subscription->update([
-                    'payment_status' => 'failed',
-                    'payment_details' => json_encode($data)
-                ]);
-                break;
+            $subscription->user->update([
+                'is_active'   => true,
+                'package'  => $subscription->package_id,
+            ]);
+        } else {
+            $subscription->update([
+                'payment_status' => 'failed',
+                'payment_details' => $json
+            ]);
         }
 
         return response()->json(['success' => true]);

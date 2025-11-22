@@ -16,7 +16,8 @@ class Subscription extends Model
         'payment_status',
         'payment_method',
         'payment_details',
-        'transaction_id'
+        'transaction_id',
+        'package_id'
     ];
 
     protected $dates = [

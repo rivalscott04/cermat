@@ -120,7 +120,17 @@
 
                                         <div class="payment-option mb-3">
                                             <label class="custom-radio">
-                                                <input type="radio" name="payment_method" value="BCA_VA">
+                                                <input type="radio" name="payment_method" value="BRIVA">
+                                                <span class="radio-label">
+                                                    <i class="fa fa-university"></i> BRI Virtual Account
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Transfer ke Virtual Account BRI</small>
+                                        </div>
+
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="BCAVA">
                                                 <span class="radio-label">
                                                     <i class="fa fa-university"></i> BCA Virtual Account
                                                 </span>
@@ -130,7 +140,7 @@
 
                                         <div class="payment-option mb-3">
                                             <label class="custom-radio">
-                                                <input type="radio" name="payment_method" value="BNI_VA">
+                                                <input type="radio" name="payment_method" value="BNIVA">
                                                 <span class="radio-label">
                                                     <i class="fa fa-university"></i> BNI Virtual Account
                                                 </span>
@@ -138,15 +148,7 @@
                                             <small class="text-muted d-block ms-4">Transfer ke Virtual Account BNI</small>
                                         </div>
 
-                                        <div class="payment-option mb-3">
-                                            <label class="custom-radio">
-                                                <input type="radio" name="payment_method" value="GOPAY">
-                                                <span class="radio-label">
-                                                    <i class="fa fa-mobile"></i> GoPay
-                                                </span>
-                                            </label>
-                                            <small class="text-muted d-block ms-4">Pembayaran melalui GoPay</small>
-                                        </div>
+
 
                                         <div class="payment-option mb-3">
                                             <label class="custom-radio">
