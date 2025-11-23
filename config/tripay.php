@@ -1,9 +1,9 @@
 <?php
 
 return [
-    'api_key' => 'DEV-iTcJnqHk6NDr9BucDiA2SystwmPI85hhmMzis4oF',
-    'private_key' => 'x4H4e-S8TX7-Nkm0U-tvvrL-bUPOd',
-    'merchant_code' => 'T47056',
-    'sandbox_mode' => true,
-    'callback_url' => 'https://5652d8f3d02c.ngrok-free.app/api/tripay/callback',
+    'api_key' => 'i9r7DDykM6Y2NK2yadq43dwTHHrFLuznx89IWmgo',
+    'private_key' => 'VDete-Pn5Qg-f3cbW-3p5F4-D7LQd',
+    'merchant_code' => 'T47060',
+    'sandbox_mode' => false,
+    'callback_url' => 'https://tespol.rivaldev.site/api/tripay/callback',
 ];

@@ -290,7 +290,7 @@ class SubscriptionController extends Controller
             $response = \Http::withHeaders([
                 'Authorization' => 'Bearer ' . $apiKey,
                 'Content-Type' => 'application/json'
-            ])->post('https://tripay.co.id/api-sandbox/transaction/create', $payload);
+            ])->post('https://tripay.co.id/api/transaction/create', $payload);
 
             $result = $response->json();
 
