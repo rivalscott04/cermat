@@ -751,6 +751,7 @@
     </section>
 
     <!-- Packages Section -->
+    <!-- Packages Section -->
     <section class="packages-section" id="packages">
         <div class="container" style="padding-top:25px">
             <div class="section-title">
@@ -801,15 +802,81 @@
                     </div>
                 @endforeach
             </div>
-
-            <div class="text-center mt-5">
-                <small class="text-muted">
-                    Dengan membeli paket ini, Anda menyetujui
-                    <a href="{{ route('privacy') }}" style="color: #1ab394;">Syarat & Ketentuan</a> yang berlaku
-                </small>
-            </div>
         </div>
     </section>
+
+    <!-- Footer -->
+    <footer class="footer-section" style="background-color: #343a40; color: #ffffff; padding: 60px 0 30px 0;">
+        <div class="container">
+            <div class="row mb-5">
+                <!-- Company Info -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5 style="margin-bottom: 20px; font-weight: 600;">Tentang Kami</h5>
+                    <p style="font-size: 14px; line-height: 1.6; color: #cccccc;">
+                        Platform persiapan tes BINTARA POLRI terlengkap dengan fitur pembelajaran interaktif dan
+                        soal-soal berkualitas tinggi.
+                    </p>
+                </div>
+
+                <!-- Quick Links -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5 style="margin-bottom: 20px; font-weight: 600;">Menu Utama</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px;">
+                            <a href="#hero"
+                                style="color: #cccccc; text-decoration: none; font-size: 14px;">Beranda</a>
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <a href="#packages"
+                                style="color: #cccccc; text-decoration: none; font-size: 14px;">Paket</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Legal & Support -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5 style="margin-bottom: 20px; font-weight: 600;">Dukungan</h5>
+                    <ul style="list-style: none; padding: 0;">
+                        <li style="margin-bottom: 10px;">
+                            <a href="{{ route('terms') }}"
+                                style="color: #cccccc; text-decoration: none; font-size: 14px;">Syarat & Ketentuan</a>
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <a href="{{ route('privacy') }}"
+                                style="color: #cccccc; text-decoration: none; font-size: 14px;">Kebijakan Privasi</a>
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <a href="{{ route('contact') }}"
+                                style="color: #cccccc; text-decoration: none; font-size: 14px;">Hubungi Kami</a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5 style="margin-bottom: 20px; font-weight: 600;">Hubungi Kami</h5>
+                    <ul style="list-style: none; padding: 0; font-size: 14px; color: #cccccc;">
+                        <li style="margin-bottom: 10px;">
+                            <i class="fas fa-envelope"></i> support@tryoutpsikotes.com
+                        </li>
+                        <li style="margin-bottom: 10px;">
+                            <i class="fas fa-map-marker-alt"></i> Jl. Merdeka Raya Jempong Baru
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Divider -->
+            <hr style="border-color: #333333; margin: 30px 0;">
+
+            <!-- Bottom Footer -->
+            <div class="row align-items-center">
+                <div class="col-md-12 text-center text-md-left" style="font-size: 14px; color: #999999;">
+                    <strong>Copyright</strong> Mahir Cermat &copy; {{ date('Y') }}
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>

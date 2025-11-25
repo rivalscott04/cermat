@@ -39,6 +39,14 @@ Route::get('/privacy-policy', function () {
     return view('privacy-policy');
 })->name('privacy');
 
+Route::get('/terms-of-service', function () {
+    return view('terms-of-service');
+})->name('terms');
+
+Route::get('/contact-support', function () {
+    return view('contact-support');
+})->name('contact');
+
 Route::get('/trial', function () {
     return view('kecermatan.trial');
 })->name('trial');

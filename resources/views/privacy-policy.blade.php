@@ -13,7 +13,7 @@
     <link href="{{ asset('css/plugins/dataTables/datatables.min.css') }}" rel="stylesheet">
     <style>
         .policy-section {
-            background-color: #f8f9fa;
+            background-color: #fff;
             border-radius: 10px;
             margin-bottom: 30px;
             padding: 25px;
@@ -160,7 +160,7 @@
                 </div>
 
                 <!-- Contact Section -->
-                <div class="contact-info">
+                {{-- <div class="contact-info">
                     <h2>Hubungi Kami</h2>
                     <p>Jika Anda memiliki pertanyaan atau membutuhkan bantuan, silakan hubungi kami:</p>
                     <address>
@@ -169,7 +169,7 @@
                         <strong>Email:</strong><br>
                         <a href="mailto:sasambosolusidigital@gmail.com">sasambosolusidigital@gmail.com</a>
                     </address>
-                </div>
+                </div> --}}
             </div>
         </div>
     </div>
