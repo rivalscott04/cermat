@@ -201,8 +201,8 @@
         }
 
         .logo {
-            width: 80px;
-            height: 50px;
+            width: 100px;
+            height: 80px;
             object-fit: contain;
             filter: invert(10%) brightness(200%);
         }
@@ -857,7 +857,7 @@
                     <h5 style="margin-bottom: 20px; font-weight: 600;">Hubungi Kami</h5>
                     <ul style="list-style: none; padding: 0; font-size: 14px; color: #cccccc;">
                         <li style="margin-bottom: 10px;">
-                            <i class="fas fa-envelope"></i> support@tryoutpsikotes.com
+                            <i class="fas fa-envelope"></i> support@tryoutpsikotes.comwel
                         </li>
                         <li style="margin-bottom: 10px;">
                             <i class="fas fa-map-marker-alt"></i> Jl. Merdeka Raya Jempong Baru
