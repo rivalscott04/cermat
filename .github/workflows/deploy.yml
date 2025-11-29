@@ -1,0 +1,29 @@
+name: Deploy Laravel Application
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script: |
+            cd ${{ secrets.SSH_PATH || '/var/www/cermat' }}
+            git pull origin ${{ github.ref_name }}
+            php artisan migrate --force
+            php artisan cache:clear
+            php artisan route:clear
+            php artisan optimize
+
