@@ -109,7 +109,7 @@
 
                                         <div class="payment-option mb-3">
                                             <label class="custom-radio">
-                                                <input type="radio" name="payment_method" value="QRIS" checked>
+                                                <input type="radio" name="payment_method" value="QRIS2" checked>
                                                 <span class="radio-label">
                                                     <i class="fa fa-qrcode"></i> QRIS (Instant)
                                                 </span>
@@ -148,6 +148,26 @@
                                             <small class="text-muted d-block ms-4">Transfer ke Virtual Account BNI</small>
                                         </div>
 
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="MANDIRIVA">
+                                                <span class="radio-label">
+                                                    <i class="fa fa-university"></i> Mandiri Virtual Account
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Transfer ke Virtual Account
+                                                Mandiri</small>
+                                        </div>
+
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="BSIVA">
+                                                <span class="radio-label">
+                                                    <i class="fa fa-university"></i> BSI Virtual Account
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Transfer ke Virtual Account BSI</small>
+                                        </div>
 
 
                                         <div class="payment-option mb-3">
@@ -158,6 +178,16 @@
                                                 </span>
                                             </label>
                                             <small class="text-muted d-block ms-4">Pembayaran melalui ShopeePay</small>
+                                        </div>
+
+                                        <div class="payment-option mb-3">
+                                            <label class="custom-radio">
+                                                <input type="radio" name="payment_method" value="DANA">
+                                                <span class="radio-label">
+                                                    <i class="fa fa-mobile"></i> DANA
+                                                </span>
+                                            </label>
+                                            <small class="text-muted d-block ms-4">Pembayaran melalui DANA</small>
                                         </div>
                                     </div>
 
