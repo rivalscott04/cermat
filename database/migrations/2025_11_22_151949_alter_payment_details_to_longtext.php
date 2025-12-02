@@ -12,14 +12,16 @@ return new class extends Migration
     public function up()
     {
         Schema::table('subscriptions', function (Blueprint $table) {
-            $table->longText('payment_details')->change();
+            // Pastikan kolom tetap nullable saat diubah ke longText
+            $table->longText('payment_details')->nullable()->change();
         });
     }
 
     public function down()
     {
         Schema::table('subscriptions', function (Blueprint $table) {
-            $table->text('payment_details')->change();
+            // Kembalikan ke text, tetap nullable
+            $table->text('payment_details')->nullable()->change();
         });
     }
 };

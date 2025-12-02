@@ -12,17 +12,24 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Update existing data first - map old levels to new levels
-        DB::statement("UPDATE soals SET level = 'dasar' WHERE level = 'mudah'");
-        
-        // Drop the old enum and create new one
-        Schema::table('soals', function (Blueprint $table) {
-            $table->dropColumn('level');
-        });
-        
-        Schema::table('soals', function (Blueprint $table) {
-            $table->enum('level', ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'])->default('dasar')->after('tipe');
-        });
+        // Update existing data dulu hanya kalau kolom level memang ada
+        if (Schema::hasColumn('soals', 'level')) {
+            DB::statement("UPDATE soals SET level = 'dasar' WHERE level = 'mudah'");
+
+            // Drop enum lama
+            Schema::table('soals', function (Blueprint $table) {
+                $table->dropColumn('level');
+            });
+        }
+
+        // Tambah enum level baru (kalau belum ada)
+        if (!Schema::hasColumn('soals', 'level')) {
+            Schema::table('soals', function (Blueprint $table) {
+                $table->enum('level', ['dasar', 'mudah', 'sedang', 'sulit', 'tersulit', 'ekstrem'])
+                    ->default('dasar')
+                    ->after('tipe');
+            });
+        }
     }
 
     /**
@@ -30,20 +37,28 @@ return new class extends Migration
      */
     public function down(): void
     {
-        // Map new levels back to old levels
-        DB::statement("UPDATE soals SET level = 'mudah' WHERE level = 'dasar'");
-        DB::statement("UPDATE soals SET level = 'mudah' WHERE level = 'mudah'");
-        DB::statement("UPDATE soals SET level = 'sedang' WHERE level = 'sedang'");
-        DB::statement("UPDATE soals SET level = 'sulit' WHERE level = 'sulit'");
-        DB::statement("UPDATE soals SET level = 'sulit' WHERE level = 'tersulit'");
-        DB::statement("UPDATE soals SET level = 'sulit' WHERE level = 'ekstrem'");
-        
-        Schema::table('soals', function (Blueprint $table) {
-            $table->dropColumn('level');
-        });
-        
-        Schema::table('soals', function (Blueprint $table) {
-            $table->enum('level', ['mudah', 'sedang', 'sulit'])->default('mudah')->after('tipe');
-        });
+        // Cuma jalanin rollback kalau kolom level memang ada
+        if (Schema::hasColumn('soals', 'level')) {
+            // Map new levels back to old levels
+            DB::statement("UPDATE soals SET level = 'mudah' WHERE level = 'dasar'");
+            DB::statement("UPDATE soals SET level = 'mudah' WHERE level = 'mudah'");
+            DB::statement("UPDATE soals SET level = 'sedang' WHERE level = 'sedang'");
+            DB::statement("UPDATE soals SET level = 'sulit' WHERE level = 'sulit'");
+            DB::statement("UPDATE soals SET level = 'sulit' WHERE level = 'tersulit'");
+            DB::statement("UPDATE soals SET level = 'sulit' WHERE level = 'ekstrem'");
+
+            Schema::table('soals', function (Blueprint $table) {
+                $table->dropColumn('level');
+            });
+        }
+
+        // Tambah lagi enum lama kalau belum ada
+        if (!Schema::hasColumn('soals', 'level')) {
+            Schema::table('soals', function (Blueprint $table) {
+                $table->enum('level', ['mudah', 'sedang', 'sulit'])
+                    ->default('mudah')
+                    ->after('tipe');
+            });
+        }
     }
 };

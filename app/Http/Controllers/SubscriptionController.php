@@ -241,6 +241,8 @@ class SubscriptionController extends Controller
                     'amount_paid' => $package->price,
                     'start_date' => now(),
                     'end_date' => now()->addDays($package->duration_days ?? 30),
+                    // Pastikan kolom payment_details selalu punya nilai awal
+                    'payment_details' => json_encode([]),
                 ]
             );
 

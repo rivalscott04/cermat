@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
-    protected $tables = 'subscriptions';
+    protected $table = 'subscriptions';
 
     protected $fillable = [
         'user_id',
@@ -23,7 +23,10 @@ class Subscription extends Model
     protected $dates = [
         'start_date',
         'end_date',
-        'payment_details' => 'array'
+    ];
+
+    protected $casts = [
+        'payment_details' => 'array',
     ];
 
     public function user()
