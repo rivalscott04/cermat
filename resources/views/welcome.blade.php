@@ -793,9 +793,15 @@
                                 </div>
 
                                 <div class="button-container">
-                                    <a href="{{ route('pricing.index') }}" class="btn btn-success btn-package">
-                                        Pilih Paket
-                                    </a>
+                                    @guest
+                                        <a href="{{ route('register') }}" class="btn btn-success btn-package">
+                                            Daftar untuk pilih paket
+                                        </a>
+                                    @else
+                                        <a href="{{ route('subscription.packages') }}" class="btn btn-success btn-package">
+                                            Pilih Paket
+                                        </a>
+                                    @endguest
                                 </div>
                             </div>
                         </div>

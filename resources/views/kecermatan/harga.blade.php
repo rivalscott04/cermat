@@ -108,7 +108,16 @@
             @endif
             
             <div class="current-price">Rp {{ number_format($package->price, 0, ',', '.') }},-</div>
-            <button class="register-button">DAFTAR SEKARANG</button>
+
+            @guest
+              <a href="{{ route('register') }}" class="register-button text-center d-block text-decoration-none">
+                DAFTAR SEKARANG
+              </a>
+            @else
+              <a href="{{ route('subscription.packages') }}" class="register-button text-center d-block text-decoration-none">
+                PILIH PAKET
+              </a>
+            @endguest
 
             <p class="section-title">Akses yang didapat:</p>
             <ul class="feature-list">
