@@ -294,12 +294,25 @@ class SubscriptionController extends Controller
                 'Content-Type' => 'application/json'
             ])->post('https://tripay.co.id/api/transaction/create', $payload);
 
+            // Log mentah HTTP response untuk debugging
+            \Log::info('Tripay HTTP Debug:', [
+                'status'  => $response->status(),
+                'ok'      => $response->ok(),
+                'json'    => $response->json(),
+                'body'    => $response->body(),
+                'headers' => $response->headers(),
+            ]);
+
             $result = $response->json();
 
-            \Log::info('Tripay Response:', $result);
+            \Log::info('Tripay Response:', $result ?? []);
 
-            if (!$result || ($result['success'] ?? false) === false) {
-                Log::error('Tripay Error: ' . json_encode($result));
+            if (!$response->successful() || !$result || ($result['success'] ?? false) === false) {
+                Log::error('Tripay Error Detail:', [
+                    'status'  => $response->status(),
+                    'body'    => $response->body(),
+                    'result'  => $result,
+                ]);
                 throw new \Exception($result['message'] ?? 'Gagal membuat transaksi Tripay');
             }
 
