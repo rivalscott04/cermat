@@ -41,17 +41,24 @@ class User extends Authenticatable
 
     public function hasActiveSubscription()
     {
-        // Jika user sudah di-set is_active, langsung return true
-        if ($this->is_active) {
-            return true;
-        }
-
         // Cek subscription dengan eager loading untuk menghindari N+1 query
         $subscription = $this->subscriptions;
         
-        return $subscription &&
-            $subscription->payment_status === 'paid' &&
-            $subscription->end_date > now();
+        // Jika ada subscription, cek apakah masih aktif (paid & belum expired)
+        if ($subscription && 
+            $subscription->payment_status === 'paid' && 
+            $subscription->end_date > now()) {
+            return true;
+        }
+
+        // Jika user di-set is_active tapi tidak punya subscription valid,
+        // cek apakah ini admin atau user yang di-grant akses manual tanpa subscription
+        // Untuk user biasa dengan subscription expired, return false
+        if ($this->is_active && !$subscription) {
+            return true; // User yang di-grant akses manual tanpa subscription
+        }
+
+        return false;
     }
 
     public function hasilTes()

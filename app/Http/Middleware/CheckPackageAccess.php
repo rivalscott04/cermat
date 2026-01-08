@@ -27,12 +27,13 @@ class CheckPackageAccess
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'status' => 'error',
-                    'message' => 'Anda harus memiliki langganan aktif untuk mengakses fitur ini.'
+                    'message' => 'Langganan Anda telah berakhir. Silakan perpanjang paket untuk melanjutkan.'
                 ], 403);
             }
 
-            return redirect()->route('user.profile', ['userId' => Auth::user()->id])
-                ->with('subscriptionError', 'Anda harus memiliki langganan aktif untuk mengakses fitur ini.');
+            // Redirect ke halaman paket untuk perpanjang langganan
+            return redirect()->route('subscription.packages')
+                ->with('subscriptionError', 'Langganan Anda telah berakhir. Silakan perpanjang paket untuk melanjutkan.');
         }
 
         // Periksa akses berdasarkan package
@@ -63,7 +64,8 @@ class CheckPackageAccess
                 ], 403);
             }
 
-            return redirect()->route('user.profile', ['userId' => Auth::user()->id])
+            // Redirect ke halaman paket untuk upgrade
+            return redirect()->route('subscription.packages')
                 ->with('packageError', $errorMessage);
         }
 
