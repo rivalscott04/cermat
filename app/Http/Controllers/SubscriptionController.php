@@ -398,9 +398,31 @@ class SubscriptionController extends Controller
                 'payment_details' => $json
             ]);
 
+            // Get package type from access_tier
+            $package = Package::with('accessTier')->find($subscription->package_id);
+            $packageType = 'free'; // default
+            
+            if ($package && $package->accessTier) {
+                $packageType = $package->accessTier->key;
+            } else {
+                // Fallback: try to determine from package name
+                if ($package) {
+                    $packageName = strtolower($package->name);
+                    if (strpos($packageName, 'gold') !== false || strpos($packageName, 'platinum') !== false) {
+                        $packageType = 'lengkap';
+                    } elseif (strpos($packageName, 'silver') !== false) {
+                        $packageType = 'kecerdasan'; // or adjust based on your logic
+                    }
+                }
+                Log::warning('Package access_tier not found, using fallback', [
+                    'package_id' => $subscription->package_id,
+                    'package_type' => $packageType
+                ]);
+            }
+
             $subscription->user->update([
                 'is_active'   => true,
-                'package'  => $subscription->package_id,
+                'package'  => $packageType,
             ]);
         } else {
             $subscription->update([

@@ -92,7 +92,18 @@ class UserController extends Controller
             $summary = Cache::remember($cacheKey, 300, function () use ($userId) {
                 $user = User::findOrFail($userId);
                 if (method_exists($user, 'getPaketLengkapSummary')) {
-                    return $user->getPaketLengkapSummary();
+                    try {
+                        return $user->getPaketLengkapSummary();
+                    } catch (\Throwable $e) {
+                        \Log::error('Error in getPaketLengkapSummary', [
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString(),
+                            'user_id' => $userId,
+                            'user_package' => $user->package,
+                            'user_paket_akses' => $user->paket_akses,
+                        ]);
+                        throw $e;
+                    }
                 }
                 return null;
             });
@@ -104,11 +115,14 @@ class UserController extends Controller
         } catch (\Throwable $e) {
             \Log::error('Failed to load Paket Lengkap summary', [
                 'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
                 'user_id' => $userId,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
             ]);
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal memuat ringkasan paket lengkap'
+                'message' => 'Gagal memuat ringkasan paket lengkap: ' . $e->getMessage()
             ], 500);
         }
     }

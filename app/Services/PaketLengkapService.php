@@ -323,18 +323,19 @@ class PaketLengkapService
         $progress = $this->getProgressPercentage($user);
         
         if ($status['is_complete']) {
+            $scoringInfo = $status['scoring_info'] ?? null;
             return [
                 'title' => 'Paket Lengkap',
                 'progress' => 100,
                 'status' => 'completed',
                 'message' => 'Paket lengkap sudah selesai!',
-                'final_score' => $status['scoring_info']['final_score'],
-                'passed' => $status['scoring_info']['passed'],
-                'passing_grade' => $status['scoring_info']['passing_grade'],
+                'final_score' => $scoringInfo['final_score'] ?? null,
+                'passed' => $scoringInfo['passed'] ?? null,
+                'passing_grade' => $scoringInfo['passing_grade'] ?? null,
                 'details' => [
-                    'kecermatan' => $status['kecermatan'],
-                    'kecerdasan' => $status['kecerdasan'],
-                    'kepribadian' => $status['kepribadian']
+                    'kecermatan' => $status['kecermatan'] ?? [],
+                    'kecerdasan' => $status['kecerdasan'] ?? [],
+                    'kepribadian' => $status['kepribadian'] ?? []
                 ]
             ];
         }
