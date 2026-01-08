@@ -43,5 +43,29 @@ class RouteServiceProvider extends ServiceProvider
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        // Rate limiter untuk login - 5 attempts per 1 menit per IP
+        RateLimiter::for('login', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip())->response(function () {
+                return redirect()->route('login')
+                    ->with('error', 'Terlalu banyak percobaan login. Silakan coba lagi dalam 1 menit.');
+            });
+        });
+
+        // Rate limiter untuk register - 5 attempts per 1 menit per IP
+        RateLimiter::for('register', function (Request $request) {
+            return Limit::perMinute(5)->by($request->ip())->response(function () {
+                return redirect()->route('register')
+                    ->with('error', 'Terlalu banyak percobaan pendaftaran. Silakan coba lagi dalam 1 menit.');
+            });
+        });
+
+        // Rate limiter untuk reset password - 3 attempts per 1 jam per IP
+        RateLimiter::for('reset-password', function (Request $request) {
+            return Limit::perHour(3)->by($request->ip())->response(function () {
+                return redirect()->route('reset-password')
+                    ->with('error', 'Terlalu banyak percobaan reset password. Silakan coba lagi dalam 1 jam.');
+            });
+        });
     }
 }

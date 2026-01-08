@@ -149,9 +149,15 @@
                                                         <small class="text-muted">Aktivitas Terakhir:</small><br>
                                                         <strong class="text-warning">
                                                             @try
-                                                                {{ \Carbon\Carbon::parse($additionalInfo['last_activity'])->format('d M Y H:i') }}
+                                                                @if(is_object($additionalInfo['last_activity']) && method_exists($additionalInfo['last_activity'], 'format'))
+                                                                    {{ $additionalInfo['last_activity']->format('d M Y H:i') }}
+                                                                @elseif(is_string($additionalInfo['last_activity']))
+                                                                    {{ \Carbon\Carbon::parse($additionalInfo['last_activity'])->format('d M Y H:i') }}
+                                                                @else
+                                                                    {{ $additionalInfo['last_activity'] }}
+                                                                @endif
                                                             @catch(\Exception $e)
-                                                                {{ $additionalInfo['last_activity'] }}
+                                                                {{ is_string($additionalInfo['last_activity']) ? $additionalInfo['last_activity'] : 'N/A' }}
                                                             @endtry
                                                         </strong>
                                                     </div>

@@ -26,14 +26,14 @@ Route::get('/pricing', [PricingController::class, 'index'])->name('pricing.index
 
 // Authentication Routes
 Route::get('/register', [AuthController::class, 'showRegister'])->middleware('guest')->name('register');
-Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:5,1')->name('post.register');
+Route::post('/register', [AuthController::class, 'register'])->middleware('throttle:register')->name('post.register');
 Route::get('/login', [AuthController::class, 'showLogin'])->middleware('guest')->name('login');
-Route::post('/login', [AuthController::class, 'login'])->name('post.login');
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:login')->name('post.login');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('payment/process/{transaction_id}', [SubscriptionController::class, 'process'])->name('payment.process');
 
 Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('reset-password');
-Route::post('/reset-password', [AuthController::class, 'resetPassword'])->name('post.reset-password');
+Route::post('/reset-password', [AuthController::class, 'resetPassword'])->middleware('throttle:reset-password')->name('post.reset-password');
 
 Route::get('/privacy-policy', function () {
     return view('privacy-policy');

@@ -106,7 +106,7 @@ class AuthController extends Controller
             // Eager load subscription untuk menghindari N+1 query
             $user = Auth::user()->load('subscriptions');
 
-            Log::info('User logged in: ' . $user->email);
+            Log::info('User logged in: ' . $user->email . ' from IP: ' . $request->ip());
 
             if ($user->role == 'admin') {
                 return redirect()->route('admin.dashboard');
@@ -123,6 +123,9 @@ class AuthController extends Controller
 
             return redirect()->route('dashboard');
         }
+
+        // Log failed login attempt untuk security monitoring
+        Log::warning('Failed login attempt for email: ' . $request->email . ' from IP: ' . $request->ip());
 
         return back()->withErrors([
             'email' => 'Email atau password salah.',
