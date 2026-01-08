@@ -17,7 +17,7 @@
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <i class="fa fa-exclamation-triangle"></i>
                 <strong>Langganan Diperlukan!</strong> {{ session('subscriptionError') }}
-                <a href="{{ route('subscription.packages') }}" class="btn btn-sm btn-primary ml-2">
+                <a href="{{ route('subscription.select-package') }}" class="btn btn-sm btn-primary ml-2">
                     <i class="fa fa-shopping-cart"></i> Berlangganan Sekarang
                 </a>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -30,7 +30,7 @@
             <div class="alert alert-info alert-dismissible fade show" role="alert">
                 <i class="fa fa-info-circle"></i>
                 <strong>Upgrade Paket!</strong> {{ session('packageError') }}
-                <a href="{{ route('subscription.packages') }}" class="btn btn-sm btn-success ml-2">
+                <a href="{{ route('subscription.select-package') }}" class="btn btn-sm btn-success ml-2">
                     <i class="fa fa-arrow-up"></i> Upgrade Paket
                 </a>
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -75,11 +75,11 @@
                             </div>
                             <div class="col-auto">
                                 @if (!$user->hasActiveSubscription())
-                                    <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-lg">
+                                    <a href="{{ route('subscription.select-package') }}" class="btn btn-primary btn-lg">
                                         <i class="fa fa-rocket mr-2"></i>Berlangganan
                                     </a>
                                 @elseif ($user->package !== 'lengkap')
-                                    <a href="{{ route('subscription.packages') }}" class="btn btn-outline-primary">
+                                    <a href="{{ route('subscription.select-package') }}" class="btn btn-outline-primary">
                                         <i class="fa fa-arrow-up mr-2"></i>Upgrade Paket
                                     </a>
                                 @else
@@ -154,11 +154,11 @@
 
                         <div>
                             @if (!$user->hasActiveSubscription())
-                                <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-sm btn-block mb-2">
+                                <a href="{{ route('subscription.select-package') }}" class="btn btn-primary btn-sm btn-block mb-2">
                                     <i class="fa fa-shopping-cart mr-2"></i>Berlangganan
                                 </a>
                             @elseif ($user->package !== 'lengkap')
-                                <a href="{{ route('subscription.packages') }}" class="btn btn-outline-primary btn-sm btn-block mb-2">
+                                <a href="{{ route('subscription.select-package') }}" class="btn btn-outline-primary btn-sm btn-block mb-2">
                                     <i class="fa fa-arrow-up mr-2"></i>Upgrade Paket
                                 </a>
                             @else
@@ -409,7 +409,7 @@
                                         <i class="fa fa-credit-card text-muted" style="font-size: 4rem;"></i>
                                         <h4 class="mt-3 text-muted">Belum Berlangganan</h4>
                                         <p class="text-muted">Daftar langganan untuk mengakses semua fitur premium</p>
-                                        <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-lg">
+                                        <a href="{{ route('subscription.select-package') }}" class="btn btn-primary btn-lg">
                                             <i class="fa fa-rocket mr-2"></i>Pilih Paket
                                         </a>
                                     </div>
