@@ -70,15 +70,23 @@
                                             <div class="row">
                                                 <div class="col-md-6">
                                                     <small class="text-muted">Mulai:</small><br>
-                                                    <strong>{{ $additionalInfo['subscription_start_date']->format('d M Y') }}</strong>
+                                                    @if(isset($additionalInfo['subscription_start_date']) && $additionalInfo['subscription_start_date'])
+                                                        <strong>{{ $additionalInfo['subscription_start_date']->format('d M Y') }}</strong>
+                                                    @else
+                                                        <strong>-</strong>
+                                                    @endif
                                                 </div>
                                                 <div class="col-md-6">
                                                     <small class="text-muted">Berakhir:</small><br>
-                                                    <strong>{{ $subscription->end_date->format('d M Y') }}</strong>
-                                                    @if($additionalInfo['days_remaining'] > 0)
-                                                        <br><span class="text-info">({{ $additionalInfo['days_remaining'] }} hari lagi)</span>
+                                                    @if($subscription && $subscription->end_date)
+                                                        <strong>{{ $subscription->end_date->format('d M Y') }}</strong>
+                                                        @if(isset($additionalInfo['days_remaining']) && $additionalInfo['days_remaining'] > 0)
+                                                            <br><span class="text-info">({{ $additionalInfo['days_remaining'] }} hari lagi)</span>
+                                                        @elseif(isset($additionalInfo['days_remaining']) && $additionalInfo['days_remaining'] <= 0)
+                                                            <br><span class="text-danger">(Kadaluarsa)</span>
+                                                        @endif
                                                     @else
-                                                        <br><span class="text-danger">(Kadaluarsa)</span>
+                                                        <strong>-</strong>
                                                     @endif
                                                 </div>
                                             </div>
@@ -124,10 +132,16 @@
                                                     <small class="text-muted">Kategori Tersedia:</small><br>
                                                     <strong class="text-info">{{ $allowedCategories ? count($allowedCategories) : 0 }}</strong>
                                                 </div>
-                                                @if($additionalInfo['last_activity'])
+                                                @if(isset($additionalInfo['last_activity']) && $additionalInfo['last_activity'])
                                                     <div class="m-b">
                                                         <small class="text-muted">Aktivitas Terakhir:</small><br>
-                                                        <strong class="text-warning">{{ \Carbon\Carbon::parse($additionalInfo['last_activity'])->format('d M Y H:i') }}</strong>
+                                                        <strong class="text-warning">
+                                                            @try
+                                                                {{ \Carbon\Carbon::parse($additionalInfo['last_activity'])->format('d M Y H:i') }}
+                                                            @catch(\Exception $e)
+                                                                {{ $additionalInfo['last_activity'] }}
+                                                            @endtry
+                                                        </strong>
                                                     </div>
                                                 @endif
                                             </div>
@@ -246,13 +260,19 @@
                 </div>
                 <div class="ibox-content">
                     <div class="row">
-                        @foreach($packageFeatures['features'] as $feature)
-                        <div class="col-md-6">
-                            <div class="feature-item">
-                                <i class="fa fa-check text-success"></i> {{ $feature }}
+                        @if(isset($packageFeatures['features']) && is_array($packageFeatures['features']))
+                            @foreach($packageFeatures['features'] as $feature)
+                            <div class="col-md-6">
+                                <div class="feature-item">
+                                    <i class="fa fa-check text-success"></i> {{ $feature }}
+                                </div>
                             </div>
-                        </div>
-                        @endforeach
+                            @endforeach
+                        @else
+                            <div class="col-md-12">
+                                <p class="text-muted">Fitur paket tidak tersedia.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

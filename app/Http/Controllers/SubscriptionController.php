@@ -37,13 +37,41 @@ class SubscriptionController extends Controller
             if ($user->package === 'lengkap') {
                 try {
                     // Tetap pakai logic optimasi untuk halaman status paket
-                    $packageLimits = $user->getPackageLimits();
-                    $maxTryouts = $packageLimits['max_tryouts'] ?? 20;
+                    $packageLimits = [];
+                    $maxTryouts = 20;
+                    try {
+                        $packageLimits = $user->getPackageLimits();
+                        $maxTryouts = $packageLimits['max_tryouts'] ?? 20;
+                    } catch (\Throwable $e) {
+                        Log::error('Error getting package limits', [
+                            'error' => $e->getMessage(),
+                            'user_id' => $user->id
+                        ]);
+                    }
 
                     $subscription = $user->subscriptions;
-                    $allowedCategories = $user->getAllowedCategories();
-                    $packageFeatures = $user->getPackageFeaturesDescription();
-                    $packageDisplayName = $user->getPackageDisplayName();
+                    
+                    $allowedCategories = [];
+                    try {
+                        $allowedCategories = $user->getAllowedCategories();
+                    } catch (\Throwable $e) {
+                        Log::error('Error getting allowed categories', [
+                            'error' => $e->getMessage(),
+                            'user_id' => $user->id
+                        ]);
+                    }
+                    
+                    $packageFeatures = [];
+                    $packageDisplayName = 'Paket Lengkap';
+                    try {
+                        $packageFeatures = $user->getPackageFeaturesDescription();
+                        $packageDisplayName = $user->getPackageDisplayName();
+                    } catch (\Throwable $e) {
+                        Log::error('Error getting package features/display name', [
+                            'error' => $e->getMessage(),
+                            'user_id' => $user->id
+                        ]);
+                    }
 
                     $hasActiveSubscription = $user->hasActiveSubscription();
                     $canAccessTryout = $user->canAccessTryout();
@@ -82,15 +110,15 @@ class SubscriptionController extends Controller
                         ];
                     }
 
-                    // Additional info
+                    // Additional info - dengan null safety
                     $additionalInfo = [
-                        'subscription_start_date' => $subscription ? $subscription->created_at : null,
-                        'days_remaining' => $subscription && $subscription->end_date
+                        'subscription_start_date' => ($subscription && $subscription->created_at) ? $subscription->created_at : null,
+                        'days_remaining' => ($subscription && $subscription->end_date)
                             ? max(0, now()->diffInDays($subscription->end_date, false))
                             : null,
-                        'total_questions_answered' => $userStatistics['total_questions_answered'] ?? 0,
-                        'total_tryouts_completed' => $userStatistics['total_tryouts'] ?? 0,
-                        'last_activity' => $userStatistics['last_activity'] ?? null
+                        'total_questions_answered' => isset($userStatistics['total_questions_answered']) ? (int)$userStatistics['total_questions_answered'] : 0,
+                        'total_tryouts_completed' => isset($userStatistics['total_tryouts']) ? (int)$userStatistics['total_tryouts'] : 0,
+                        'last_activity' => isset($userStatistics['last_activity']) ? $userStatistics['last_activity'] : null
                     ];
 
                     // Logging waktu eksekusi
