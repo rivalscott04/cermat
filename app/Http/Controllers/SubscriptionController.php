@@ -359,15 +359,21 @@ class SubscriptionController extends Controller
             $payload['merchant_code'] = $merchantCode;
 
 
-            \Log::info('Signature Debug:', [
+            \Log::info('Tripay signature generated', [
                 'merchant_ref' => $merchantRef,
                 'amount' => $amount,
-                'data' => $data,
+                'data_string' => $data,
                 'signature' => $signature,
+                'user_id' => $user->id,
             ]);
 
-
-            \Log::info('Sending to Tripay:', ['merchant_ref' => $merchantRef, 'amount' => intval($subscription->amount_paid)]);
+            \Log::info('Sending transaction to Tripay', [
+                'merchant_ref' => $merchantRef,
+                'amount' => intval($subscription->amount_paid),
+                'package_id' => $package->id,
+                'user_id' => $user->id,
+                'timestamp' => now()->toDateTimeString(),
+            ]);
 
             // Kirim ke Tripay
             $response = \Http::withHeaders([
@@ -375,18 +381,16 @@ class SubscriptionController extends Controller
                 'Content-Type' => 'application/json'
             ])->post('https://tripay.co.id/api/transaction/create', $payload);
 
-            // Log mentah HTTP response untuk debugging
-            \Log::info('Tripay HTTP Debug:', [
-                'status'  => $response->status(),
-                'ok'      => $response->ok(),
-                'json'    => $response->json(),
-                'body'    => $response->body(),
-                'headers' => $response->headers(),
-            ]);
-
+            // Log HTTP response untuk debugging
             $result = $response->json();
-
-            \Log::info('Tripay Response:', $result ?? []);
+            \Log::info('Tripay HTTP response received', [
+                'status_code' => $response->status(),
+                'success' => $response->ok(),
+                'merchant_ref' => $merchantRef,
+                'response_success' => $result['success'] ?? false,
+                'response_message' => $result['message'] ?? 'N/A',
+                'timestamp' => now()->toDateTimeString(),
+            ]);
 
             if (!$response->successful() || !$result || ($result['success'] ?? false) === false) {
                 Log::error('Tripay Error Detail:', [

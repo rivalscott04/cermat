@@ -148,17 +148,20 @@
                                                     <div class="m-b">
                                                         <small class="text-muted">Aktivitas Terakhir:</small><br>
                                                         <strong class="text-warning">
-                                                            @try
-                                                                @if(is_object($additionalInfo['last_activity']) && method_exists($additionalInfo['last_activity'], 'format'))
-                                                                    {{ $additionalInfo['last_activity']->format('d M Y H:i') }}
-                                                                @elseif(is_string($additionalInfo['last_activity']))
-                                                                    {{ \Carbon\Carbon::parse($additionalInfo['last_activity'])->format('d M Y H:i') }}
-                                                                @else
-                                                                    {{ $additionalInfo['last_activity'] }}
-                                                                @endif
-                                                            @catch(\Exception $e)
-                                                                {{ is_string($additionalInfo['last_activity']) ? $additionalInfo['last_activity'] : 'N/A' }}
-                                                            @endtry
+                                                            @php
+                                                                try {
+                                                                    if(is_object($additionalInfo['last_activity']) && method_exists($additionalInfo['last_activity'], 'format')) {
+                                                                        $formattedDate = $additionalInfo['last_activity']->format('d M Y H:i');
+                                                                    } elseif(is_string($additionalInfo['last_activity'])) {
+                                                                        $formattedDate = \Carbon\Carbon::parse($additionalInfo['last_activity'])->format('d M Y H:i');
+                                                                    } else {
+                                                                        $formattedDate = $additionalInfo['last_activity'];
+                                                                    }
+                                                                } catch(\Exception $e) {
+                                                                    $formattedDate = is_string($additionalInfo['last_activity']) ? $additionalInfo['last_activity'] : 'N/A';
+                                                                }
+                                                            @endphp
+                                                            {{ $formattedDate }}
                                                         </strong>
                                                     </div>
                                                 @endif
@@ -208,17 +211,19 @@
                                             @if(isset($paketLengkapStatus['kecermatan']['completed']) && $paketLengkapStatus['kecermatan']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kecermatan']['score'] ?? '-' }}</h2>
                                                 @if(isset($paketLengkapStatus['kecermatan']['tanggal']) && $paketLengkapStatus['kecermatan']['tanggal'])
-                                                    @try
-                                                        <small style="font-size: 10px; opacity: 0.8;">
-                                                            @if(is_object($paketLengkapStatus['kecermatan']['tanggal']) && method_exists($paketLengkapStatus['kecermatan']['tanggal'], 'format'))
-                                                                {{ $paketLengkapStatus['kecermatan']['tanggal']->format('d M Y H:i') }}
-                                                            @else
-                                                                {{ \Carbon\Carbon::parse($paketLengkapStatus['kecermatan']['tanggal'])->format('d M Y H:i') }}
-                                                            @endif
-                                                        </small>
-                                                    @catch(\Exception $e)
-                                                        <small style="font-size: 10px; opacity: 0.8;">{{ $paketLengkapStatus['kecermatan']['tanggal'] }}</small>
-                                                    @endtry
+                                                    <?php
+                                                    try {
+                                                        echo '<small style="font-size: 10px; opacity: 0.8;">';
+                                                        if(is_object($paketLengkapStatus['kecermatan']['tanggal']) && method_exists($paketLengkapStatus['kecermatan']['tanggal'], 'format')) {
+                                                            echo $paketLengkapStatus['kecermatan']['tanggal']->format('d M Y H:i');
+                                                        } else {
+                                                            echo \Carbon\Carbon::parse($paketLengkapStatus['kecermatan']['tanggal'])->format('d M Y H:i');
+                                                        }
+                                                        echo '</small>';
+                                                    } catch(\Exception $e) {
+                                                        echo '<small style="font-size: 10px; opacity: 0.8;">' . $paketLengkapStatus['kecermatan']['tanggal'] . '</small>';
+                                                    }
+                                                    ?>
                                                 @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>
@@ -242,17 +247,19 @@
                                             @if(isset($paketLengkapStatus['kecerdasan']['completed']) && $paketLengkapStatus['kecerdasan']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kecerdasan']['score'] ?? '-' }}</h2>
                                                 @if(isset($paketLengkapStatus['kecerdasan']['tanggal']) && $paketLengkapStatus['kecerdasan']['tanggal'])
-                                                    @try
-                                                        <small style="font-size: 10px; opacity: 0.8;">
-                                                            @if(is_object($paketLengkapStatus['kecerdasan']['tanggal']) && method_exists($paketLengkapStatus['kecerdasan']['tanggal'], 'format'))
-                                                                {{ $paketLengkapStatus['kecerdasan']['tanggal']->format('d M Y H:i') }}
-                                                            @else
-                                                                {{ \Carbon\Carbon::parse($paketLengkapStatus['kecerdasan']['tanggal'])->format('d M Y H:i') }}
-                                                            @endif
-                                                        </small>
-                                                    @catch(\Exception $e)
-                                                        <small style="font-size: 10px; opacity: 0.8;">{{ $paketLengkapStatus['kecerdasan']['tanggal'] }}</small>
-                                                    @endtry
+                                                    <?php
+                                                    try {
+                                                        echo '<small style="font-size: 10px; opacity: 0.8;">';
+                                                        if(is_object($paketLengkapStatus['kecerdasan']['tanggal']) && method_exists($paketLengkapStatus['kecerdasan']['tanggal'], 'format')) {
+                                                            echo $paketLengkapStatus['kecerdasan']['tanggal']->format('d M Y H:i');
+                                                        } else {
+                                                            echo \Carbon\Carbon::parse($paketLengkapStatus['kecerdasan']['tanggal'])->format('d M Y H:i');
+                                                        }
+                                                        echo '</small>';
+                                                    } catch(\Exception $e) {
+                                                        echo '<small style="font-size: 10px; opacity: 0.8;">' . $paketLengkapStatus['kecerdasan']['tanggal'] . '</small>';
+                                                    }
+                                                    ?>
                                                 @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>
@@ -276,17 +283,19 @@
                                             @if(isset($paketLengkapStatus['kepribadian']['completed']) && $paketLengkapStatus['kepribadian']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kepribadian']['score'] ?? '-' }}</h2>
                                                 @if(isset($paketLengkapStatus['kepribadian']['tanggal']) && $paketLengkapStatus['kepribadian']['tanggal'])
-                                                    @try
-                                                        <small style="font-size: 10px; opacity: 0.8;">
-                                                            @if(is_object($paketLengkapStatus['kepribadian']['tanggal']) && method_exists($paketLengkapStatus['kepribadian']['tanggal'], 'format'))
-                                                                {{ $paketLengkapStatus['kepribadian']['tanggal']->format('d M Y H:i') }}
-                                                            @else
-                                                                {{ \Carbon\Carbon::parse($paketLengkapStatus['kepribadian']['tanggal'])->format('d M Y H:i') }}
-                                                            @endif
-                                                        </small>
-                                                    @catch(\Exception $e)
-                                                        <small style="font-size: 10px; opacity: 0.8;">{{ $paketLengkapStatus['kepribadian']['tanggal'] }}</small>
-                                                    @endtry
+                                                    <?php
+                                                    try {
+                                                        echo '<small style="font-size: 10px; opacity: 0.8;">';
+                                                        if(is_object($paketLengkapStatus['kepribadian']['tanggal']) && method_exists($paketLengkapStatus['kepribadian']['tanggal'], 'format')) {
+                                                            echo $paketLengkapStatus['kepribadian']['tanggal']->format('d M Y H:i');
+                                                        } else {
+                                                            echo \Carbon\Carbon::parse($paketLengkapStatus['kepribadian']['tanggal'])->format('d M Y H:i');
+                                                        }
+                                                        echo '</small>';
+                                                    } catch(\Exception $e) {
+                                                        echo '<small style="font-size: 10px; opacity: 0.8;">' . $paketLengkapStatus['kepribadian']['tanggal'] . '</small>';
+                                                    }
+                                                    ?>
                                                 @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>

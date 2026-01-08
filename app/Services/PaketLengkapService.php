@@ -51,8 +51,11 @@ class PaketLengkapService
             } catch (\Throwable $e) {
                 \Log::error('Error in getCompletionStatus cache callback', [
                     'error' => $e->getMessage(),
-                    'trace' => $e->getTraceAsString(),
                     'user_id' => $user->id,
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                    'timestamp' => now()->toDateTimeString(),
                 ]);
                 // Return safe fallback
                 return [
@@ -387,10 +390,13 @@ class PaketLengkapService
         } catch (\Throwable $e) {
             \Log::error('Error in getDashboardSummary', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'user_id' => $user->id,
                 'user_package' => $user->package,
                 'user_paket_akses' => $user->paket_akses,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'timestamp' => now()->toDateTimeString(),
             ]);
             
             // Return safe fallback response
@@ -480,10 +486,11 @@ class PaketLengkapService
         } catch (\Throwable $e) {
             \Log::error('Error in getAllCompletionDataInOneQuery', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
                 'user_id' => $user->id,
                 'file' => $e->getFile(),
                 'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'timestamp' => now()->toDateTimeString(),
             ]);
             
             // Return safe fallback
