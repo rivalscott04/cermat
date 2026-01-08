@@ -181,6 +181,16 @@ class SubscriptionController extends Controller
         return view('subscription.packages');
     }
 
+    /**
+     * Display the package selection page for users to choose a subscription package.
+     * This page shows available packages without any redirect logic.
+     */
+    public function showPackageSelection()
+    {
+        $packages = Package::ordered()->get();
+        return view('subscription.packages', ['packages' => $packages]);
+    }
+
     public function expired()
     {
         return view('subscription.expired');

@@ -84,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/subscription/checkout', [SubscriptionController::class, 'checkout'])->name('subscription.checkout');
     Route::get('/subscription/packages', [SubscriptionController::class, 'packages'])->name('subscription.packages');
     Route::get('/subscription/packages/admin', [SubscriptionController::class, 'packagesAdmin'])->name('subscription.packages.admin');
+    Route::get('/subscription/select-package', [SubscriptionController::class, 'showPackageSelection'])->name('subscription.select-package');
     Route::get('/subscription/process/{package}', [SubscriptionController::class, 'processSubscription'])->name('subscription.process.packages');
     Route::get('/subscription/checkout/{package}', [SubscriptionController::class, 'showCheckout'])->name('subscription.checkout');
     Route::get('/test', [UserController::class, 'showTest'])->name('show.test');

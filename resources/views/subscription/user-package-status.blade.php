@@ -338,7 +338,7 @@
             <div class="ibox">
                 <div class="ibox-content text-center">
                     @if (!$hasActiveSubscription)
-                        <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-lg">
+                        <a href="{{ route('subscription.select-package') }}" class="btn btn-primary btn-lg">
                             <i class="fa fa-gem"></i> Berlangganan Sekarang
                         </a>
                         <p class="text-muted m-t-md">Mulai perjalanan persiapan tes Anda</p>
@@ -346,7 +346,7 @@
                         <div class="row">
                             @if ($userPackage !== 'lengkap')
                                 <div class="col-md-4">
-                                    <a href="{{ route('subscription.packages') }}" class="btn btn-success btn-block">
+                                    <a href="{{ route('subscription.select-package') }}" class="btn btn-success btn-block">
                                         <i class="fa fa-arrow-up"></i> Upgrade Paket
                                     </a>
                                 </div>

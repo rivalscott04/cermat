@@ -205,12 +205,12 @@
                 <div class="col-12">
                     <div class="d-flex gap-3 justify-content-center">
                         @if (!$hasActiveSubscription)
-                            <a href="{{ route('subscription.packages') }}" class="btn btn-primary btn-lg px-4">
+                            <a href="{{ route('subscription.select-package') }}" class="btn btn-primary btn-lg px-4">
                                 <i class="fa fa-gem me-2"></i>Berlangganan Sekarang
                             </a>
                         @else
                             @if ($userPackage !== 'lengkap')
-                                <a href="{{ route('subscription.packages') }}" class="btn btn-success btn-lg px-4">
+                                <a href="{{ route('subscription.select-package') }}" class="btn btn-success btn-lg px-4">
                                     <i class="fa fa-arrow-up me-2"></i>Upgrade Paket
                                 </a>
                             @endif
