@@ -26,26 +26,45 @@ class PaketLengkapService
 
         // OPTIMASI: Cache hasil untuk user ini (cache 10 detik untuk hasil instant)
         return cache()->remember("paket_lengkap_status_{$user->id}", 10, function () use ($user) {
-            // OPTIMASI: Load semua data dalam 1 query besar
-            $allData = $this->getAllCompletionDataInOneQuery($user);
-            
-            $kecermatanStatus = $allData['kecermatan'];
-            $kecerdasanStatus = $allData['kecerdasan'];
-            $kepribadianStatus = $allData['kepribadian'];
+            try {
+                // OPTIMASI: Load semua data dalam 1 query besar
+                $allData = $this->getAllCompletionDataInOneQuery($user);
+                
+                $kecermatanStatus = $allData['kecermatan'] ?? [];
+                $kecerdasanStatus = $allData['kecerdasan'] ?? [];
+                $kepribadianStatus = $allData['kepribadian'] ?? [];
 
-            // Kecermatan wajib + minimal 1 tryout CBT yang berisi kategori yang dibutuhkan
-            $isComplete = $kecermatanStatus['completed'] && 
-                         ($kecerdasanStatus['completed'] || $kepribadianStatus['completed']);
+                // Kecermatan wajib + minimal 1 tryout CBT yang berisi kategori yang dibutuhkan
+                $isComplete = isset($kecermatanStatus['completed']) && $kecermatanStatus['completed'] && 
+                             (isset($kecerdasanStatus['completed']) && $kecerdasanStatus['completed'] || 
+                              isset($kepribadianStatus['completed']) && $kepribadianStatus['completed']);
 
-            return [
-                'is_eligible' => true,
-                'is_complete' => $isComplete,
-                'kecermatan' => $kecermatanStatus,
-                'kecerdasan' => $kecerdasanStatus,
-                'kepribadian' => $kepribadianStatus,
-                'final_score' => $isComplete ? $this->calculateFinalScoreFromData($allData) : null,
-                'scoring_info' => $isComplete ? $this->getScoringInfo($allData) : null
-            ];
+                return [
+                    'is_eligible' => true,
+                    'is_complete' => $isComplete,
+                    'kecermatan' => $kecermatanStatus,
+                    'kecerdasan' => $kecerdasanStatus,
+                    'kepribadian' => $kepribadianStatus,
+                    'final_score' => $isComplete ? $this->calculateFinalScoreFromData($allData) : null,
+                    'scoring_info' => $isComplete ? $this->getScoringInfo($allData) : null
+                ];
+            } catch (\Throwable $e) {
+                \Log::error('Error in getCompletionStatus cache callback', [
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString(),
+                    'user_id' => $user->id,
+                ]);
+                // Return safe fallback
+                return [
+                    'is_eligible' => true,
+                    'is_complete' => false,
+                    'kecermatan' => ['completed' => false, 'message' => 'Error loading data'],
+                    'kecerdasan' => ['completed' => false, 'message' => 'Error loading data'],
+                    'kepribadian' => ['completed' => false, 'message' => 'Error loading data'],
+                    'final_score' => null,
+                    'scoring_info' => null
+                ];
+            }
         });
     }
 
@@ -309,54 +328,79 @@ class PaketLengkapService
      */
     public function getDashboardSummary(User $user): array
     {
-        $status = $this->getCompletionStatus($user);
-        
-        if (!$status['is_eligible']) {
+        try {
+            $status = $this->getCompletionStatus($user);
+            
+            if (!isset($status['is_eligible']) || !$status['is_eligible']) {
+                return [
+                    'title' => 'Paket Lengkap',
+                    'progress' => 0,
+                    'status' => 'not_eligible',
+                    'message' => $status['message'] ?? 'Anda tidak memiliki paket lengkap'
+                ];
+            }
+
+            $progress = $this->getProgressPercentage($user);
+            
+            if (isset($status['is_complete']) && $status['is_complete']) {
+                $scoringInfo = $status['scoring_info'] ?? null;
+                return [
+                    'title' => 'Paket Lengkap',
+                    'progress' => 100,
+                    'status' => 'completed',
+                    'message' => 'Paket lengkap sudah selesai!',
+                    'final_score' => $scoringInfo['final_score'] ?? null,
+                    'passed' => $scoringInfo['passed'] ?? null,
+                    'passing_grade' => $scoringInfo['passing_grade'] ?? null,
+                    'details' => [
+                        'kecermatan' => $status['kecermatan'] ?? [],
+                        'kecerdasan' => $status['kecerdasan'] ?? [],
+                        'kepribadian' => $status['kepribadian'] ?? []
+                    ]
+                ];
+            }
+
+            $remainingTasks = [];
+            $kecermatan = $status['kecermatan'] ?? [];
+            $kecerdasan = $status['kecerdasan'] ?? [];
+            $kepribadian = $status['kepribadian'] ?? [];
+            
+            if (!isset($kecermatan['completed']) || !$kecermatan['completed']) {
+                $remainingTasks[] = 'Tes Kecermatan';
+            }
+            if ((!isset($kecerdasan['completed']) || !$kecerdasan['completed']) && 
+                (!isset($kepribadian['completed']) || !$kepribadian['completed'])) {
+                $remainingTasks[] = 'Tryout CBT (Kecerdasan/Kepribadian)';
+            }
+
+            return [
+                'title' => 'Paket Lengkap',
+                'progress' => $progress,
+                'status' => 'in_progress',
+                'message' => count($remainingTasks) > 0 ? 'Selesaikan: ' . implode(', ', $remainingTasks) : 'Sedang dalam proses...',
+                'details' => [
+                    'kecermatan' => $kecermatan,
+                    'kecerdasan' => $kecerdasan,
+                    'kepribadian' => $kepribadian
+                ]
+            ];
+        } catch (\Throwable $e) {
+            \Log::error('Error in getDashboardSummary', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => $user->id,
+                'user_package' => $user->package,
+                'user_paket_akses' => $user->paket_akses,
+            ]);
+            
+            // Return safe fallback response
             return [
                 'title' => 'Paket Lengkap',
                 'progress' => 0,
-                'status' => 'not_eligible',
-                'message' => 'Anda tidak memiliki paket lengkap'
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan saat memuat data paket lengkap'
             ];
         }
-
-        $progress = $this->getProgressPercentage($user);
-        
-        if ($status['is_complete']) {
-            $scoringInfo = $status['scoring_info'] ?? null;
-            return [
-                'title' => 'Paket Lengkap',
-                'progress' => 100,
-                'status' => 'completed',
-                'message' => 'Paket lengkap sudah selesai!',
-                'final_score' => $scoringInfo['final_score'] ?? null,
-                'passed' => $scoringInfo['passed'] ?? null,
-                'passing_grade' => $scoringInfo['passing_grade'] ?? null,
-                'details' => [
-                    'kecermatan' => $status['kecermatan'] ?? [],
-                    'kecerdasan' => $status['kecerdasan'] ?? [],
-                    'kepribadian' => $status['kepribadian'] ?? []
-                ]
-            ];
-        }
-
-        $remainingTasks = [];
-        if (!$status['kecermatan']['completed']) $remainingTasks[] = 'Tes Kecermatan';
-        if (!$status['kecerdasan']['completed'] && !$status['kepribadian']['completed']) {
-            $remainingTasks[] = 'Tryout CBT (Kecerdasan/Kepribadian)';
-        }
-
-        return [
-            'title' => 'Paket Lengkap',
-            'progress' => $progress,
-            'status' => 'in_progress',
-            'message' => 'Selesaikan: ' . implode(', ', $remainingTasks),
-            'details' => [
-                'kecermatan' => $status['kecermatan'],
-                'kecerdasan' => $status['kecerdasan'],
-                'kepribadian' => $status['kepribadian']
-            ]
-        ];
     }
 
     /**
@@ -385,53 +429,83 @@ class PaketLengkapService
      */
     private function getAllCompletionDataInOneQuery(User $user): array
     {
-        // 1. Ambil data kecermatan (query terpisah karena tabel berbeda)
-        $kecermatanResult = HasilTes::where('user_id', $user->id)
-            ->where('jenis_tes', 'kecermatan')
-            ->orderBy('tanggal_tes', 'desc')
-            ->first();
+        try {
+            // 1. Ambil data kecermatan (query terpisah karena tabel berbeda)
+            $kecermatanResult = HasilTes::where('user_id', $user->id)
+                ->where('jenis_tes', 'kecermatan')
+                ->orderBy('tanggal_tes', 'desc')
+                ->first();
 
-        $kecermatanStatus = [
-            'completed' => $kecermatanResult ? true : false,
-            'score' => $kecermatanResult ? $kecermatanResult->skor_akhir : null,
-            'tanggal' => $kecermatanResult ? $kecermatanResult->tanggal_tes : null,
-            'message' => $kecermatanResult ? 'Tes kecermatan sudah selesai' : 'Belum mengerjakan tes kecermatan'
-        ];
+            $kecermatanStatus = [
+                'completed' => $kecermatanResult ? true : false,
+                'score' => $kecermatanResult ? $kecermatanResult->skor_akhir : null,
+                'tanggal' => $kecermatanResult ? $kecermatanResult->tanggal_tes : null,
+                'message' => $kecermatanResult ? 'Tes kecermatan sudah selesai' : 'Belum mengerjakan tes kecermatan'
+            ];
 
-        // 2. Ambil kategori codes untuk kecerdasan dan kepribadian
-        $kecerdasanKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kecerdasan');
-        $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
+            // 2. Ambil kategori codes untuk kecerdasan dan kepribadian
+            $kecerdasanKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kecerdasan');
+            $kepribadianKategoriCodes = PackageCategoryMapping::getCategoriesForPackage('kepribadian');
 
-        // 3. OPTIMASI: Single query untuk semua tryout sessions dengan eager loading
-        $completedTryouts = UserTryoutSession::where('user_id', $user->id)
-            ->where('status', 'completed')
-            ->with([
-                'tryout:id,judul',
-                'tryout.blueprints.kategori:id,kode'
-            ])
-            ->orderBy('finished_at', 'desc')
-            ->get();
+            // 3. OPTIMASI: Single query untuk semua tryout sessions dengan eager loading
+            $completedTryouts = UserTryoutSession::where('user_id', $user->id)
+                ->where('status', 'completed')
+                ->with([
+                    'tryout:id,judul',
+                    'tryout.blueprints.kategori:id,kode'
+                ])
+                ->orderBy('finished_at', 'desc')
+                ->get();
 
-        // 4. OPTIMASI: Single query untuk semua user answers dengan eager loading
-        $allUserAnswers = \App\Models\UserTryoutSoal::where('user_id', $user->id)
-            ->whereIn('user_tryout_session_id', $completedTryouts->pluck('id'))
-            ->with(['soal:id,kategori_id', 'soal.kategori:id,kode'])
-            ->get();
+            // 4. OPTIMASI: Single query untuk semua user answers dengan eager loading
+            $allUserAnswers = \App\Models\UserTryoutSoal::where('user_id', $user->id)
+                ->whereIn('user_tryout_session_id', $completedTryouts->pluck('id'))
+                ->with(['soal:id,kategori_id', 'soal.kategori:id,kode'])
+                ->get();
 
-        // 5. Group answers by session untuk efisiensi
-        $answersBySession = $allUserAnswers->groupBy('user_tryout_session_id');
+            // 5. Group answers by session untuk efisiensi
+            $answersBySession = $allUserAnswers->groupBy('user_tryout_session_id');
 
-        // 6. Process kecerdasan status
-        $kecerdasanStatus = $this->processKecerdasanStatus($completedTryouts, $answersBySession, $kecerdasanKategoriCodes, $user->id);
+            // 6. Process kecerdasan status
+            $kecerdasanStatus = $this->processKecerdasanStatus($completedTryouts, $answersBySession, $kecerdasanKategoriCodes, $user->id);
 
-        // 7. Process kepribadian status  
-        $kepribadianStatus = $this->processKepribadianStatus($completedTryouts, $answersBySession, $kepribadianKategoriCodes, $user->id);
+            // 7. Process kepribadian status  
+            $kepribadianStatus = $this->processKepribadianStatus($completedTryouts, $answersBySession, $kepribadianKategoriCodes, $user->id);
 
-        return [
-            'kecermatan' => $kecermatanStatus,
-            'kecerdasan' => $kecerdasanStatus,
-            'kepribadian' => $kepribadianStatus
-        ];
+            return [
+                'kecermatan' => $kecermatanStatus,
+                'kecerdasan' => $kecerdasanStatus,
+                'kepribadian' => $kepribadianStatus
+            ];
+        } catch (\Throwable $e) {
+            \Log::error('Error in getAllCompletionDataInOneQuery', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => $user->id,
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+            
+            // Return safe fallback
+            return [
+                'kecermatan' => [
+                    'completed' => false,
+                    'score' => null,
+                    'tanggal' => null,
+                    'message' => 'Error loading data'
+                ],
+                'kecerdasan' => [
+                    'completed' => false,
+                    'score' => null,
+                    'message' => 'Error loading data'
+                ],
+                'kepribadian' => [
+                    'completed' => false,
+                    'score' => null,
+                    'message' => 'Error loading data'
+                ]
+            ];
+        }
     }
 
     /**
