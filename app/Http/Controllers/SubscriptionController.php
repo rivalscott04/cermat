@@ -29,68 +29,121 @@ class SubscriptionController extends Controller
 
     public function packages()
     {
-        $startTime = microtime(true);
-        $user = Auth::user();
-        $packages = Package::ordered()->get();
+        try {
+            $startTime = microtime(true);
+            $user = Auth::user();
+            $packages = Package::ordered()->get();
 
-        if ($user->package === 'lengkap') {
+            if ($user->package === 'lengkap') {
+                try {
+                    // Tetap pakai logic optimasi untuk halaman status paket
+                    $packageLimits = $user->getPackageLimits();
+                    $maxTryouts = $packageLimits['max_tryouts'] ?? 20;
 
-            // Tetap pakai logic optimasi untuk halaman status paket
-            $packageLimits = $user->getPackageLimits();
-            $maxTryouts = $packageLimits['max_tryouts'];
+                    $subscription = $user->subscriptions;
+                    $allowedCategories = $user->getAllowedCategories();
+                    $packageFeatures = $user->getPackageFeaturesDescription();
+                    $packageDisplayName = $user->getPackageDisplayName();
 
-            $subscription = $user->subscriptions;
-            $allowedCategories = $user->getAllowedCategories();
-            $packageFeatures = $user->getPackageFeaturesDescription();
-            $packageDisplayName = $user->getPackageDisplayName();
+                    $hasActiveSubscription = $user->hasActiveSubscription();
+                    $canAccessTryout = $user->canAccessTryout();
+                    $canAccessKecermatan = $user->canAccessKecermatan();
+                    $userPackage = $user->package;
 
-            $hasActiveSubscription = $user->hasActiveSubscription();
-            $canAccessTryout = $user->canAccessTryout();
-            $canAccessKecermatan = $user->canAccessKecermatan();
-            $userPackage = $user->package;
+                    // Paket lengkap pasti punya status dan progress - dengan error handling
+                    $paketLengkapStatus = null;
+                    $paketLengkapProgress = 0;
+                    try {
+                        $paketLengkapStatus = $user->getPaketLengkapStatus();
+                        $paketLengkapProgress = $user->getPaketLengkapProgress();
+                    } catch (\Throwable $e) {
+                        Log::error('Error getting paket lengkap status/progress', [
+                            'error' => $e->getMessage(),
+                            'user_id' => $user->id,
+                            'trace' => $e->getTraceAsString()
+                        ]);
+                    }
 
-            // Paket lengkap pasti punya status dan progress
-            $paketLengkapStatus = $user->getPaketLengkapStatus();
-            $paketLengkapProgress = $user->getPaketLengkapProgress();
+                    // Statistik user - dengan error handling
+                    $userStatistics = [];
+                    try {
+                        $userStatistics = $user->getUserStatistics();
+                    } catch (\Throwable $e) {
+                        Log::error('Error getting user statistics', [
+                            'error' => $e->getMessage(),
+                            'user_id' => $user->id
+                        ]);
+                        $userStatistics = [
+                            'total_tryouts' => 0,
+                            'total_questions_answered' => 0,
+                            'total_kecermatan_tests' => 0,
+                            'last_activity' => null,
+                            'last_test_date' => null
+                        ];
+                    }
 
-            // Statistik user
-            $userStatistics = $user->getUserStatistics();
+                    // Additional info
+                    $additionalInfo = [
+                        'subscription_start_date' => $subscription ? $subscription->created_at : null,
+                        'days_remaining' => $subscription && $subscription->end_date
+                            ? max(0, now()->diffInDays($subscription->end_date, false))
+                            : null,
+                        'total_questions_answered' => $userStatistics['total_questions_answered'] ?? 0,
+                        'total_tryouts_completed' => $userStatistics['total_tryouts'] ?? 0,
+                        'last_activity' => $userStatistics['last_activity'] ?? null
+                    ];
 
-            // Additional info
-            $additionalInfo = [
-                'subscription_start_date' => $subscription ? $subscription->created_at : null,
-                'days_remaining' => $subscription && $subscription->end_date
-                    ? max(0, now()->diffInDays($subscription->end_date, false))
-                    : null,
-                'total_questions_answered' => $userStatistics['total_questions_answered'] ?? 0,
-                'total_tryouts_completed' => $userStatistics['total_tryouts'] ?? 0,
-                'last_activity' => $userStatistics['last_activity'] ?? null
-            ];
+                    // Logging waktu eksekusi
+                    $executionTime = round((microtime(true) - $startTime) * 1000, 2);
+                    Log::info("User with paket lengkap redirected to status page in {$executionTime}ms (user {$user->id})");
 
-            // Logging waktu eksekusi
-            $executionTime = round((microtime(true) - $startTime) * 1000, 2);
-            Log::info("User with paket lengkap redirected to status page in {$executionTime}ms (user {$user->id})");
+                    return view('subscription.user-package-status', [
+                        'user' => $user,
+                        'packageLimits' => $packageLimits,
+                        'subscription' => $subscription,
+                        'allowedCategories' => $allowedCategories,
+                        'maxTryouts' => $maxTryouts,
+                        'packageFeatures' => $packageFeatures,
+                        'packageDisplayName' => $packageDisplayName,
+                        'hasActiveSubscription' => $hasActiveSubscription,
+                        'canAccessTryout' => $canAccessTryout,
+                        'canAccessKecermatan' => $canAccessKecermatan,
+                        'userPackage' => $userPackage,
+                        'paketLengkapStatus' => $paketLengkapStatus,
+                        'paketLengkapProgress' => $paketLengkapProgress,
+                        'userStatistics' => $userStatistics,
+                        'additionalInfo' => $additionalInfo
+                    ]);
+                } catch (\Throwable $e) {
+                    Log::error('Error loading paket lengkap status page', [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString(),
+                        'user_id' => $user->id,
+                        'file' => $e->getFile(),
+                        'line' => $e->getLine()
+                    ]);
+                    
+                    // Fallback: tampilkan halaman packages biasa dengan error message
+                    return view('subscription.packages', [
+                        'packages' => $packages,
+                        'error' => 'Terjadi kesalahan saat memuat status paket lengkap. Silakan coba lagi nanti.'
+                    ]);
+                }
+            }
 
-            return view('subscription.user-package-status', [
-                'user' => $user,
-                'packageLimits' => $packageLimits,
-                'subscription' => $subscription,
-                'allowedCategories' => $allowedCategories,
-                'maxTryouts' => $maxTryouts,
-                'packageFeatures' => $packageFeatures,
-                'packageDisplayName' => $packageDisplayName,
-                'hasActiveSubscription' => $hasActiveSubscription,
-                'canAccessTryout' => $canAccessTryout,
-                'canAccessKecermatan' => $canAccessKecermatan,
-                'userPackage' => $userPackage,
-                'paketLengkapStatus' => $paketLengkapStatus,
-                'paketLengkapProgress' => $paketLengkapProgress,
-                'userStatistics' => $userStatistics,
-                'additionalInfo' => $additionalInfo
+            return view('subscription.packages', ['packages' => $packages]);
+        } catch (\Throwable $e) {
+            Log::error('Error in packages method', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'user_id' => Auth::id()
+            ]);
+            
+            return view('subscription.packages', [
+                'packages' => Package::ordered()->get(),
+                'error' => 'Terjadi kesalahan saat memuat halaman paket.'
             ]);
         }
-
-        return view('subscription.packages', ['packages' => $packages]);
     }
 
 

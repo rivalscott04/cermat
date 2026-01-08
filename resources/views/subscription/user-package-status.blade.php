@@ -37,6 +37,12 @@
                 </div>
             @endif
 
+            @if (isset($error))
+                <div class="alert alert-warning">
+                    <i class="fa fa-exclamation-triangle"></i> {{ $error }}
+                </div>
+            @endif
+
             {{-- Status Cards Grid --}}
             <div class="row">
                 {{-- Status Paket Card --}}
@@ -135,7 +141,7 @@
             </div>
 
             {{-- Progress Section --}}
-            @if ($userPackage === 'lengkap' && $paketLengkapStatus)
+            @if ($userPackage === 'lengkap' && $paketLengkapStatus && isset($paketLengkapStatus['kecermatan']))
             <div class="ibox">
                 <div class="ibox-title">
                     <h5><i class="fa fa-trophy"></i> Progress Paket Lengkap</h5>
@@ -157,19 +163,21 @@
                     
                     <div class="row m-t-md">
                         <div class="col-md-4">
-                            <div class="widget style1 {{ $paketLengkapStatus['kecermatan']['completed'] ? 'navy-bg' : 'gray-bg' }}">
+                            <div class="widget style1 {{ isset($paketLengkapStatus['kecermatan']['completed']) && $paketLengkapStatus['kecermatan']['completed'] ? 'navy-bg' : 'gray-bg' }}">
                                 <div class="row">
                                     <div class="col-xs-4 text-center">
                                         <div class="progress-icon-container">
-                                            <i class="fa fa-{{ $paketLengkapStatus['kecermatan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                            <i class="fa fa-{{ isset($paketLengkapStatus['kecermatan']['completed']) && $paketLengkapStatus['kecermatan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
                                         </div>
                                     </div>
                                     <div class="col-xs-8">
                                         <div class="progress-text-container">
                                             <span class="progress-label">Kecermatan</span>
-                                            @if($paketLengkapStatus['kecermatan']['completed'])
-                                                <h2 class="font-bold">{{ $paketLengkapStatus['kecermatan']['score'] }}</h2>
-                                                <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kecermatan']['tanggal'])->format('d M Y H:i') }}</small>
+                                            @if(isset($paketLengkapStatus['kecermatan']['completed']) && $paketLengkapStatus['kecermatan']['completed'])
+                                                <h2 class="font-bold">{{ $paketLengkapStatus['kecermatan']['score'] ?? '-' }}</h2>
+                                                @if(isset($paketLengkapStatus['kecermatan']['tanggal']) && $paketLengkapStatus['kecermatan']['tanggal'])
+                                                    <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kecermatan']['tanggal'])->format('d M Y H:i') }}</small>
+                                                @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>
                                             @endif
@@ -179,19 +187,21 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="widget style1 {{ $paketLengkapStatus['kecerdasan']['completed'] ? 'navy-bg' : 'gray-bg' }}">
+                            <div class="widget style1 {{ isset($paketLengkapStatus['kecerdasan']['completed']) && $paketLengkapStatus['kecerdasan']['completed'] ? 'navy-bg' : 'gray-bg' }}">
                                 <div class="row">
                                     <div class="col-xs-4 text-center">
                                         <div class="progress-icon-container">
-                                            <i class="fa fa-{{ $paketLengkapStatus['kecerdasan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                            <i class="fa fa-{{ isset($paketLengkapStatus['kecerdasan']['completed']) && $paketLengkapStatus['kecerdasan']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
                                         </div>
                                     </div>
                                     <div class="col-xs-8">
                                         <div class="progress-text-container">
                                             <span class="progress-label">Kecerdasan</span>
-                                            @if($paketLengkapStatus['kecerdasan']['completed'])
-                                                <h2 class="font-bold">{{ $paketLengkapStatus['kecerdasan']['score'] }}</h2>
-                                                <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kecerdasan']['tanggal'])->format('d M Y H:i') }}</small>
+                                            @if(isset($paketLengkapStatus['kecerdasan']['completed']) && $paketLengkapStatus['kecerdasan']['completed'])
+                                                <h2 class="font-bold">{{ $paketLengkapStatus['kecerdasan']['score'] ?? '-' }}</h2>
+                                                @if(isset($paketLengkapStatus['kecerdasan']['tanggal']) && $paketLengkapStatus['kecerdasan']['tanggal'])
+                                                    <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kecerdasan']['tanggal'])->format('d M Y H:i') }}</small>
+                                                @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>
                                             @endif
@@ -201,19 +211,21 @@
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <div class="widget style1 {{ $paketLengkapStatus['kepribadian']['completed'] ? 'navy-bg' : 'gray-bg' }}">
+                            <div class="widget style1 {{ isset($paketLengkapStatus['kepribadian']['completed']) && $paketLengkapStatus['kepribadian']['completed'] ? 'navy-bg' : 'gray-bg' }}">
                                 <div class="row">
                                     <div class="col-xs-4 text-center">
                                         <div class="progress-icon-container">
-                                            <i class="fa fa-{{ $paketLengkapStatus['kepribadian']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
+                                            <i class="fa fa-{{ isset($paketLengkapStatus['kepribadian']['completed']) && $paketLengkapStatus['kepribadian']['completed'] ? 'check' : 'times' }}-circle fa-3x"></i>
                                         </div>
                                     </div>
                                     <div class="col-xs-8">
                                         <div class="progress-text-container">
                                             <span class="progress-label">Kepribadian</span>
-                                            @if($paketLengkapStatus['kepribadian']['completed'])
-                                                <h2 class="font-bold">{{ $paketLengkapStatus['kepribadian']['score'] }}</h2>
-                                                <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kepribadian']['tanggal'])->format('d M Y H:i') }}</small>
+                                            @if(isset($paketLengkapStatus['kepribadian']['completed']) && $paketLengkapStatus['kepribadian']['completed'])
+                                                <h2 class="font-bold">{{ $paketLengkapStatus['kepribadian']['score'] ?? '-' }}</h2>
+                                                @if(isset($paketLengkapStatus['kepribadian']['tanggal']) && $paketLengkapStatus['kepribadian']['tanggal'])
+                                                    <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kepribadian']['tanggal'])->format('d M Y H:i') }}</small>
+                                                @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>
                                             @endif
