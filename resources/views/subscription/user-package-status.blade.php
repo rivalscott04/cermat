@@ -71,7 +71,13 @@
                                                 <div class="col-md-6">
                                                     <small class="text-muted">Mulai:</small><br>
                                                     @if(isset($additionalInfo['subscription_start_date']) && $additionalInfo['subscription_start_date'])
-                                                        <strong>{{ $additionalInfo['subscription_start_date']->format('d M Y') }}</strong>
+                                                        <strong>
+                                                            @if(is_object($additionalInfo['subscription_start_date']) && method_exists($additionalInfo['subscription_start_date'], 'format'))
+                                                                {{ $additionalInfo['subscription_start_date']->format('d M Y') }}
+                                                            @else
+                                                                {{ \Carbon\Carbon::parse($additionalInfo['subscription_start_date'])->format('d M Y') }}
+                                                            @endif
+                                                        </strong>
                                                     @else
                                                         <strong>-</strong>
                                                     @endif
@@ -79,7 +85,13 @@
                                                 <div class="col-md-6">
                                                     <small class="text-muted">Berakhir:</small><br>
                                                     @if($subscription && $subscription->end_date)
-                                                        <strong>{{ $subscription->end_date->format('d M Y') }}</strong>
+                                                        <strong>
+                                                            @if(is_object($subscription->end_date) && method_exists($subscription->end_date, 'format'))
+                                                                {{ $subscription->end_date->format('d M Y') }}
+                                                            @else
+                                                                {{ \Carbon\Carbon::parse($subscription->end_date)->format('d M Y') }}
+                                                            @endif
+                                                        </strong>
                                                         @if(isset($additionalInfo['days_remaining']) && $additionalInfo['days_remaining'] > 0)
                                                             <br><span class="text-info">({{ $additionalInfo['days_remaining'] }} hari lagi)</span>
                                                         @elseif(isset($additionalInfo['days_remaining']) && $additionalInfo['days_remaining'] <= 0)
@@ -190,7 +202,17 @@
                                             @if(isset($paketLengkapStatus['kecermatan']['completed']) && $paketLengkapStatus['kecermatan']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kecermatan']['score'] ?? '-' }}</h2>
                                                 @if(isset($paketLengkapStatus['kecermatan']['tanggal']) && $paketLengkapStatus['kecermatan']['tanggal'])
-                                                    <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kecermatan']['tanggal'])->format('d M Y H:i') }}</small>
+                                                    @try
+                                                        <small style="font-size: 10px; opacity: 0.8;">
+                                                            @if(is_object($paketLengkapStatus['kecermatan']['tanggal']) && method_exists($paketLengkapStatus['kecermatan']['tanggal'], 'format'))
+                                                                {{ $paketLengkapStatus['kecermatan']['tanggal']->format('d M Y H:i') }}
+                                                            @else
+                                                                {{ \Carbon\Carbon::parse($paketLengkapStatus['kecermatan']['tanggal'])->format('d M Y H:i') }}
+                                                            @endif
+                                                        </small>
+                                                    @catch(\Exception $e)
+                                                        <small style="font-size: 10px; opacity: 0.8;">{{ $paketLengkapStatus['kecermatan']['tanggal'] }}</small>
+                                                    @endtry
                                                 @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>
@@ -214,7 +236,17 @@
                                             @if(isset($paketLengkapStatus['kecerdasan']['completed']) && $paketLengkapStatus['kecerdasan']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kecerdasan']['score'] ?? '-' }}</h2>
                                                 @if(isset($paketLengkapStatus['kecerdasan']['tanggal']) && $paketLengkapStatus['kecerdasan']['tanggal'])
-                                                    <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kecerdasan']['tanggal'])->format('d M Y H:i') }}</small>
+                                                    @try
+                                                        <small style="font-size: 10px; opacity: 0.8;">
+                                                            @if(is_object($paketLengkapStatus['kecerdasan']['tanggal']) && method_exists($paketLengkapStatus['kecerdasan']['tanggal'], 'format'))
+                                                                {{ $paketLengkapStatus['kecerdasan']['tanggal']->format('d M Y H:i') }}
+                                                            @else
+                                                                {{ \Carbon\Carbon::parse($paketLengkapStatus['kecerdasan']['tanggal'])->format('d M Y H:i') }}
+                                                            @endif
+                                                        </small>
+                                                    @catch(\Exception $e)
+                                                        <small style="font-size: 10px; opacity: 0.8;">{{ $paketLengkapStatus['kecerdasan']['tanggal'] }}</small>
+                                                    @endtry
                                                 @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>
@@ -238,7 +270,17 @@
                                             @if(isset($paketLengkapStatus['kepribadian']['completed']) && $paketLengkapStatus['kepribadian']['completed'])
                                                 <h2 class="font-bold">{{ $paketLengkapStatus['kepribadian']['score'] ?? '-' }}</h2>
                                                 @if(isset($paketLengkapStatus['kepribadian']['tanggal']) && $paketLengkapStatus['kepribadian']['tanggal'])
-                                                    <small style="font-size: 10px; opacity: 0.8;">{{ \Carbon\Carbon::parse($paketLengkapStatus['kepribadian']['tanggal'])->format('d M Y H:i') }}</small>
+                                                    @try
+                                                        <small style="font-size: 10px; opacity: 0.8;">
+                                                            @if(is_object($paketLengkapStatus['kepribadian']['tanggal']) && method_exists($paketLengkapStatus['kepribadian']['tanggal'], 'format'))
+                                                                {{ $paketLengkapStatus['kepribadian']['tanggal']->format('d M Y H:i') }}
+                                                            @else
+                                                                {{ \Carbon\Carbon::parse($paketLengkapStatus['kepribadian']['tanggal'])->format('d M Y H:i') }}
+                                                            @endif
+                                                        </small>
+                                                    @catch(\Exception $e)
+                                                        <small style="font-size: 10px; opacity: 0.8;">{{ $paketLengkapStatus['kepribadian']['tanggal'] }}</small>
+                                                    @endtry
                                                 @endif
                                             @else
                                                 <h2 class="font-bold">-</h2>
